@@ -13,7 +13,7 @@
         v-if="empty.action === 'chat'"
         class="mt-3 rounded-lg bg-action-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-action-primary-700"
         @click="$emit('start-chat')"
-      >Start a chat</button>
+      >{{ uiText("Start a chat") }}</button>
     </div>
 
     <template v-else>
@@ -26,7 +26,7 @@
           v-if="showSearch"
           v-model="query"
           type="search"
-          placeholder="Search canvases…"
+          :placeholder="uiText(&quot;Search canvases…&quot;)"
           data-testid="canvas-search"
           class="min-w-0 flex-1 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2.5 py-1 text-xs"
         />
@@ -38,7 +38,7 @@
           class="rounded-lg border border-gray-300 dark:border-gray-700 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:hover:bg-gray-800"
           data-testid="canvas-manage-toggle"
           @click="manage = !manage; selectedIds = []"
-        >{{ manage ? 'Done' : 'Manage' }}</button>
+        >{{ manage ? uiText("Done") : uiText("Manage") }}</button>
       </div>
 
       <!-- Selector only when there is a choice to make — and ALWAYS when a
@@ -79,7 +79,7 @@
             <input
               type="checkbox"
               :checked="selection.ids.includes(c.canvas_id)"
-              :aria-label="`Select ${c.title || c.canvas_id}`"
+              :aria-label="uiText(&quot;Select {arg1}&quot;, { arg1: (c.title || c.canvas_id) })"
               @change="toggleSelected(c.canvas_id)"
             />
             <span class="min-w-0 flex-1 truncate text-xs">{{ c.title || c.canvas_id }}</span>
@@ -87,22 +87,22 @@
             <span
               v-if="c.stale"
               class="shrink-0 rounded-full bg-status-warning-100 px-1.5 text-[10px] text-status-warning-700 dark:bg-status-warning-500/16 dark:text-status-warning-300"
-            >stale</span>
+            >{{ uiText("stale") }}</span>
             <button
               class="shrink-0 rounded px-1 text-xs hover:bg-gray-100 dark:hover:bg-gray-800"
               :disabled="busy"
               :aria-pressed="!!c.pinned"
-              :title="c.pinned ? 'Unpin' : 'Pin to the top'"
+              :title="c.pinned ? uiText(&quot;Unpin&quot;) : uiText(&quot;Pin to the top&quot;)"
               :data-canvas-pin="c.canvas_id"
               @click="togglePin(c)"
             >{{ c.pinned ? '📌' : '📍' }}</button>
             <button
               class="shrink-0 rounded px-1 text-xs text-status-danger-600 hover:bg-status-danger-50 dark:hover:bg-status-danger-500/16"
               :disabled="busy"
-              title="Delete this canvas"
+              :title="uiText(&quot;Delete this canvas&quot;)"
               :data-canvas-delete="c.canvas_id"
               @click="removeOne(c)"
-            >Delete</button>
+            >{{ uiText("Delete") }}</button>
           </li>
         </ul>
       </div>
@@ -113,16 +113,16 @@
         class="mb-3 flex items-center gap-2 rounded-lg bg-gray-100 dark:bg-gray-800 px-3 py-2"
         data-testid="canvas-bulk-bar"
       >
-        <span class="text-xs">{{ selection.count }} selected</span>
+        <span class="text-xs">{{ selection.count }} {{ uiText("selected") }}</span>
         <button class="text-xs underline" @click="toggleAll">
-          {{ selection.all ? 'Clear' : 'Select all' }}
+          {{ selection.all ? uiText("Clear") : uiText("Select all") }}
         </button>
         <button
           class="ml-auto rounded-lg bg-status-danger-600 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50"
           :disabled="busy"
           data-testid="canvas-bulk-delete"
           @click="removeSelected"
-        >Delete selected</button>
+        >{{ uiText("Delete selected") }}</button>
       </div>
 
       <p v-if="actionError" class="mb-2 text-xs text-status-danger-600 dark:text-status-danger-400" data-testid="canvas-action-error">
@@ -133,7 +133,7 @@
       </p>
 
       <p v-if="query && !visible.length" class="mb-3 text-xs text-gray-500 dark:text-gray-400" data-testid="canvas-search-empty">
-        No canvas matches “{{ query }}”.
+        {{ uiText("No canvas matches “") }}{{ query }}”.
       </p>
 
       <div
@@ -158,7 +158,7 @@
             class="shrink-0 rounded-lg border border-gray-300 px-2 py-0.5 text-[11px] font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800 print:hidden"
             data-testid="canvas-share-open"
             @click="openShare"
-          >Share</button>
+          >{{ uiText("Share") }}</button>
           <!-- Two facts, never a verdict (#2734): when this canvas was written
                and when the agent last finished a run, both measured against one
                clock. Trinity draws no conclusion from them — a derived
@@ -176,26 +176,26 @@
         <!-- The share dialog. The wider reach names what it means AT the point
              of choosing (AC #2), not behind a warning nobody opens. -->
         <div v-if="shareOpen" class="border-b border-gray-200 px-4 py-3 dark:border-gray-800 print:hidden" data-testid="canvas-share-panel">
-          <p class="text-xs font-semibold">Share this canvas</p>
+          <p class="text-xs font-semibold">{{ uiText("Share this canvas") }}</p>
           <label v-for="opt in shareScopes" :key="opt.scope" class="mt-2 flex items-start gap-2 text-xs">
             <input type="radio" :value="opt.scope" v-model="shareScope" :data-share-scope="opt.scope" class="mt-0.5" />
             <span>
               <span class="font-medium">{{ opt.label }}</span>
-              <span v-if="opt.wide" class="ml-1 rounded bg-status-warning-100 px-1 text-[10px] text-status-warning-700 dark:bg-status-warning-500/16 dark:text-status-warning-300">wider</span>
+              <span v-if="opt.wide" class="ml-1 rounded bg-status-warning-100 px-1 text-[10px] text-status-warning-700 dark:bg-status-warning-500/16 dark:text-status-warning-300">{{ uiText("wider") }}</span>
               <span class="block text-gray-500 dark:text-gray-400">{{ opt.detail }}</span>
             </span>
           </label>
           <div class="mt-3 flex items-center gap-2">
             <button class="rounded-lg bg-action-primary-600 px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50"
-                    :disabled="busy" data-testid="canvas-share-create" @click="createShare">Create link</button>
-            <button class="text-xs underline" @click="shareOpen = false">Close</button>
+                    :disabled="busy" data-testid="canvas-share-create" @click="createShare">{{ uiText("Create link") }}</button>
+            <button class="text-xs underline" @click="shareOpen = false">{{ uiText("Close") }}</button>
           </div>
 
           <ul v-if="shares.length" class="mt-3 space-y-1" data-testid="canvas-share-list">
             <li v-for="sh in shares" :key="sh.id" class="flex items-center gap-2 text-[11px]">
               <span class="min-w-0 flex-1 truncate">{{ summarize(sh) }}</span>
-              <button class="underline" :data-share-copy="sh.id" @click="copyShare(sh)">Copy</button>
-              <button class="text-status-danger-600 underline" :data-share-revoke="sh.id" @click="revokeShare(sh)">Revoke</button>
+              <button class="underline" :data-share-copy="sh.id" @click="copyShare(sh)">{{ uiText("Copy") }}</button>
+              <button class="text-status-danger-600 underline" :data-share-revoke="sh.id" @click="revokeShare(sh)">{{ uiText("Revoke") }}</button>
             </li>
           </ul>
           <p v-if="shareNote" class="mt-2 text-[11px] text-gray-500 dark:text-gray-400" data-testid="canvas-share-note">{{ shareNote }}</p>
@@ -227,7 +227,7 @@
           <p
             v-else-if="!blocks.length"
             class="text-xs text-gray-500 dark:text-gray-400"
-          >This canvas is empty.</p>
+          >{{ uiText("This canvas is empty.") }}</p>
           <template v-else>
             <div
               v-if="placement"
@@ -341,7 +341,7 @@ const selectorVisible = computed(() => canvasSelectorVisible({
 }))
 const canManage = computed(() => props.canManage && !!props.deleteCanvas)
 
-function ageOf(c) { return c?.updated_at ? relativeTime(c.updated_at) : 'never updated' }
+function ageOf(c) { return c?.updated_at ? relativeTime(c.updated_at) : uiText("never updated") }
 
 // ent#554 — share + PDF.
 const shareOpen = ref(false)
@@ -376,7 +376,7 @@ async function copyShare(sh) {
                        typeof window !== 'undefined' ? window.location.origin : '')
   try {
     await navigator.clipboard.writeText(url)
-    shareNote.value = 'Link copied.'
+    shareNote.value = uiText('Link copied.')
   } catch {
     // Clipboard access is denied in plenty of ordinary situations (insecure
     // origin, permissions). Showing the link is the fallback that always works.
@@ -386,11 +386,11 @@ async function copyShare(sh) {
 
 async function revokeShare(sh) {
   if (!props.revokeCanvasShare) return
-  if (!window.confirm('Revoke this link? Anyone holding it will be told it was turned off.')) return
+  if (!window.confirm(uiText('Revoke this link? Anyone holding it will be told it was turned off.'))) return
   const ok = await run(() => props.revokeCanvasShare(sh.id))
   if (ok !== null) {
     shares.value = shares.value.filter((s) => s.id !== sh.id)
-    shareNote.value = 'Link revoked.'
+    shareNote.value = uiText('Link revoked.')
   }
 }
 
@@ -400,7 +400,7 @@ async function downloadPdf() {
   // and no headless service to run or keep in step.
   pdfNote.value = ''
   if (typeof window === 'undefined' || typeof window.print !== 'function') {
-    pdfNote.value = 'This browser cannot produce a PDF here — use Print and choose Save as PDF.'
+    pdfNote.value = uiText('This browser cannot produce a PDF here — use Print and choose Save as PDF.')
     return
   }
   // Mount the teleported document first and let Vue flush, or `print()` fires
@@ -410,7 +410,7 @@ async function downloadPdf() {
   try {
     window.print()
   } catch {
-    pdfNote.value = 'The PDF could not be produced. Use your browser’s Print → Save as PDF.'
+    pdfNote.value = uiText('The PDF could not be produced. Use your browser’s Print → Save as PDF.')
   } finally {
     // `print()` blocks in every browser that implements it, but Safari has
     // historically returned early — `afterprint` is the reliable teardown and
@@ -439,7 +439,7 @@ async function run(fn) {
   } catch (e) {
     // Named, never a generic failure: the person just tried to destroy or
     // reorder something and needs to know whether it happened.
-    actionError.value = e?.response?.data?.detail || e?.message || 'That did not work.'
+    actionError.value = e?.response?.data?.detail || e?.message || uiText("That did not work.")
     return null
   } finally {
     busy.value = false
@@ -532,7 +532,7 @@ async function select(id) {
     if (seq !== selectSeq) return
     // Keep the header — the metadata row is real and its timestamp is the
     // honest part. Only the blocks are missing, and we say so.
-    detailError.value = 'Could not load this canvas.'
+    detailError.value = uiText("Could not load this canvas.")
   }
 }
 
@@ -573,4 +573,6 @@ watch(
     if (detail.value.updated_at !== updatedAt) select(selectedId.value)
   },
 )
+
+import { t as uiText } from '@/i18n'
 </script>

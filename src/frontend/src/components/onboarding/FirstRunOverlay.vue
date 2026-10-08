@@ -53,6 +53,7 @@
         />
 
         <div class="flex min-h-0 min-w-0 flex-col">
+          <div class="flex justify-end px-4 pt-2"><LanguageSelect /></div>
           <div ref="bodyEl" class="min-h-0 flex-1 overflow-auto px-8 py-7 max-sm:px-4 max-sm:py-5">
             <StepWelcome
               v-if="currentKey === 'welcome'"
@@ -82,7 +83,7 @@
                    px-8 py-3.5 max-sm:px-4 max-sm:py-3"
           >
             <BaseButton v-if="!isFirst" variant="ghost" size="sm" data-testid="first-run-back" @click="back">
-              &larr; Back
+              {{ t('← Back') }}
             </BaseButton>
             <!-- Phone: the rail's "Finish later" is hidden, so it lives here. -->
             <BaseButton
@@ -92,7 +93,7 @@
               data-testid="first-run-finish-later-footer"
               @click="requestClose"
             >
-              Finish later
+              {{ t('Finish later') }}
             </BaseButton>
             <span class="flex-1"></span>
 
@@ -105,7 +106,7 @@
               :data-testid="`first-run-skip-${currentKey}`"
               @click="skipCurrent"
             >
-              Skip &mdash; later in {{ currentStep.settingsPath }}
+              {{ t('Skip — later in') }} {{ t(currentStep.settingsPath) }}
             </BaseButton>
 
             <BaseButton
@@ -116,7 +117,7 @@
               :data-testid="`first-run-next-${currentKey}`"
               @click="next"
             >
-              {{ continueLabel }}
+              {{ t(continueLabel) }}
             </BaseButton>
           </footer>
         </div>
@@ -127,10 +128,10 @@
       <ConfirmDialog
         v-model:visible="confirming"
         variant="warning"
-        title="Finish setup later?"
+        :title="t('Finish setup later?')"
         :message="closeConsequence"
-        confirm-text="Finish later"
-        cancel-text="Keep setting up"
+        :confirm-text="t('Finish later')"
+        :cancel-text="t('Keep setting up')"
         @confirm="finishLater"
         @cancel="focusSafeAction"
       />
@@ -139,6 +140,10 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import LanguageSelect from '@/components/LanguageSelect.vue'
+import { t } from '@/i18n'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
@@ -274,10 +279,9 @@ const nextLabel = ref('')
 
 const closeConsequence = computed(() => {
   const claude = steps.value.find((s) => s.key === 'claude')
-  const idle = claude && states.value.claude !== 'done'
-    ? 'Your agents stay idle until you connect Claude in Settings → Integrations. '
-    : ''
-  return `${idle}Anything you have not done stays where each step said — and Settings → General → Re-run setup brings this back.`
+  return claude && states.value.claude !== 'done'
+    ? uiText("Your agents stay idle until you connect Claude in Settings → Integrations. Anything you have not done stays where each step said — and Settings → General → Re-run setup brings this back.")
+    : uiText("Anything you have not done stays where each step said — and Settings → General → Re-run setup brings this back.")
 })
 
 // ---- open / close -----------------------------------------------------------

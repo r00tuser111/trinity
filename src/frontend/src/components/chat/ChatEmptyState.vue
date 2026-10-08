@@ -5,9 +5,9 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
       </svg>
     </div>
-    <h3 v-if="heading" class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ heading }}</h3>
+    <h3 v-if="heading" class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText(heading) }}</h3>
     <p v-if="subheading" class="text-gray-500 dark:text-gray-400 text-sm max-w-md mx-auto mb-6">
-      {{ subheading }}
+      {{ uiText(subheading) }}
     </p>
 
     <div v-if="suggestions.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-2xl mx-auto">
@@ -30,6 +30,8 @@
 </template>
 
 <script setup>
+import { t as uiText, msg } from '@/i18n'
+
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -39,11 +41,11 @@ const props = defineProps({
   },
   heading: {
     type: String,
-    default: 'Start a Conversation'
+    default: msg('Start a Conversation')
   },
   subheading: {
     type: String,
-    default: 'Pick a quick action below or type your own message.'
+    default: msg('Pick a quick action below or type your own message.')
   },
   maxButtons: {
     type: Number,
@@ -58,10 +60,10 @@ const props = defineProps({
 defineEmits(['select'])
 
 const FALLBACK_PROMPTS = [
-  { label: 'What can you help me with?', text: 'What can you help me with?', sendImmediately: false },
-  { label: 'How do I get started?', text: 'How do I get started?', sendImmediately: false },
-  { label: 'What data sources do you have access to?', text: 'What data sources do you have access to?', sendImmediately: false },
-  { label: 'Show me an example of what you can do', text: 'Show me an example of what you can do', sendImmediately: false }
+  { get "label"() { return uiText("What can you help me with?") }, get "text"() { return uiText("What can you help me with?") }, sendImmediately: false },
+  { get "label"() { return uiText("How do I get started?") }, get "text"() { return uiText("How do I get started?") }, sendImmediately: false },
+  { get "label"() { return uiText("What data sources do you have access to?") }, get "text"() { return uiText("What data sources do you have access to?") }, sendImmediately: false },
+  { get "label"() { return uiText("Show me an example of what you can do") }, get "text"() { return uiText("Show me an example of what you can do") }, sendImmediately: false }
 ]
 
 const suggestions = computed(() => {

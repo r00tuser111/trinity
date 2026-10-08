@@ -1,3 +1,6 @@
+import { watch } from 'vue'
+import { locale, t as uiText } from '../i18n/index.js'
+
 import { createRouter, createWebHistory } from 'vue-router'
 import { setBaseTitle } from '@/utils/tabTitle'
 import axios from 'axios'
@@ -28,25 +31,25 @@ export const routes = [
     path: '/setup',
     name: 'Setup',
     component: () => import('../views/SetupPassword.vue'),
-    meta: { requiresAuth: false, isSetup: true, title: 'Setup' }
+    meta: { requiresAuth: false, isSetup: true, get "title"() { return uiText("Setup") } }
   },
   {
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue'),
-    meta: { requiresAuth: false, title: 'Login' }
+    meta: { requiresAuth: false, get "title"() { return uiText("Login") } }
   },
   {
     path: '/chat/:token',
     name: 'PublicChat',
     component: () => import('../views/PublicChat.vue'),
-    meta: { requiresAuth: false, title: 'Chat' }
+    meta: { requiresAuth: false, get "title"() { return uiText("Chat") } }
   },
   {
     path: '/',
     name: 'Dashboard',
     component: () => import('../views/Dashboard.vue'),
-    meta: { requiresAuth: true, title: 'Dashboard' }
+    meta: { requiresAuth: true, get "title"() { return uiText("Dashboard") } }
   },
   // trinity-enterprise#260 — the standalone Agents page is retired; its list
   // lives on as the Dashboard's List mode. Query-preserving function redirect
@@ -130,7 +133,7 @@ export const routes = [
     path: '/library',
     name: 'Library',
     component: () => import('../views/Library.vue'),
-    meta: { requiresAuth: true, title: 'Library' }
+    meta: { requiresAuth: true, get "title"() { return uiText("Library") } }
   },
   // Legacy redirect — function form so query AND hash survive the hop (the
   // #1109 precedent preserves query only; hash carry added here for the
@@ -152,7 +155,7 @@ export const routes = [
     path: '/operations',
     name: 'Operations',
     component: () => import('../views/Operations.vue'),
-    meta: { requiresAuth: true, title: 'Operations' }
+    meta: { requiresAuth: true, get "title"() { return uiText("Operations") } }
   },
   // Legacy redirects — function form so existing ?tab= deep links survive
   // the hop (a string/object redirect would drop the incoming query).
@@ -174,7 +177,7 @@ export const routes = [
     path: '/settings',
     name: 'Settings',
     component: () => import('../views/Settings.vue'),
-    meta: { requiresAuth: true, requiresAdmin: true, title: 'Settings' }
+    meta: { requiresAuth: true, requiresAdmin: true, get "title"() { return uiText("Settings") } }
   },
   // Legacy redirect for /system-agent -> agents page (consolidated)
   {
@@ -203,13 +206,13 @@ export const routes = [
     path: '/enterprise',
     name: 'EnterpriseLanding',
     component: () => import('../views/enterprise/Index.vue'),
-    meta: { requiresAuth: true, requiresAnyEntitlement: true, title: 'Enterprise' }
+    meta: { requiresAuth: true, requiresAnyEntitlement: true, get "title"() { return uiText("Enterprise") } }
   },
   {
     path: '/enterprise/audit',
     name: 'EnterpriseAudit',
     component: () => import('../views/enterprise/Audit.vue'),
-    meta: { requiresAuth: true, requiresEntitlement: 'audit', title: 'Audit Log' }
+    meta: { requiresAuth: true, requiresEntitlement: 'audit', get "title"() { return uiText("Audit Log") } }
   },
   {
     // ent#381: the standalone Sessions page is retired — a multi-agent Workspace
@@ -242,7 +245,7 @@ export const routes = [
     path: '/canvas/s/:token',
     name: 'shared-canvas',
     component: () => import('../views/SharedCanvas.vue'),
-    meta: { title: 'Shared canvas', hideHelpWidget: true }
+    meta: { get "title"() { return uiText("Shared canvas") }, hideHelpWidget: true }
   },
   {
     path: '/workspace',
@@ -250,7 +253,7 @@ export const routes = [
     component: () => import('../views/Portal.vue'),
     // hideHelpWidget: the operator-only help widget would overlap the
     // conversation's Send button (and is meaningless to a client) — off here.
-    meta: { title: 'Workspace', hideHelpWidget: true }
+    meta: { get "title"() { return uiText("Workspace") }, hideHelpWidget: true }
   },
   {
     // #138: deep-linkable, refresh-safe conversation thread. The same shell as
@@ -259,7 +262,7 @@ export const routes = [
     path: '/workspace/c/:sessionId',
     name: 'WorkspaceThread',
     component: () => import('../views/Portal.vue'),
-    meta: { title: 'Workspace', hideHelpWidget: true }
+    meta: { get "title"() { return uiText("Workspace") }, hideHelpWidget: true }
   },
   {
     // ent#361: a multi-agent chat is a ROOM, not a portal thread — different
@@ -268,7 +271,7 @@ export const routes = [
     path: '/workspace/r/:roomId',
     name: 'WorkspaceRoom',
     component: () => import('../views/Portal.vue'),
-    meta: { title: 'Workspace', hideHelpWidget: true }
+    meta: { get "title"() { return uiText("Workspace") }, hideHelpWidget: true }
   },
   {
     // ent#360: an agent is a destination, so it gets a URL. Deliberately NOT
@@ -308,7 +311,7 @@ export const routes = [
     path: '/m',
     name: 'MobileAdmin',
     component: () => import('../views/MobileAdmin.vue'),
-    meta: { requiresAuth: false, title: 'Mobile' }  // handles its own inline auth
+    meta: { requiresAuth: false, get "title"() { return uiText("Mobile") } }  // handles its own inline auth
   },
   // Catch-all redirect to dashboard
   {
@@ -432,8 +435,11 @@ router.beforeEach(async (to, from) => {
 // title with no reload. Routes without a title (redirects, catch-all) fall back
 // to the branded default that index.html ships as the pre-hydration title.
 const BASE_TITLE = 'Trinity'
-router.afterEach((to) => {
-  const raw = to.meta?.title
+function applyRouteTitle(to) {
+  // `to.meta` is a merged snapshot that already evaluated the title getters;
+  // the record's own meta still holds them, so a language switch re-reads it.
+  const record = [...(to.matched || [])].reverse().find(r => r.meta && 'title' in r.meta)
+  const raw = record ? record.meta.title : to.meta?.title
   const label = typeof raw === 'function' ? raw(to) : raw
   // ent#557: routed THROUGH `setBaseTitle` rather than assigned here. The
   // Workspace's unread count is a prefix on this string and changes on its own
@@ -441,8 +447,11 @@ router.afterEach((to) => {
   // other's half — a navigation would drop the count, a count update would drop
   // the label. `utils/tabTitle.js` holds both halves and renders the whole
   // string; this line still owns what the LABEL says.
-  setBaseTitle(label ? `${BASE_TITLE} — ${label}` : `${BASE_TITLE} — Agent Orchestration`)
-})
+  setBaseTitle(label ? `${BASE_TITLE} — ${label}` : `${BASE_TITLE} — ${uiText('Agent Orchestration')}`)
+}
+router.afterEach(applyRouteTitle)
+// Titles are read when rendered, so a language switch re-renders the current one.
+watch(locale, () => applyRouteTitle(router.currentRoute.value))
 
 // Clear setup cache on successful setup
 export function clearSetupCache() {

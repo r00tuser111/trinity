@@ -1,5 +1,6 @@
 <script>
 import { defineComponent, h } from 'vue'
+import { t } from '@/i18n'
 
 // Helper function for file sizes
 const formatFileSize = (bytes) => {
@@ -115,7 +116,7 @@ export default defineComponent({
           // Download button
           h('button', {
             class: 'p-1 text-action-primary-600 dark:text-action-primary-400 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-action-primary-50 dark:hover:bg-action-primary-900/30 rounded',
-            title: 'Download file',
+            title: t('Download file'),
             onClick: downloadFile
           }, [
             h('svg', {

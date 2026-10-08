@@ -6,18 +6,18 @@
          load" as "assigned to nobody" is the confident wrong zero this whole
          read exists to avoid. -->
     <p v-if="store.assignmentsError" class="text-gray-600 dark:text-gray-400">
-      <span class="font-[550]">Assigned to</span>
-      — unavailable
+      <span class="font-[550]">{{ uiText("Assigned to") }}</span>
+      {{ uiText("— unavailable") }}
       <button
         type="button"
         :disabled="store.assignmentsFetching"
         class="ml-1 text-action-primary-600 dark:text-action-primary-400 hover:underline disabled:opacity-45 disabled:cursor-not-allowed disabled:no-underline"
         @click="store.loadAssignments()"
-      >{{ store.assignmentsFetching ? 'retrying…' : 'retry' }}</button>
+      >{{ store.assignmentsFetching ? uiText("retrying…") : uiText("retry") }}</button>
     </p>
 
     <p v-else-if="!store.assignmentsLoaded" class="text-gray-600 dark:text-gray-400">
-      <span class="font-[550]">Assigned to</span>
+      <span class="font-[550]">{{ uiText("Assigned to") }}</span>
       —
     </p>
 
@@ -25,10 +25,10 @@
       <!-- Spacing is real whitespace, not `ml-*`: a margin is invisible to a
            screen reader, which would read "Assigned to1 agent". -->
       <p class="text-gray-600 dark:text-gray-400">
-        <span class="font-[550]">Assigned to</span>
+        <span class="font-[550]">{{ uiText("Assigned to") }}</span>
         <template v-if="agents.length">
           {{ ' ' }}<span class="tabular-nums">{{ agents.length }}</span>
-          {{ ' ' }}agent{{ agents.length === 1 ? '' : 's' }}
+          {{ ' ' }}{{ uiText("agent") }}{{ agents.length === 1 ? '' : 's' }}
         </template>
         <!-- Wording follows the payload's `scope`, so a non-admin is never told
              a skill has NO holders when they simply cannot see the ones it
@@ -54,8 +54,8 @@
             type="button"
             :disabled="busy === a.name"
             class="inline-flex items-center rounded-full rounded-l-none pl-[3px] pr-[7px] py-[2.5px] text-[11.5px] leading-[1.4] bg-gray-100 text-gray-500 dark:bg-gray-750 dark:text-gray-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/40 dark:hover:text-red-300 disabled:opacity-45 disabled:cursor-not-allowed"
-            :title="`Unassign from ${a.display_label || a.name}`"
-            :aria-label="`Unassign ${skillName} from ${a.display_label || a.name}`"
+            :title="uiText(&quot;Unassign from {arg1}&quot;, { arg1: (a.display_label || a.name) })"
+            :aria-label="uiText(&quot;Unassign {arg1} from {arg2}&quot;, { arg1: (skillName), arg2: (a.display_label || a.name) })"
             @click="onUnassign(a.name)"
           >×</button>
         </li>
@@ -66,14 +66,14 @@
             type="button"
             class="text-[11px] text-action-primary-600 dark:text-action-primary-400 hover:underline"
             @click="expanded = true"
-          >+{{ hiddenCount }} more</button>
+          >+{{ hiddenCount }} {{ uiText("more") }}</button>
         </li>
         <li v-else-if="expanded && agents.length > COLLAPSED_LIMIT">
           <button
             type="button"
             class="text-[11px] text-action-primary-600 dark:text-action-primary-400 hover:underline"
             @click="expanded = false"
-          >show fewer</button>
+          >{{ uiText("show fewer") }}</button>
         </li>
       </ul>
 
@@ -82,14 +82,14 @@
            the one place that could tell you a skill was unused and the one
            place that could not act on it. -->
       <div v-if="assignable.length" class="mt-1.5 flex items-center gap-1.5">
-        <label class="sr-only" :for="selectId">Assign {{ skillName }} to an agent</label>
+        <label class="sr-only" :for="selectId">{{ uiText("Assign") }} {{ skillName }} {{ uiText("to an agent") }}</label>
         <select
           :id="selectId"
           v-model="picked"
           :disabled="busy !== null"
           class="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-[11px] text-gray-700 dark:text-gray-200 py-[2px] pl-1.5 pr-5 disabled:opacity-45 disabled:cursor-not-allowed"
         >
-          <option value="">Assign to…</option>
+          <option value="">{{ uiText("Assign to…") }}</option>
           <option v-for="a in assignable" :key="a.name" :value="a.name">
             {{ a.display_label || a.name }}
           </option>
@@ -99,7 +99,7 @@
           :disabled="!picked || busy !== null"
           class="rounded px-2 py-[2.5px] text-[11px] font-[550] bg-action-primary-600 text-white hover:bg-action-primary-700 disabled:opacity-45 disabled:cursor-not-allowed"
           @click="onAssign"
-        >{{ busy === picked && picked ? 'assigning…' : 'Assign' }}</button>
+        >{{ busy === picked && picked ? uiText("assigning…") : uiText("Assign") }}</button>
       </div>
 
       <!-- The server's own reason, next to the control that caused it. Not a
@@ -202,6 +202,8 @@ const hiddenCount = computed(() =>
 )
 
 const emptyText = computed(() =>
-  store.assignmentsScope === 'all' ? 'no agents yet' : 'none of your agents'
+  store.assignmentsScope === 'all' ? uiText('no agents yet') : uiText('none of your agents')
 )
+
+import { t as uiText } from '@/i18n'
 </script>

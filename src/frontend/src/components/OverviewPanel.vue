@@ -1,4 +1,5 @@
 <script setup>
+import { t } from '@/i18n'
 /**
  * Agent Detail "Overview" tab (#1107) — the default landing tab.
  *
@@ -103,7 +104,7 @@ function fmtDateTime(iso) {
 const dates = computed(() => (analytics.value?.timeline || []).map((p) => p.date))
 
 const successSeries = computed(() => [{
-  label: 'Completion',  // ent#206: exit-based, not answer quality
+  get "label"() { return uiText("Completion") },  // ent#206: exit-based, not answer quality
   color: SUCCESS_COLOR,
   fill: true,
   data: (analytics.value?.timeline || []).map((p) =>
@@ -112,14 +113,14 @@ const successSeries = computed(() => [{
 }])
 
 const durationSeries = computed(() => [{
-  label: 'Avg duration',
+  get "label"() { return uiText("Avg duration") },
   color: DURATION_COLOR,
   fill: true,
   data: (analytics.value?.timeline || []).map((p) => p.duration_avg_ms ?? null),
 }])
 
 const contextSeries = computed(() => [{
-  label: 'Avg context',
+  get "label"() { return uiText("Avg context") },
   color: CONTEXT_COLOR,
   fill: true,
   data: (analytics.value?.timeline || []).map((p) => p.context_avg ?? null),
@@ -135,11 +136,11 @@ const hasHealthTrend = computed(
   () => healthTrend.value && healthTrend.value.dates.length > 0
 )
 const uptimeSeries = computed(() => [{
-  label: 'Uptime', color: UPTIME_COLOR, fill: true,
+  get "label"() { return uiText("Uptime") }, color: UPTIME_COLOR, fill: true,
   data: healthTrend.value?.uptime || [],
 }])
 const latencySeries = computed(() => [{
-  label: 'Latency', color: LATENCY_COLOR, fill: true,
+  get "label"() { return uiText("Latency") }, color: LATENCY_COLOR, fill: true,
   data: healthTrend.value?.latency || [],
 }])
 
@@ -153,10 +154,10 @@ function dotColor(s) { return statusColor[s] || 'bg-gray-400' }
 
 const healthBadge = computed(() => {
   const s = (health.value?.aggregate_status || '').toLowerCase()
-  if (s === 'healthy') return { label: 'Healthy', cls: 'bg-status-success-100 dark:bg-status-success-900/50 text-status-success-700 dark:text-status-success-300' }
-  if (s === 'degraded') return { label: 'Degraded', cls: 'bg-status-warning-100 dark:bg-status-warning-900/50 text-status-warning-700 dark:text-status-warning-300' }
-  if (s === 'unhealthy') return { label: 'Unhealthy', cls: 'bg-status-danger-100 dark:bg-status-danger-900/50 text-status-danger-700 dark:text-status-danger-300' }
-  return { label: 'Unknown', cls: 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }
+  if (s === 'healthy') return { get "label"() { return uiText("Healthy") }, cls: 'bg-status-success-100 dark:bg-status-success-900/50 text-status-success-700 dark:text-status-success-300' }
+  if (s === 'degraded') return { get "label"() { return uiText("Degraded") }, cls: 'bg-status-warning-100 dark:bg-status-warning-900/50 text-status-warning-700 dark:text-status-warning-300' }
+  if (s === 'unhealthy') return { get "label"() { return uiText("Unhealthy") }, cls: 'bg-status-danger-100 dark:bg-status-danger-900/50 text-status-danger-700 dark:text-status-danger-300' }
+  return { get "label"() { return uiText("Unknown") }, cls: 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400' }
 })
 
 // --- fetching ---
@@ -260,6 +261,8 @@ onMounted(() => {
   loadAnalytics()
   loadSidecars()
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <template>
@@ -281,7 +284,7 @@ onMounted(() => {
         <button
           class="shrink-0 text-xs font-medium text-action-primary-600 dark:text-action-primary-400 hover:underline"
           @click="emit('navigate-tab', 'info')"
-        >Full details →</button>
+        >{{ t('Full details →') }}</button>
       </div>
       <div class="mt-4">
         <button
@@ -289,7 +292,7 @@ onMounted(() => {
           @click="emit('navigate-tab', 'tasks')"
         >
           <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-          New task
+          {{ t('New task') }}
         </button>
       </div>
     </div>
@@ -302,9 +305,9 @@ onMounted(() => {
     >
       <span class="flex items-center text-sm font-medium text-status-warning-800 dark:text-status-warning-300">
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86a2 2 0 001.74-3L13.74 4a2 2 0 00-3.48 0L3.34 16a2 2 0 001.73 3z" /></svg>
-        {{ attentionCount }} {{ attentionCount === 1 ? 'item needs' : 'items need' }} attention
+        {{ attentionCount }} {{ attentionCount === 1 ? t('item needs') : t('items need') }} {{ t('attention') }}
       </span>
-      <span class="text-xs text-status-warning-700 dark:text-status-warning-400">View in Operations →</span>
+      <span class="text-xs text-status-warning-700 dark:text-status-warning-400">{{ t('View in Operations →') }}</span>
     </router-link>
 
     <!-- 2b. Deployment compatibility (#668) — count + expandable checklist, auto-fix -->
@@ -313,11 +316,11 @@ onMounted(() => {
     <!-- 3. Trend charts -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
       <div class="flex items-center justify-between px-5 pt-4">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Activity trends</h3>
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">{{ t('Activity trends') }}</h3>
         <div class="flex items-center gap-2">
           <span v-if="live" class="text-xs text-gray-500 dark:text-gray-400">
-            <span class="font-mono text-action-primary-600 dark:text-action-primary-400">{{ live.running_count }}</span> running ·
-            <span class="font-mono text-status-warning-600 dark:text-status-warning-400">{{ live.queued_count }}</span> queued
+            <span class="font-mono text-action-primary-600 dark:text-action-primary-400">{{ live.running_count }}</span> {{ t('running ·') }}
+            <span class="font-mono text-status-warning-600 dark:text-status-warning-400">{{ live.queued_count }}</span> {{ t('queued') }}
           </span>
           <div class="inline-flex rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
             <button
@@ -337,9 +340,9 @@ onMounted(() => {
         <svg class="w-10 h-10 mx-auto text-gray-300 dark:text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3v18h18M7 15l4-4 3 3 5-6" />
         </svg>
-        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">No runs in the last {{ window }}</p>
+        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('No runs in the last') }} {{ window }}</p>
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-          Executions show up here after this agent runs a chat, schedule, or task.
+          {{ t('Executions show up here after this agent runs a chat, schedule, or task.') }}
         </p>
       </div>
 
@@ -347,8 +350,8 @@ onMounted(() => {
         <!-- executions by type -->
         <div class="lg:col-span-2">
           <div class="flex items-baseline justify-between mb-2">
-            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300">Executions by type</h4>
-            <span class="text-xs text-gray-400">{{ analytics.total_executions }} total</span>
+            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ t('Executions by type') }}</h4>
+            <span class="text-xs text-gray-400">{{ analytics.total_executions }} {{ t('total') }}</span>
           </div>
           <StackedBarChart :data="analytics.timeline" :buckets="analytics.buckets" :colors="BUCKET_COLORS" :height="150" />
         </div>
@@ -356,7 +359,7 @@ onMounted(() => {
         <!-- success rate -->
         <div>
           <div class="flex items-baseline justify-between mb-2">
-            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300" title="Runs that finished without erroring — completion, not answer quality (ent#206)">Execution completion rate</h4>
+            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300" :title="t('Runs that finished without erroring — completion, not answer quality (ent#206)')">{{ t('Execution completion rate') }}</h4>
             <span class="text-sm font-semibold text-status-success-600 dark:text-status-success-400">{{ Math.round(analytics.success_rate * 100) }}%</span>
           </div>
           <TrendLineChart :dates="dates" :series="successSeries" :y-min="0" :y-max="100" :value-format="(v) => (v == null ? '—' : v + '%')" :axis-format="(v) => v + '%'" />
@@ -365,8 +368,8 @@ onMounted(() => {
         <!-- duration -->
         <div>
           <div class="flex items-baseline justify-between mb-2">
-            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300">Duration</h4>
-            <span class="text-xs text-gray-500 dark:text-gray-400">avg <span class="font-mono text-gray-700 dark:text-gray-200">{{ fmtDuration(analytics.duration_ms.avg) }}</span> · p95 <span class="font-mono text-gray-700 dark:text-gray-200">{{ fmtDuration(analytics.duration_ms.p95) }}</span></span>
+            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ t('Duration') }}</h4>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('avg') }} <span class="font-mono text-gray-700 dark:text-gray-200">{{ fmtDuration(analytics.duration_ms.avg) }}</span> · p95 <span class="font-mono text-gray-700 dark:text-gray-200">{{ fmtDuration(analytics.duration_ms.p95) }}</span></span>
           </div>
           <TrendLineChart :dates="dates" :series="durationSeries" :y-min="0" :value-format="(v) => fmtDuration(v)" :axis-format="(v) => fmtDuration(v)" />
         </div>
@@ -374,15 +377,15 @@ onMounted(() => {
         <!-- context -->
         <div v-if="hasContext" class="lg:col-span-2">
           <div class="flex items-baseline justify-between mb-2">
-            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300">Context consumption</h4>
-            <span class="text-xs text-gray-500 dark:text-gray-400">avg <span class="font-mono text-gray-700 dark:text-gray-200">{{ fmtTokens(analytics.context_avg) }}</span> tokens</span>
+            <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{ t('Context consumption') }}</h4>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('avg') }} <span class="font-mono text-gray-700 dark:text-gray-200">{{ fmtTokens(analytics.context_avg) }}</span> {{ t('tokens') }}</span>
           </div>
           <TrendLineChart :dates="dates" :series="contextSeries" :y-min="0" :value-format="(v) => fmtTokens(v)" :axis-format="(v) => fmtTokens(v)" />
         </div>
       </div>
 
       <p v-if="analytics?.sampled" class="px-5 pb-3 -mt-2 text-[11px] text-gray-400">
-        p95 sampled over the newest {{ analytics.sample_size }} runs.
+        {{ t('p95 sampled over the newest') }} {{ analytics.sample_size }} {{ t('runs.') }}
       </p>
     </div>
 
@@ -394,8 +397,8 @@ onMounted(() => {
       class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700"
     >
       <div class="flex items-baseline justify-between mb-3">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Schedules performance</h3>
-        <span class="text-xs text-gray-400">last {{ window }}</span>
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">{{ t('Schedules performance') }}</h3>
+        <span class="text-xs text-gray-400">{{ t('last') }} {{ window }}</span>
       </div>
       <div class="divide-y divide-gray-100 dark:divide-gray-700/60">
         <button
@@ -403,7 +406,7 @@ onMounted(() => {
           :key="s.schedule_id"
           @click="emit('navigate-tab', 'schedules')"
           class="w-full flex items-center gap-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded px-1 -mx-1"
-          :title="`Open ${s.name} in the Schedules tab`"
+          :title="uiText(&quot;Open {arg1} in the Schedules tab&quot;, { arg1: (s.name) })"
         >
           <div class="min-w-0 flex-1">
             <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ s.command || s.name }}</p>
@@ -412,19 +415,19 @@ onMounted(() => {
           <div class="shrink-0 flex items-center gap-4 text-right">
             <div class="w-14">
               <p :class="['text-sm font-semibold', successRateClass(s.success_rate)]">{{ fmtSuccessRate(s.success_rate) }}</p>
-              <p class="text-[10px] text-gray-400 uppercase tracking-wide">success</p>
+              <p class="text-[10px] text-gray-400 uppercase tracking-wide">{{ t('success') }}</p>
             </div>
             <div class="w-16 hidden sm:block">
               <p class="text-sm font-mono text-gray-700 dark:text-gray-200">{{ fmtDuration(s.avg_duration_ms) }}</p>
-              <p class="text-[10px] text-gray-400 uppercase tracking-wide">avg</p>
+              <p class="text-[10px] text-gray-400 uppercase tracking-wide">{{ t('avg') }}</p>
             </div>
             <div class="w-10">
               <p class="text-sm font-mono text-gray-700 dark:text-gray-200">{{ s.total_executions }}</p>
-              <p class="text-[10px] text-gray-400 uppercase tracking-wide">runs</p>
+              <p class="text-[10px] text-gray-400 uppercase tracking-wide">{{ t('runs') }}</p>
             </div>
             <div class="w-10 hidden sm:block">
               <p class="text-sm font-mono text-gray-700 dark:text-gray-200">{{ s.tool_call_total }}</p>
-              <p class="text-[10px] text-gray-400 uppercase tracking-wide">tools</p>
+              <p class="text-[10px] text-gray-400 uppercase tracking-wide">{{ t('tools') }}</p>
             </div>
             <svg class="w-4 h-4 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -433,37 +436,37 @@ onMounted(() => {
         </button>
       </div>
       <p v-if="schedulesPerf.tool_calls_sampled" class="mt-2 text-[11px] text-gray-400">
-        Tool counts sampled over the newest runs.
+        {{ t('Tool counts sampled over the newest runs.') }}
       </p>
     </div>
 
     <!-- 4. Health & reliability -->
     <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
-      <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-3">Health &amp; reliability</h3>
+      <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-3">{{ t('Health & reliability') }}</h3>
       <div class="flex flex-wrap items-center gap-2 mb-4">
         <span :class="['px-2.5 py-1 text-xs font-semibold rounded-full', healthBadge.cls]">{{ healthBadge.label }}</span>
         <span v-if="health?.network" class="px-2.5 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-          {{ health.network.reachable ? 'Reachable' : 'Offline' }}
+          {{ health.network.reachable ? t('Reachable') : t('Offline') }}
         </span>
         <span v-if="health?.docker" class="px-2.5 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-          {{ health.docker.restart_count || 0 }} restarts
+          {{ health.docker.restart_count || 0 }} {{ t('restarts') }}
         </span>
-        <span v-if="health?.docker?.oom_killed" class="px-2.5 py-1 text-xs rounded-full bg-status-danger-100 dark:bg-status-danger-900/50 text-status-danger-700 dark:text-status-danger-300">OOM killed</span>
+        <span v-if="health?.docker?.oom_killed" class="px-2.5 py-1 text-xs rounded-full bg-status-danger-100 dark:bg-status-danger-900/50 text-status-danger-700 dark:text-status-danger-300">{{ t('OOM killed') }}</span>
         <span v-if="health?.uptime_percent_24h != null" class="px-2.5 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-          {{ fmtPct(health.uptime_percent_24h) }} uptime (24h)
+          {{ fmtPct(health.uptime_percent_24h) }} {{ t('uptime (24h)') }}
         </span>
         <span v-if="health?.circuit_breaker?.open" class="px-2.5 py-1 text-xs rounded-full bg-status-danger-100 dark:bg-status-danger-900/50 text-status-danger-700 dark:text-status-danger-300">
-          Circuit open — see header
+          {{ t('Circuit open — see header') }}
         </span>
       </div>
 
       <div v-if="hasHealthTrend" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Uptime <span class="font-normal text-gray-400">(last 7 days)</span></h4>
+          <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('Uptime') }} <span class="font-normal text-gray-400">{{ t('(last 7 days)') }}</span></h4>
           <TrendLineChart :dates="healthTrend.dates" :series="uptimeSeries" :y-min="0" :y-max="100" :height="120" :value-format="(v) => (v == null ? '—' : v + '%')" :axis-format="(v) => v + '%'" />
         </div>
         <div>
-          <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Latency <span class="font-normal text-gray-400">(last 7 days)</span></h4>
+          <h4 class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">{{ t('Latency') }} <span class="font-normal text-gray-400">{{ t('(last 7 days)') }}</span></h4>
           <TrendLineChart :dates="healthTrend.dates" :series="latencySeries" :y-min="0" :height="120" :value-format="(v) => (v == null ? '—' : v + 'ms')" :axis-format="(v) => v + 'ms'" />
         </div>
       </div>
@@ -471,19 +474,19 @@ onMounted(() => {
         <svg class="w-10 h-10 mx-auto text-gray-300 dark:text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12h4l3 8 4-16 3 8h4" />
         </svg>
-        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">No health data yet</p>
+        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('No health data yet') }}</p>
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-          Fleet-health monitoring is off, so uptime and latency aren't being recorded for this agent.
+          {{ t('Fleet-health monitoring is off, so uptime and latency aren\'t being recorded for this agent.') }}
         </p>
         <router-link
           v-if="isAdmin"
           :to="{ path: '/operations', query: { tab: 'health' } }"
           class="mt-3 inline-flex items-center text-xs font-medium text-action-primary-600 dark:text-action-primary-400 hover:underline"
         >
-          Enable it in Operations → Health →
+          {{ t('Enable it in Operations → Health →') }}
         </router-link>
         <p v-else class="mt-2 text-xs text-gray-400 dark:text-gray-500">
-          An admin can enable it in Operations → Health.
+          {{ t('An admin can enable it in Operations → Health.') }}
         </p>
       </div>
     </div>
@@ -491,15 +494,15 @@ onMounted(() => {
     <!-- 5. Recent activity -->
     <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
       <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Recent activity</h3>
-        <button class="text-xs font-medium text-action-primary-600 dark:text-action-primary-400 hover:underline" @click="emit('navigate-tab', 'tasks')">View all →</button>
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">{{ t('Recent activity') }}</h3>
+        <button class="text-xs font-medium text-action-primary-600 dark:text-action-primary-400 hover:underline" @click="emit('navigate-tab', 'tasks')">{{ t('View all →') }}</button>
       </div>
-      <div v-if="recent.length === 0" class="text-sm text-gray-400 py-2">No recent executions.</div>
+      <div v-if="recent.length === 0" class="text-sm text-gray-400 py-2">{{ t('No recent executions.') }}</div>
       <ul v-else class="divide-y divide-gray-100 dark:divide-gray-700">
         <li v-for="r in recent" :key="r.id">
           <button class="w-full flex items-center gap-3 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded px-1 -mx-1" @click="emit('open-task', r.id)">
             <span :class="['w-2 h-2 rounded-full shrink-0', dotColor(r.status)]"></span>
-            <span class="flex-1 min-w-0 truncate text-sm text-gray-700 dark:text-gray-200">{{ r.message || '(no message)' }}</span>
+            <span class="flex-1 min-w-0 truncate text-sm text-gray-700 dark:text-gray-200">{{ r.message || t('(no message)') }}</span>
             <span class="shrink-0 px-1.5 py-0.5 text-[10px] rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">{{ r.triggered_by }}</span>
             <span class="shrink-0 text-[11px] text-gray-400">{{ fmtDateTime(r.started_at) }}</span>
           </button>
@@ -509,19 +512,19 @@ onMounted(() => {
 
     <!-- 6. Footprint (compact, static) -->
     <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
-      <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-3">Footprint</h3>
+      <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-3">{{ t('Footprint') }}</h3>
       <div class="flex flex-wrap gap-2 text-xs">
         <button class="px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" @click="emit('navigate-tab', 'schedules')">
-          {{ schedulesCount ?? '—' }} schedules
+          {{ schedulesCount ?? '—' }} {{ t('schedules') }}
         </button>
         <button class="px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" @click="emit('navigate-tab', 'skills')">
-          {{ skillsCount ?? '—' }} skills
+          {{ skillsCount ?? '—' }} {{ t('skills') }}
         </button>
         <button v-if="agent.can_share" class="px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" @click="emit('navigate-tab', 'sharing')">
-          {{ (agent.shares && agent.shares.length) || 0 }} shares
+          {{ (agent.shares && agent.shares.length) || 0 }} {{ t('shares') }}
         </button>
         <span class="px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-          Sync: <span :class="syncFailures > 0 ? 'text-status-danger-600 dark:text-status-danger-400' : 'text-status-success-600 dark:text-status-success-400'">{{ syncFailures > 0 ? `${syncFailures} failing` : 'ok' }}</span>
+          {{ t('Sync:') }} <span :class="syncFailures > 0 ? 'text-status-danger-600 dark:text-status-danger-400' : 'text-status-success-600 dark:text-status-success-400'">{{ syncFailures > 0 ? uiText("{arg1} failing", { arg1: (syncFailures) }) : t('ok') }}</span>
         </span>
       </div>
     </div>

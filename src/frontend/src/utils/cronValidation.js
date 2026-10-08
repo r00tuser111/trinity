@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * cronValidation.js — client-side mirror of the backend's cron acceptance grammar (#925).
  *
@@ -60,10 +62,10 @@ const FIELDS = [
  *  against the SHIPPED list, not a mirrored literal (labels/expressions are
  *  byte-identical to the former hardcoded buttons). */
 export const CRON_PRESETS = [
-  { label: 'Daily 9 AM', expression: '0 9 * * *' },
-  { label: 'Weekly Mon', expression: '0 9 * * 1' },
-  { label: 'Every 6h', expression: '0 */6 * * *' },
-  { label: 'Every 30m', expression: '*/30 * * * *' },
+  { get "label"() { return uiText("Daily 9 AM") }, expression: '0 9 * * *' },
+  { get "label"() { return uiText("Weekly Mon") }, expression: '0 9 * * 1' },
+  { get "label"() { return uiText("Every 6h") }, expression: '0 */6 * * *' },
+  { get "label"() { return uiText("Every 30m") }, expression: '*/30 * * * *' },
 ]
 
 // Verbatim port of schedule_validation._dow_to_apscheduler — BRANCH ORDER MATTERS
@@ -93,7 +95,7 @@ function echo(item) {
 }
 
 function itemError(rawItem, field, reason) {
-  return `Invalid cron expression: "${echo(rawItem)}" is not valid for ${field.name}${reason ? ` — ${reason}` : ''}`
+  return uiText("Invalid cron expression: \"{arg1}\" is not valid for {arg2}{arg3}", { arg1: (echo(rawItem)), arg2: (field.name), arg3: (reason ? ` — ${reason}` : '') })
 }
 
 /**
@@ -105,7 +107,7 @@ function itemError(rawItem, field, reason) {
  */
 function checkItem(item, rawItem, field) {
   if (item === '') {
-    return `Invalid cron expression: ${field.name} has an empty list item`
+    return uiText("Invalid cron expression: {arg1} has an empty list item", { arg1: (field.name) })
   }
 
   // 1. AllExpression: r'\*(?:/(?P<step>\d+))?$'
@@ -113,9 +115,9 @@ function checkItem(item, rawItem, field) {
   if (m) {
     if (m[1] !== undefined) {
       const step = Number(m[1])
-      if (step === 0) return itemError(rawItem, field, 'step must be at least 1')
+      if (step === 0) return itemError(rawItem, field, uiText('step must be at least 1'))
       if (step > field.max - field.min) {
-        return itemError(rawItem, field, `step ${step} is larger than the ${field.min}–${field.max} range`)
+        return itemError(rawItem, field, uiText('step {step} is larger than the {min}–{max} range', { step, min: field.min, max: field.max }))
       }
     }
     return null
@@ -128,21 +130,21 @@ function checkItem(item, rawItem, field) {
     let last = m[2] !== undefined ? Number(m[2]) : undefined
     const step = m[3] !== undefined ? Number(m[3]) : undefined
     // AllExpression.__init__: zero step raises before anything else.
-    if (step === 0) return itemError(rawItem, field, 'step must be at least 1')
+    if (step === 0) return itemError(rawItem, field, uiText('step must be at least 1'))
     // RangeExpression.__init__: bare value ⇒ last = first (so `8` in dow hits the ≤max check).
     if (last === undefined && step === undefined) last = first
     if (last !== undefined && first > last) {
-      return itemError(rawItem, field, 'range first value is greater than last')
+      return itemError(rawItem, field, uiText('range first value is greater than last'))
     }
     // validate_range, in APScheduler's order: super() full-span step check first…
     if (step !== undefined && step > field.max - field.min) {
-      return itemError(rawItem, field, `step ${step} is larger than the ${field.min}–${field.max} range`)
+      return itemError(rawItem, field, uiText('step {step} is larger than the {min}–{max} range', { step, min: field.min, max: field.max }))
     }
     if (first < field.min) {
-      return itemError(rawItem, field, `values must be ${field.min}–${field.max}`)
+      return itemError(rawItem, field, uiText('values must be {min}–{max}', { min: field.min, max: field.max }))
     }
     if (last !== undefined && last > field.max) {
-      return itemError(rawItem, field, `values must be ${field.min}–${field.max}`)
+      return itemError(rawItem, field, uiText('values must be {min}–{max}', { min: field.min, max: field.max }))
     }
     // …then the actual-span step check. `||` (not `??`) is INTENTIONAL: mirrors
     // APScheduler's Python-truthiness `(self.last or MAX) - self.first`, where an
@@ -153,7 +155,7 @@ function checkItem(item, rawItem, field) {
     // reserved slot — a second echo pushed worst cases to 3 lines (measured).
     const span = (last || field.max) - first
     if (step !== undefined && step > span) {
-      return itemError(rawItem, field, `step ${step} is larger than the range`)
+      return itemError(rawItem, field, uiText('step {step} is larger than the range', { step }))
     }
     return null
   }
@@ -175,15 +177,15 @@ function checkItem(item, rawItem, field) {
       // never a fall-through (mirrors the propagating ValueError).
       const firstIdx = names.indexOf(nm[1].toLowerCase())
       if (firstIdx === -1) {
-        return itemError(rawItem, field, `not a recognized name (use ${names[0]}..${names[names.length - 1]})`)
+        return itemError(rawItem, field, uiText('not a recognized name (use {first}..{last})', { first: names[0], last: names[names.length - 1] }))
       }
       if (nm[2] !== undefined) {
         const lastIdx = names.indexOf(nm[2].toLowerCase())
         if (lastIdx === -1) {
-          return itemError(rawItem, field, `not a recognized name (use ${names[0]}..${names[names.length - 1]})`)
+          return itemError(rawItem, field, uiText('not a recognized name (use {first}..{last})', { first: names[0], last: names[names.length - 1] }))
         }
         if (firstIdx > lastIdx) {
-          return itemError(rawItem, field, 'range first value is greater than last')
+          return itemError(rawItem, field, uiText('range first value is greater than last'))
         }
       }
       return null
@@ -206,9 +208,7 @@ export function validateCronExpression(expr) {
     if (fields.length !== 5) {
       return {
         valid: false,
-        error:
-          `Invalid cron expression: expected 5 fields (minute hour day month day_of_week), ` +
-          `got ${fields.length} — e.g. "0 9 * * *"`,
+        error: uiText('Invalid cron expression: expected 5 fields (minute hour day month day_of_week), got {count} — e.g. "0 9 * * *"', { count: fields.length }),
       }
     }
 

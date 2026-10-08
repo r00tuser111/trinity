@@ -29,7 +29,7 @@
             v-if="notification.type === 'error'"
             type="button"
             class="ml-3 font-medium opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-status-danger-500/40 rounded"
-            aria-label="Dismiss notification"
+            :aria-label="t('Dismiss notification')"
             @click="dismissNotification"
           >✕</button>
         </div>
@@ -41,16 +41,16 @@
           <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <h2 class="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Agent not found</h2>
+          <h2 class="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">{{ t('Agent not found') }}</h2>
           <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
             <span class="font-mono text-gray-800 dark:text-gray-200">{{ route.params.name }}</span>
-            doesn't exist, or you don't have access to it.
+            {{ t('doesn\'t exist, or you don\'t have access to it.') }}
           </p>
           <router-link
             to="/"
             class="mt-6 inline-block px-4 py-2 rounded-lg bg-action-primary-600 hover:bg-action-primary-700 text-white text-sm font-medium transition-colors"
           >
-            Back to Dashboard
+            {{ t('Back to Dashboard') }}
           </router-link>
         </div>
 
@@ -61,7 +61,7 @@
             data-testid="agent-load-retry"
             class="shrink-0 px-3 py-1 rounded border border-status-danger-400 dark:border-status-danger-700 text-sm font-medium hover:bg-status-danger-200 dark:hover:bg-status-danger-900 transition-colors"
           >
-            Retry
+            {{ t('Retry') }}
           </button>
         </div>
 
@@ -115,7 +115,7 @@
           <!-- Tabs -->
           <div :class="['bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg', isFullscreenTab ? 'flex-1 flex flex-col overflow-hidden' : '']">
             <!-- #1114: tabs overflow into a "More ▾" dropdown instead of horizontal scroll -->
-            <OverflowTabs :tabs="visibleTabs" v-model="activeTab" />
+            <OverflowTabs :tabs="visibleTabs.map(tab => ({ ...tab, label: t(tab.label) }))" v-model="activeTab" />
 
             <!-- Overview Tab Content (#1107 — default landing tab) -->
             <div v-if="activeTab === 'overview'" class="p-6">
@@ -148,7 +148,7 @@
             <div v-show="activeTab === 'chat'" class="flex-1 overflow-hidden flex flex-col">
               <div class="flex items-center justify-end gap-2 px-3 py-1.5 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40">
                 <span class="text-xs text-gray-500 dark:text-gray-400">
-                  Stateless chat — each message starts fresh.
+                  {{ t('Stateless chat — each message starts fresh.') }}
                 </span>
                 <!-- ent#456: opens a new tab, so the agent page you were on is
                      still here when you come back. The ?tab=session REDIRECT
@@ -159,9 +159,9 @@
                   target="_blank"
                   rel="noopener"
                   class="text-xs font-medium text-action-primary-600 hover:text-action-primary-700 dark:text-action-primary-400 dark:hover:text-action-primary-300"
-                  title="The Workspace keeps one continuous conversation — memory, tool results and reasoning carry across turns."
+                  :title="t('The Workspace keeps one continuous conversation — memory, tool results and reasoning carry across turns.')"
                 >
-                  Continue in Workspace →
+                  {{ t('Continue in Workspace →') }}
                 </router-link>
               </div>
 
@@ -337,6 +337,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import { ref, computed, onMounted, onUnmounted, onActivated, onDeactivated, watch, nextTick } from 'vue'
 import { readStoredToken } from '../utils/platformSession'
 import { useRoute, useRouter } from 'vue-router'
@@ -648,12 +651,12 @@ async function toggleAutonomy() {
     // all disabled / N of M will run) that the raw count used to hide.
     showNotification(
       result.message ||
-        `Autonomy ${newState ? 'enabled' : 'disabled'}.`,
+        uiText("Autonomy {arg1}.", { arg1: (newState ? 'enabled' : 'disabled') }),
       'success'
     )
   } catch (error) {
     console.error('Failed to toggle autonomy:', error)
-    showNotification(error.message || 'Failed to update autonomy mode', 'error')
+    showNotification(error.message || uiText("Failed to update autonomy mode"), 'error')
   } finally {
     autonomyLoading.value = false
   }
@@ -687,13 +690,13 @@ async function toggleReadOnly() {
 
     showNotification(
       newState
-        ? `Read-only mode enabled. Agent cannot modify source files.${result.hooks_injected ? '' : ' Hooks will be applied on next agent start.'}`
-        : 'Read-only mode disabled. Agent can modify all files.',
+        ? uiText("Read-only mode enabled. Agent cannot modify source files.{arg1}", { arg1: (result.hooks_injected ? '' : ' Hooks will be applied on next agent start.') })
+        : uiText("Read-only mode disabled. Agent can modify all files."),
       'success'
     )
   } catch (error) {
     console.error('Failed to toggle read-only mode:', error)
-    showNotification(error.message || 'Failed to update read-only mode', 'error')
+    showNotification(error.message || uiText("Failed to update read-only mode"), 'error')
   } finally {
     readOnlyLoading.value = false
   }
@@ -722,7 +725,7 @@ async function setAgentLabel(label) {
     agent.value.display_label = res.label
   } catch (e) {
     console.error('Failed to set agent label:', e)
-    error.value = e.response?.data?.detail || 'Failed to update the label'
+    error.value = e.response?.data?.detail || uiText("Failed to update the label")
   }
 }
 
@@ -751,14 +754,14 @@ async function renameAgent(newName) {
     const result = await response.json()
 
     // Navigate to new URL with new agent name
-    showNotification(`Agent renamed to '${result.new_name}'${result.note ? `. ${result.note}` : ''}`, 'success')
+    showNotification(uiText("Agent renamed to '{arg1}'{arg2}", { arg1: (result.new_name), arg2: (result.note ? `. ${result.note}` : '') }), 'success')
 
     // Navigate to the new agent URL
     router.replace({ name: 'AgentDetail', params: { name: result.new_name } })
 
   } catch (error) {
     console.error('Failed to rename agent:', error)
-    showNotification(error.message || 'Failed to rename agent', 'error')
+    showNotification(error.message || uiText("Failed to rename agent"), 'error')
   } finally {
     renameLoading.value = false
   }
@@ -825,7 +828,7 @@ async function saveResourceLimits() {
 
   // If values changed and agent is running, restart it to apply the new limits.
   if (valuesChanged && agent.value?.status === 'running') {
-    showNotification('Restarting agent to apply new resource limits...', 'info')
+    showNotification(uiText("Restarting agent to apply new resource limits..."), 'info')
     try {
       await stopAgent()
       // #1126: gate the start on the container actually being stopped rather
@@ -833,7 +836,7 @@ async function saveResourceLimits() {
       const stopped = await waitForAgentStatus(['stopped', 'exited', 'created'])
       if (!stopped) {
         showNotification(
-          'Agent did not stop within 30s — not restarting automatically. Start it manually to apply the new limits.',
+          uiText("Agent did not stop within 30s — not restarting automatically. Start it manually to apply the new limits."),
           'error',
         )
         return
@@ -842,10 +845,10 @@ async function saveResourceLimits() {
       // Refresh effective values so the header/dialog reflect the applied limits.
       await loadAgent()
       await loadResourceLimits()
-      showNotification('Agent restarted with new resource limits.', 'success')
+      showNotification(uiText("Agent restarted with new resource limits."), 'success')
     } catch (err) {
       showNotification(
-        `Restart failed: ${err?.message || err}. The agent may be stopped — start it manually.`,
+        uiText("Restart failed: {arg1}. The agent may be stopped — start it manually.", { arg1: (err?.message || err) }),
         'error',
       )
     }
@@ -883,9 +886,9 @@ function buildTabs({
 
   // Primary tabs - most frequently used. Overview leads (#1107).
   const tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'tasks', label: 'Tasks' },
-    { id: 'chat', label: 'Chat' }
+    { id: 'overview', get "label"() { return uiText("Overview") } },
+    { id: 'tasks', get "label"() { return uiText("Tasks") } },
+    { id: 'chat', get "label"() { return uiText("Chat") } }
   ]
 
   // #1112 collapsed the Session tab into the Chat tab above; ent#358 retired
@@ -1011,7 +1014,7 @@ async function loadAgent() {
     if (err.response?.status === 404) {
       notFound.value = true
     } else {
-      error.value = 'Failed to load agent details'
+      error.value = uiText("Failed to load agent details")
     }
   } finally {
     loading.value = false
@@ -1134,10 +1137,10 @@ async function updateTags(newTags) {
       headers: authStore.authHeader
     })
     agentTags.value = response.data.tags || []
-    showNotification('Tags updated', 'success')
+    showNotification(uiText("Tags updated"), 'success')
   } catch (err) {
     console.error('Failed to update tags:', err)
-    showNotification('Failed to update tags', 'error')
+    showNotification(uiText("Failed to update tags"), 'error')
   }
 }
 
@@ -1152,7 +1155,7 @@ async function addTag(tag) {
     await loadAllTags()
   } catch (err) {
     console.error('Failed to add tag:', err)
-    showNotification(err.response?.data?.detail || 'Failed to add tag', 'error')
+    showNotification(err.response?.data?.detail || uiText("Failed to add tag"), 'error')
   }
 }
 
@@ -1165,7 +1168,7 @@ async function removeTag(tag) {
     agentTags.value = response.data.tags || []
   } catch (err) {
     console.error('Failed to remove tag:', err)
-    showNotification('Failed to remove tag', 'error')
+    showNotification(uiText("Failed to remove tag"), 'error')
   }
 }
 
@@ -1342,7 +1345,7 @@ async function changeSubscription(subscriptionName) {
     }
     await loadAuthStatus()
   } catch (err) {
-    showNotification(err.response?.data?.detail || 'Failed to update subscription', 'error')
+    showNotification(err.response?.data?.detail || uiText("Failed to update subscription"), 'error')
   } finally {
     subscriptionChanging.value = false
   }

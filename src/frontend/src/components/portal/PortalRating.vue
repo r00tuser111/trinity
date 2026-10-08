@@ -56,7 +56,7 @@
       v-model="comment"
       rows="2"
       maxlength="2000"
-      :placeholder="`What were you looking for instead? (optional)`"
+      :placeholder="uiText(&quot;What were you looking for instead? (optional)&quot;)"
       class="flex-1 resize-none rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs text-gray-900 dark:text-gray-100 px-2.5 py-2 focus:ring-2 focus:ring-action-primary-500/40 focus:border-action-primary-500 focus:outline-none"
     ></textarea>
     <div class="flex flex-col gap-1">
@@ -64,12 +64,12 @@
         type="submit"
         class="rounded-lg bg-action-primary-600 hover:bg-action-primary-700 px-2.5 py-1 text-[11px] text-white disabled:opacity-40"
         :disabled="sending || !comment.trim()"
-      >Send</button>
+      >{{ uiText("Send") }}</button>
       <button
         type="button"
         class="rounded-lg px-2.5 py-1 text-[11px] text-gray-500 dark:text-gray-400 hover:underline"
         @click="commentOpen = false"
-      >Close</button>
+      >{{ uiText("Close") }}</button>
     </div>
   </form>
   </div>
@@ -127,7 +127,7 @@ async function send(value, text) {
     return res
   } catch (e) {
     // A failed verb gets a home next to its control, never a console line.
-    error.value = e?.response?.data?.detail || "Couldn't save that."
+    error.value = e?.response?.data?.detail || uiText("Couldn't save that.")
     return null
   } finally {
     sending.value = false
@@ -160,4 +160,6 @@ async function submitComment() {
   comment.value = ''
   acknowledgement.value = feedbackAcknowledgement(res.capture_feedback)
 }
+
+import { t as uiText } from '@/i18n'
 </script>

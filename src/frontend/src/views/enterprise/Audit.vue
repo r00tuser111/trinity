@@ -24,11 +24,11 @@ const store = useAuditLogStore()
 const filters = store.filters
 
 const TIME_PRESETS = [
-  { key: '1h', label: 'Last 1h' },
-  { key: '24h', label: 'Last 24h' },
-  { key: '7d', label: 'Last 7d' },
-  { key: '30d', label: 'Last 30d' },
-  { key: 'all', label: 'All time' },
+  { key: '1h', get "label"() { return uiText("Last 1h") } },
+  { key: '24h', get "label"() { return uiText("Last 24h") } },
+  { key: '7d', get "label"() { return uiText("Last 7d") } },
+  { key: '30d', get "label"() { return uiText("Last 30d") } },
+  { key: 'all', get "label"() { return uiText("All time") } },
 ]
 
 // #941 v3.2 — single foldable card hosting both heatmap views.
@@ -157,13 +157,13 @@ function closeDetail() {
 const HOURS = Array.from({ length: 24 }, (_, h) => h)
 // SQLite dow indices in ISO display order: Mon=1, Tue=2, …, Sat=6, Sun=0.
 const DOW_ROWS = [
-  { sqliteIndex: 1, label: 'Mon' },
-  { sqliteIndex: 2, label: 'Tue' },
-  { sqliteIndex: 3, label: 'Wed' },
-  { sqliteIndex: 4, label: 'Thu' },
-  { sqliteIndex: 5, label: 'Fri' },
-  { sqliteIndex: 6, label: 'Sat' },
-  { sqliteIndex: 0, label: 'Sun' },
+  { sqliteIndex: 1, get "label"() { return uiText("Mon") } },
+  { sqliteIndex: 2, get "label"() { return uiText("Tue") } },
+  { sqliteIndex: 3, get "label"() { return uiText("Wed") } },
+  { sqliteIndex: 4, get "label"() { return uiText("Thu") } },
+  { sqliteIndex: 5, get "label"() { return uiText("Fri") } },
+  { sqliteIndex: 6, get "label"() { return uiText("Sat") } },
+  { sqliteIndex: 0, get "label"() { return uiText("Sun") } },
 ]
 
 const heatmapGrid = computed(() => {
@@ -202,7 +202,7 @@ function heatmapCellStyle(count) {
 
 function heatmapCellTitle(label, hour, count) {
   const hourLabel = String(hour).padStart(2, '0') + ':00'
-  if (count === 0) return `${label} ${hourLabel} UTC · no events`
+  if (count === 0) return uiText("{arg1} {arg2} UTC · no events", { arg1: (label), arg2: (hourLabel) })
   return `${label} ${hourLabel} UTC · ${count} event${count === 1 ? '' : 's'}`
 }
 
@@ -216,10 +216,9 @@ function heatmapCellTitle(label, hour, count) {
 // Click handler narrows the filter to a single UTC day, which the
 // dow×hour heatmap can't offer (its cells are recurring buckets).
 // ─────────────────────────────────────────────────────────────────────
-const MONTH_LABELS = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-]
+function monthLabel(d) {
+  return d.toLocaleDateString(locale.value, { month: 'short', timeZone: 'UTC' })
+}
 
 function parseIsoDate(s) {
   // Parse 'YYYY-MM-DD' as UTC midnight. Using Date.UTC keeps the
@@ -273,7 +272,7 @@ const calendarGrid = computed(() => {
       if (i === 0) {
         const m = cursor.getUTCMonth()
         if (lastMonth !== m) {
-          months.push({ weekIdx, label: MONTH_LABELS[m] })
+          months.push({ weekIdx, label: monthLabel(cursor) })
           lastMonth = m
         }
       }
@@ -301,9 +300,9 @@ function calendarCellStyle(count, inRange) {
 }
 
 function calendarCellTitle(cell) {
-  if (!cell.inRange) return `${cell.date} · outside window`
-  if (cell.count === 0) return `${cell.date} · no events`
-  return `${cell.date} · ${cell.count} event${cell.count === 1 ? '' : 's'} (click to filter)`
+  if (!cell.inRange) return uiText("{arg1} · outside window", { arg1: (cell.date) })
+  if (cell.count === 0) return uiText("{arg1} · no events", { arg1: (cell.date) })
+  return uiText("{arg1} · {arg2} event{arg3} (click to filter)", { arg1: (cell.date), arg2: (cell.count), arg3: (cell.count === 1 ? '' : 's') })
 }
 
 async function drilldownDay(cell) {
@@ -338,6 +337,8 @@ const detailsJson = computed(() => {
     return String(e.details)
   }
 })
+
+import { locale, t as uiText } from '@/i18n'
 </script>
 
 <template>
@@ -354,18 +355,17 @@ const detailsJson = computed(() => {
             to="/enterprise"
             class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
           >
-            ← Enterprise
+            {{ uiText("← Enterprise") }}
           </router-link>
         </div>
         <div class="flex items-center gap-3 mb-2">
-          <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">Audit Log</h1>
+          <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">{{ uiText("Audit Log") }}</h1>
           <span class="px-2 py-0.5 text-xs font-bold rounded bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200">
             PRO
           </span>
         </div>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          Tamper-evident record of administrative actions. Default filter
-          shows the last 24 hours.
+          {{ uiText("Tamper-evident record of administrative actions. Default filter shows the last 24 hours.") }}
         </p>
 
         <!-- Hash-chain verify badge — manual trigger, visible-range only. -->
@@ -387,42 +387,41 @@ const detailsJson = computed(() => {
                 store.verifyState === 'error',
             }"
           >
-            <span v-if="store.verifyState === 'idle'">Hash chain · not verified</span>
-            <span v-else-if="store.verifyState === 'verifying'">Verifying…</span>
+            <span v-if="store.verifyState === 'idle'">{{ uiText("Hash chain · not verified") }}</span>
+            <span v-else-if="store.verifyState === 'verifying'">{{ uiText("Verifying…") }}</span>
             <span v-else-if="store.verifyState === 'valid'">
-              ✓ Valid · {{ store.verifyResult?.checked || 0 }} entries<template
+              {{ uiText("✓ Valid ·") }} {{ store.verifyResult?.checked || 0 }} {{ uiText("entries") }}<template
                 v-if="store.verifyResult?.skipped_unhashed"
               >
-                · {{ store.verifyResult.skipped_unhashed }} unhashed (not covered)</template>
+                · {{ store.verifyResult.skipped_unhashed }} {{ uiText("unhashed (not covered)") }}</template>
             </span>
             <!-- #1984: previously rendered as a green "✓ Valid · 0 entries" —
                  a verified verdict over a range nothing had been hashed in. -->
             <span v-else-if="store.verifyState === 'unverifiable'">
               <template v-if="store.verifyResult?.status === 'empty_range'">
-                — Nothing in range to verify
+                {{ uiText("— Nothing in range to verify") }}
               </template>
               <template v-else>
-                ⚠ Unverifiable · no hashes on
-                {{ store.verifyResult?.total_in_range || 0 }} entries — hash
-                chain was never enabled
+                {{ uiText("⚠ Unverifiable · no hashes on") }}
+                {{ store.verifyResult?.total_in_range || 0 }} {{ uiText("entries — hash chain was never enabled") }}
               </template>
             </span>
             <span v-else-if="store.verifyState === 'invalid'">
-              ✗ Tamper detected · first invalid id #{{ store.verifyResult?.first_invalid_id }}
+              {{ uiText("✗ Tamper detected · first invalid id #") }}{{ store.verifyResult?.first_invalid_id }}
             </span>
-            <span v-else>⚠ Verify failed</span>
+            <span v-else>{{ uiText("⚠ Verify failed") }}</span>
           </span>
           <button
             class="px-2 py-0.5 text-xs rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
             :disabled="store.verifyState === 'verifying' || store.entries.length === 0"
             :title="
               store.entries.length === 0
-                ? 'Load some entries first.'
-                : `Verify ids #${Math.min(...store.entries.map(e => e.id))}–#${Math.max(...store.entries.map(e => e.id))} on this page`
+                ? uiText(&quot;Load some entries first.&quot;)
+                : uiText(&quot;Verify ids #{arg1}–#{arg2} on this page&quot;, { arg1: (Math.min(...store.entries.map(e => e.id))), arg2: (Math.max(...store.entries.map(e => e.id))) })
             "
             @click="verifyChain"
           >
-            Verify visible range
+            {{ uiText("Verify visible range") }}
           </button>
         </div>
       </header>
@@ -431,51 +430,51 @@ const detailsJson = computed(() => {
       <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
           <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            Total events
+            {{ uiText("Total events") }}
           </div>
           <div class="text-2xl font-semibold text-gray-900 dark:text-white mt-1">
             {{ store.statsLoading ? '…' : (store.stats?.total ?? '—') }}
           </div>
-          <div class="text-[11px] text-gray-400 mt-1">in window</div>
+          <div class="text-[11px] text-gray-400 mt-1">{{ uiText("in window") }}</div>
         </div>
 
         <button
           class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-left hover:border-blue-400 transition disabled:opacity-60 disabled:hover:border-gray-200 disabled:cursor-default"
           :disabled="!store.topEventType"
-          :title="store.topEventType ? `Click to filter by ${store.topEventType.key}` : ''"
+          :title="store.topEventType ? uiText(&quot;Click to filter by {arg1}&quot;, { arg1: (store.topEventType.key) }) : ''"
           @click="store.topEventType && drilldownEvent(store.topEventType.key)"
         >
           <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            Top event type
+            {{ uiText("Top event type") }}
           </div>
           <div class="text-lg font-semibold text-gray-900 dark:text-white mt-1 truncate">
             {{ store.topEventType?.key || '—' }}
           </div>
           <div class="text-[11px] text-gray-400 mt-1">
-            {{ store.topEventType ? `${store.topEventType.count} events` : 'no data' }}
+            {{ store.topEventType ? uiText("{arg1} events", { arg1: (store.topEventType.count) }) : uiText("no data") }}
           </div>
         </button>
 
         <button
           class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-left hover:border-blue-400 transition disabled:opacity-60 disabled:hover:border-gray-200 disabled:cursor-default"
           :disabled="!store.topActorType"
-          :title="store.topActorType ? `Click to filter by actor_type=${store.topActorType.key}` : ''"
+          :title="store.topActorType ? uiText(&quot;Click to filter by actor_type={arg1}&quot;, { arg1: (store.topActorType.key) }) : ''"
           @click="store.topActorType && store.drilldownFilter('actor_type', store.topActorType.key)"
         >
           <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            Top actor type
+            {{ uiText("Top actor type") }}
           </div>
           <div class="text-lg font-semibold text-gray-900 dark:text-white mt-1 truncate">
             {{ store.topActorType?.key || '—' }}
           </div>
           <div class="text-[11px] text-gray-400 mt-1">
-            {{ store.topActorType ? `${store.topActorType.count} events` : 'no data' }}
+            {{ store.topActorType ? uiText("{arg1} events", { arg1: (store.topActorType.count) }) : uiText("no data") }}
           </div>
         </button>
 
         <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
           <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            Time window
+            {{ uiText("Time window") }}
           </div>
           <div class="text-sm font-medium text-gray-900 dark:text-white mt-1 break-all">
             {{ store.timeWindowLabel }}
@@ -486,7 +485,7 @@ const detailsJson = computed(() => {
 
       <!-- Time-preset chips -->
       <div class="flex flex-wrap items-center gap-2 mb-4">
-        <span class="text-xs text-gray-500 dark:text-gray-400 mr-1">Time:</span>
+        <span class="text-xs text-gray-500 dark:text-gray-400 mr-1">{{ uiText("Time:") }}</span>
         <button
           v-for="p in TIME_PRESETS"
           :key="p.key"
@@ -504,7 +503,7 @@ const detailsJson = computed(() => {
           v-if="store.activePreset === 'custom'"
           class="px-2.5 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200"
         >
-          Custom
+          {{ uiText("Custom") }}
         </span>
       </div>
 
@@ -517,19 +516,19 @@ const detailsJson = computed(() => {
           <button
             class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-mono text-xs"
             :aria-expanded="heatmapsOpen"
-            :title="heatmapsOpen ? 'Collapse heatmaps' : 'Expand heatmaps'"
+            :title="heatmapsOpen ? uiText(&quot;Collapse heatmaps&quot;) : uiText(&quot;Expand heatmaps&quot;)"
             @click="heatmapsOpen = !heatmapsOpen"
           >
             {{ heatmapsOpen ? '▾' : '▸' }}
           </button>
           <div class="flex-shrink-0">
-            <h2 class="text-sm font-medium text-gray-700 dark:text-gray-200">Activity</h2>
+            <h2 class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ uiText("Activity") }}</h2>
             <p class="text-[11px] text-gray-500 dark:text-gray-400">
               <template v-if="heatmapTab === 'weekly'">
-                Weekday × hour of day · UTC · honors current filters
+                {{ uiText("Weekday × hour of day · UTC · honors current filters") }}
               </template>
               <template v-else>
-                One cell per UTC day · click a day to filter the dashboard to it
+                {{ uiText("One cell per UTC day · click a day to filter the dashboard to it") }}
               </template>
             </p>
           </div>
@@ -551,7 +550,7 @@ const detailsJson = computed(() => {
               "
               @click="heatmapTab = 'weekly'; heatmapsOpen = true"
             >
-              Weekly
+              {{ uiText("Weekly") }}
             </button>
             <button
               role="tab"
@@ -564,7 +563,7 @@ const detailsJson = computed(() => {
               "
               @click="heatmapTab = 'calendar'; heatmapsOpen = true"
             >
-              Calendar
+              {{ uiText("Calendar") }}
             </button>
           </div>
 
@@ -576,7 +575,7 @@ const detailsJson = computed(() => {
             v-if="heatmapsOpen"
             class="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400"
           >
-            <span>Less</span>
+            <span>{{ uiText("Less") }}</span>
             <template v-if="heatmapTab === 'weekly'">
               <span class="inline-block w-3 h-3 rounded-sm" :style="heatmapCellStyle(0)" />
               <span
@@ -615,7 +614,7 @@ const detailsJson = computed(() => {
                 :style="calendarCellStyle(store.calendar?.max_count || 1, true)"
               />
             </template>
-            <span>More</span>
+            <span>{{ uiText("More") }}</span>
           </div>
         </header>
 
@@ -623,15 +622,15 @@ const detailsJson = computed(() => {
              switching tabs is instant and table state is preserved. -->
         <div v-show="heatmapsOpen" class="px-4 pb-4">
           <!-- Weekly (dow × hour) -->
-          <div v-show="heatmapTab === 'weekly'" role="tabpanel" aria-label="Weekly pattern">
+          <div v-show="heatmapTab === 'weekly'" role="tabpanel" :aria-label="uiText(&quot;Weekly pattern&quot;)">
             <div v-if="store.heatmapLoading" class="text-xs text-gray-500 dark:text-gray-400 py-4 text-center">
-              Loading heatmap…
+              {{ uiText("Loading heatmap…") }}
             </div>
             <div
               v-else-if="(store.heatmap?.total || 0) === 0"
               class="text-xs text-gray-500 dark:text-gray-400 py-4 text-center"
             >
-              No events in this window.
+              {{ uiText("No events in this window.") }}
             </div>
             <div v-else class="overflow-x-auto">
               <table class="text-[10px] text-gray-500 dark:text-gray-400 border-separate" style="border-spacing: 2px">
@@ -664,22 +663,21 @@ const detailsJson = computed(() => {
                 </tbody>
               </table>
               <p class="mt-2 text-[11px] text-gray-500 dark:text-gray-400">
-                {{ store.heatmap?.total || 0 }} events ·
-                peak {{ store.heatmap?.max_count || 0 }}/hour
+                {{ store.heatmap?.total || 0 }} {{ uiText("events · peak") }} {{ store.heatmap?.max_count || 0 }}/hour
               </p>
             </div>
           </div>
 
           <!-- Calendar (per-day, GitHub-style) -->
-          <div v-show="heatmapTab === 'calendar'" role="tabpanel" aria-label="Calendar">
+          <div v-show="heatmapTab === 'calendar'" role="tabpanel" :aria-label="uiText(&quot;Calendar&quot;)">
             <div v-if="store.calendarLoading" class="text-xs text-gray-500 dark:text-gray-400 py-4 text-center">
-              Loading calendar…
+              {{ uiText("Loading calendar…") }}
             </div>
             <div
               v-else-if="(store.calendar?.total || 0) === 0"
               class="text-xs text-gray-500 dark:text-gray-400 py-4 text-center"
             >
-              No events in this window.
+              {{ uiText("No events in this window.") }}
             </div>
             <div v-else class="overflow-x-auto">
               <table class="text-[10px] text-gray-500 dark:text-gray-400 border-separate" style="border-spacing: 2px">
@@ -718,9 +716,8 @@ const detailsJson = computed(() => {
                 </tbody>
               </table>
               <p class="mt-2 text-[11px] text-gray-500 dark:text-gray-400">
-                {{ store.calendar?.total || 0 }} events across
-                {{ store.calendar?.days?.length || 0 }} active day{{ (store.calendar?.days?.length || 0) === 1 ? '' : 's' }} ·
-                peak {{ store.calendar?.max_count || 0 }}/day
+                {{ store.calendar?.total || 0 }} {{ uiText("events across") }}
+                {{ store.calendar?.days?.length || 0 }} {{ uiText("active day") }}{{ (store.calendar?.days?.length || 0) === 1 ? '' : 's' }} {{ uiText("· peak") }} {{ store.calendar?.max_count || 0 }}/day
               </p>
             </div>
           </div>
@@ -732,18 +729,18 @@ const detailsJson = computed(() => {
         class="mb-4 p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
       >
         <h2 class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">
-          Filters
+          {{ uiText("Filters") }}
         </h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <div>
             <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-              >Event type</label
+              >{{ uiText("Event type") }}</label
             >
             <select
               v-model="filters.event_type"
               class="w-full px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
-              <option value="">All</option>
+              <option value="">{{ uiText("All") }}</option>
               <option v-for="t in store.distinctEventTypes" :key="t" :value="t">
                 {{ t }}
               </option>
@@ -751,13 +748,13 @@ const detailsJson = computed(() => {
           </div>
           <div>
             <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-              >Actor type</label
+              >{{ uiText("Actor type") }}</label
             >
             <select
               v-model="filters.actor_type"
               class="w-full px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             >
-              <option value="">All</option>
+              <option value="">{{ uiText("All") }}</option>
               <option v-for="t in store.distinctActorTypes" :key="t" :value="t">
                 {{ t }}
               </option>
@@ -765,29 +762,29 @@ const detailsJson = computed(() => {
           </div>
           <div>
             <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-              >Actor ID</label
+              >{{ uiText("Actor ID") }}</label
             >
             <input
               v-model="filters.actor_id"
               type="text"
-              placeholder="user.id or agent_name"
+              :placeholder="uiText(&quot;user.id or agent_name&quot;)"
               class="w-full px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
             <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-              >Target type</label
+              >{{ uiText("Target type") }}</label
             >
             <input
               v-model="filters.target_type"
               type="text"
-              placeholder="agent / user / schedule…"
+              :placeholder="uiText(&quot;agent / user / schedule…&quot;)"
               class="w-full px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
           <div>
             <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-              >Start (ISO 8601 UTC)</label
+              >{{ uiText("Start (ISO 8601 UTC)") }}</label
             >
             <input
               v-model="filters.start_time"
@@ -798,12 +795,12 @@ const detailsJson = computed(() => {
           </div>
           <div>
             <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1"
-              >End (ISO 8601 UTC)</label
+              >{{ uiText("End (ISO 8601 UTC)") }}</label
             >
             <input
               v-model="filters.end_time"
               type="text"
-              placeholder="leave blank for now"
+              :placeholder="uiText(&quot;leave blank for now&quot;)"
               class="w-full px-2 py-1 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
@@ -813,33 +810,33 @@ const detailsJson = computed(() => {
             class="px-3 py-1.5 text-sm font-medium rounded bg-blue-600 text-white hover:bg-blue-700"
             @click="applyFilters"
           >
-            Apply
+            {{ uiText("Apply") }}
           </button>
           <button
             class="px-3 py-1.5 text-sm font-medium rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
             @click="resetFilters"
           >
-            Reset
+            {{ uiText("Reset") }}
           </button>
           <div class="flex-1"></div>
           <span class="text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">
-            Export current view:
+            {{ uiText("Export current view:") }}
           </span>
           <button
             class="px-3 py-1.5 text-sm font-medium rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
             :disabled="store.exporting"
-            title="Download a CSV of the current filter window (uses /api/audit-log/export)."
+            :title="uiText(&quot;Download a CSV of the current filter window (uses /api/audit-log/export).&quot;)"
             @click="exportAs('csv')"
           >
-            ⬇ CSV
+            {{ uiText("⬇ CSV") }}
           </button>
           <button
             class="px-3 py-1.5 text-sm font-medium rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
             :disabled="store.exporting"
-            title="Download a JSON array of the current filter window."
+            :title="uiText(&quot;Download a JSON array of the current filter window.&quot;)"
             @click="exportAs('json')"
           >
-            ⬇ JSON
+            {{ uiText("⬇ JSON") }}
           </button>
         </div>
         <div
@@ -857,7 +854,7 @@ const detailsJson = computed(() => {
           :class="store.selectedEntry ? 'lg:max-w-3xl' : ''"
         >
           <div v-if="store.loading" class="p-6 text-sm text-gray-500 dark:text-gray-400 text-center">
-            Loading…
+            {{ uiText("Loading…") }}
           </div>
           <div
             v-else-if="!store.entries.length"
@@ -865,18 +862,18 @@ const detailsJson = computed(() => {
           >
             {{
               store.total === 0
-                ? 'No audit entries match these filters.'
-                : 'No results on this page.'
+                ? uiText("No audit entries match these filters.")
+                : uiText("No results on this page.")
             }}
           </div>
           <table v-else class="w-full text-sm">
             <thead class="bg-gray-50 dark:bg-gray-900 text-left">
               <tr class="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                <th class="px-3 py-2 font-medium">Timestamp</th>
-                <th class="px-3 py-2 font-medium">Event</th>
-                <th class="px-3 py-2 font-medium">Actor</th>
-                <th class="px-3 py-2 font-medium">Target</th>
-                <th class="px-3 py-2 font-medium">Source</th>
+                <th class="px-3 py-2 font-medium">{{ uiText("Timestamp") }}</th>
+                <th class="px-3 py-2 font-medium">{{ uiText("Event") }}</th>
+                <th class="px-3 py-2 font-medium">{{ uiText("Actor") }}</th>
+                <th class="px-3 py-2 font-medium">{{ uiText("Target") }}</th>
+                <th class="px-3 py-2 font-medium">{{ uiText("Source") }}</th>
               </tr>
             </thead>
             <tbody>
@@ -897,7 +894,7 @@ const detailsJson = computed(() => {
                 <td class="px-3 py-2 text-gray-900 dark:text-white">
                   <button
                     class="font-medium underline-offset-2 hover:underline hover:text-blue-700 dark:hover:text-blue-300"
-                    :title="`Filter by event_type=${entry.event_type}`"
+                    :title="uiText(&quot;Filter by event_type={arg1}&quot;, { arg1: (entry.event_type) })"
                     @click.stop="drilldownEvent(entry.event_type)"
                   >
                     {{ entry.event_type }}
@@ -911,8 +908,8 @@ const detailsJson = computed(() => {
                     class="underline-offset-2 hover:underline hover:text-blue-700 dark:hover:text-blue-300"
                     :title="
                       entry.actor_id
-                        ? `Filter by actor_id=${entry.actor_id}`
-                        : `Filter by actor_type=${entry.actor_type}`
+                        ? uiText(&quot;Filter by actor_id={arg1}&quot;, { arg1: (entry.actor_id) })
+                        : uiText(&quot;Filter by actor_type={arg1}&quot;, { arg1: (entry.actor_type) })
                     "
                     @click.stop="drilldownActor(entry)"
                   >
@@ -938,15 +935,15 @@ const detailsJson = computed(() => {
                 :disabled="!store.hasPrev || store.loading"
                 @click="store.prevPage()"
               >
-                ← Prev
+                {{ uiText("← Prev") }}
               </button>
-              <span>Page {{ store.page }} of {{ store.pageCount }}</span>
+              <span>{{ uiText("Page") }} {{ store.page }} {{ uiText("of") }} {{ store.pageCount }}</span>
               <button
                 class="px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600 disabled:opacity-40"
                 :disabled="!store.hasNext || store.loading"
                 @click="store.nextPage()"
               >
-                Next →
+                {{ uiText("Next →") }}
               </button>
             </span>
           </footer>
@@ -969,7 +966,7 @@ const detailsJson = computed(() => {
             </div>
             <button
               class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              aria-label="Close detail"
+              :aria-label="uiText(&quot;Close detail&quot;)"
               @click="closeDetail"
             >
               ✕
@@ -977,37 +974,37 @@ const detailsJson = computed(() => {
           </header>
 
           <dl class="grid grid-cols-3 gap-x-3 gap-y-1 text-xs mb-3">
-            <dt class="text-gray-500 dark:text-gray-400">Timestamp</dt>
+            <dt class="text-gray-500 dark:text-gray-400">{{ uiText("Timestamp") }}</dt>
             <dd class="col-span-2 font-mono text-gray-900 dark:text-white">
               {{ store.selectedEntry.timestamp }}
             </dd>
 
-            <dt class="text-gray-500 dark:text-gray-400">Actor</dt>
+            <dt class="text-gray-500 dark:text-gray-400">{{ uiText("Actor") }}</dt>
             <dd class="col-span-2 text-gray-900 dark:text-white">
               {{ store.selectedEntry.actor_type }} ·
               {{ actorLabel(store.selectedEntry) }}
             </dd>
 
             <template v-if="store.selectedEntry.actor_ip">
-              <dt class="text-gray-500 dark:text-gray-400">Actor IP</dt>
+              <dt class="text-gray-500 dark:text-gray-400">{{ uiText("Actor IP") }}</dt>
               <dd class="col-span-2 font-mono text-gray-900 dark:text-white">
                 {{ store.selectedEntry.actor_ip }}
               </dd>
             </template>
 
             <template v-if="store.selectedEntry.mcp_key_name">
-              <dt class="text-gray-500 dark:text-gray-400">MCP key</dt>
+              <dt class="text-gray-500 dark:text-gray-400">{{ uiText("MCP key") }}</dt>
               <dd class="col-span-2 text-gray-900 dark:text-white">
-                {{ store.selectedEntry.mcp_key_name }} ({{ store.selectedEntry.mcp_scope || 'unknown scope' }})
+                {{ store.selectedEntry.mcp_key_name }} ({{ store.selectedEntry.mcp_scope || uiText("unknown scope") }})
               </dd>
             </template>
 
-            <dt class="text-gray-500 dark:text-gray-400">Target</dt>
+            <dt class="text-gray-500 dark:text-gray-400">{{ uiText("Target") }}</dt>
             <dd class="col-span-2 text-gray-900 dark:text-white">
               {{ targetLabel(store.selectedEntry) }}
             </dd>
 
-            <dt class="text-gray-500 dark:text-gray-400">Source</dt>
+            <dt class="text-gray-500 dark:text-gray-400">{{ uiText("Source") }}</dt>
             <dd class="col-span-2 text-gray-900 dark:text-white">
               {{ store.selectedEntry.source }}
               <span
@@ -1019,7 +1016,7 @@ const detailsJson = computed(() => {
             </dd>
 
             <template v-if="store.selectedEntry.request_id">
-              <dt class="text-gray-500 dark:text-gray-400">Request</dt>
+              <dt class="text-gray-500 dark:text-gray-400">{{ uiText("Request") }}</dt>
               <dd class="col-span-2 font-mono text-gray-900 dark:text-white">
                 {{ store.selectedEntry.request_id }}
               </dd>
@@ -1028,7 +1025,7 @@ const detailsJson = computed(() => {
 
           <details class="mb-3" open>
             <summary class="text-xs font-medium text-gray-600 dark:text-gray-300 cursor-pointer">
-              Details JSON
+              {{ uiText("Details JSON") }}
             </summary>
             <pre
               class="mt-2 p-2 rounded bg-gray-50 dark:bg-gray-900 text-xs text-gray-800 dark:text-gray-200 overflow-x-auto"
@@ -1037,16 +1034,16 @@ const detailsJson = computed(() => {
 
           <details>
             <summary class="text-xs font-medium text-gray-600 dark:text-gray-300 cursor-pointer">
-              Hash chain
+              {{ uiText("Hash chain") }}
             </summary>
             <dl class="mt-2 text-xs grid grid-cols-3 gap-x-3 gap-y-1">
               <dt class="text-gray-500 dark:text-gray-400">previous_hash</dt>
               <dd class="col-span-2 font-mono break-all text-gray-900 dark:text-white">
-                {{ store.selectedEntry.previous_hash || '(none)' }}
+                {{ store.selectedEntry.previous_hash || uiText("(none)") }}
               </dd>
               <dt class="text-gray-500 dark:text-gray-400">entry_hash</dt>
               <dd class="col-span-2 font-mono break-all text-gray-900 dark:text-white">
-                {{ store.selectedEntry.entry_hash || '(none)' }}
+                {{ store.selectedEntry.entry_hash || uiText("(none)") }}
               </dd>
             </dl>
           </details>

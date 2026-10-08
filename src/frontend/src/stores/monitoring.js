@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Monitoring Store (MON-001)
  *
@@ -132,7 +134,7 @@ export const useMonitoringStore = defineStore('monitoring', {
         this.agents = response.data.agents
       } catch (err) {
         console.error('Failed to fetch monitoring status:', err)
-        this.error = err.response?.data?.detail || 'Failed to fetch status'
+        this.error = err.response?.data?.detail || uiText("Failed to fetch status")
       } finally {
         this.loading = false
       }

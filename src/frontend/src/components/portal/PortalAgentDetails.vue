@@ -62,8 +62,8 @@
          you can open, it just stopped being the one the agent reaches you
          in. -->
     <section>
-      <h2 class="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2">Your chats</h2>
-      <p v-if="!chats.length" class="text-sm text-gray-400">No conversations yet.</p>
+      <h2 class="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2">{{ t('Your chats') }}</h2>
+      <p v-if="!chats.length" class="text-sm text-gray-400">{{ t('No conversations yet.') }}</p>
       <ul v-else class="divide-y divide-gray-100 dark:divide-gray-800">
         <li v-for="c in chats" :key="c.id || c.session_id">
           <button
@@ -73,9 +73,9 @@
             <span
               v-if="c.is_main"
               class="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-action-primary-600 dark:text-action-primary-400"
-            >{{ MAIN_TAB_LABEL }}</span>
+            >{{ t(MAIN_TAB_LABEL) }}</span>
             <span class="flex-1 min-w-0 truncate" :class="{ 'text-gray-400': c.archived_at }">
-              {{ c.is_main ? 'Current conversation' : chatTitle(c) }}
+              {{ c.is_main ? t('Current conversation') : chatTitle(c) }}
             </span>
             <span
               v-if="c.unread"
@@ -91,7 +91,7 @@
     <!-- ent#138's rule, unchanged by the move: a card PRE-FILLS the composer
          and never auto-sends. -->
     <section>
-      <h2 class="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2">What it can do</h2>
+      <h2 class="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2">{{ t('What it can do') }}</h2>
       <!-- #2597: the failure arm comes FIRST, because the empty arm below it
            is a positive claim ("hasn't published anything") that a failed
            fetch supplies no evidence for. `LoadFailed` is the "failed" member
@@ -101,12 +101,12 @@
       <LoadFailed
         v-if="pageFailed"
         dense
-        title="Couldn't load this agent"
+        :title="t('Couldn\'t load this agent')"
         :message="pageError"
         @retry="reload"
       />
       <p v-else-if="!capabilities.length" class="text-sm text-gray-400">
-        This agent hasn't published anything it can do yet.
+        {{ t("This agent hasn't published anything it can do yet.") }}
       </p>
       <div v-else class="space-y-2">
         <button
@@ -127,19 +127,19 @@
          surfaces' raw JSON viewer. Carried over verbatim — that split is a
          disclosure decision, not a style one. -->
     <section>
-      <h2 class="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2">Reports</h2>
+      <h2 class="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2">{{ t('Reports') }}</h2>
       <div v-if="!reportsLoaded && !reportsError" class="space-y-2" aria-busy="true">
         <div v-for="row in 2" :key="row" class="animate-pulse h-12 rounded-xl bg-gray-100 dark:bg-gray-800/60"></div>
-        <span class="sr-only">Loading this agent's reports…</span>
+        <span class="sr-only">{{ t('Loading this agent\'s reports…') }}</span>
       </div>
       <LoadFailed
         v-else-if="reportsError"
         dense
-        title="Couldn't load reports"
+        :title="t('Couldn\'t load reports')"
         :message="reportsError"
         @retry="loadReports"
       />
-      <p v-else-if="!reports.length" class="text-sm text-gray-400">This agent hasn't published any reports.</p>
+      <p v-else-if="!reports.length" class="text-sm text-gray-400">{{ t("This agent hasn't published any reports.") }}</p>
       <div v-for="r in reports" :key="r.id" class="mb-2 rounded-xl border border-gray-200 dark:border-gray-800">
         <button class="w-full px-3 py-2.5 flex items-center gap-2 text-left" @click="toggleReport(r.id)">
           <span class="min-w-0 flex-1">
@@ -159,7 +159,7 @@
           />
           <div v-else-if="!reportPayloads[r.id]" class="pt-3 space-y-2" aria-busy="true">
             <div v-for="row in 2" :key="row" class="animate-pulse h-8 rounded-lg bg-gray-100 dark:bg-gray-800/60"></div>
-            <span class="sr-only">Loading this report…</span>
+            <span class="sr-only">{{ t('Loading this report…') }}</span>
           </div>
           <div v-else class="pt-3">
             <ReportRenderer
@@ -178,6 +178,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 /**
  * Agent details (ent#523) — the half of the retired agent page that answers
  * "what has this agent got": your chats with it, what it can do, what it has
@@ -240,8 +243,8 @@ const pageFailed = computed(() => !!pageError.value && !pageLoaded.value)
 const label = computed(() => agentDisplayName(props.agent || { name: props.agentName }))
 
 const healthLabel = computed(() => ({
-  healthy: 'Healthy', unhealthy: 'Unhealthy', degraded: 'Degraded',
-}[header.value?.health?.status] || 'Status unknown'))
+  healthy: t('Healthy'), unhealthy: t('Unhealthy'), degraded: t('Degraded'),
+}[header.value?.health?.status] || t('Status unknown')))
 const healthDot = computed(() => ({
   healthy: 'bg-status-success-500', unhealthy: 'bg-status-danger-500', degraded: 'bg-status-warning-500',
 }[header.value?.health?.status] || 'bg-gray-300 dark:bg-gray-600'))
@@ -310,11 +313,11 @@ function relative(iso) {
   const then = new Date(iso).getTime()
   if (Number.isNaN(then)) return ''
   const mins = Math.round((Date.now() - then) / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
+  if (mins < 1) return uiText("just now")
+  if (mins < 60) return uiText("{arg1}m ago", { arg1: (mins) })
   const hrs = Math.round(mins / 60)
-  if (hrs < 24) return `${hrs}h ago`
+  if (hrs < 24) return uiText("{arg1}h ago", { arg1: (hrs) })
   const days = Math.round(hrs / 24)
-  return days < 30 ? `${days}d ago` : new Date(iso).toLocaleDateString()
+  return days < 30 ? uiText("{arg1}d ago", { arg1: (days) }) : new Date(iso).toLocaleDateString()
 }
 </script>

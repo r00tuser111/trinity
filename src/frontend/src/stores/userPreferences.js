@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import axios from 'axios'
@@ -58,7 +60,7 @@ export const useUserPreferencesStore = defineStore('userPreferences', () => {
 
   function _describe(e) {
     const status = e?.response?.status
-    return status ? `HTTP ${status}` : 'network error'
+    return status ? `HTTP ${status}` : uiText("network error")
   }
 
   function _setRecord(key, rec) {

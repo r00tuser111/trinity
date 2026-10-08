@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Drag-and-drop and multi-file upload for the Workspace (ent#524).
  *
@@ -89,11 +91,11 @@ export function clipboardHasText(clipboardData) {
  * chip shows — it names the file and the limit, never "upload failed".
  */
 export function rejectionFor(file) {
-  if (!file) return 'That item is not a file.'
+  if (!file) return uiText("That item is not a file.")
   if (typeof file.size === 'number' && file.size > MAX_UPLOAD_BYTES) {
-    return `Too large (${formatBytes(file.size)}) — the limit is ${formatBytes(MAX_UPLOAD_BYTES)}.`
+    return uiText("Too large ({arg1}) — the limit is {arg2}.", { arg1: (formatBytes(file.size)), arg2: (formatBytes(MAX_UPLOAD_BYTES)) })
   }
-  if (file.size === 0) return 'That file is empty.'
+  if (file.size === 0) return uiText("That file is empty.")
   return null
 }
 
@@ -113,10 +115,10 @@ export function rateLimitMessage(err) {
   if (Number.isFinite(after) && after > 0) {
     const mins = Math.ceil(after / 60)
     return after < 60
-      ? `Too many uploads just now — try again in ${Math.ceil(after)}s.`
-      : `Too many uploads just now — try again in ${mins} min.`
+      ? uiText("Too many uploads just now — try again in {arg1}s.", { arg1: (Math.ceil(after)) })
+      : uiText("Too many uploads just now — try again in {arg1} min.", { arg1: (mins) })
   }
-  return 'Too many uploads just now — try again shortly.'
+  return uiText("Too many uploads just now — try again shortly.")
 }
 
 /**
@@ -130,8 +132,8 @@ export function uploadFailureReason(err) {
   if (detail && typeof detail === 'object' && typeof detail.message === 'string') {
     return detail.message
   }
-  if (err?.response?.status === 413) return 'The server rejected it as too large.'
-  return "Couldn't upload."
+  if (err?.response?.status === 413) return uiText("The server rejected it as too large.")
+  return uiText("Couldn't upload.")
 }
 
 /**
@@ -229,7 +231,7 @@ export function usePortalFileDrop(upload, { disabled = () => false } = {}) {
     if (files.length > MAX_BATCH_FILES) {
       batch = files.slice(0, MAX_BATCH_FILES)
       batchNotice.value =
-        `Only the first ${MAX_BATCH_FILES} of ${files.length} files were added.`
+        uiText("Only the first {arg1} of {arg2} files were added.", { arg1: (MAX_BATCH_FILES), arg2: (files.length) })
     }
 
     const mine = batch.map((file) => {

@@ -804,7 +804,7 @@ describe('the status line never sits on the buttons, and M mutes', () => {
     expect(orb).not.toContain('bottom-16')
     const stack = orb.slice(orb.indexOf('voice-bottom-stack'))
     expect(stack.indexOf('statusLabel')).toBeLessThan(stack.indexOf('voice.toggleMute()'))
-    expect(orb).toContain("'Unmute (M)' : 'Mute (M)'")
+    expect(orb).toMatch(/uiText\((?:'|&quot;)Unmute \(M\)(?:'|&quot;)\) : uiText\((?:'|&quot;)Mute \(M\)(?:'|&quot;)\)/)
   })
 })
 

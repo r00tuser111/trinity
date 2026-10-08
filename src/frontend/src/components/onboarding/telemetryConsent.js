@@ -1,3 +1,5 @@
+import { t as uiText } from '../../i18n/index.js'
+
 /**
  * Consent copy and per-browser state for the usage-sharing ask (ent#437) —
  * since ent#581 the `sharing` step of the first-run overlay, whose visibility is
@@ -31,23 +33,20 @@ export function consentVariant({ firstValue = false, warmShown = false } = {}) {
  */
 export const CONSENT_COPY = {
   cold: {
-    title: 'Help improve Trinity',
-    lead:
-      'Share anonymous, aggregate usage so we can see whether the platform works outside our own instance — and so you can see how your setup compares to the fleet.',
+    get "title"() { return uiText("Help improve Trinity") },
+    get "lead"() { return uiText("Share anonymous, aggregate usage so we can see whether the platform works outside our own instance — and so you can see how your setup compares to the fleet.") },
   },
   warm: {
-    title: 'Your first scheduled run just completed',
-    lead:
-      'Share anonymous, aggregate usage to see how your setup compares to the fleet. Coarse counts only — the same numbers you can inspect below.',
+    get "title"() { return uiText("Your first scheduled run just completed") },
+    get "lead"() { return uiText("Share anonymous, aggregate usage to see how your setup compares to the fleet. Coarse counts only — the same numbers you can inspect below.") },
   },
   shared: {
-    detail:
-      'Off by default. Coarse counts and version info only — no prompts, no agent content, no emails, no agent names. Turning it on also shares the last 30 days of local counts so your benchmarks are accurate. Keyed by a random share id minted when you turn this on and discarded when you turn it off. Reversible any time in Settings → Usage sharing.',
-    previewSummary: 'See what would be sent',
-    share: 'Share anonymous usage',
-    notNow: 'Not now',
-    dontAsk: "Don't ask again",
-    shared: 'Sharing is on. Each send shows in Settings → Usage sharing → Recent sends.',
+    get detail() { return uiText('Off by default. Coarse counts and version info only — no prompts, no agent content, no emails, no agent names. Turning it on also shares the last 30 days of local counts so your benchmarks are accurate. Keyed by a random share id minted when you turn this on and discarded when you turn it off. Reversible any time in Settings → Usage sharing.') },
+    get previewSummary() { return uiText('See what would be sent') },
+    get share() { return uiText('Share anonymous usage') },
+    get notNow() { return uiText('Not now') },
+    get dontAsk() { return uiText("Don't ask again") },
+    get shared() { return uiText('Sharing is on. Each send shows in Settings → Usage sharing → Recent sends.') },
   },
 }
 
@@ -59,7 +58,7 @@ export const CONSENT_COPY = {
  * the "Last delivered … to …" line; never "null" or "undefined".
  */
 export function receiverLabel(host) {
-  return typeof host === 'string' && host.trim() ? host.trim() : 'an unknown receiver'
+  return typeof host === 'string' && host.trim() ? host.trim() : uiText("an unknown receiver")
 }
 
 /**
@@ -85,29 +84,30 @@ export function receiverCopy(hint, { host = null, configuredHost = null, mismatc
   switch (hint) {
     case 'ok':
       line = named
-        ? `The receiving service at ${named} acknowledged the last send.`
-        : 'The receiving service acknowledged the last send; which receiver answered was not recorded (sent before this version).'
+        ? uiText('The receiving service at {host} acknowledged the last send.', { host: named })
+        : uiText('The receiving service acknowledged the last send; which receiver answered was not recorded (sent before this version).')
       break
     case 'receiver_not_live':
-      line = 'The receiving service answered 404 at the default address. The send is recorded here and retried automatically.'
+      line = uiText('The receiving service answered 404 at the default address. The send is recorded here and retried automatically.')
       break
     case 'receiver_404':
       line = named
-        ? `The receiver at ${named} answered 404. Check TELEMETRY_SHARING_URL.`
-        : 'A receiver answered 404; which one was not recorded (sent before this version). Check TELEMETRY_SHARING_URL.'
+        ? uiText('The receiver at {host} answered 404. Check TELEMETRY_SHARING_URL.', { host: named })
+        : uiText('A receiver answered 404; which one was not recorded (sent before this version). Check TELEMETRY_SHARING_URL.')
       break
     case 'failed':
       line = named
-        ? `The last send to ${named} failed; it is recorded below and retried automatically.`
-        : 'The last send failed; it is recorded below and retried automatically.'
+        ? uiText('The last send to {host} failed; it is recorded below and retried automatically.', { host: named })
+        : uiText('The last send failed; it is recorded below and retried automatically.')
       break
     default:
-      return 'Nothing has been sent yet.'
+      return uiText("Nothing has been sent yet.")
   }
   if (mismatch && named) {
-    const now = typeof configuredHost === 'string' && configuredHost.trim() ? configuredHost.trim() : 'a different address'
-    line += ` That send went to ${named}; sharing is now configured for ${now}, which has not seen it.`
-    line += enabled ? ' The next scheduled send goes there.' : ' Sharing is off, so nothing further leaves the box.'
+    const now = typeof configuredHost === 'string' && configuredHost.trim() ? configuredHost.trim() : uiText('a different address')
+    line += ' ' + (enabled
+      ? uiText('That send went to {sent}; sharing is now configured for {configured}, which has not seen it. The next scheduled send goes there.', { sent: named, configured: now })
+      : uiText('That send went to {sent}; sharing is now configured for {configured}, which has not seen it. Sharing is off, so nothing further leaves the box.', { sent: named, configured: now }))
   }
   return line
 }

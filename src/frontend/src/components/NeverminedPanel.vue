@@ -3,7 +3,7 @@
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-8">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-action-primary-500 mx-auto"></div>
-      <p class="text-gray-500 dark:text-gray-400 mt-2">Loading payment config...</p>
+      <p class="text-gray-500 dark:text-gray-400 mt-2">{{ uiText("Loading payment config...") }}</p>
     </div>
 
     <template v-else>
@@ -11,14 +11,14 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div>
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Nevermined x402 Payments</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Nevermined x402 Payments") }}</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Configure per-request monetization via the x402 payment protocol
+              {{ uiText("Configure per-request monetization via the x402 payment protocol") }}
             </p>
           </div>
           <!-- Enable/Disable Toggle -->
           <div v-if="config" class="flex items-center space-x-2">
-            <span class="text-sm text-gray-500 dark:text-gray-400">{{ config.enabled ? 'Enabled' : 'Disabled' }}</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ config.enabled ? uiText("Enabled") : uiText("Disabled") }}</span>
             <button
               @click="toggleEnabled"
               :disabled="toggling || !canEdit"
@@ -42,19 +42,19 @@
           <!-- Read-only notice for shared users -->
           <div v-if="!canEdit" class="bg-status-warning-50 dark:bg-status-warning-900/20 border border-status-warning-200 dark:border-status-warning-800 rounded-lg p-3">
             <p class="text-sm text-status-warning-800 dark:text-status-warning-300">
-              You have view-only access to this agent's payment configuration. Only the agent owner can modify settings.
+              {{ uiText("You have view-only access to this agent's payment configuration. Only the agent owner can modify settings.") }}
             </p>
           </div>
 
           <!-- Paid Endpoint URL (show when configured) -->
           <div v-if="config && config.enabled" class="bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg p-3">
-            <label class="block text-xs font-medium text-status-success-700 dark:text-status-success-400 mb-1">Paid Endpoint</label>
+            <label class="block text-xs font-medium text-status-success-700 dark:text-status-success-400 mb-1">{{ uiText("Paid Endpoint") }}</label>
             <div class="flex items-center space-x-2">
               <code class="flex-1 text-sm text-status-success-800 dark:text-status-success-300 break-all">{{ paidEndpointUrl }}</code>
               <button
                 @click="copyEndpoint"
                 class="text-status-success-600 hover:text-status-success-700 dark:text-status-success-400 dark:hover:text-status-success-300 flex-shrink-0"
-                title="Copy to clipboard"
+                :title="uiText(&quot;Copy to clipboard&quot;)"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -67,13 +67,13 @@
           <form @submit.prevent="saveConfig" class="space-y-4">
             <!-- API Key -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">NVM API Key</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("NVM API Key") }}</label>
               <div class="relative">
                 <input
                   v-model="form.nvm_api_key"
                   :type="showApiKey ? 'text' : 'password'"
                   :disabled="!canEdit"
-                  placeholder="sandbox:eyJhbGci..."
+                  :placeholder="uiText(&quot;sandbox:eyJhbGci...&quot;)"
                   :class="['w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-action-primary-500 focus:border-action-primary-500', canEdit ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed']"
                 />
                 <button
@@ -90,29 +90,29 @@
                   </svg>
                 </button>
               </div>
-              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">From nevermined.app Settings. Format: env:jwt</p>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ uiText("From nevermined.app Settings. Format: env:jwt") }}</p>
             </div>
 
             <!-- Environment -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Environment</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Environment") }}</label>
               <select
                 v-model="form.nvm_environment"
                 :disabled="!canEdit"
                 :class="['w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:ring-action-primary-500 focus:border-action-primary-500', canEdit ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed']"
               >
-                <option value="sandbox">Sandbox (testnet)</option>
-                <option value="live">Live (mainnet)</option>
-                <option value="staging_sandbox">Staging Sandbox</option>
-                <option value="staging_live">Staging Live</option>
-                <option value="custom">Custom</option>
+                <option value="sandbox">{{ uiText("Sandbox (testnet)") }}</option>
+                <option value="live">{{ uiText("Live (mainnet)") }}</option>
+                <option value="staging_sandbox">{{ uiText("Staging Sandbox") }}</option>
+                <option value="staging_live">{{ uiText("Staging Live") }}</option>
+                <option value="custom">{{ uiText("Custom") }}</option>
               </select>
             </div>
 
             <!-- Agent ID and Plan ID side by side -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Agent ID</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Agent ID") }}</label>
                 <input
                   v-model="form.nvm_agent_id"
                   type="text"
@@ -122,7 +122,7 @@
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Plan ID</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Plan ID") }}</label>
                 <input
                   v-model="form.nvm_plan_id"
                   type="text"
@@ -135,7 +135,7 @@
 
             <!-- Credits per Request -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Credits per Request</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Credits per Request") }}</label>
               <input
                 v-model.number="form.credits_per_request"
                 type="number"
@@ -152,7 +152,7 @@
                 :disabled="saving || !isFormValid"
                 class="px-4 py-2 bg-action-primary-600 text-white text-sm font-medium rounded-md hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {{ saving ? 'Saving...' : (config ? 'Update Configuration' : 'Save Configuration') }}
+                {{ saving ? uiText("Saving...") : (config ? uiText("Update Configuration") : uiText("Save Configuration")) }}
               </button>
               <button
                 v-if="config"
@@ -161,7 +161,7 @@
                 :disabled="deleting"
                 class="px-4 py-2 bg-status-danger-600 text-white text-sm font-medium rounded-md hover:bg-status-danger-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {{ deleting ? 'Removing...' : 'Remove' }}
+                {{ deleting ? uiText("Removing...") : uiText("Remove") }}
               </button>
             </div>
           </form>
@@ -171,29 +171,29 @@
       <!-- Payment Log Section -->
       <div v-if="config" class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Payment Log</h3>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Payment Log") }}</h3>
           <button
             @click="loadPaymentLog"
             class="text-sm text-action-primary-600 hover:text-action-primary-700 dark:text-action-primary-400 dark:hover:text-action-primary-300"
           >
-            Refresh
+            {{ uiText("Refresh") }}
           </button>
         </div>
 
         <div v-if="paymentLog.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
-          No payment activity yet
+          {{ uiText("No payment activity yet") }}
         </div>
 
         <div v-else class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-900/50">
               <tr>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Time</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Action</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Subscriber</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Credits</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Tx Hash</th>
-                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ uiText("Time") }}</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ uiText("Action") }}</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ uiText("Subscriber") }}</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ uiText("Credits") }}</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ uiText("Tx Hash") }}</th>
+                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{{ uiText("Status") }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -209,7 +209,7 @@
                 <td class="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 font-mono">{{ truncateHash(entry.tx_hash) }}</td>
                 <td class="px-4 py-2">
                   <span v-if="entry.success" class="text-status-success-600 dark:text-status-success-400 text-sm">OK</span>
-                  <span v-else class="text-status-danger-600 dark:text-status-danger-400 text-sm" :title="entry.error">Failed</span>
+                  <span v-else class="text-status-danger-600 dark:text-status-danger-400 text-sm" :title="entry.error">{{ uiText("Failed") }}</span>
                 </td>
               </tr>
             </tbody>
@@ -284,7 +284,7 @@ async function loadConfig() {
     await loadPaymentLog()
   } catch (err) {
     if (err.response?.status !== 404) {
-      showNotification('Failed to load Nevermined config', 'error')
+      showNotification(uiText("Failed to load Nevermined config"), 'error')
     }
     config.value = null
   } finally {
@@ -299,26 +299,26 @@ async function saveConfig() {
     const { data } = await api.post(`/api/nevermined/agents/${props.agentName}/config`, form.value)
     config.value = data
     form.value.nvm_api_key = '' // Clear after save
-    showNotification('Nevermined configuration saved', 'success')
+    showNotification(uiText("Nevermined configuration saved"), 'success')
     await loadPaymentLog()
   } catch (err) {
-    showNotification(err.response?.data?.detail || 'Failed to save config', 'error')
+    showNotification(err.response?.data?.detail || uiText("Failed to save config"), 'error')
   } finally {
     saving.value = false
   }
 }
 
 async function deleteConfig() {
-  if (!confirm('Remove Nevermined payment configuration? This will disable paid access.')) return
+  if (!confirm(uiText("Remove Nevermined payment configuration? This will disable paid access."))) return
   deleting.value = true
   try {
     await api.delete(`/api/nevermined/agents/${props.agentName}/config`)
     config.value = null
     paymentLog.value = []
     form.value = { nvm_api_key: '', nvm_environment: 'sandbox', nvm_agent_id: '', nvm_plan_id: '', credits_per_request: 1 }
-    showNotification('Nevermined configuration removed', 'success')
+    showNotification(uiText("Nevermined configuration removed"), 'success')
   } catch (err) {
-    showNotification(err.response?.data?.detail || 'Failed to remove config', 'error')
+    showNotification(err.response?.data?.detail || uiText("Failed to remove config"), 'error')
   } finally {
     deleting.value = false
   }
@@ -331,9 +331,9 @@ async function toggleEnabled() {
   try {
     await api.put(`/api/nevermined/agents/${props.agentName}/config/toggle?enabled=${newState}`)
     config.value.enabled = newState
-    showNotification(`Payments ${newState ? 'enabled' : 'disabled'}`, 'success')
+    showNotification(uiText("Payments {arg1}", { arg1: (newState ? 'enabled' : 'disabled') }), 'success')
   } catch (err) {
-    showNotification(err.response?.data?.detail || 'Failed to toggle', 'error')
+    showNotification(err.response?.data?.detail || uiText("Failed to toggle"), 'error')
   } finally {
     toggling.value = false
   }
@@ -350,7 +350,7 @@ async function loadPaymentLog() {
 
 function copyEndpoint() {
   navigator.clipboard.writeText(paidEndpointUrl.value)
-  showNotification('Endpoint URL copied', 'success')
+  showNotification(uiText("Endpoint URL copied"), 'success')
 }
 
 function formatTime(iso) {
@@ -389,4 +389,6 @@ onMounted(() => {
 watch(() => props.agentName, () => {
   loadConfig()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

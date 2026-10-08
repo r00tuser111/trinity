@@ -44,7 +44,7 @@
           v-if="showFullscreenToggle"
           @click="$emit('toggle-fullscreen')"
           class="p-1.5 text-gray-400 hover:text-gray-200 rounded transition-colors"
-          :title="isFullscreen ? 'Exit Fullscreen (Esc)' : 'Fullscreen'"
+          :title="isFullscreen ? uiText(&quot;Exit Fullscreen (Esc)&quot;) : uiText(&quot;Fullscreen&quot;)"
         >
           <!-- Expand icon -->
           <svg v-if="!isFullscreen" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,7 +61,7 @@
           @click="connect"
           class="px-3 py-1 text-xs font-medium bg-status-success-600 hover:bg-status-success-700 text-white rounded-lg transition-colors"
         >
-          Connect
+          {{ uiText("Connect") }}
         </button>
         <!-- Disconnect Button -->
         <button
@@ -69,7 +69,7 @@
           @click="disconnect"
           class="px-3 py-1 text-xs font-medium bg-status-danger-600 hover:bg-status-danger-700 text-white rounded-lg transition-colors"
         >
-          Disconnect
+          {{ uiText("Disconnect") }}
         </button>
       </div>
     </div>
@@ -323,7 +323,7 @@ function connect() {
   // Get token from localStorage
   const token = readStoredToken()
   if (!token) {
-    errorMessage.value = 'Not authenticated. Please log in.'
+    errorMessage.value = uiText("Not authenticated. Please log in.")
     connectionStatus.value = 'disconnected'
     terminal.write('\x1b[31mError: Not authenticated\x1b[0m\r\n')
     return
@@ -386,12 +386,12 @@ function connect() {
 
     ws.onerror = (error) => {
       console.error('WebSocket error:', error)
-      errorMessage.value = 'Connection error. Please try again.'
+      errorMessage.value = uiText("Connection error. Please try again.")
       terminal.write('\r\n\x1b[31mConnection error\x1b[0m\r\n')
     }
   } catch (error) {
     console.error('Failed to create WebSocket:', error)
-    errorMessage.value = 'Failed to connect: ' + error.message
+    errorMessage.value = uiText("Failed to connect: ") + error.message
     connectionStatus.value = 'disconnected'
   }
 }
@@ -509,6 +509,8 @@ defineExpose({
   focus,
   fit
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

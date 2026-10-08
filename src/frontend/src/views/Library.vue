@@ -6,9 +6,9 @@
       <div class="px-4 sm:px-0">
         <div class="flex justify-between items-center mb-8">
           <div>
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Library</h1>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ t('Library') }}</h1>
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Installable assets for your fleet — agent templates, systems, and skills
+              {{ t('Installable assets for your fleet — agent templates, systems, and skills') }}
             </p>
           </div>
         </div>
@@ -20,7 +20,7 @@
              stacked-sections choice for the whole page rather than
              special-casing Skills, so the page keeps exactly one model. -->
         <div class="mb-6 border-b border-gray-200 dark:border-gray-750">
-          <OverflowTabs :tabs="visibleTabs" v-model="activeTab" />
+          <OverflowTabs :tabs="visibleTabs.map(tab => ({ ...tab, label: t(tab.label) }))" v-model="activeTab" />
         </div>
 
         <!-- Agent Templates section (ent#263: the Library's first asset kind).
@@ -28,11 +28,11 @@
              never blanks the skills section below. -->
         <section v-show="activeTab === 'templates'" id="agent-templates" class="mb-12">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Agent Templates</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ t('Agent Templates') }}</h2>
           <button
             @click="fetchTemplates"
             class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title="Refresh templates"
+            :title="t('Refresh templates')"
           >
             <svg class="w-5 h-5" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -47,7 +47,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span>Loading templates...</span>
+            <span>{{ t('Loading templates...') }}</span>
           </div>
         </div>
 
@@ -60,7 +60,7 @@
           </div>
           <p class="text-gray-600 dark:text-gray-400">{{ error }}</p>
           <button @click="fetchTemplates" class="mt-4 text-action-primary-600 dark:text-action-primary-400 hover:text-action-primary-800 dark:hover:text-action-primary-300">
-            Try again
+            {{ t('Try again') }}
           </button>
         </div>
 
@@ -73,7 +73,7 @@
               <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Starter Templates
+              {{ t('Starter Templates') }}
               <span class="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">({{ localTemplates.length }})</span>
             </h3>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -91,7 +91,7 @@
                     </div>
                     <div class="ml-3">
                       <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ getDisplayName(template) }}</h3>
-                      <p class="text-xs text-gray-500 dark:text-gray-400">Bundled template</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('Bundled template') }}</p>
                     </div>
                   </div>
                 </div>
@@ -99,7 +99,7 @@
                 <!-- Content area that grows -->
                 <div class="flex-grow">
                   <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                    {{ template.description || 'No description available' }}
+                    {{ template.description || t('No description available') }}
                   </p>
 
                   <!-- Stats row: Skills, MCPs, Credentials -->
@@ -108,19 +108,19 @@
                       <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
-                      {{ template.skills.length }} skills
+                      {{ template.skills.length }} {{ t('skills') }}
                     </span>
                     <span v-if="template.mcp_servers?.length" class="flex items-center">
                       <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
                       </svg>
-                      {{ template.mcp_servers.length }} MCPs
+                      {{ template.mcp_servers.length }} {{ t('MCPs') }}
                     </span>
                     <span v-if="template.required_credentials?.length" class="flex items-center">
                       <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                       </svg>
-                      {{ template.required_credentials.length }} credentials
+                      {{ template.required_credentials.length }} {{ t('credentials') }}
                     </span>
                   </div>
                 </div>
@@ -129,7 +129,7 @@
                   @click="useTemplate(template)"
                   class="w-full bg-action-primary-600 hover:bg-action-primary-700 text-white font-bold py-2 px-4 rounded transition-colors mt-auto"
                 >
-                  Use Template
+                  {{ t('Use Template') }}
                 </button>
               </div>
             </div>
@@ -154,7 +154,7 @@
               <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
               </svg>
-              GitHub Templates
+              {{ t('GitHub Templates') }}
               <span v-if="githubTemplates.length > 0" class="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">({{ githubTemplates.length }})</span>
             </h3>
             <div v-if="githubTemplates.length > 0" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -180,7 +180,7 @@
                 <!-- Content area that grows -->
                 <div class="flex-grow">
                   <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                    {{ template.description || 'No description available' }}
+                    {{ template.description || t('No description available') }}
                   </p>
 
                   <!-- Stats row: Skills, MCPs, Credentials -->
@@ -189,19 +189,19 @@
                       <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
-                      {{ template.skills.length }} skills
+                      {{ template.skills.length }} {{ t('skills') }}
                     </span>
                     <span v-if="template.mcp_servers?.length" class="flex items-center">
                       <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
                       </svg>
-                      {{ template.mcp_servers.length }} MCPs
+                      {{ template.mcp_servers.length }} {{ t('MCPs') }}
                     </span>
                     <span v-if="template.required_credentials?.length" class="flex items-center">
                       <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                       </svg>
-                      {{ template.required_credentials.length }} credentials
+                      {{ template.required_credentials.length }} {{ t('credentials') }}
                     </span>
                   </div>
                 </div>
@@ -210,7 +210,7 @@
                   @click="useTemplate(template)"
                   class="w-full bg-action-primary-600 hover:bg-action-primary-700 text-white font-bold py-2 px-4 rounded transition-colors mt-auto"
                 >
-                  Use Template
+                  {{ t('Use Template') }}
                 </button>
               </div>
             </div>
@@ -231,33 +231,33 @@
                       <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
                   </div>
-                  <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No GitHub templates configured</h3>
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ t('No GitHub templates configured') }}</h3>
                   <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                    Trinity ships none by default. The recommended way to build an agent is the
+                    {{ t('Trinity ships none by default. The recommended way to build an agent is the') }}
                     <a
                       href="https://github.com/abilityai/abilities"
                       target="_blank"
                       rel="noopener noreferrer"
                       class="text-action-primary-600 dark:text-action-primary-400 hover:underline font-medium"
                     >abilityai/abilities</a>
-                    marketplace — install its <code class="text-xs px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700">create-agent</code>
-                    plugin in Claude Code and its wizards scaffold a Trinity-ready agent repository for you.
+                    {{ t('marketplace — install its') }} <code class="text-xs px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700">create-agent</code>
+                    {{ t('plugin in Claude Code and its wizards scaffold a Trinity-ready agent repository for you.') }}
                   </p>
                   <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">
-                    Already have a repository? Create an agent from it directly.
+                    {{ t('Already have a repository? Create an agent from it directly.') }}
                   </p>
                   <button
                     @click="useTemplate({ id: 'github-custom' })"
                     class="w-full sm:w-auto sm:px-8 bg-action-primary-600 hover:bg-action-primary-700 text-white font-bold py-2 px-4 rounded transition-colors"
                   >
-                    Create from a GitHub repository
+                    {{ t('Create from a GitHub repository') }}
                   </button>
                   <p v-if="isAdmin" class="mt-6 text-xs text-gray-500 dark:text-gray-400">
-                    To list repositories here for everyone, curate them under
-                    <router-link to="/settings?tab=agents" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">Settings → GitHub Templates</router-link>.
+                    {{ t('To list repositories here for everyone, curate them under') }}
+                    <router-link to="/settings?tab=agents" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">{{ t('Settings → GitHub Templates') }}</router-link>.
                   </p>
                   <p v-else class="mt-6 text-xs text-gray-500 dark:text-gray-400">
-                    To list repositories here for everyone, ask an admin to add them under Settings → GitHub Templates.
+                    {{ t('To list repositories here for everyone, ask an admin to add them under Settings → GitHub Templates.') }}
                   </p>
                 </div>
               </div>
@@ -270,7 +270,7 @@
               <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              Custom Agent
+              {{ t('Custom Agent') }}
             </h3>
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-action-primary-300 dark:hover:border-action-primary-500 transition-colors">
@@ -280,15 +280,15 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                   </div>
-                  <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Blank Agent</h3>
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ t('Blank Agent') }}</h3>
                   <p class="text-gray-600 dark:text-gray-300 text-sm mb-6">
-                    Start with an empty configuration and customize everything
+                    {{ t('Start with an empty configuration and customize everything') }}
                   </p>
                   <button
                     @click="useTemplate(null)"
                     class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors"
                   >
-                    Create Blank Agent
+                    {{ t('Create Blank Agent') }}
                   </button>
                 </div>
               </div>
@@ -300,11 +300,11 @@
             <svg class="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <p class="text-gray-500 dark:text-gray-400 text-lg mb-2">No templates configured</p>
+            <p class="text-gray-500 dark:text-gray-400 text-lg mb-2">{{ t('No templates configured') }}</p>
             <!-- #1931: was "Configure GitHub templates in config.py …" — config.py
                  is not an operator surface, and its default list is now empty by
                  design. Name the two actions an operator can actually take. -->
-            <p class="text-gray-400 dark:text-gray-500 text-sm">Add a GitHub repository under Settings → GitHub Templates, or add a template directory to <code>config/agent-templates/</code>.</p>
+            <p class="text-gray-400 dark:text-gray-500 text-sm">{{ t('Add a GitHub repository under Settings → GitHub Templates, or add a template directory to') }} <code>config/agent-templates/</code>.</p>
           </div>
         </div>
         </section>
@@ -327,11 +327,10 @@
           class="mb-12"
         >
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Systems</h2>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ t('Systems') }}</h2>
           </div>
           <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
-            Install a multi-agent system from a manifest — pick a bundled one, upload a
-            file, or paste YAML. Preview shows exactly what it would create before anything runs.
+            {{ t('Install a multi-agent system from a manifest — pick a bundled one, upload a file, or paste YAML. Preview shows exactly what it would create before anything runs.') }}
           </p>
           <SystemInstallPanel />
         </section>
@@ -358,6 +357,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import NavBar from '../components/NavBar.vue'
@@ -400,9 +402,9 @@ const HASH_TO_TAB = {
 // already did with the section: a browse surface gains nothing from a dead
 // panel, and POST /api/systems/deploy is the actual enforcement point.
 const visibleTabs = computed(() => [
-  { id: 'templates', label: 'Agent Templates' },
-  ...(canInstallSystems.value ? [{ id: 'systems', label: 'Systems' }] : []),
-  { id: 'skills', label: 'Skills' },
+  { id: 'templates', get "label"() { return uiText("Agent Templates") } },
+  ...(canInstallSystems.value ? [{ id: 'systems', get "label"() { return uiText("Systems") } }] : []),
+  { id: 'skills', get "label"() { return uiText("Skills") } },
 ])
 
 /** A tab id is only valid if it is currently VISIBLE to this role. */
@@ -532,7 +534,7 @@ const fetchTemplates = async () => {
     templates.value = response.data
   } catch (err) {
     console.error('Failed to fetch templates:', err)
-    error.value = err.response?.data?.detail || 'Failed to load templates'
+    error.value = err.response?.data?.detail || uiText("Failed to load templates")
   } finally {
     loading.value = false
   }

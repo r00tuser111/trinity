@@ -2,11 +2,10 @@
   <div class="p-6 space-y-6">
     <!-- Header -->
     <div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Access</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Access") }}</h3>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Trinity <strong>operators</strong> (platform users) with access to this agent. External
-        clients who reach the agent through channels are managed on the
-        <span class="font-medium">Sharing</span> tab.
+        Trinity <strong>{{ uiText("operators") }}</strong> {{ uiText("(platform users) with access to this agent. External clients who reach the agent through channels are managed on the") }}
+        <span class="font-medium">{{ uiText("Sharing") }}</span> {{ uiText("tab.") }}
       </p>
     </div>
 
@@ -29,7 +28,7 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"></path>
         </svg>
-        {{ adding ? 'Adding…' : 'Add operator' }}
+        {{ adding ? uiText("Adding…") : uiText("Add operator") }}
       </button>
     </form>
 
@@ -53,14 +52,14 @@
       v-else-if="error"
       class="text-center py-6 text-sm text-status-danger-600 dark:text-status-danger-400"
     >
-      Couldn't load access list.
-      <button @click="load" class="ml-1 underline">Retry</button>
+      {{ uiText("Couldn't load access list.") }}
+      <button @click="load" class="ml-1 underline">{{ uiText("Retry") }}</button>
     </div>
     <div
       v-else-if="operators.length === 0"
       class="text-center py-8 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700"
     >
-      No operators yet. Add a Trinity user by email above.
+      {{ uiText("No operators yet. Add a Trinity user by email above.") }}
     </div>
     <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
       <li
@@ -76,7 +75,7 @@
               :class="['inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium', op.status === 'active'
                 ? 'bg-status-success-100 text-status-success-800 dark:bg-status-success-900/40 dark:text-status-success-300'
                 : 'bg-state-autonomous-100 text-state-autonomous-800 dark:bg-state-autonomous-900/40 dark:text-state-autonomous-300']"
-            >{{ op.status === 'active' ? 'Active' : 'Pending' }}</span>
+            >{{ op.status === 'active' ? uiText("Active") : uiText("Pending") }}</span>
             <!-- role -->
             <span
               v-if="op.role"
@@ -84,8 +83,8 @@
             >{{ op.role }}</span>
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
-            {{ op.username ? op.email : 'Invited — no account yet' }}
-            <span v-if="op.last_active"> · last active {{ formatLastActive(op.last_active) }}</span>
+            {{ op.username ? op.email : uiText("Invited — no account yet") }}
+            <span v-if="op.last_active"> {{ uiText("· last active") }} {{ formatLastActive(op.last_active) }}</span>
           </p>
         </div>
         <div class="ml-3 flex items-center gap-4 shrink-0">
@@ -96,7 +95,7 @@
             class="flex items-center gap-2 cursor-pointer select-none"
             :title="proactiveTitle(op)"
           >
-            <span class="text-xs text-gray-500 dark:text-gray-400">Proactive</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Proactive") }}</span>
             <span class="relative inline-flex items-center">
               <input
                 type="checkbox"
@@ -112,7 +111,7 @@
             @click="removeOperator(op.email)"
             :disabled="removing === op.email"
             class="text-sm text-status-danger-600 dark:text-status-danger-400 hover:underline disabled:opacity-50"
-          >{{ removing === op.email ? 'Removing…' : 'Remove' }}</button>
+          >{{ removing === op.email ? uiText("Removing…") : uiText("Remove") }}</button>
         </div>
       </li>
     </ul>
@@ -120,8 +119,7 @@
       v-if="!loading && !error && operators.length > 0"
       class="text-xs text-gray-500 dark:text-gray-400"
     >
-      <span class="font-medium">Proactive</span> lets the agent message a user without being
-      prompted (e.g. Telegram alerts). The agent owner always receives proactive messages.
+      <span class="font-medium">{{ uiText("Proactive") }}</span> {{ uiText("lets the agent message a user without being prompted (e.g. Telegram alerts). The agent owner always receives proactive messages.") }}
     </p>
   </div>
 </template>
@@ -165,10 +163,10 @@ async function addOperator() {
   try {
     await agentsStore.shareAgent(props.agentName, email)
     newEmail.value = ''
-    message.value = { type: 'success', text: `Added ${email}.` }
+    message.value = { type: 'success', get "text"() { return uiText("Added {arg1}.", { arg1: (email) }) } }
     await load()
   } catch (e) {
-    message.value = { type: 'error', text: e?.response?.data?.detail || 'Failed to add operator.' }
+    message.value = { type: 'error', text: e?.response?.data?.detail || uiText("Failed to add operator.") }
   } finally {
     adding.value = false
   }
@@ -180,7 +178,7 @@ async function removeOperator(email) {
     await agentsStore.unshareAgent(props.agentName, email)
     await load()
   } catch (e) {
-    message.value = { type: 'error', text: e?.response?.data?.detail || 'Failed to remove operator.' }
+    message.value = { type: 'error', text: e?.response?.data?.detail || uiText("Failed to remove operator.") }
   } finally {
     removing.value = ''
   }
@@ -197,7 +195,7 @@ async function onToggleProactive(op, next) {
     op.allow_proactive = !!res.allow_proactive
   } catch (e) {
     op.allow_proactive = prev  // revert so the toggle matches persisted state
-    message.value = { type: 'error', text: e?.response?.data?.detail || 'Failed to update proactive setting.' }
+    message.value = { type: 'error', text: e?.response?.data?.detail || uiText("Failed to update proactive setting.") }
   } finally {
     savingProactive.value = ''
   }
@@ -205,8 +203,8 @@ async function onToggleProactive(op, next) {
 
 function proactiveTitle(op) {
   return op.status === 'pending'
-    ? 'Allow the agent to message this user proactively. Takes effect once they sign in and connect a channel.'
-    : 'Allow the agent to send this user proactive (unprompted) messages.'
+    ? uiText("Allow the agent to message this user proactively. Takes effect once they sign in and connect a channel.")
+    : uiText("Allow the agent to send this user proactive (unprompted) messages.")
 }
 
 function formatLastActive(iso) {
@@ -218,4 +216,6 @@ function formatLastActive(iso) {
 
 onMounted(load)
 watch(() => props.agentName, load)
+
+import { t as uiText } from '@/i18n'
 </script>

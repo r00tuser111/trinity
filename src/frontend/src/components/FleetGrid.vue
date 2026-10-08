@@ -28,12 +28,12 @@
           <div
             class="gv-zonehead"
             :title="z.readOnly
-              ? 'Derived from plain tags (read-only) — create a department to organize explicitly. Drag to move the whole group.'
-              : 'Drag to move the whole department'"
+              ? uiText(&quot;Derived from plain tags (read-only) — create a department to organize explicitly. Drag to move the whole group.&quot;)
+              : uiText(&quot;Drag to move the whole department&quot;)"
             @pointerdown.stop.prevent="startZoneDrag(z, $event)"
           >
             <span class="zname">{{ z.dept }}</span>
-            <span class="zstat" title="Counts include only agents you can access">{{ z.count }} agent{{ z.count === 1 ? '' : 's' }} · {{ z.running }} running</span>
+            <span class="zstat" :title="uiText(&quot;Counts include only agents you can access&quot;)">{{ z.count }} {{ uiText("agent") }}{{ z.count === 1 ? '' : 's' }} · {{ z.running }} {{ uiText("running") }}</span>
           </div>
         </div>
       </template>
@@ -72,18 +72,18 @@
         v-if="hoverEdge && !connecting"
         class="gv-edgechip"
         :style="{ left: hoverEdge.mid.x + 'px', top: hoverEdge.mid.y + 'px' }"
-      >{{ hoverEdge.manager }} → {{ hoverEdge.report }} · click line to remove</div>
+      >{{ hoverEdge.manager }} → {{ hoverEdge.report }} {{ uiText("· click line to remove") }}</div>
       <div
         v-if="connecting && connectTarget"
         class="gv-connectpill"
         :style="{ left: connecting.x + 'px', top: connecting.y + 22 + 'px' }"
-      >{{ connectTarget }} will report to {{ connecting.source }}</div>
+      >{{ connectTarget }} {{ uiText("will report to") }} {{ connecting.source }}</div>
 
       <div
         class="gv-grid"
         :class="{ showcells: isDragging }"
         role="list"
-        aria-label="Agent tiles — drag to any cell on the canvas"
+        :aria-label="uiText(&quot;Agent tiles — drag to any cell on the canvas&quot;)"
         @pointerdown="onTilePointerDown"
         @pointermove="onTilePointerMove"
         @pointerup="onTilePointerUp"
@@ -132,7 +132,7 @@
           :data-agent="agent.name"
           role="listitem"
           tabindex="0"
-          :aria-label="agent.name + ' — drag to any cell, or use arrow keys'"
+          :aria-label="agent.name + uiText(&quot; — drag to any cell, or use arrow keys&quot;)"
           @transitionend="onTileTransitionEnd(agent.name, $event)"
           @pointerenter="onTileEnter(agent.name)"
           @pointerleave="onTileLeave(agent.name)"
@@ -152,7 +152,7 @@
           <span
             v-if="showLines && visibleNames.has(agent.name)"
             class="gv-handle nodrag"
-            title="Drag down onto an agent — it will report to this one"
+            :title="uiText(&quot;Drag down onto an agent — it will report to this one&quot;)"
             @pointerdown.stop.prevent="startConnect(agent.name, $event)"
           ></span>
         </div>
@@ -175,7 +175,7 @@
           :data-agent="w.key"
           role="listitem"
           tabindex="0"
-          :aria-label="w.entry.title + ' info tile — drag to any cell, or use arrow keys'"
+          :aria-label="uiText('{title} info tile — drag to any cell, or use arrow keys', { title: uiText(w.entry.title) })"
           @transitionend="onTileTransitionEnd(w.key, $event)"
         >
           <!-- `unfilteredAgents`, not `agents`: the ent#261 type-to-filter
@@ -193,20 +193,20 @@
             :agents="unfilteredAgents"
             :now="w.entry.wantsTick ? now : undefined"
           />
-          <div v-else class="gv-tile-far">{{ w.entry.title }}</div>
+          <div v-else class="gv-tile-far">{{ uiText(w.entry.title) }}</div>
         </div>
       </div>
     </div>
 
     <!-- Zoom controls (bottom-left, Vue Flow-style) -->
     <div class="gv-zoomctl">
-      <button type="button" title="Zoom in" aria-label="Zoom in" @click="zoomStep(1.2)">
+      <button type="button" :title="uiText(&quot;Zoom in&quot;)" :aria-label="uiText(&quot;Zoom in&quot;)" @click="zoomStep(1.2)">
         <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
       </button>
-      <button type="button" title="Zoom out" aria-label="Zoom out" @click="zoomStep(1 / 1.2)">
+      <button type="button" :title="uiText(&quot;Zoom out&quot;)" :aria-label="uiText(&quot;Zoom out&quot;)" @click="zoomStep(1 / 1.2)">
         <svg viewBox="0 0 24 24"><path d="M5 12h14"></path></svg>
       </button>
-      <button type="button" title="Fit view" aria-label="Fit view" @click="fitView">
+      <button type="button" :title="uiText(&quot;Fit view&quot;)" :aria-label="uiText(&quot;Fit view&quot;)" @click="fitView">
         <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
       </button>
     </div>
@@ -224,49 +224,49 @@
         :class="{ on: tilesMenuOpen }"
         aria-haspopup="true"
         :aria-expanded="tilesMenuOpen"
-        title="Show or hide fleet info tiles"
+        :title="uiText(&quot;Show or hide fleet info tiles&quot;)"
         @click="tilesMenuOpen = !tilesMenuOpen"
-      >Tiles ▾</button>
+      >{{ uiText("Tiles ▾") }}</button>
       <div v-if="tilesMenuOpen" class="gv-tilesmenu" @pointerdown.stop>
-        <p v-if="!widgetCatalog.length" class="empty">No info tiles available.</p>
+        <p v-if="!widgetCatalog.length" class="empty">{{ uiText("No info tiles available.") }}</p>
         <label v-for="w in widgetCatalog" :key="w.id">
           <input
             type="checkbox"
             :checked="isWidgetOn(w)"
             @change="gridStore.setWidgetEnabled(w.id, $event.target.checked)"
           />
-          <span>{{ w.title }}</span>
+          <span>{{ uiText(w.title) }}</span>
         </label>
-        <button type="button" class="reset" @click="resetTiles">Reset to defaults</button>
+        <button type="button" class="reset" @click="resetTiles">{{ uiText("Reset to defaults") }}</button>
       </div>
     </div>
 
     <!-- PROTOTYPE org overlay controls -->
     <div class="gv-orgctl">
-      <button type="button" :class="{ on: showZones }" title="Show department zones (dept-* tags; plain tags as fallback)" @click="toggleZones">Zones</button>
-      <button type="button" :class="{ on: showLines }" title="Show reporting lines (reports-to-* tags)" @click="toggleLines">Lines</button>
+      <button type="button" :class="{ on: showZones }" :title="uiText(&quot;Show department zones (dept-* tags; plain tags as fallback)&quot;)" @click="toggleZones">{{ uiText("Zones") }}</button>
+      <button type="button" :class="{ on: showLines }" :title="uiText(&quot;Show reporting lines (reports-to-* tags)&quot;)" @click="toggleLines">{{ uiText("Lines") }}</button>
       <button
         type="button"
         class="act"
-        title="One-shot arrange into department blocks — tiles stay fully hand-editable after"
+        :title="uiText(&quot;One-shot arrange into department blocks — tiles stay fully hand-editable after&quot;)"
         @click="arrangeNow"
-      >Group by dept</button>
+      >{{ uiText("Group by dept") }}</button>
       <button
         type="button"
         class="act"
-        title="Create a department, then click agents to assign them"
+        :title="uiText(&quot;Create a department, then click agents to assign them&quot;)"
         @click="openNewDept"
-      >New dept</button>
+      >{{ uiText("New dept") }}</button>
     </div>
 
     <!-- New-department popover (field recipe: named validation, Esc/Enter) -->
     <div v-if="newDeptOpen" class="gv-newdept">
-      <label for="gv-newdept-name">New department</label>
+      <label for="gv-newdept-name">{{ uiText("New department") }}</label>
       <input
         id="gv-newdept-name"
         v-model="newDeptName"
         type="text"
-        placeholder="marketing"
+        :placeholder="uiText(&quot;marketing&quot;)"
         autocomplete="off"
         spellcheck="false"
         @keydown.enter.prevent="confirmNewDept"
@@ -275,30 +275,30 @@
       />
       <p v-if="newDeptError" class="err">{{ newDeptError }}</p>
       <div class="row">
-        <button type="button" class="primary" @click="confirmNewDept">Create</button>
-        <button type="button" @click="closeNewDept">Cancel</button>
+        <button type="button" class="primary" @click="confirmNewDept">{{ uiText("Create") }}</button>
+        <button type="button" @click="closeNewDept">{{ uiText("Cancel") }}</button>
       </div>
     </div>
 
     <!-- Assign-mode banner -->
     <div v-if="assignMode" class="gv-assignbanner">
-      Adding agents to <b>{{ assignMode.dept }}</b> — click tiles to assign
-      <span class="cnt">{{ assignMode.count }} so far</span>
-      <button type="button" @click="endAssignMode">Done</button>
+      {{ uiText("Adding agents to") }} <b>{{ assignMode.dept }}</b> {{ uiText("— click tiles to assign") }}
+      <span class="cnt">{{ assignMode.count }} {{ uiText("so far") }}</span>
+      <button type="button" @click="endAssignMode">{{ uiText("Done") }}</button>
     </div>
 
     <!-- Empty state: zones on, none derivable -->
     <div v-if="showZones && zones.length === 0 && placedAgents.length && !assignMode" class="gv-emptyzones">
-      <b>No departments yet.</b>
-      <span>Zones appear when agents carry a department.</span>
-      <button type="button" @click="openNewDept">New department</button>
+      <b>{{ uiText("No departments yet.") }}</b>
+      <span>{{ uiText("Zones appear when agents carry a department.") }}</span>
+      <button type="button" @click="openNewDept">{{ uiText("New department") }}</button>
     </div>
 
     <!-- Org toast: completed verbs (+Undo); failures persist until dismissed -->
     <div v-if="orgToast" class="gv-orgtoast" :class="orgToast.type" role="status">
       <span class="msg">{{ orgToast.message }}</span>
-      <button v-if="orgToast.undo" type="button" class="undo" @click="undoToast">Undo</button>
-      <button type="button" class="x" aria-label="Dismiss" @click="dismissToast">✕</button>
+      <button v-if="orgToast.undo" type="button" class="undo" @click="undoToast">{{ uiText("Undo") }}</button>
+      <button type="button" class="x" :aria-label="uiText(&quot;Dismiss&quot;)" @click="dismissToast">✕</button>
     </div>
 
     <!-- Persistence notice (ent#413): the server could not load or save the
@@ -306,17 +306,17 @@
          keeps working from this browser's copy. -->
     <div v-if="gridStore.persistNotice" class="gv-orgtoast gv-persist error" role="status">
       <span class="msg">{{ gridStore.persistNotice }}</span>
-      <button type="button" class="x" aria-label="Dismiss" @click="gridStore.dismissPersistNotice()">✕</button>
+      <button type="button" class="x" :aria-label="uiText(&quot;Dismiss&quot;)" @click="gridStore.dismissPersistNotice()">✕</button>
     </div>
 
     <!-- Board-level legend: the activity chart's trigger colors, once -->
-    <div class="gv-legend" title="Execution trigger types (14-day activity chart)">
-      <span><i class="ls"></i>Scheduled</span>
-      <span><i class="lm"></i>Manual · MCP</span>
-      <span><i class="le"></i>External</span>
-      <span v-if="showLines" class="lrep" title="Reporting line (manager → report)">
+    <div class="gv-legend" :title="uiText(&quot;Execution trigger types (14-day activity chart)&quot;)">
+      <span><i class="ls"></i>{{ uiText("Scheduled") }}</span>
+      <span><i class="lm"></i>{{ uiText("Manual · MCP") }}</span>
+      <span><i class="le"></i>{{ uiText("External") }}</span>
+      <span v-if="showLines" class="lrep" :title="uiText(&quot;Reporting line (manager → report)&quot;)">
         <svg viewBox="0 0 22 8" width="22" height="8" aria-hidden="true"><path d="M0 4 H14" stroke="currentColor" stroke-width="1.5" fill="none"></path><path d="M13 0.8 L21 4 L13 7.2 Z" fill="currentColor"></path></svg>
-        Reporting
+        {{ uiText("Reporting") }}
       </span>
     </div>
   </div>
@@ -975,6 +975,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('keydown', onOrgKeydown)
   destroyOrg()
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

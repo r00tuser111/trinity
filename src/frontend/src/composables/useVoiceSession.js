@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Voice session composable for Trinity (VOICE-001, ent#534, #2559).
  *
@@ -98,10 +100,10 @@ export function useVoiceSession(agentName) {
     // browser's own refusal arrives as a bare NotAllowedError that reads as
     // "you denied permission".
     if (typeof window !== 'undefined' && window.isSecureContext === false) {
-      error.value = VOICE_INSECURE_REASON; status.value = 'error'; return false
+      error.value = uiText(VOICE_INSECURE_REASON); status.value = 'error'; return false
     }
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-      error.value = VOICE_NO_MIC_REASON; status.value = 'error'; return false
+      error.value = uiText(VOICE_NO_MIC_REASON); status.value = 'error'; return false
     }
     error.value = null
     endReason.value = null
@@ -140,13 +142,13 @@ export function useVoiceSession(agentName) {
             _startAmplitudePolling()
             resolve(true)
           } catch (micError) {
-            error.value = 'Microphone access denied. Please allow microphone access and try again.'
+            error.value = uiText("Microphone access denied. Please allow microphone access and try again.")
             await stop()
             resolve(false)
           }
         }
         ws.onerror = () => {
-          if (!error.value) error.value = 'Voice connection error'
+          if (!error.value) error.value = uiText("Voice connection error")
           resolve(false)
         }
       })

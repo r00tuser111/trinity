@@ -8,7 +8,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          {{ isEditing ? 'Edit System View' : 'Create System View' }}
+          {{ isEditing ? t('Edit System View') : t('Create System View') }}
         </h3>
         <button
           @click="close"
@@ -25,7 +25,7 @@
         <!-- Name -->
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Name *
+            {{ t('Name *') }}
           </label>
           <input
             v-model="form.name"
@@ -33,21 +33,21 @@
             required
             maxlength="100"
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="e.g., Due Diligence Team"
+            :placeholder="t('e.g., Due Diligence Team')"
           />
         </div>
 
         <!-- Description -->
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Description
+            {{ t('Description') }}
           </label>
           <input
             v-model="form.description"
             type="text"
             maxlength="200"
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Optional description"
+            :placeholder="t('Optional description')"
           />
         </div>
 
@@ -56,7 +56,7 @@
           <!-- Icon -->
           <div class="flex-1">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Icon
+              {{ t('Icon') }}
             </label>
             <div class="flex flex-wrap gap-2">
               <button
@@ -79,7 +79,7 @@
           <!-- Color -->
           <div class="w-32">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Color
+              {{ t('Color') }}
             </label>
             <div class="flex flex-wrap gap-2">
               <button
@@ -100,7 +100,7 @@
         <!-- Filter Tags -->
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Filter Tags *
+            {{ t('Filter Tags *') }}
           </label>
           <div class="space-y-2">
             <!-- Tag Input -->
@@ -110,14 +110,14 @@
                 type="text"
                 @keydown.enter.prevent="addTag"
                 class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Type a tag and press Enter"
+                :placeholder="t('Type a tag and press Enter')"
               />
               <button
                 type="button"
                 @click="addTag"
                 class="px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
-                Add
+                {{ t('Add') }}
               </button>
             </div>
 
@@ -130,17 +130,17 @@
               class="flex items-center gap-2 text-xs text-status-danger-600 dark:text-status-danger-400"
               role="status"
             >
-              <span>Couldn't load existing tags — you can still type one above.</span>
+              <span>{{ t('Couldn\'t load existing tags — you can still type one above.') }}</span>
               <button
                 type="button"
                 class="font-medium underline hover:no-underline"
                 @click="fetchAvailableTags"
-              >Try again</button>
+              >{{ t('Try again') }}</button>
             </div>
 
             <!-- Available Tags -->
             <div v-else-if="availableTags.length > 0" class="text-xs text-gray-500 dark:text-gray-400">
-              Available:
+              {{ t('Available:') }}
               <button
                 v-for="tag in availableTags"
                 :key="tag.tag"
@@ -172,7 +172,7 @@
               </span>
             </div>
             <p v-else class="text-xs text-gray-400 dark:text-gray-500">
-              Add at least one tag to filter agents
+              {{ t('Add at least one tag to filter agents') }}
             </p>
           </div>
         </div>
@@ -181,10 +181,10 @@
         <div class="flex items-center justify-between py-2">
           <div>
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Share with all users
+              {{ t('Share with all users') }}
             </label>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Make this view visible to everyone
+              {{ t('Make this view visible to everyone') }}
             </p>
           </div>
           <button
@@ -217,7 +217,7 @@
             @click="handleDelete"
             class="px-4 py-2 text-sm text-status-danger-600 dark:text-status-danger-400 hover:bg-status-danger-50 dark:hover:bg-status-danger-900/20 rounded transition-colors"
           >
-            Delete
+            {{ t('Delete') }}
           </button>
           <div v-else></div>
 
@@ -227,14 +227,14 @@
               @click="close"
               class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
             >
-              Cancel
+              {{ t('Cancel') }}
             </button>
             <button
               type="submit"
               :disabled="!isValid || isSubmitting"
               class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed rounded transition-colors"
             >
-              {{ isSubmitting ? 'Saving...' : (isEditing ? 'Update' : 'Create') }}
+              {{ isSubmitting ? t('Saving...') : (isEditing ? t('Update') : t('Create')) }}
             </button>
           </div>
         </div>
@@ -244,6 +244,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useSystemViewsStore } from '@/stores/systemViews'
 import { isOrgTag } from '@/utils/gridOrg'
@@ -373,7 +376,7 @@ async function handleSubmit() {
     emit('saved')
     close()
   } catch (err) {
-    error.value = err.response?.data?.detail || 'Failed to save system view'
+    error.value = err.response?.data?.detail || uiText("Failed to save system view")
   } finally {
     isSubmitting.value = false
   }
@@ -382,7 +385,7 @@ async function handleSubmit() {
 async function handleDelete() {
   if (!props.editingView) return
 
-  if (!confirm(`Delete "${props.editingView.name}"? This action cannot be undone.`)) {
+  if (!confirm(uiText("Delete \"{arg1}\"? This action cannot be undone.", { arg1: (props.editingView.name) }))) {
     return
   }
 
@@ -394,7 +397,7 @@ async function handleDelete() {
     emit('saved')
     close()
   } catch (err) {
-    error.value = err.response?.data?.detail || 'Failed to delete system view'
+    error.value = err.response?.data?.detail || uiText("Failed to delete system view")
   } finally {
     isSubmitting.value = false
   }

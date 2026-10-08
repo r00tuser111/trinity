@@ -1,11 +1,8 @@
 <template>
   <div class="p-6">
     <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">
-      A canvas is a surface this agent keeps <em>current</em> — it writes and rewrites it with
-      <code class="rounded bg-gray-100 px-1 dark:bg-gray-800">set_canvas</code>.
-      Reports are the other half: published once, and they accumulate.
-      A canvas marked <span class="font-medium">shared</span> also appears on this agent's
-      Workspace page for the people it works with.
+      {{ uiText("A canvas is a surface this agent keeps") }} <em>{{ uiText("current") }}</em> {{ uiText("— it writes and rewrites it with") }}
+      <code class="rounded bg-gray-100 px-1 dark:bg-gray-800">set_canvas</code>{{ uiText(". Reports are the other half: published once, and they accumulate. A canvas marked") }} <span class="font-medium">{{ uiText("shared") }}</span> {{ uiText("also appears on this agent's Workspace page for the people it works with.") }}
     </p>
 
     <p v-if="error" class="mb-3 text-xs text-status-danger-600 dark:text-status-danger-400">
@@ -75,7 +72,7 @@ async function load() {
   } catch (e) {
     // Keep whatever was already rendered — a failed refresh must not blank a
     // surface that was working (the ent#253 treatment).
-    error.value = 'Could not load canvases.'
+    error.value = uiText("Could not load canvases.")
   }
 }
 
@@ -139,4 +136,6 @@ onMounted(() => {
   sessions.loadFeatureFlags?.()
 })
 watch(() => props.agentName, load)
+
+import { t as uiText } from '@/i18n'
 </script>

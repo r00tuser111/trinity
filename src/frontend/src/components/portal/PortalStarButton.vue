@@ -10,8 +10,8 @@
           ? 'text-gray-300 dark:text-gray-600 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 hover:text-amber-500'
           : 'text-gray-400 hover:text-amber-500',
     ]"
-    :title="starred ? 'Unstar this chat' : 'Star this chat'"
-    :aria-label="starred ? 'Unstar this chat' : 'Star this chat'"
+    :title="starred ? uiText(&quot;Unstar this chat&quot;) : uiText(&quot;Star this chat&quot;)"
+    :aria-label="starred ? uiText(&quot;Unstar this chat&quot;) : uiText(&quot;Star this chat&quot;)"
     :aria-pressed="starred"
     @click.stop="$emit('toggle')"
     @keydown.stop
@@ -58,4 +58,6 @@ defineProps({
   revealOnHover: { type: Boolean, default: false },
 })
 defineEmits(['toggle'])
+
+import { t as uiText } from '@/i18n'
 </script>

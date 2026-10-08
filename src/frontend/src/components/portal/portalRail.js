@@ -1,3 +1,5 @@
+import { msg, t as uiText } from '../../i18n/index.js'
+
 /**
  * Workspace conversation rail — the tab contract and every decidable rule
  * (trinity-enterprise#474, slice 1 of #472). Pure.
@@ -116,12 +118,12 @@ export const RAIL_TABS = Object.freeze([
     signal: RAIL_SIGNAL_LIVE,
     icon: 'bolt',
     empty: Object.freeze({
-      title: 'Nothing running right now',
+      title: msg('Nothing running right now'),
       body: (participants) => {
         const who = whoIs(participants)
-        return `When ${who} takes on a longer job from this chat — a report, a research pass — it shows up here step by step, and reports back to the chat when it's done.`
+        return uiText("When {arg1} takes on a longer job from this chat — a report, a research pass — it shows up here step by step, and reports back to the chat when it's done.", { arg1: (who) })
       },
-      action: 'See what you can ask',
+      action: msg('See what you can ask'),
       event: 'see-hints',
     }),
   }),
@@ -137,12 +139,12 @@ export const RAIL_TABS = Object.freeze([
     signal: RAIL_SIGNAL_LIVE,
     icon: 'refresh',
     empty: Object.freeze({
-      title: 'No loops running',
+      title: msg('No loops running'),
       body: (participants) => {
         const who = whoIs(participants)
-        return `A loop runs the same instruction several times in a row — working through a list, retrying until something succeeds, refining a draft. Start one on ${who} from here; it stops at its run limit, and you can stop it any time.`
+        return uiText("A loop runs the same instruction several times in a row — working through a list, retrying until something succeeds, refining a draft. Start one on {arg1} from here; it stops at its run limit, and you can stop it any time.", { arg1: (who) })
       },
-      action: 'Start a loop',
+      action: msg('Start a loop'),
       event: 'start-loop',
     }),
   }),
@@ -157,12 +159,12 @@ export const RAIL_TABS = Object.freeze([
     signal: RAIL_SIGNAL_UPDATED,
     icon: 'template',
     empty: Object.freeze({
-      title: 'No canvas yet',
+      title: msg('No canvas yet'),
       body: (participants) => {
         const who = whoIs(participants)
-        return `A canvas is a surface ${who} keeps current — a status board, a running tally, the latest version of an analysis. Ask for one in the chat and it appears here.`
+        return uiText("A canvas is a surface {arg1} keeps current — a status board, a running tally, the latest version of an analysis. Ask for one in the chat and it appears here.", { arg1: (who) })
       },
-      action: 'Ask for a canvas',
+      action: msg('Ask for a canvas'),
       event: 'ask-canvas',
     }),
   }),
@@ -177,12 +179,12 @@ export const RAIL_TABS = Object.freeze([
     signal: RAIL_SIGNAL_UPDATED,
     icon: 'paperclip',
     empty: Object.freeze({
-      title: 'No files yet',
+      title: msg('No files yet'),
       body: (participants) => {
         const who = whoIs(participants)
-        return `Send ${who} a file to work from, or download what it shares back with you.`
+        return uiText("Send {arg1} a file to work from, or download what it shares back with you.", { arg1: (who) })
       },
-      action: 'Send a file',
+      action: msg('Send a file'),
       event: 'send-file',
     }),
   }),
@@ -218,7 +220,7 @@ export const RAIL_TABS = Object.freeze([
 /** "scout" in a 1:1, "an agent in this room" otherwise — one rule for every empty copy. */
 function whoIs(participants) {
   const list = participantList(participants)
-  return list.length === 1 ? list[0] : 'an agent in this room'
+  return list.length === 1 ? list[0] : uiText("an agent in this room")
 }
 
 // ---------------------------------------------------------------- doors
@@ -463,8 +465,8 @@ export function participantState(agent, sig) {
   const s = sig || emptySignal()
   const live = s.agents.filter((a) => a === agent).length
   return live > 0
-    ? { live, label: `${live} running` }
-    : { live: 0, label: 'nothing in flight' }
+    ? { live, get "label"() { return uiText("{arg1} running", { arg1: (live) }) } }
+    : { live: 0, get "label"() { return uiText("nothing in flight") } }
 }
 
 /** Copy for a tab's empty state, with the participant list folded in. */
@@ -472,9 +474,9 @@ export function railEmptyCopy(tab, participants) {
   const empty = tab && tab.empty ? tab.empty : {}
   const body = typeof empty.body === 'function' ? empty.body(participants) : (empty.body || '')
   return {
-    title: empty.title || 'Nothing here yet',
+    title: empty.title ? uiText(empty.title) : uiText("Nothing here yet"),
     body,
-    action: empty.action || null,
+    action: empty.action ? uiText(empty.action) : null,
     event: empty.event || null,
   }
 }

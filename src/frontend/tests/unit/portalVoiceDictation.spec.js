@@ -236,7 +236,7 @@ describe('#2212 the component wiring', () => {
   })
 
   it('surfaces a narration failure too — the speaker is a separate path', () => {
-    expect(VOICE).toMatch(/voiceError\.value = TTS_FAILED_MESSAGE/)
+    expect(VOICE).toMatch(/voiceError\.value = (uiText\()?TTS_FAILED_MESSAGE/)
     expect(VOICE).toContain('const ttsEnabled = computed(() => !!props.agent.voice_available)')
   })
 

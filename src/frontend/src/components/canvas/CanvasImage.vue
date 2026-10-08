@@ -18,17 +18,17 @@
       v-else-if="!failed && image.kind === 'path' && agentName"
       class="h-40 w-full max-w-md animate-pulse rounded-lg bg-gray-100 motion-reduce:animate-none dark:bg-gray-800"
       aria-busy="true"
-    ><span class="sr-only">Loading image…</span></div>
+    ><span class="sr-only">{{ uiText("Loading image…") }}</span></div>
 
     <!-- Honest, not broken: say what the image is and why it is not here. -->
     <p v-else class="rounded-lg border border-dashed border-gray-300 px-3 py-2 text-xs text-gray-600 dark:border-gray-700 dark:text-gray-300">
       <template v-if="image.kind === 'path' && !agentName">
-        This image is a file in the agent's workspace and is not available on this surface.
+        {{ uiText("This image is a file in the agent's workspace and is not available on this surface.") }}
       </template>
       <template v-else-if="image.kind === 'path'">
-        Image could not be loaded from the agent's workspace — it may be stopped, or the file may have moved.
+        {{ uiText("Image could not be loaded from the agent's workspace — it may be stopped, or the file may have moved.") }}
       </template>
-      <template v-else>Image could not be loaded.</template>
+      <template v-else>{{ uiText("Image could not be loaded.") }}</template>
       <span class="ml-1 break-all font-mono text-gray-500 dark:text-gray-400">{{ shortSrc }}</span>
     </p>
 
@@ -68,7 +68,7 @@ const src = computed(() => {
 })
 
 const shortSrc = computed(() => {
-  const s = props.image.kind === 'data' ? 'inline image' : props.image.src
+  const s = props.image.kind === 'data' ? uiText('inline image') : props.image.src
   return s.length > 96 ? `${s.slice(0, 93)}…` : s
 })
 
@@ -95,4 +95,6 @@ async function loadPath() {
 
 watch(() => [props.image.src, props.image.kind, props.agentName], loadPath, { immediate: true })
 onBeforeUnmount(() => { fetchSeq++; revoke() })
+
+import { t as uiText } from '@/i18n'
 </script>

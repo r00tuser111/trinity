@@ -5,12 +5,12 @@
       @click="toggleDropdown"
       class="inline-flex items-center px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
       :class="{ 'text-action-primary-600 dark:text-action-primary-400 bg-action-primary-50 dark:bg-action-primary-900/20': isOpen }"
-      title="Chat history"
+      :title="uiText(&quot;Chat history&quot;)"
     >
       <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      History
+      {{ uiText("History") }}
       <svg class="w-3 h-3 ml-1 transition-transform" :class="{ 'rotate-180': isOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>
@@ -31,8 +31,8 @@
       >
         <!-- Header -->
         <div class="px-3 py-2 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Previous Sessions</span>
-          <span class="text-xs text-gray-400 dark:text-gray-500">Logged-in chats only</span>
+          <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ uiText("Previous Sessions") }}</span>
+          <span class="text-xs text-gray-400 dark:text-gray-500">{{ uiText("Logged-in chats only") }}</span>
         </div>
 
         <!-- Loading state -->
@@ -47,7 +47,7 @@
 
         <!-- Empty state -->
         <div v-else-if="sessions.length === 0" class="px-3 py-4 text-center text-xs text-gray-400 dark:text-gray-500">
-          No previous sessions found.
+          {{ uiText("No previous sessions found.") }}
         </div>
 
         <!-- Session list -->
@@ -60,9 +60,9 @@
           >
             <div class="flex items-center justify-between mb-0.5">
               <span class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ formatDate(session.last_message_at) }}</span>
-              <span class="text-xs text-gray-400 dark:text-gray-500">{{ session.message_count }} msg{{ session.message_count !== 1 ? 's' : '' }}</span>
+              <span class="text-xs text-gray-400 dark:text-gray-500">{{ session.message_count }} {{ uiText("msg") }}{{ session.message_count !== 1 ? 's' : '' }}</span>
             </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ session.preview || 'No preview' }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ session.preview || uiText("No preview") }}</p>
           </li>
         </ul>
       </div>
@@ -107,7 +107,7 @@ const fetchSessions = async () => {
     })
     sessions.value = response.data.sessions || []
   } catch (err) {
-    error.value = 'Failed to load history.'
+    error.value = uiText("Failed to load history.")
   } finally {
     loading.value = false
   }
@@ -128,7 +128,7 @@ const selectSession = async (session) => {
     }))
     emit('session-selected', { messages, session })
   } catch (err) {
-    error.value = 'Failed to load session.'
+    error.value = uiText("Failed to load session.")
   } finally {
     loading.value = false
   }
@@ -143,7 +143,7 @@ const formatDate = (iso) => {
 
   if (diffDays === 0) return 'Today'
   if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays}d ago`
+  if (diffDays < 7) return uiText("{arg1}d ago", { arg1: (diffDays) })
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
@@ -155,4 +155,6 @@ const handleClickOutside = (e) => {
 
 onMounted(() => document.addEventListener('mousedown', handleClickOutside))
 onUnmounted(() => document.removeEventListener('mousedown', handleClickOutside))
+
+import { t as uiText } from '@/i18n'
 </script>

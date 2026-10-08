@@ -28,7 +28,7 @@
               <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              New
+              {{ uiText("New") }}
             </button>
           </div>
         </div>
@@ -39,7 +39,7 @@
             <div class="flex items-center space-x-2">
               <div class="w-2 h-2 rounded-full bg-status-success-500 animate-pulse"></div>
               <span class="font-semibold text-gray-900 dark:text-white">
-                {{ linkInfo.agent_display_name || 'Agent' }}
+                {{ linkInfo.agent_display_name || uiText("Agent") }}
               </span>
             </div>
             <!-- Status badges -->
@@ -70,7 +70,7 @@
           </p>
         </div>
         <div v-else class="text-sm text-gray-500 dark:text-gray-400">
-          Loading...
+          {{ uiText("Loading...") }}
         </div>
       </div>
     </header>
@@ -81,7 +81,7 @@
       <div v-if="loading" class="flex-1 flex items-center justify-center">
         <div class="text-center">
           <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-action-primary-500 mx-auto mb-4"></div>
-          <p class="text-gray-500 dark:text-gray-400">Loading...</p>
+          <p class="text-gray-500 dark:text-gray-400">{{ uiText("Loading...") }}</p>
         </div>
       </div>
 
@@ -93,9 +93,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Link Not Available</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">{{ uiText("Link Not Available") }}</h2>
           <p class="text-gray-500 dark:text-gray-400">
-            {{ linkError || 'This link is no longer valid or has expired.' }}
+            {{ linkError || uiText("This link is no longer valid or has expired.") }}
           </p>
         </div>
       </div>
@@ -108,9 +108,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Agent Unavailable</h2>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">{{ uiText("Agent Unavailable") }}</h2>
           <p class="text-gray-500 dark:text-gray-400">
-            The agent is currently offline. Please try again later.
+            {{ uiText("The agent is currently offline. Please try again later.") }}
           </p>
         </div>
       </div>
@@ -124,9 +124,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Verify Your Email</h2>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">{{ uiText("Verify Your Email") }}</h2>
             <p class="text-gray-500 dark:text-gray-400 text-sm">
-              {{ !codeSent ? 'Enter your email to continue' : 'Enter the code sent to your email' }}
+              {{ !codeSent ? uiText("Enter your email to continue") : uiText("Enter the code sent to your email") }}
             </p>
           </div>
 
@@ -152,9 +152,9 @@
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Sending...
+                {{ uiText("Sending...") }}
               </span>
-              <span v-else>Send Code</span>
+              <span v-else>{{ uiText("Send Code") }}</span>
             </button>
           </form>
 
@@ -171,7 +171,7 @@
                 :disabled="verifyLoading"
               />
               <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
-                Code sent to {{ email }}
+                {{ uiText("Code sent to") }} {{ email }}
               </p>
             </div>
             <button
@@ -184,16 +184,16 @@
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Verifying...
+                {{ uiText("Verifying...") }}
               </span>
-              <span v-else>Verify</span>
+              <span v-else>{{ uiText("Verify") }}</span>
             </button>
             <button
               type="button"
               @click="codeSent = false; code = ''"
               class="w-full py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
             >
-              Use a different email
+              {{ uiText("Use a different email") }}
             </button>
           </form>
 
@@ -212,13 +212,13 @@
           class="mb-3 px-3 py-2 bg-state-autonomous-50 dark:bg-state-autonomous-900/20 border border-state-autonomous-200 dark:border-state-autonomous-800 rounded-lg flex items-center justify-between text-xs"
         >
           <span class="text-state-autonomous-700 dark:text-state-autonomous-400">
-            Viewing past session — read only
+            {{ uiText("Viewing past session — read only") }}
           </span>
           <button
             @click="exitHistoryView"
             class="ml-2 text-state-autonomous-700 dark:text-state-autonomous-400 underline hover:no-underline"
           >
-            Return to current chat
+            {{ uiText("Return to current chat") }}
           </button>
         </div>
 
@@ -239,9 +239,9 @@
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               </div>
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Getting ready...</h3>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Getting ready...") }}</h3>
               <p class="text-gray-500 dark:text-gray-400 text-sm max-w-md mx-auto">
-                The agent is preparing to assist you.
+                {{ uiText("The agent is preparing to assist you.") }}
               </p>
             </div>
 
@@ -252,9 +252,9 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                 </svg>
               </div>
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Start a Conversation</h3>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Start a Conversation") }}</h3>
               <p class="text-gray-500 dark:text-gray-400 text-sm max-w-md mx-auto">
-                Type a message below to begin chatting.
+                {{ uiText("Type a message below to begin chatting.") }}
               </p>
             </div>
           </template>
@@ -282,7 +282,7 @@
           v-model="message"
           :disabled="chatLoading"
           :public-token="token"
-          placeholder="Type your message or / for playbooks..."
+          :placeholder="uiText(&quot;Type your message or / for playbooks...&quot;)"
           :cancellable="canCancelTurn"
           :cancelling="cancelling"
           @submit="sendMessage"
@@ -390,9 +390,9 @@ const loadLinkInfo = async () => {
     console.error('Failed to load link info:', err)
     if (err.response?.status === 404) {
       linkInfo.value = { valid: false }
-      linkError.value = 'This link does not exist or has been removed.'
+      linkError.value = uiText("This link does not exist or has been removed.")
     } else {
-      linkError.value = 'Failed to load link information. Please try again.'
+      linkError.value = uiText("Failed to load link information. Please try again.")
     }
   } finally {
     loading.value = false
@@ -402,13 +402,13 @@ const loadLinkInfo = async () => {
 const getErrorMessage = (reason) => {
   switch (reason) {
     case 'expired':
-      return 'This link has expired.'
+      return uiText("This link has expired.")
     case 'disabled':
-      return 'This link has been disabled by the owner.'
+      return uiText("This link has been disabled by the owner.")
     case 'not_found':
-      return 'This link does not exist.'
+      return uiText("This link does not exist.")
     default:
-      return 'This link is no longer valid.'
+      return uiText("This link is no longer valid.")
   }
 }
 
@@ -426,9 +426,9 @@ const requestCode = async () => {
   } catch (err) {
     console.error('Failed to request code:', err)
     if (err.response?.status === 429) {
-      verifyError.value = 'Too many requests. Please wait a few minutes and try again.'
+      verifyError.value = uiText("Too many requests. Please wait a few minutes and try again.")
     } else {
-      verifyError.value = err.response?.data?.detail || 'Failed to send verification code.'
+      verifyError.value = err.response?.data?.detail || uiText("Failed to send verification code.")
     }
   } finally {
     verifyLoading.value = false
@@ -465,7 +465,7 @@ const verifyCode = async () => {
     }
   } catch (err) {
     console.error('Failed to verify code:', err)
-    verifyError.value = err.response?.data?.detail || 'Failed to verify code.'
+    verifyError.value = err.response?.data?.detail || uiText("Failed to verify code.")
   } finally {
     verifyLoading.value = false
   }
@@ -474,11 +474,11 @@ const verifyCode = async () => {
 const getVerifyErrorMessage = (error) => {
   switch (error) {
     case 'invalid_code':
-      return 'Invalid code. Please check and try again.'
+      return uiText("Invalid code. Please check and try again.")
     case 'code_expired':
-      return 'Code has expired. Please request a new one.'
+      return uiText("Code has expired. Please request a new one.")
     default:
-      return 'Verification failed. Please try again.'
+      return uiText("Verification failed. Please try again.")
   }
 }
 
@@ -549,7 +549,7 @@ const fetchIntro = async () => {
   } catch (err) {
     console.error('Failed to fetch intro:', err)
     // Don't block the user - just skip the intro on error
-    introError.value = 'Could not load introduction.'
+    introError.value = uiText("Could not load introduction.")
     introFetched.value = true
   } finally {
     introLoading.value = false
@@ -558,7 +558,7 @@ const fetchIntro = async () => {
 
 // Confirm and start new conversation
 const confirmNewConversation = async () => {
-  if (!confirm('Start a new conversation? This will clear your chat history.')) {
+  if (!confirm(uiText("Start a new conversation? This will clear your chat history."))) {
     return
   }
 
@@ -593,7 +593,7 @@ const confirmNewConversation = async () => {
     await fetchIntro()
   } catch (err) {
     console.error('Failed to clear session:', err)
-    chatError.value = 'Failed to start new conversation. Please refresh the page.'
+    chatError.value = uiText("Failed to start new conversation. Please refresh the page.")
   }
 }
 
@@ -820,12 +820,12 @@ const sendMessage = async (userMessage, files = []) => {
           content: execution.response
         })
       } else if (execution.status === 'failed') {
-        chatError.value = execution.error || 'Failed to process your request. Please try again.'
+        chatError.value = execution.error || uiText("Failed to process your request. Please try again.")
       } else if (execution.status === 'cancelled') {
-        chatError.value = 'Request was cancelled.'
+        chatError.value = uiText("Request was cancelled.")
       }
     } else {
-      chatError.value = 'Request timed out. Please try again.'
+      chatError.value = uiText("Request timed out. Please try again.")
     }
   } catch (err) {
     console.error('Chat error:', err)
@@ -834,11 +834,11 @@ const sendMessage = async (userMessage, files = []) => {
       // Session expired, clear and show verification again
       sessionToken.value = ''
       localStorage.removeItem(`public_session_${token.value}`)
-      chatError.value = 'Session expired. Please verify your email again.'
+      chatError.value = uiText("Session expired. Please verify your email again.")
     } else if (err.response?.status === 429) {
-      chatError.value = 'Too many requests. Please wait a moment.'
+      chatError.value = uiText("Too many requests. Please wait a moment.")
     } else {
-      chatError.value = err.response?.data?.detail || 'Failed to send message. Please try again.'
+      chatError.value = err.response?.data?.detail || uiText("Failed to send message. Please try again.")
     }
   } finally {
     chatLoading.value = false
@@ -917,6 +917,8 @@ onUnmounted(() => {
   document.removeEventListener('keydown', onEscapeKeydown)
   closeSSE()
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

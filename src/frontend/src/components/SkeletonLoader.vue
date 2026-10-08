@@ -16,7 +16,7 @@
     class="skeleton-loader w-full"
     role="status"
     aria-busy="true"
-    aria-label="Loading"
+    :aria-label="uiText(&quot;Loading&quot;)"
   >
     <!-- rows: timeline / list / card placeholders -->
     <div v-if="variant === 'rows'" class="flex flex-col" :style="{ gap }">
@@ -46,7 +46,7 @@
       </div>
     </div>
 
-    <span class="sr-only">Loading…</span>
+    <span class="sr-only">{{ uiText("Loading…") }}</span>
   </div>
 </template>
 
@@ -63,4 +63,6 @@ defineProps({
   // diameter of each node circle (nodes variant)
   nodeSize: { type: String, default: '3.5rem' },
 })
+
+import { t as uiText } from '@/i18n'
 </script>

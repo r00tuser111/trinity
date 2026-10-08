@@ -2,21 +2,20 @@
   <div class="p-6 space-y-8">
     <!-- Framing: Google-Docs-style "share this agent" (trinity-enterprise#18) -->
     <div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Share this agent</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Share this agent") }}</h3>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Let external clients reach this agent through channels — Slack, Telegram, WhatsApp, voice, and public links.
-        Trinity <strong>operators</strong> (your teammates) are managed on the <span class="font-medium">Access</span> tab.
+        {{ uiText("Let external clients reach this agent through channels — Slack, Telegram, WhatsApp, voice, and public links. Trinity") }} <strong>{{ uiText("operators") }}</strong> {{ uiText("(your teammates) are managed on the") }} <span class="font-medium">{{ uiText("Access") }}</span> {{ uiText("tab.") }}
       </p>
     </div>
 
     <!-- External access policy: single Restricted ↔ Open control (#18) -->
     <div>
-      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">Who can chat with this agent?</h4>
+      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Who can chat with this agent?") }}</h4>
 
       <div
         class="mt-3 inline-flex rounded-lg border border-gray-300 dark:border-gray-600 p-1 bg-gray-100 dark:bg-gray-800"
         role="group"
-        aria-label="External access policy"
+        :aria-label="uiText(&quot;External access policy&quot;)"
       >
         <button
           type="button"
@@ -28,7 +27,7 @@
               ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
               : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white']"
         >
-          <span aria-hidden="true">🔒</span> Restricted
+          <span aria-hidden="true">🔒</span> {{ uiText("Restricted") }}
         </button>
         <button
           type="button"
@@ -40,18 +39,18 @@
               ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
               : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white']"
         >
-          <span aria-hidden="true">🌐</span> Open
+          <span aria-hidden="true">🌐</span> {{ uiText("Open") }}
         </button>
       </div>
 
       <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
         <template v-if="accessMode === 'open'">
-          <strong>Open</strong> — anyone with a verified email can chat without approval.
+          <strong>{{ uiText("Open") }}</strong> {{ uiText("— anyone with a verified email can chat without approval.") }}
         </template>
         <template v-else>
-          <strong>Restricted</strong> — only people you approve can chat. Everyone else lands in Pending requests below.
+          <strong>{{ uiText("Restricted") }}</strong> {{ uiText("— only people you approve can chat. Everyone else lands in Pending requests below.") }}
         </template>
-        Either way, clients must verify their email first (Telegram users <code>/login</code>; Slack uses workspace email; web requires verification).
+        {{ uiText("Either way, clients must verify their email first (Telegram users") }} <code>/login</code>{{ uiText("; Slack uses workspace email; web requires verification).") }}
       </p>
 
       <!-- Dead-end heads-up: Restricted with nobody approved yet (#446) -->
@@ -59,24 +58,23 @@
         v-if="accessMode === 'restricted' && (!shares || shares.length === 0)"
         class="mt-4 rounded-lg bg-state-autonomous-50 dark:bg-state-autonomous-900/20 border border-state-autonomous-200 dark:border-state-autonomous-800/40 p-3 text-sm text-state-autonomous-900 dark:text-state-autonomous-200"
       >
-        <strong>Heads up:</strong> access is Restricted and no one's approved yet — every verified client will wait in
-        Pending requests until you approve them. Approve requests below, or switch to <strong>Open</strong>.
+        <strong>{{ uiText("Heads up:") }}</strong> {{ uiText("access is Restricted and no one's approved yet — every verified client will wait in Pending requests until you approve them. Approve requests below, or switch to") }} <strong>{{ uiText("Open") }}</strong>.
       </div>
 
       <!-- Pending access requests (external clients) -->
       <div v-if="pendingRequests.length > 0" class="mt-6">
         <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
-          Pending requests ({{ pendingRequests.length }})
+          {{ uiText("Pending requests (") }}{{ pendingRequests.length }})
         </h4>
         <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-          External clients who verified their identity but aren't approved yet. Approving lets them chat.
+          {{ uiText("External clients who verified their identity but aren't approved yet. Approving lets them chat.") }}
         </p>
         <ul class="divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700 rounded-lg">
           <li v-for="req in pendingRequests" :key="req.id" class="px-4 py-3 flex items-center justify-between">
             <div>
               <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ req.email }}</p>
               <p class="text-xs text-gray-500 dark:text-gray-400">
-                via {{ req.channel || 'unknown' }} · {{ formatRequestedAt(req.requested_at) }}
+                {{ uiText("via") }} {{ req.channel || uiText("unknown") }} · {{ formatRequestedAt(req.requested_at) }}
               </p>
             </div>
             <div class="flex items-center gap-2">
@@ -84,12 +82,12 @@
                 @click="decideRequest(req, true)"
                 :disabled="decisionLoading === req.id"
                 class="px-3 py-1 text-sm font-medium rounded-md text-white bg-status-success-600 hover:bg-status-success-700 disabled:opacity-50"
-              >Approve</button>
+              >{{ uiText("Approve") }}</button>
               <button
                 @click="decideRequest(req, false)"
                 :disabled="decisionLoading === req.id"
                 class="px-3 py-1 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
-              >Deny</button>
+              >{{ uiText("Deny") }}</button>
             </div>
           </li>
         </ul>
@@ -99,10 +97,9 @@
     <!-- Public chat model (#894): governs the model for ALL public-facing
          conversations (public link, channels, x402) — not the owner's own chats. -->
     <div>
-      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Public chat model</h4>
+      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{{ uiText("Public chat model") }}</h4>
       <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-        The Claude model used for public-facing chats (public link, Slack/Telegram/WhatsApp, paid).
-        Your own authenticated chats and scheduled runs are unaffected.
+        {{ uiText("The Claude model used for public-facing chats (public link, Slack/Telegram/WhatsApp, paid). Your own authenticated chats and scheduled runs are unaffected.") }}
       </p>
       <select
         :value="publicChannelModel"
@@ -110,20 +107,19 @@
         :disabled="pcmSaving"
         class="block w-full sm:w-80 text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-action-primary-500 disabled:opacity-50"
       >
-        <option value="">Use platform default{{ pcmDefault ? ` (${pcmDefault})` : '' }}</option>
+        <option value="">{{ uiText("Use platform default") }}{{ pcmDefault ? uiText(" ({arg1})", { arg1: (pcmDefault) }) : '' }}</option>
         <option v-for="m in pcmAvailable" :key="m" :value="m">{{ m }}</option>
       </select>
     </div>
 
     <!-- Additional Instructions for public & channel chats (#1205) -->
     <div>
-      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Additional instructions <span class="font-normal text-gray-500 dark:text-gray-400">— public &amp; channel chats only</span></h4>
+      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{{ uiText("Additional instructions") }} <span class="font-normal text-gray-500 dark:text-gray-400">{{ uiText("— public & channel chats only") }}</span></h4>
       <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-        Extra instructions injected into the agent's system prompt for <strong>outside audiences only</strong> — public links, Slack / Telegram / WhatsApp, and paid chat.
-        Use it for persona, scope limits, disclaimers, or guardrails like "you're talking to an external customer, never reveal internal project names."
+        {{ uiText("Extra instructions injected into the agent's system prompt for") }} <strong>{{ uiText("outside audiences only") }}</strong> {{ uiText("— public links, Slack / Telegram / WhatsApp, and paid chat. Use it for persona, scope limits, disclaimers, or guardrails like \"you're talking to an external customer, never reveal internal project names.\"") }}
       </p>
       <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-        Does <em>not</em> affect your own authenticated chats, scheduled runs, loops, or agent-to-agent calls. Leave empty to disable (no behavior change). Voice/VoIP has its own prompt.
+        {{ uiText("Does") }} <em>{{ uiText("not") }}</em> {{ uiText("affect your own authenticated chats, scheduled runs, loops, or agent-to-agent calls. Leave empty to disable (no behavior change). Voice/VoIP has its own prompt.") }}
       </p>
 
       <textarea
@@ -131,7 +127,7 @@
         :maxlength="PUBLIC_PROMPT_MAX"
         rows="5"
         :disabled="publicPromptLoading"
-        placeholder="e.g. Always answer in the visitor's language. Never mention internal codenames. Add the disclaimer: 'Responses are informational only.'"
+        :placeholder="uiText(&quot;e.g. Always answer in the visitor's language. Never mention internal codenames. Add the disclaimer: 'Responses are informational only.'&quot;)"
         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-900 font-mono text-sm"
       ></textarea>
 
@@ -143,22 +139,22 @@
             @click="clearPublicPrompt"
             :disabled="publicPromptLoading || !publicPrompt"
             class="px-3 py-1.5 text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
-          >Clear</button>
+          >{{ uiText("Clear") }}</button>
           <button
             type="button"
             @click="savePublicPrompt"
             :disabled="publicPromptLoading || !publicPromptDirty"
             class="inline-flex items-center px-4 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 dark:focus:ring-offset-gray-800 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed"
-          >{{ publicPromptLoading ? 'Saving…' : 'Save' }}</button>
+          >{{ publicPromptLoading ? uiText("Saving…") : uiText("Save") }}</button>
         </div>
       </div>
     </div>
 
     <!-- Channels: compact summary rows; config opens in a dialog (#19) -->
     <div>
-      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Channels</h4>
+      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{{ uiText("Channels") }}</h4>
       <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-        Connect this agent to messaging channels. Use <strong>Configure</strong> to set one up.
+        {{ uiText("Connect this agent to messaging channels. Use") }} <strong>{{ uiText("Configure") }}</strong> {{ uiText("to set one up.") }}
       </p>
       <div class="space-y-2">
         <ChannelConfigRow
@@ -195,7 +191,7 @@
 
         <ChannelConfigRow
           v-if="sessionsStore.voipAvailable"
-          title="Voice calls"
+          :title="uiText(&quot;Voice calls&quot;)"
           icon="📞"
           :agent-name="agentName"
           :status-url="`/api/agents/${agentName}/voip`"
@@ -206,7 +202,7 @@
 
         <!-- MCP connector (ent#46) — OSS-core since #118 (un-gated) -->
         <ChannelDisclosure
-          title="MCP connector"
+          :title="uiText(&quot;MCP connector&quot;)"
           subtitle="Add this agent to an AI client; playbooks become tools"
           icon="🔌"
         >
@@ -225,29 +221,29 @@
     <!-- Client Roster (#20) — external channel users (read-only) -->
     <div>
       <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-        Client roster <span class="font-normal text-gray-500 dark:text-gray-400">— who's reaching this agent</span>
+        {{ uiText("Client roster") }} <span class="font-normal text-gray-500 dark:text-gray-400">{{ uiText("— who's reaching this agent") }}</span>
       </h4>
       <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-        External users who have messaged this agent through a channel (Telegram, WhatsApp). Read-only.
+        {{ uiText("External users who have messaged this agent through a channel (Telegram, WhatsApp). Read-only.") }}
       </p>
 
       <div v-if="clients.length === 0" class="text-center py-6 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
-        <p class="text-sm">No external clients yet</p>
-        <p class="text-xs mt-1">Users who message via Telegram or WhatsApp will appear here.</p>
+        <p class="text-sm">{{ uiText("No external clients yet") }}</p>
+        <p class="text-xs mt-1">{{ uiText("Users who message via Telegram or WhatsApp will appear here.") }}</p>
       </div>
 
       <div v-else class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-lg">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
           <thead class="bg-gray-50 dark:bg-gray-900/50">
             <tr class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              <th class="px-4 py-2">Client</th>
-              <th class="px-4 py-2">Channel</th>
-              <th class="px-4 py-2">Verified email</th>
+              <th class="px-4 py-2">{{ uiText("Client") }}</th>
+              <th class="px-4 py-2">{{ uiText("Channel") }}</th>
+              <th class="px-4 py-2">{{ uiText("Verified email") }}</th>
               <th
                 class="px-4 py-2 text-right"
-                title="Direct messages received from this client. Counting starts when this feature is deployed — earlier history is not backfilled."
-              >Messages</th>
-              <th class="px-4 py-2">Last active</th>
+                :title="uiText(&quot;Direct messages received from this client. Counting starts when this feature is deployed — earlier history is not backfilled.&quot;)"
+              >{{ uiText("Messages") }}</th>
+              <th class="px-4 py-2">{{ uiText("Last active") }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -272,16 +268,16 @@
 
     <!-- Distribution: content/links sharing — not client access (#18 nudge) -->
     <div>
-      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Distribution</h4>
+      <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">{{ uiText("Distribution") }}</h4>
       <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-        Share generated files and public chat links. This is about distributing output, not granting client access.
+        {{ uiText("Share generated files and public chat links. This is about distributing output, not granting client access.") }}
       </p>
       <div class="space-y-2">
-        <ChannelDisclosure title="Public links" subtitle="Shareable public chat URLs" icon="🔗">
+        <ChannelDisclosure :title="uiText(&quot;Public links&quot;)" subtitle="Shareable public chat URLs" icon="🔗">
           <PublicLinksPanel :agent-name="agentName" />
         </ChannelDisclosure>
 
-        <ChannelDisclosure title="File sharing" subtitle="Outbound shared files" icon="📂">
+        <ChannelDisclosure :title="uiText(&quot;File sharing&quot;)" subtitle="Outbound shared files" icon="📂">
           <FileSharingPanel :agent-name="agentName" />
         </ChannelDisclosure>
       </div>
@@ -403,10 +399,10 @@ const savePublicPrompt = async () => {
     )
     publicPrompt.value = value || ''
     publicPromptSaved.value = value || ''
-    showNotification('Additional instructions saved', 'success')
+    showNotification(uiText("Additional instructions saved"), 'success')
   } catch (err) {
     console.error('Failed to save public instructions:', err)
-    showNotification(err.response?.data?.detail || 'Failed to save instructions', 'error')
+    showNotification(err.response?.data?.detail || uiText("Failed to save instructions"), 'error')
   } finally {
     publicPromptLoading.value = false
   }
@@ -469,10 +465,10 @@ const setAccessMode = async (mode) => {
       { headers: authStore.authHeader }
     )
     policy.value = data
-    showNotification('Access policy updated', 'success')
+    showNotification(uiText("Access policy updated"), 'success')
   } catch (err) {
     console.error('Failed to update access policy:', err)
-    showNotification(err.response?.data?.detail || 'Failed to update policy', 'error')
+    showNotification(err.response?.data?.detail || uiText("Failed to update policy"), 'error')
   } finally {
     policyLoading.value = false
   }
@@ -499,14 +495,14 @@ const decideRequest = async (req, approve) => {
       { headers: authStore.authHeader }
     )
     showNotification(
-      approve ? `Approved ${req.email}` : `Denied ${req.email}`,
+      approve ? uiText("Approved {arg1}", { arg1: (req.email) }) : uiText("Denied {arg1}", { arg1: (req.email) }),
       'success'
     )
     await loadAccessRequests()
     if (approve) await loadAgent()
   } catch (err) {
     console.error('Failed to decide request:', err)
-    showNotification(err.response?.data?.detail || 'Failed to update request', 'error')
+    showNotification(err.response?.data?.detail || uiText("Failed to update request"), 'error')
   } finally {
     decisionLoading.value = null
   }
@@ -552,12 +548,12 @@ const setPublicChannelModel = async (value) => {
     )
     publicChannelModel.value = data.public_channel_model || ''
     showNotification(
-      data.is_overridden ? `Public chat model set to ${data.public_channel_model}` : 'Public chat model reset to platform default',
+      data.is_overridden ? uiText("Public chat model set to {arg1}", { arg1: (data.public_channel_model) }) : uiText("Public chat model reset to platform default"),
       'success'
     )
   } catch (err) {
     console.error('Failed to update public-channel model:', err)
-    showNotification(err.response?.data?.detail?.message || err.response?.data?.detail || 'Failed to update model', 'error')
+    showNotification(err.response?.data?.detail?.message || err.response?.data?.detail || uiText("Failed to update model"), 'error')
     await loadPublicChannelModel()  // re-sync the select to the persisted value
   } finally {
     pcmSaving.value = false
@@ -568,4 +564,6 @@ watch(() => props.agentName, async (name) => {
   if (!name) return
   await Promise.all([loadPolicy(), loadAccessRequests(), loadPublicChannelModel(), loadClients(), loadPublicPrompt()])
 }, { immediate: true })
+
+import { t as uiText } from '@/i18n'
 </script>

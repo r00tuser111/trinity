@@ -31,6 +31,9 @@ import ThemeChoice from '../../src/components/base/ThemeChoice.vue'
 import { useThemeStore } from '../../src/stores/theme'
 import { shouldCancelOnEscape, shouldEndCallOnEscape } from '../../src/utils/turnCancel'
 
+// Node >= 25 ships its own (unconfigured) localStorage global, which shadows jsdom's.
+Object.defineProperty(globalThis, 'localStorage', { value: globalThis.jsdom.window.localStorage, configurable: true })
+
 const src = (rel) => stripComments(readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8'))
 
 // jsdom has no matchMedia; the store consults it for `system`. Answer "dark".

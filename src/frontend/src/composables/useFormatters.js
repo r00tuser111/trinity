@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 // ===========================================================================
 // Cost formatting (#92) — the single, canonical way to render a USD cost.
 // Do NOT inline `toFixed` on cost values or add local `formatCost` helpers;
@@ -175,10 +177,10 @@ export function useFormatters() {
     const now = new Date()
     const diffSeconds = Math.floor((now - date) / 1000)
 
-    if (diffSeconds < 60) return 'just now'
-    if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)} minutes ago`
-    if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)} hours ago`
-    if (diffSeconds < 604800) return `${Math.floor(diffSeconds / 86400)} days ago`
+    if (diffSeconds < 60) return uiText("just now")
+    if (diffSeconds < 3600) return uiText("{arg1} minutes ago", { arg1: (Math.floor(diffSeconds / 60)) })
+    if (diffSeconds < 86400) return uiText("{arg1} hours ago", { arg1: (Math.floor(diffSeconds / 3600)) })
+    if (diffSeconds < 604800) return uiText("{arg1} days ago", { arg1: (Math.floor(diffSeconds / 86400)) })
     return date.toLocaleDateString()
   }
 
@@ -225,10 +227,10 @@ export function useFormatters() {
     const diffHours = Math.floor(diffMs / 3600000)
     const diffDays = Math.floor(diffMs / 86400000)
 
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays < 7) return `${diffDays}d ago`
+    if (diffMins < 1) return uiText("Just now")
+    if (diffMins < 60) return uiText("{arg1}m ago", { arg1: (diffMins) })
+    if (diffHours < 24) return uiText("{arg1}h ago", { arg1: (diffHours) })
+    if (diffDays < 7) return uiText("{arg1}d ago", { arg1: (diffDays) })
     return date.toLocaleDateString()
   }
 
@@ -236,20 +238,20 @@ export function useFormatters() {
    * Format credential source for display
    */
   const formatSource = (source) => {
-    if (!source) return 'Unknown source'
+    if (!source) return uiText("Unknown source")
 
     if (source.startsWith('mcp:')) {
       const mcpServer = source.replace('mcp:', '')
-      return `MCP Server: ${mcpServer}`
+      return uiText("MCP Server: {arg1}", { arg1: (mcpServer) })
     }
 
     if (source === 'env_file' || source === 'template:env_file') {
-      return 'Environment variable'
+      return uiText("Environment variable")
     }
 
     if (source.startsWith('template:mcp:')) {
       const mcpServer = source.replace('template:mcp:', '')
-      return `MCP Server: ${mcpServer}`
+      return uiText("MCP Server: {arg1}", { arg1: (mcpServer) })
     }
 
     return source

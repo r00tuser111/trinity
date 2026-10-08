@@ -7,7 +7,7 @@
       v-if="dept"
       class="dept-ribbon"
       :style="{ background: `var(--gv-dept-${dept.slot})` }"
-      :title="'Department: ' + dept.name"
+      :title="uiText(&quot;Department: &quot;) + dept.name"
     ></span>
     <!-- Avatar half-out on the left edge -->
     <div class="gtile-avatar">
@@ -32,15 +32,15 @@
           <span
             v-if="isSystemAgent"
             class="sys-badge"
-            title="System Agent - Platform Orchestrator"
-          >SYSTEM</span>
+            :title="t('System Agent - Platform Orchestrator')"
+          >{{ t('SYSTEM') }}</span>
           <!-- ent#139: agent-class variant. The runner is not a persona, it is
                an execution surface, so it gets its own identity chip. -->
           <span
             v-else-if="isSkillRunner"
             class="runner-badge"
             :title="runnerTooltip"
-          >SKILL RUNNER</span>
+          >{{ t('SKILL RUNNER') }}</span>
         </div>
         <!-- #2358: when a display label hides the slug, the identity leads
              this ALREADY always-rendered meta line. Not a third line: the tile
@@ -61,7 +61,7 @@
             <span class="t-sep">·</span>
           </template>
           <svg v-if="githubRepoShort" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd" /></svg>
-          <span :title="githubRepoShort || 'Local agent'">{{ githubRepoShort || 'Local agent' }}</span>
+          <span :title="githubRepoShort || t('Local agent')">{{ githubRepoShort || t('Local agent') }}</span>
         </div>
       </div>
       <div class="t-staterow">
@@ -84,9 +84,9 @@
     <!-- Zone 3: twin trend charts -->
     <div class="t-charts">
       <!-- Activity · 14d — stacked daily bars by trigger bucket -->
-      <div class="mini" title="Executions per day by trigger type, last 14 days">
+      <div class="mini" :title="t('Executions per day by trigger type, last 14 days')">
         <div class="mlbl">
-          <span>Activity · 14d</span>
+          <span>{{ t('Activity · 14d') }}</span>
           <b v-if="analytics" :class="activityTotal > 0 ? 'info' : 'na'">{{ activityTotal }}</b>
           <b v-else class="na">&mdash;</b>
         </div>
@@ -98,7 +98,7 @@
             <!-- Empty days keep a faint baseline stub so sparse data reads as a
                  14-day rhythm instead of a lone bar floating in a void. -->
             <div v-if="activityDays.length" class="stack">
-              <span v-for="(d, i) in activityDays" :key="i" class="col" :title="d.date + ' — ' + d.total + ' runs'">
+              <span v-for="(d, i) in activityDays" :key="i" class="col" :title="d.date + ' — ' + d.total + uiText(&quot; runs&quot;)">
                 <template v-if="d.total > 0">
                   <i v-if="d.sched" class="bs" :style="{ height: d.schedPx + 'px' }"></i>
                   <i v-if="d.man" class="bm" :style="{ height: d.manPx + 'px' }"></i>
@@ -115,7 +115,7 @@
       <!-- Context · 7d — miniature trend line, colored by current level -->
       <div class="mini" :title="contextTooltip">
         <div class="mlbl">
-          <span>Context · 7d</span>
+          <span>{{ t('Context · 7d') }}</span>
           <b :class="contextHeadline == null ? 'na' : contextLevelClass">{{ contextHeadline == null ? '—' : contextHeadline + '%' }}</b>
         </div>
         <ScanlineReveal :loading="chartsLoading" :reveal="!!analytics" class="chartbox">
@@ -139,7 +139,7 @@
     <!-- Zone 4: success micro-meter + stats -->
     <div class="t-statrow">
       <span class="sucmini">
-        <span class="slbl">Success</span>
+        <span class="slbl">{{ t('Success') }}</span>
         <template v-if="hasTasks">
           <span class="sbar"><i :class="successClass" :style="{ width: successRate + '%' }"></i></span>
           <b :class="successClass">{{ successRate }}%</b>
@@ -147,18 +147,18 @@
         <b v-else class="na">&mdash;</b>
       </span>
       <span v-if="hasTasks" class="t-stats">
-        <b>{{ stats.taskCount }}</b> tasks <span class="dim">·</span>
-        <b :title="costIsApproximate ? 'API-price equivalent of subscription usage — not a bill' : null">{{ costIsApproximate ? '≈' : '' }}{{ formatCostCompact(stats.totalCost || 0) }}</b> <span class="dim">·</span>
+        <b>{{ stats.taskCount }}</b> {{ t('tasks') }} <span class="dim">·</span>
+        <b :title="costIsApproximate ? t('API-price equivalent of subscription usage — not a bill') : null">{{ costIsApproximate ? '≈' : '' }}{{ formatCostCompact(stats.totalCost || 0) }}</b> <span class="dim">·</span>
         {{ lastExecutionDisplay }}
       </span>
-      <span v-else class="t-stats empty">No tasks (24h)</span>
+      <span v-else class="t-stats empty">{{ t('No tasks (24h)') }}</span>
     </div>
 
     <!-- Zone 5: actions -->
     <div class="t-actions">
       <template v-if="!isSystemAgent">
         <span class="tgl-group">
-          <label>Run
+          <label>{{ t('Run') }}
             <RunningStateToggle
               :model-value="isRunning"
               :loading="runningLoading"
@@ -168,7 +168,7 @@
               @toggle="handleRunningToggle"
             />
           </label>
-          <label>Auto
+          <label>{{ t('Auto') }}
             <AutonomyToggle
               :model-value="agent.autonomy_enabled === true"
               :loading="autonomyLoading"
@@ -179,17 +179,18 @@
             />
           </label>
         </span>
-        <button type="button" class="t-btn nodrag" @click="viewDetails">Details</button>
+        <button type="button" class="t-btn nodrag" @click="viewDetails">{{ t('Details') }}</button>
       </template>
       <template v-else>
-        <span class="t-sysnote">Platform orchestrator · autonomous</span>
-        <router-link to="/system-agent" class="t-btn sys nodrag">System Dashboard</router-link>
+        <span class="t-sysnote">{{ t('Platform orchestrator · autonomous') }}</span>
+        <router-link to="/system-agent" class="t-btn sys nodrag">{{ t('System Dashboard') }}</router-link>
       </template>
     </div>
   </div>
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { formatCostCompact } from '../composables/useFormatters'
@@ -248,9 +249,9 @@ const avatarRingClass = computed(() => {
 })
 const runnerTooltip = computed(() => {
   const s = runnerStatus.value
-  if (!s) return 'Skill runner — executes library skills for permitted agents'
-  if (!s.enabled) return 'Skill runner — skill execution is currently disabled'
-  return `Skill runner — ${s.exposed_skill_count} skill(s) exposed to ${s.grant_count} grant(s)`
+  if (!s) return uiText("Skill runner — executes library skills for permitted agents")
+  if (!s.enabled) return uiText("Skill runner — skill execution is currently disabled")
+  return uiText("Skill runner — {arg1} skill(s) exposed to {arg2} grant(s)", { arg1: (s.exposed_skill_count), arg2: (s.grant_count) })
 })
 const isRunning = computed(() => props.agent.status === 'running')
 
@@ -323,25 +324,25 @@ const chips = computed(() => {
   const out = []
   const circuit = networkStore.circuitBreakers[name.value]
   if (circuit?.state === 'open') {
-    out.push({ kind: 'crit', icon: '⚡', text: 'circuit open', title: 'Dispatch circuit breaker OPEN — new tasks fast-fail until it recovers' })
+    out.push({ kind: 'crit', icon: '⚡', text: uiText('circuit open'), title: uiText('Dispatch circuit breaker OPEN — new tasks fast-fail until it recovers') })
   }
   const oq = gridStore.opQueuePending[name.value]
   if (oq?.count) {
-    const label = oq.hasApproval ? 'approval pending' : 'needs response'
-    out.push({ kind: 'warn', icon: '⚠', text: `${label} · ${ageLabel(oq.oldestCreatedAt)}`, title: `${oq.count} pending operator-queue item${oq.count > 1 ? 's' : ''}` })
+    const label = oq.hasApproval ? uiText("approval pending") : uiText("needs response")
+    out.push({ kind: 'warn', icon: '⚠', text: `${label} · ${ageLabel(oq.oldestCreatedAt)}`, title: oq.count > 1 ? uiText('{count} pending operator-queue items', { count: oq.count }) : uiText('{count} pending operator-queue item', { count: oq.count }) })
   }
   if (workingInfo.value) {
     out.push({
       kind: 'work',
       icon: '▶',
-      text: 'working',
+      text: uiText('working'),
       timer: workingInfo.value.since ? fmtTimer(workingInfo.value.since) : null,
-      title: 'Executing now',
+      title: uiText('Executing now'),
     })
   }
   const sh = gridStore.syncHealth[name.value]
   if (sh && sh.last_sync_status === 'failed' && sh.consecutive_failures > 0) {
-    out.push({ kind: 'warn', icon: '⟳', text: `sync failing ×${sh.consecutive_failures}`, title: sh.last_error_summary || 'Git sync failing' })
+    out.push({ kind: 'warn', icon: '⟳', text: uiText('sync failing ×{count}', { count: sh.consecutive_failures }), title: sh.last_error_summary || uiText('Git sync failing') })
   }
   // #471: subscription-pressure chip (one shared predicate — utils/subscriptionPressure.js)
   const sp = pressureBadge(gridStore.subscriptionPressure[name.value])
@@ -354,11 +355,13 @@ const chips = computed(() => {
     out.push({
       kind: runnerStatus.value.enabled ? 'calm' : 'warn',
       text: runnerStatus.value.enabled
-        ? `${runnerStatus.value.exposed_skill_count} skill${runnerStatus.value.exposed_skill_count === 1 ? '' : 's'} exposed`
-        : 'skill running disabled',
+        ? (runnerStatus.value.exposed_skill_count === 1
+          ? uiText('{count} skill exposed', { count: runnerStatus.value.exposed_skill_count })
+          : uiText('{count} skills exposed', { count: runnerStatus.value.exposed_skill_count }))
+        : uiText('skill running disabled'),
       title: runnerStatus.value.enabled
-        ? `${runnerStatus.value.grant_count} grant(s) across ${runnerStatus.value.exposed_skill_count} skill(s)`
-        : 'The skill runner exists but skill execution is turned off',
+        ? uiText('{grants} grant(s) across {skills} skill(s)', { grants: runnerStatus.value.grant_count, skills: runnerStatus.value.exposed_skill_count })
+        : uiText('The skill runner exists but skill execution is turned off'),
     })
   }
   // Calm facts after problems. The system agent gets these too — an empty
@@ -367,12 +370,12 @@ const chips = computed(() => {
   const enabled = stats.value?.schedulesEnabled || 0
   if (total > 0) {
     if (props.agent.autonomy_enabled || isSystemAgent.value) {
-      out.push({ kind: 'calm', text: `${enabled}/${total} schedules` })
+      out.push({ kind: 'calm', text: uiText('{enabled}/{total} schedules', { enabled, total }) })
     } else {
-      out.push({ kind: 'calm', text: 'schedules paused' })
+      out.push({ kind: 'calm', text: uiText('schedules paused') })
     }
   } else {
-    out.push({ kind: 'calm', text: 'no schedules' })
+    out.push({ kind: 'calm', text: uiText('no schedules') })
   }
   if (sh && sh.auto_sync_enabled && sh.last_sync_status === 'success') {
     out.push({ kind: 'calm', text: 'git ✓' })
@@ -477,8 +480,8 @@ const contextPoints = computed(() => {
 
 const contextTooltip = computed(() => {
   const used = ctxStats.value?.contextUsed
-  if (used == null) return 'Avg context per day, last 7 days'
-  return `Avg context per day, last 7 days — now ${Math.round(used / 1000)}k / ${Math.round(contextMax.value / 1000)}k tokens`
+  if (used == null) return uiText("Avg context per day, last 7 days")
+  return uiText("Avg context per day, last 7 days — now {arg1}k / {arg2}k tokens", { arg1: (Math.round(used / 1000)), arg2: (Math.round(contextMax.value / 1000)) })
 })
 
 // --- Zone 4: success + stats (24h window) ---
@@ -493,11 +496,11 @@ const lastExecutionDisplay = computed(() => {
   if (!at) return ''
   const diffMs = props.now - new Date(at).getTime()
   const mins = Math.floor(diffMs / 60000)
-  if (mins < 1) return 'just now'
-  if (mins < 60) return `${mins}m ago`
+  if (mins < 1) return uiText("just now")
+  if (mins < 60) return uiText("{arg1}m ago", { arg1: (mins) })
   const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  return `${Math.floor(hours / 24)}d ago`
+  if (hours < 24) return uiText("{arg1}h ago", { arg1: (hours) })
+  return uiText("{arg1}d ago", { arg1: (Math.floor(hours / 24)) })
 })
 
 // --- Zone 5: actions ---
@@ -533,6 +536,8 @@ watch(
   },
   { immediate: true }
 )
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

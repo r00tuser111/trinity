@@ -3,19 +3,19 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-4">
       <div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Loops</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Loops") }}</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          Run a task repeatedly — fixed count or until a stop signal. Each iteration runs sequentially.
+          {{ uiText("Run a task repeatedly — fixed count or until a stop signal. Each iteration runs sequentially.") }}
         </p>
       </div>
       <button
         type="button"
         @click="showForm = !showForm"
         :disabled="agentStatus !== 'running'"
-        :title="agentStatus !== 'running' ? 'Agent must be running to start a loop' : ''"
+        :title="agentStatus !== 'running' ? uiText(&quot;Agent must be running to start a loop&quot;) : ''"
         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-action-primary-600 hover:bg-action-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
-        {{ showForm ? 'Cancel' : 'Run Loop' }}
+        {{ showForm ? uiText("Cancel") : uiText("Run Loop") }}
       </button>
     </div>
 
@@ -24,7 +24,7 @@
       <form @submit.prevent="submit" class="space-y-4">
         <!-- Message template -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message template <span class="text-status-danger-500">*</span></label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Message template") }} <span class="text-status-danger-500">*</span></label>
           <textarea
             v-model="form.message"
             rows="4"
@@ -33,15 +33,15 @@
             class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
           ></textarea>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Use <code class="px-1 bg-gray-200 dark:bg-gray-700 rounded">{{ RUN_VAR }}</code> for the 1-indexed run number and
-            <code class="px-1 bg-gray-200 dark:bg-gray-700 rounded">{{ PREV_VAR }}</code> for the previous iteration's output.
+            {{ uiText("Use") }} <code class="px-1 bg-gray-200 dark:bg-gray-700 rounded">{{ RUN_VAR }}</code> {{ uiText("for the 1-indexed run number and") }}
+            <code class="px-1 bg-gray-200 dark:bg-gray-700 rounded">{{ PREV_VAR }}</code> {{ uiText("for the previous iteration's output.") }}
           </p>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <!-- Max runs -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max runs <span class="text-status-danger-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Max runs") }} <span class="text-status-danger-500">*</span></label>
             <input
               v-model.number="form.max_runs"
               type="number"
@@ -55,19 +55,19 @@
 
           <!-- Stop signal -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stop signal</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Stop signal") }}</label>
             <input
               v-model="form.stop_signal"
               type="text"
-              placeholder="optional — substring that ends the loop"
+              :placeholder="uiText(&quot;optional — substring that ends the loop&quot;)"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
             />
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">If a response contains this text, the loop stops early.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ uiText("If a response contains this text, the loop stops early.") }}</p>
           </div>
 
           <!-- Delay -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Delay between runs (seconds)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Delay between runs (seconds)") }}</label>
             <input
               v-model.number="form.delay_seconds"
               type="number"
@@ -79,48 +79,48 @@
 
           <!-- Timeout per run -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Timeout per run (seconds)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Timeout per run (seconds)") }}</label>
             <input
               v-model.number="form.timeout_per_run"
               type="number"
               min="10"
               max="7200"
-              placeholder="agent default"
+              :placeholder="uiText(&quot;agent default&quot;)"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
             />
           </div>
 
           <!-- Max duration (wall-clock deadline) -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max duration (seconds)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Max duration (seconds)") }}</label>
             <input
               v-model.number="form.max_duration_seconds"
               type="number"
               min="1"
               max="604800"
-              placeholder="no deadline"
+              :placeholder="uiText(&quot;no deadline&quot;)"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
             />
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total wall-clock limit; checked between runs. Must be ≥ the per-run timeout.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ uiText("Total wall-clock limit; checked between runs. Must be ≥ the per-run timeout.") }}</p>
           </div>
 
           <!-- Max cost (USD budget) #1155 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max cost (USD)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Max cost (USD)") }}</label>
             <input
               v-model.number="form.max_cost_usd"
               type="number"
               min="0.01"
               step="0.01"
-              placeholder="no budget"
+              :placeholder="uiText(&quot;no budget&quot;)"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
             />
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Hard USD budget; checked between runs (the current run always finishes).</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ uiText("Hard USD budget; checked between runs (the current run always finishes).") }}</p>
           </div>
 
           <!-- No-progress threshold (doom-loop detection) #1157 -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No-progress threshold</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("No-progress threshold") }}</label>
             <input
               v-model.number="form.no_progress_threshold"
               type="number"
@@ -128,24 +128,24 @@
               placeholder="3"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
             />
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Stops after this many identical responses in a row (default 3). Set 0 to disable.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ uiText("Stops after this many identical responses in a row (default 3). Set 0 to disable.") }}</p>
           </div>
 
           <!-- Failure policy (#1167) -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">On iteration failure</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("On iteration failure") }}</label>
             <select
               v-model="form.on_failure"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
             >
-              <option value="abort">Abort — stop the loop (default)</option>
-              <option value="continue">Continue — skip to next run</option>
+              <option value="abort">{{ uiText("Abort — stop the loop (default)") }}</option>
+              <option value="continue">{{ uiText("Continue — skip to next run") }}</option>
             </select>
           </div>
 
           <!-- Max consecutive failures (continue mode only) -->
           <div v-if="form.on_failure === 'continue'">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max consecutive failures</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Max consecutive failures") }}</label>
             <input
               v-model.number="form.max_consecutive_failures"
               type="number"
@@ -153,27 +153,27 @@
               max="100"
               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
             />
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Abort the loop as failed after this many failures in a row.</p>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ uiText("Abort the loop as failed after this many failures in a row.") }}</p>
           </div>
         </div>
 
         <!-- Model -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Model</label>
-          <ModelSelector v-model="form.model" placeholder="Agent default" />
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Model") }}</label>
+          <ModelSelector v-model="form.model" :placeholder="uiText(&quot;Agent default&quot;)" />
         </div>
 
         <!-- Allowed tools -->
         <div>
           <div class="flex items-center justify-between mb-2">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Allowed tools</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ uiText("Allowed tools") }}</label>
             <button
               type="button"
               @click="toggleAllTools"
               class="text-xs px-2 py-1 rounded"
               :class="form.allowed_tools === null ? 'bg-action-primary-100 dark:bg-action-primary-900/30 text-action-primary-700 dark:text-action-primary-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'"
             >
-              {{ form.allowed_tools === null ? 'All Tools (Unrestricted)' : 'Enable All' }}
+              {{ form.allowed_tools === null ? uiText("All Tools (Unrestricted)") : uiText("Enable All") }}
             </button>
           </div>
           <div v-if="form.allowed_tools !== null" class="space-y-3">
@@ -199,7 +199,7 @@
             </div>
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {{ form.allowed_tools === null ? 'Agent can use any tool' : `${form.allowed_tools.length} tool(s) selected` }}
+            {{ form.allowed_tools === null ? uiText("Agent can use any tool") : uiText("{arg1} tool(s) selected", { arg1: (form.allowed_tools.length) }) }}
           </p>
         </div>
 
@@ -213,14 +213,14 @@
             @click="resetForm"
             class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
           >
-            Reset
+            {{ uiText("Reset") }}
           </button>
           <button
             type="submit"
             :disabled="store.starting || !form.message"
             class="px-4 py-2 text-sm font-medium text-white bg-action-primary-600 border border-transparent rounded-md hover:bg-action-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {{ store.starting ? 'Starting…' : 'Start Loop' }}
+            {{ store.starting ? uiText("Starting…") : uiText("Start Loop") }}
           </button>
         </div>
       </form>
@@ -228,12 +228,12 @@
 
     <!-- Loading -->
     <div v-if="store.loading && !store.loops.length" class="text-center py-8 text-gray-500 dark:text-gray-400">
-      Loading loops…
+      {{ uiText("Loading loops…") }}
     </div>
 
     <!-- Empty -->
     <div v-else-if="!store.loops.length" class="text-center py-8 text-gray-500 dark:text-gray-400">
-      No loops yet. Start one with “Run Loop”.
+      {{ uiText("No loops yet. Start one with “Run Loop”.") }}
     </div>
 
     <!-- Loop list -->
@@ -257,10 +257,10 @@
               {{ (loop.status || '').replace(/_/g, ' ') }}
             </span>
             <span class="text-sm font-medium text-gray-900 dark:text-white">
-              Run {{ loop.runs_completed }} / {{ loop.max_runs }}
+              {{ uiText("Run") }} {{ loop.runs_completed }} / {{ loop.max_runs }}
             </span>
             <span v-if="loop.failed_runs > 0" class="text-xs font-medium text-status-danger-600 dark:text-status-danger-400">
-              · {{ loop.failed_runs }} failed
+              · {{ loop.failed_runs }} {{ uiText("failed") }}
             </span>
             <span v-if="loop.stop_reason" class="text-xs text-gray-500 dark:text-gray-400 truncate">
               · {{ formatStopReason(loop.stop_reason) }}
@@ -275,7 +275,7 @@
               :disabled="store.stoppingIds.includes(loop.loop_id)"
               class="px-2.5 py-1 text-xs font-medium rounded-md text-status-danger-700 dark:text-status-danger-300 bg-status-danger-50 dark:bg-status-danger-900/30 hover:bg-status-danger-100 dark:hover:bg-status-danger-900/50 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {{ store.stoppingIds.includes(loop.loop_id) ? 'Stopping…' : 'Stop' }}
+              {{ store.stoppingIds.includes(loop.loop_id) ? uiText("Stopping…") : uiText("Stop") }}
             </button>
             <svg
               class="w-4 h-4 text-gray-400 transition-transform"
@@ -295,31 +295,31 @@
 
           <!-- Deadline (#1156) -->
           <div v-if="loop.max_duration_seconds" class="text-xs text-gray-600 dark:text-gray-400">
-            <span class="font-medium text-gray-500 dark:text-gray-400">Deadline:</span>
-            {{ formatSeconds(loop.elapsed_seconds) }} / {{ formatSeconds(loop.max_duration_seconds) }} elapsed
+            <span class="font-medium text-gray-500 dark:text-gray-400">{{ uiText("Deadline:") }}</span>
+            {{ formatSeconds(loop.elapsed_seconds) }} / {{ formatSeconds(loop.max_duration_seconds) }} {{ uiText("elapsed") }}
           </div>
 
           <!-- Cost budget (#1155) -->
           <div v-if="loop.max_cost_usd" class="text-xs text-gray-600 dark:text-gray-400">
-            <span class="font-medium text-gray-500 dark:text-gray-400">Budget:</span>
-            {{ formatCost(loop.total_cost) }} / {{ formatCost(loop.max_cost_usd) }} spent
+            <span class="font-medium text-gray-500 dark:text-gray-400">{{ uiText("Budget:") }}</span>
+            {{ formatCost(loop.total_cost) }} / {{ formatCost(loop.max_cost_usd) }} {{ uiText("spent") }}
           </div>
 
           <!-- Per-run table -->
           <div>
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Runs</p>
+            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">{{ uiText("Runs") }}</p>
             <div v-if="!loop.runs || !loop.runs.length" class="text-sm text-gray-500 dark:text-gray-400">
-              No runs yet.
+              {{ uiText("No runs yet.") }}
             </div>
             <div v-else class="overflow-x-auto">
               <table class="min-w-full text-sm">
                 <thead>
                   <tr class="text-left text-xs text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                     <th class="py-1 pr-4 font-medium">#</th>
-                    <th class="py-1 pr-4 font-medium">Status</th>
-                    <th class="py-1 pr-4 font-medium">Cost</th>
-                    <th class="py-1 pr-4 font-medium">Duration</th>
-                    <th class="py-1 font-medium">Response</th>
+                    <th class="py-1 pr-4 font-medium">{{ uiText("Status") }}</th>
+                    <th class="py-1 pr-4 font-medium">{{ uiText("Cost") }}</th>
+                    <th class="py-1 pr-4 font-medium">{{ uiText("Duration") }}</th>
+                    <th class="py-1 font-medium">{{ uiText("Response") }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -342,7 +342,7 @@
 
           <!-- Last full response -->
           <div v-if="loop.last_response">
-            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Last response</p>
+            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ uiText("Last response") }}</p>
             <div
               class="prose prose-sm dark:prose-invert max-w-none max-h-80 overflow-y-auto p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-md"
               v-html="renderMarkdown(loop.last_response)"
@@ -355,7 +355,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useLoopsStore } from '../stores/loops'
 import { renderMarkdown } from '../utils/markdown'
 import { formatCost } from '../composables/useFormatters'
@@ -373,7 +373,7 @@ const showForm = ref(false)
 // parser can't tokenize `{{run}}` written inline in markup.
 const RUN_VAR = '{{run}}'
 const PREV_VAR = '{{previous_response}}'
-const messagePlaceholder = `e.g. Process item ${RUN_VAR}. Previous result: ${PREV_VAR}`
+const messagePlaceholder = computed(() => uiText('e.g. Process item {run}. Previous result: {previous}', { run: RUN_VAR, previous: PREV_VAR }))
 
 const ACTIVE_STATUSES = ['queued', 'running']
 
@@ -395,9 +395,9 @@ const form = reactive(defaultForm())
 
 const toolCategories = [
   { name: 'File', tools: [
-    { value: 'Read', label: 'Read' },
-    { value: 'Write', label: 'Write' },
-    { value: 'Edit', label: 'Edit' },
+    { value: 'Read', get "label"() { return uiText("Read") } },
+    { value: 'Write', get "label"() { return uiText("Write") } },
+    { value: 'Edit', get "label"() { return uiText("Edit") } },
   ] },
   { name: 'Search', tools: [
     { value: 'Glob', label: 'Glob' },
@@ -493,15 +493,15 @@ function runStatusClass(status) {
 
 function formatStopReason(reason) {
   const map = {
-    max_runs_reached: 'reached max runs',
-    stop_signal_matched: 'stop signal matched',
-    user_stopped: 'stopped by user',
-    deadline_exceeded: 'deadline exceeded',
-    budget_exhausted: 'budget exhausted',
-    no_progress: 'no progress — identical responses',
-    error: 'error',
-    max_consecutive_failures: 'too many consecutive failures',
-    interrupted: 'interrupted',
+    max_runs_reached: uiText('reached max runs'),
+    stop_signal_matched: uiText('stop signal matched'),
+    user_stopped: uiText('stopped by user'),
+    deadline_exceeded: uiText('deadline exceeded'),
+    budget_exhausted: uiText('budget exhausted'),
+    no_progress: uiText('no progress — identical responses'),
+    error: uiText('error'),
+    max_consecutive_failures: uiText('too many consecutive failures'),
+    interrupted: uiText('interrupted'),
   }
   return map[reason] || reason
 }
@@ -540,4 +540,6 @@ function bind(name) {
 onMounted(() => bind(props.agentName))
 watch(() => props.agentName, (name) => { if (name) bind(name) })
 onUnmounted(() => store.clear())
+
+import { t as uiText } from '@/i18n'
 </script>

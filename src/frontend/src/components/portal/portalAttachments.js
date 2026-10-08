@@ -23,6 +23,7 @@
  */
 
 import { attachmentState } from '@/composables/usePortalFileDrop'
+import { t as uiText } from '../../i18n/index.js'
 
 /**
  * Split a composer's entries into what can travel and what cannot.
@@ -158,21 +159,24 @@ export function carriedNotice({ carried = [], dropped = [], failures = [], recip
   const delivered = carried.filter((e) => e && !failedNames.has(e.name))
 
   if (delivered.length && recipients.length) {
-    parts.push(`Sent with your message: ${nameList(delivered.map((e) => e.name))} `
-      + `— also delivered to ${nameList(recipients)}.`)
+    parts.push(uiText('Sent with your message: {files} — also delivered to {agents}.', {
+      files: nameList(delivered.map((e) => e.name)),
+      agents: nameList(recipients),
+    }))
   } else if (delivered.length) {
-    parts.push(`Sent with your message: ${nameList(delivered.map((e) => e.name))}.`)
+    parts.push(uiText('Sent with your message: {files}.', { files: nameList(delivered.map((e) => e.name)) }))
   }
 
   for (const f of failures) {
     if (!f || !f.name || !(f.agents || []).length) continue
-    parts.push(`${f.name} didn't reach ${nameList(f.agents)} — attach it again here to retry.`)
+    parts.push(uiText("{file} didn't reach {agents} — attach it again here to retry.", { file: f.name, agents: nameList(f.agents) }))
   }
 
   if (dropped.length) {
-    parts.push(`${nameList(dropped.map((e) => e.name))} `
-      + `${dropped.length === 1 ? 'was' : 'were'} not carried over — `
-      + `${dropped.length === 1 ? 'it' : 'they'} never finished uploading.`)
+    const files = nameList(dropped.map((e) => e.name))
+    parts.push(dropped.length === 1
+      ? uiText('{files} was not carried over — it never finished uploading.', { files })
+      : uiText('{files} were not carried over — they never finished uploading.', { files }))
   }
 
   return parts.length ? parts.join(' ') : null

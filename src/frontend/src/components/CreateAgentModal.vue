@@ -15,11 +15,11 @@
              has already been emitted; only the auto-close is deferred. -->
         <form v-if="!postCreate" @submit.prevent="createAgent">
           <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">Create New Agent</h3>
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">{{ t('Create New Agent') }}</h3>
 
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Slug / Identifier</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Slug / Identifier') }}</label>
                 <input
                   v-model="form.name"
                   type="text"
@@ -28,31 +28,29 @@
                   placeholder="my-agent"
                 />
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  The permanent identifier used in URLs, containers, and API keys.
-                  Lowercase, no spaces — it can't be changed casually later.
+                  {{ t('The permanent identifier used in URLs, containers, and API keys. Lowercase, no spaces — it can\'t be changed casually later.') }}
                 </p>
               </div>
 
               <!-- ent#1640: optional human-facing display name, set at creation. -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Display name <span class="font-normal text-gray-400">(optional)</span>
+                  {{ t('Display name') }} <span class="font-normal text-gray-400">{{ t('(optional)') }}</span>
                 </label>
                 <input
                   v-model="form.display_label"
                   type="text"
                   maxlength="120"
                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 focus:ring-action-primary-500 focus:border-action-primary-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                  placeholder="e.g. Marketing Assistant"
+                  :placeholder="t('e.g. Marketing Assistant')"
                 />
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  A friendly name shown in the UI. Leave blank to display the slug.
-                  You can change this any time.
+                  {{ t('A friendly name shown in the UI. Leave blank to display the slug. You can change this any time.') }}
                 </p>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Template</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Template') }}</label>
 
                 <!-- Loading state -->
                 <div v-if="templatesLoading" class="mt-2 flex items-center justify-center py-4">
@@ -60,14 +58,14 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span class="text-sm text-gray-500 dark:text-gray-400">Loading templates...</span>
+                  <span class="text-sm text-gray-500 dark:text-gray-400">{{ t('Loading templates...') }}</span>
                 </div>
 
                 <!-- Error state -->
                 <div v-else-if="templatesError" class="mt-2 p-3 bg-status-danger-50 dark:bg-status-danger-900/30 border border-status-danger-200 dark:border-status-danger-800 rounded-lg">
                   <p class="text-sm text-status-danger-600 dark:text-status-danger-400">{{ templatesError }}</p>
                   <button @click="fetchTemplates" type="button" class="mt-1 text-sm text-status-danger-700 dark:text-status-danger-300 underline">
-                    Try again
+                    {{ t('Try again') }}
                   </button>
                 </div>
 
@@ -91,7 +89,7 @@
                       <div class="ml-3 flex-1">
                         <p class="text-sm font-medium text-gray-900 dark:text-white">{{ template.display_name }}</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ template.tagline || truncateDescription(template.description) }}</p>
-                        <p class="text-[11px] text-action-primary-700 dark:text-action-primary-300 mt-0.5">Creates a copy in your own GitHub account</p>
+                        <p class="text-[11px] text-action-primary-700 dark:text-action-primary-300 mt-0.5">{{ t('Creates a copy in your own GitHub account') }}</p>
                       </div>
                       <div v-if="form.template === template.id" class="flex-shrink-0 text-action-primary-500 dark:text-action-primary-400">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -115,8 +113,8 @@
                       </svg>
                     </div>
                     <div class="ml-3 flex-1">
-                      <p class="text-sm font-medium text-gray-900 dark:text-white">Blank Agent (Claude Code)</p>
-                      <p class="text-xs text-gray-500 dark:text-gray-400">Start with empty config using Claude Code runtime</p>
+                      <p class="text-sm font-medium text-gray-900 dark:text-white">{{ t('Blank Agent (Claude Code)') }}</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('Start with empty config using Claude Code runtime') }}</p>
                     </div>
                     <div v-if="form.template === ''" class="flex-shrink-0 text-action-primary-500 dark:text-action-primary-400">
                       <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -139,8 +137,8 @@
                       </svg>
                     </div>
                     <div class="ml-3 flex-1">
-                      <p class="text-sm font-medium text-gray-900 dark:text-white">GitHub Repository</p>
-                      <p class="text-xs text-gray-500 dark:text-gray-400">Create from any GitHub repository URL</p>
+                      <p class="text-sm font-medium text-gray-900 dark:text-white">{{ t('GitHub Repository') }}</p>
+                      <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('Create from any GitHub repository URL') }}</p>
                     </div>
                     <div v-if="form.template === 'github-custom'" class="flex-shrink-0 text-action-primary-500 dark:text-action-primary-400">
                       <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -155,10 +153,10 @@
                       type="text"
                       ref="githubRepoInput"
                       class="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 focus:ring-action-primary-500 focus:border-action-primary-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                      placeholder="owner/repo or https://github.com/owner/repo"
+                      :placeholder="t('owner/repo or https://github.com/owner/repo')"
                       @click.stop
                     />
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Enter a GitHub repository in <code>owner/repo</code> format</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('Enter a GitHub repository in') }} <code>owner/repo</code> {{ t('format') }}</p>
                     <!-- trinity-enterprise#15: clone/copy/fork intent selector -->
                     <ImportIntentPicker v-model="importIntent" />
                   </div>
@@ -169,7 +167,7 @@
                       <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
                       </svg>
-                      Local Templates
+                      {{ t('Local Templates') }}
                     </p>
                     <div
                       v-for="template in localTemplates"
@@ -203,7 +201,7 @@
                       <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                       </svg>
-                      GitHub Templates
+                      {{ t('GitHub Templates') }}
                     </p>
                     <div
                       v-for="template in githubTemplates"
@@ -236,21 +234,20 @@
                      the github-custom 'fork' intent, trinity-enterprise#15) -->
                 <div v-if="showForkFields" class="mt-3 p-3 border border-action-primary-200 dark:border-action-primary-800 rounded-lg space-y-3">
                   <p class="text-xs text-gray-600 dark:text-gray-300">
-                    This template is copied into a repository <span class="font-medium">you own</span> — your agent's
-                    knowledge lives there, and template updates stay one <code class="text-[11px]">git pull upstream</code> away.
+                    {{ t('This template is copied into a repository') }} <span class="font-medium">{{ t('you own') }}</span> {{ t('— your agent\'s knowledge lives there, and template updates stay one') }} <code class="text-[11px]">git pull upstream</code> {{ t('away.') }}
                   </p>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Your repository <span class="text-status-danger-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Your repository') }} <span class="text-status-danger-500">*</span></label>
                     <input
                       v-model="forkDestination"
                       type="text"
                       class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-3 py-2 focus:ring-action-primary-500 focus:border-action-primary-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                       placeholder="your-github-username/my-agent-brain"
                     />
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Doesn't need to exist — it will be created for you. (If you pre-create it, leave it empty: no README.)</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ t('Doesn\'t need to exist — it will be created for you. (If you pre-create it, leave it empty: no README.)') }}</p>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">GitHub token <span class="text-status-danger-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('GitHub token') }} <span class="text-status-danger-500">*</span></label>
                     <input
                       v-model="forkPat"
                       type="password"
@@ -259,28 +256,24 @@
                       placeholder="ghp_… or github_pat_…"
                     />
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      <span class="font-medium">Recommended:</span> a fine-grained token scoped to just this repository
-                      (Administration + Contents write). A classic PAT with <code>repo</code> scope also works but grants
-                      access to <em>all</em> your repositories — and the agent can read its own git credential, so prefer
-                      the narrow token. Stored encrypted as this agent's git identity.
+                      <span class="font-medium">{{ t('Recommended:') }}</span> {{ t('a fine-grained token scoped to just this repository (Administration + Contents write). A classic PAT with') }} <code>repo</code> {{ t('scope also works but grants access to') }} <em>{{ t('all') }}</em> {{ t('your repositories — and the agent can read its own git credential, so prefer the narrow token. Stored encrypted as this agent\'s git identity.') }}
                     </p>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibility</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Visibility') }}</label>
                     <div class="mt-1 flex gap-4">
                       <label class="inline-flex items-center text-sm text-gray-700 dark:text-gray-300">
                         <input type="radio" v-model="forkPrivate" :value="true" class="text-action-primary-600 focus:ring-action-primary-500" />
-                        <span class="ml-1.5">Private (recommended)</span>
+                        <span class="ml-1.5">{{ t('Private (recommended)') }}</span>
                       </label>
                       <label class="inline-flex items-center text-sm text-gray-700 dark:text-gray-300">
                         <input type="radio" v-model="forkPrivate" :value="false" class="text-action-primary-600 focus:ring-action-primary-500" />
-                        <span class="ml-1.5">Public</span>
+                        <span class="ml-1.5">{{ t('Public') }}</span>
                       </label>
                     </div>
                     <div v-if="!forkPrivate" class="mt-2 p-2 bg-status-danger-50 dark:bg-status-danger-900/30 border border-status-danger-300 dark:border-status-danger-700 rounded-md">
                       <p class="text-xs font-medium text-status-danger-700 dark:text-status-danger-300">
-                        ⚠ Everything this agent captures — notes, insights, potentially personal information — will be
-                        publicly visible on GitHub. Choose Private unless you are certain.
+                        {{ t('⚠ Everything this agent captures — notes, insights, potentially personal information — will be publicly visible on GitHub. Choose Private unless you are certain.') }}
                       </p>
                     </div>
                   </div>
@@ -290,7 +283,7 @@
                 <div v-if="selectedTemplate" class="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <p class="text-sm text-gray-700 dark:text-gray-300">{{ selectedTemplate.description }}</p>
                   <div v-if="selectedTemplate.mcp_servers && selectedTemplate.mcp_servers.length > 0" class="mt-2">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">MCP Servers:</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">{{ t('MCP Servers:') }}</p>
                     <div class="flex flex-wrap gap-1">
                       <span v-for="server in selectedTemplate.mcp_servers" :key="typeof server === 'string' ? server : server.name" class="px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded">
                         {{ typeof server === 'string' ? server : server.name }}
@@ -316,14 +309,14 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              {{ loading ? (showForkFields ? 'Creating your repository…' : 'Creating...') : 'Create Agent' }}
+              {{ loading ? (showForkFields ? t('Creating your repository…') : t('Creating...')) : t('Create Agent') }}
             </button>
             <button
               type="button"
               @click="$emit('close')"
               class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-action-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
-              Cancel
+              {{ t('Cancel') }}
             </button>
           </div>
         </form>
@@ -339,6 +332,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import { ref, reactive, onMounted, computed, watch, nextTick } from 'vue'
 import { useAgentsStore } from '../stores/agents'
 import api from '../api'
@@ -481,7 +477,7 @@ const fetchTemplates = async () => {
     }
   } catch (err) {
     console.error('Failed to fetch templates:', err)
-    templatesError.value = 'Failed to load templates'
+    templatesError.value = uiText("Failed to load templates")
   } finally {
     templatesLoading.value = false
   }
@@ -504,7 +500,7 @@ const createAgent = async () => {
     if (form.template === 'github-custom') {
       const repo = parseGithubRepo(githubRepoUrl.value)
       if (!repo) {
-        error.value = 'Please enter a valid GitHub repository (e.g., owner/repo)'
+        error.value = uiText("Please enter a valid GitHub repository (e.g., owner/repo)")
         loading.value = false
         return
       }
@@ -523,12 +519,12 @@ const createAgent = async () => {
     if (showForkFields.value) {
       const dest = forkDestination.value.trim()
       if (!/^[A-Za-z0-9][A-Za-z0-9-]*\/[A-Za-z0-9._-]+$/.test(dest)) {
-        error.value = 'Enter your repository as owner/name (e.g., your-username/my-agent-brain)'
+        error.value = uiText("Enter your repository as owner/name (e.g., your-username/my-agent-brain)")
         loading.value = false
         return
       }
       if (!forkPat.value.trim()) {
-        error.value = 'A GitHub token is required to create the repository in your account'
+        error.value = uiText("A GitHub token is required to create the repository in your account")
         loading.value = false
         return
       }
@@ -566,9 +562,9 @@ const createAgent = async () => {
       error.value = detail
     } else if (Array.isArray(detail)) {
       // FastAPI 422 validation errors
-      error.value = detail[0]?.msg || 'Invalid input'
+      error.value = detail[0]?.msg || uiText("Invalid input")
     } else {
-      error.value = 'Failed to create agent'
+      error.value = uiText("Failed to create agent")
     }
   } finally {
     loading.value = false

@@ -15,7 +15,7 @@
     <div class="mx-auto max-w-3xl px-4 py-8 print:max-w-none print:px-0 print:py-0">
 
       <div v-if="view.state === 'loading'" class="py-16 text-center text-sm text-gray-500" data-testid="shared-canvas-loading">
-        Loading…
+        {{ uiText("Loading…") }}
       </div>
 
       <!-- Every refusal says which one it is and what to do about it. -->
@@ -31,7 +31,7 @@
           :to="{ path: '/login', query: { redirect: $route.fullPath } }"
           class="mt-4 inline-block rounded-lg bg-action-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-action-primary-700"
           data-testid="shared-canvas-signin"
-        >Sign in</router-link>
+        >{{ uiText("Sign in") }}</router-link>
       </div>
 
       <template v-else-if="canvas">
@@ -40,8 +40,8 @@
             <div class="min-w-0 flex-1">
               <h1 class="truncate text-lg font-semibold">{{ canvas.title || canvas.canvas_id }}</h1>
               <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                by {{ agentName }} · {{ fresh.label }}
-                <span v-if="fresh.stale"> · may be out of date</span>
+                {{ uiText("by") }} {{ agentName }} · {{ fresh.label }}
+                <span v-if="fresh.stale"> {{ uiText("· may be out of date") }}</span>
               </p>
             </div>
             <!-- print:hidden — the controls are chrome, never part of the document. -->
@@ -50,14 +50,14 @@
                 class="rounded-lg border border-gray-300 px-2.5 py-1 text-xs font-medium hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
                 data-testid="shared-canvas-print"
                 @click="downloadPdf"
-              >Download PDF</button>
+              >{{ uiText("Download PDF") }}</button>
             </div>
           </div>
 
           <!-- AC #3: which it is, stated, never left ambiguous. -->
           <p class="mt-3 rounded-lg bg-gray-100 px-3 py-1.5 text-[11px] text-gray-600 dark:bg-gray-800 dark:text-gray-400 print:hidden"
              data-testid="shared-canvas-live-note">
-            This view stays current — it shows the canvas as the agent updates it, not a copy taken when it was shared.
+            {{ uiText("This view stays current — it shows the canvas as the agent updates it, not a copy taken when it was shared.") }}
           </p>
           <p v-if="pdfNote" class="mt-2 text-[11px] text-status-warning-700 dark:text-status-warning-300 print:hidden"
              data-testid="shared-canvas-pdf-note">
@@ -141,7 +141,7 @@ async function downloadPdf() {
   pdfNote.value = ''
   if (typeof window === 'undefined' || typeof window.print !== 'function') {
     // AC #6: degrade with words. The share link still works.
-    pdfNote.value = 'This browser cannot produce a PDF here. The share link still works, and printing the page saves it as a PDF.'
+    pdfNote.value = uiText('This browser cannot produce a PDF here. The share link still works, and printing the page saves it as a PDF.')
     return
   }
   printing.value = true
@@ -149,11 +149,13 @@ async function downloadPdf() {
   try {
     window.print()
   } catch (e) {
-    pdfNote.value = 'The PDF could not be produced. Use your browser’s Print → Save as PDF.'
+    pdfNote.value = uiText('The PDF could not be produced. Use your browser’s Print → Save as PDF.')
   } finally {
     printing.value = false
   }
 }
 
 onMounted(load)
+
+import { t as uiText } from '@/i18n'
 </script>

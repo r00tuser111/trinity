@@ -30,54 +30,54 @@ onMounted(() => {
 const features = [
   {
     id: 'user_management',
-    title: 'User Management',
+    get "title"() { return uiText("User Management") },
     icon: '👤',
-    description: 'Invite users, deactivate accounts, and review per-user activity — in Settings → User Management.',
+    get "description"() { return uiText("Invite users, deactivate accounts, and review per-user activity — in Settings → User Management.") },
     route: '/settings',
     entitlement: 'user_management',
     soon: false,
   },
   {
     id: 'sso',
-    title: 'Single Sign-On',
+    get "title"() { return uiText("Single Sign-On") },
     icon: '🔐',
-    description: 'SAML 2.0 + OIDC. Okta, Azure AD, Google Workspace.',
+    get "description"() { return uiText("SAML 2.0 + OIDC. Okta, Azure AD, Google Workspace.") },
     route: '/enterprise/sso',
     entitlement: 'sso',
     soon: true,
   },
   {
     id: 'scim',
-    title: 'SCIM Provisioning',
+    get "title"() { return uiText("SCIM Provisioning") },
     icon: '👥',
-    description: 'Automated user lifecycle from your corporate directory.',
+    get "description"() { return uiText("Automated user lifecycle from your corporate directory.") },
     route: '/enterprise/scim',
     entitlement: 'scim',
     soon: true,
   },
   {
     id: 'siem',
-    title: 'SIEM Log Export',
+    get "title"() { return uiText("SIEM Log Export") },
     icon: '📡',
-    description: 'Real-time audit log push to Splunk, Datadog, or Elastic.',
+    get "description"() { return uiText("Real-time audit log push to Splunk, Datadog, or Elastic.") },
     route: '/enterprise/siem',
     entitlement: 'siem',
     soon: true,
   },
   {
     id: 'license',
-    title: 'License Management',
+    get "title"() { return uiText("License Management") },
     icon: '📜',
-    description: 'View entitlements, seat usage, expiry. Renew flow.',
+    get "description"() { return uiText("View entitlements, seat usage, expiry. Renew flow.") },
     route: '/enterprise/license',
     entitlement: 'license',
     soon: true,
   },
   {
     id: 'audit',
-    title: 'Audit Log',
+    get "title"() { return uiText("Audit Log") },
     icon: '🔍',
-    description: 'Searchable platform audit trail with hash-chain verify.',
+    get "description"() { return uiText("Searchable platform audit trail with hash-chain verify.") },
     route: '/enterprise/audit',
     entitlement: 'audit',
     soon: false,
@@ -95,6 +95,8 @@ const cards = computed(() =>
 const totalEntitled = computed(
   () => cards.value.filter((c) => c.entitled).length
 )
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <template>
@@ -108,18 +110,18 @@ const totalEntitled = computed(
     <div class="enterprise-landing p-6 max-w-6xl mx-auto">
       <header class="mb-8">
         <div class="flex items-center gap-3 mb-2">
-          <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">Enterprise</h1>
+          <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">{{ uiText("Enterprise") }}</h1>
           <span class="px-2 py-0.5 text-xs font-bold rounded bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200">
             PRO
           </span>
         </div>
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          Compliance-gating features for Trinity Enterprise. See
+          {{ uiText("Compliance-gating features for Trinity Enterprise. See") }}
           <a href="https://github.com/abilityai/trinity/issues/847" class="underline" target="_blank">#847</a>
-          for the architecture spike.
+          {{ uiText("for the architecture spike.") }}
         </p>
         <p class="text-xs text-gray-400 mt-2">
-          {{ totalEntitled }} of {{ cards.length }} features entitled for this instance.
+          {{ totalEntitled }} {{ uiText("of") }} {{ cards.length }} {{ uiText("features entitled for this instance.") }}
         </p>
       </header>
 
@@ -142,7 +144,7 @@ const totalEntitled = computed(
                 ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200'
                 : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'"
             >
-              {{ card.available ? 'Available' : card.entitled ? 'Coming soon' : 'Not licensed' }}
+              {{ card.available ? uiText("Available") : card.entitled ? uiText("Coming soon") : uiText("Not licensed") }}
             </span>
           </div>
           <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">
@@ -153,11 +155,10 @@ const totalEntitled = computed(
       </div>
 
       <footer class="mt-10 p-4 rounded bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
-        <strong class="block text-gray-900 dark:text-white mb-1">About Trinity Enterprise</strong>
-        Backend modules ship from the private repo
-        <code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">Abilityai/trinity-enterprise</code>.
-        Frontend is part of the OSS bundle, gated server-side. See
-        <code class="text-xs">docs/planning/ENTERPRISE_ARCHITECTURE.md</code> for the decision record.
+        <strong class="block text-gray-900 dark:text-white mb-1">{{ uiText("About Trinity Enterprise") }}</strong>
+        {{ uiText("Backend modules ship from the private repo") }}
+        <code class="text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">Abilityai/trinity-enterprise</code>{{ uiText(". Frontend is part of the OSS bundle, gated server-side. See") }}
+        <code class="text-xs">docs/planning/ENTERPRISE_ARCHITECTURE.md</code> {{ uiText("for the decision record.") }}
       </footer>
     </div>
   </div>

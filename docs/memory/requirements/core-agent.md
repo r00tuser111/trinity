@@ -3131,3 +3131,31 @@ to localStorage in the clear.
   shape, parity, queue rules, resolver, placement guards). Mutations: eight,
   each red.
 - **Flow**: `docs/memory/feature-flows/workspace-work.md`
+
+## UI internationalization (I18N-001)
+
+- Provide English and Simplified Chinese for platform-owned interface copy, with
+  an extensible message catalog and an English fallback for missing translations.
+- Place an accessible language selector in the top-right navigation, including
+  sign-in/setup and Workspace. Changing language updates mounted views without
+  reloading, losing form input, or restarting agent sessions.
+- Persist the choice locally; otherwise use the browser language (Simplified
+  Chinese for zh-CN/zh-SG/zh-Hans, English for unsupported locales). Update the
+  document language for assistive technology. Storage failures must not block use.
+- Translate primary navigation, authentication, fleet management, agent details,
+  library, operations and settings copy. Keep agent names, user/model content,
+  source code, API values and credentials unchanged.
+- Verify switching, persistence, fallback, interpolation and live component
+  updates, then run frontend unit tests, token checks and production build.
+
+### I18N-001 coverage acceptance
+
+- Simplified Chinese must cover at least 95% of translatable, platform-owned
+  frontend UI message occurrences across all shipped Vue views/components and
+  frontend JavaScript UI metadata, feedback and formatting helpers.
+- The coverage check must count untranslated source copy, not just catalog keys;
+  report template and script coverage separately, with file/line diagnostics.
+- Product/protocol names, machine identifiers, URLs, code/config examples, user
+  and model content, and external/server-provided text are not translated. Any
+  deliberate source exclusion must be explicit and reviewable.
+- Preserve English behavior, event handlers, model values and API contracts.

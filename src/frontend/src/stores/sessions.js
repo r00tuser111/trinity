@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from './auth'
@@ -212,7 +214,7 @@ export const useSessionsStore = defineStore('sessions', {
         this.errorByAgent[agentName] = null
         return r.data
       } catch (e) {
-        this.errorByAgent[agentName] = e.response?.data?.detail || 'Failed to load sessions'
+        this.errorByAgent[agentName] = e.response?.data?.detail || uiText("Failed to load sessions")
         throw e
       }
     },
@@ -460,7 +462,7 @@ export const useSessionsStore = defineStore('sessions', {
         } else if (detail?.error) {
           msg = detail.error
         } else {
-          msg = 'Failed to send message'
+          msg = uiText('Failed to send message')
         }
         this.errorBySession[sessionId] = msg
         throw e
@@ -531,7 +533,7 @@ export const useSessionsStore = defineStore('sessions', {
             this._stopPollingTimer(sessionId)
             this.inFlightBySession[sessionId] = false
             this.errorBySession[sessionId] =
-              "No reply came back — your message was sent but the agent didn't respond."
+              uiText("No reply came back — your message was sent but the agent didn't respond.")
             delete this.pollWatchersBySession[sessionId]
             return
           }
@@ -550,7 +552,7 @@ export const useSessionsStore = defineStore('sessions', {
           this._stopPollingTimer(sessionId)
           this.inFlightBySession[sessionId] = false
           this.noticeBySession[sessionId] =
-            'Still checking in the background. Refresh to see the latest status.'
+            uiText('Still checking in the background. Refresh to see the latest status.')
           delete this.pollWatchersBySession[sessionId]
           return
         }

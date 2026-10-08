@@ -32,16 +32,16 @@
   <div>
     <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
       <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
-        Agent <span class="font-mono">{{ agentName }}</span> created
+        {{ uiText("Agent") }} <span class="font-mono">{{ agentName }}</span> {{ uiText("created") }}
       </h3>
 
       <!-- Copy-intent provenance: the only durable record of what a snapshot
            agent was cloned from (present only on copy-intent responses). -->
       <p v-if="importSnapshot" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-        Snapshot of <span class="font-mono">{{ importSnapshot.source_repo }}</span>
+        {{ uiText("Snapshot of") }} <span class="font-mono">{{ importSnapshot.source_repo }}</span>
         <template v-if="shortSha"> @ <span class="font-mono">{{ shortSha }}</span></template>
         <template v-if="importSnapshot.file_count != null">
-          · <span class="tabular-nums">{{ importSnapshot.file_count }}</span> files
+          · <span class="tabular-nums">{{ importSnapshot.file_count }}</span> {{ uiText("files") }}
         </template>
       </p>
 
@@ -49,11 +49,11 @@
       <div class="mt-4 min-h-28" aria-live="polite">
         <!-- (a) waiting -->
         <template v-if="phase === 'waiting'">
-          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Setting up workspace…</p>
+          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Setting up workspace…") }}</p>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
             {{ polls > 10
-              ? 'Still working — large repositories can take longer. You can close this and check back on the agent page.'
-              : 'Cloning the repository and starting the agent. Usually ready in under a minute.' }}
+              ? uiText("Still working — large repositories can take longer. You can close this and check back on the agent page.")
+              : uiText("Cloning the repository and starting the agent. Usually ready in under a minute.") }}
           </p>
         </template>
 
@@ -67,30 +67,30 @@
               <path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-4-4a1 1 0 011.4-1.4l3.3 3.3 7.3-7.3a1 1 0 011.4 0z" clip-rule="evenodd" />
             </svg>
             <div class="min-w-0">
-              <p class="text-sm font-medium text-status-success-700 dark:text-status-success-300">Looks compatible</p>
+              <p class="text-sm font-medium text-status-success-700 dark:text-status-success-300">{{ uiText("Looks compatible") }}</p>
               <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                No hard or soft issues found. The full checklist lives on the agent's Overview tab.
+                {{ uiText("No hard or soft issues found. The full checklist lives on the agent's Overview tab.") }}
               </p>
             </div>
           </div>
 
           <div v-else>
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Compatibility check</span>
+              <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Compatibility check") }}</span>
               <span class="text-[11px] uppercase font-semibold px-1.5 py-0.5 rounded bg-status-danger-100 text-status-danger-700 dark:bg-status-danger-900/40 dark:text-status-danger-300">
-                <span class="tabular-nums">{{ hardCount }}</span> hard
+                <span class="tabular-nums">{{ hardCount }}</span> {{ uiText("hard") }}
               </span>
               <span class="text-[11px] uppercase font-semibold px-1.5 py-0.5 rounded bg-status-warning-100 text-status-warning-700 dark:bg-status-warning-900/40 dark:text-status-warning-300">
-                <span class="tabular-nums">{{ softCount }}</span> soft
+                <span class="tabular-nums">{{ softCount }}</span> {{ uiText("soft") }}
               </span>
               <span class="text-[11px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-                <span class="tabular-nums">{{ infoCount }}</span> info
+                <span class="tabular-nums">{{ infoCount }}</span> {{ uiText("info") }}
               </span>
             </div>
 
             <div v-if="hardIssues.length > 0" class="mt-2">
               <p class="text-xs font-medium text-gray-700 dark:text-gray-300">
-                Hard issues (<span class="tabular-nums">{{ hardIssues.length }}</span>) — fix these for the agent to work reliably:
+                {{ uiText("Hard issues (") }}<span class="tabular-nums">{{ hardIssues.length }}</span>{{ uiText(") — fix these for the agent to work reliably:") }}
               </p>
               <ul class="mt-1 max-h-32 overflow-y-auto space-y-1 border border-gray-200 dark:border-gray-700 rounded-md p-2">
                 <li v-for="c in hardIssues" :key="c.check_id" class="flex items-start gap-2 text-xs">
@@ -100,17 +100,17 @@
               </ul>
             </div>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Details and one-click fixes are on the agent's Overview tab.
+              {{ uiText("Details and one-click fixes are on the agent's Overview tab.") }}
             </p>
           </div>
         </template>
 
         <!-- (c) report unavailable -->
         <template v-else-if="phase === 'unavailable'">
-          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Compatibility couldn't be checked yet</p>
+          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Compatibility couldn't be checked yet") }}</p>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            {{ reportMessage || 'The workspace wasn\'t readable while the agent was starting.' }}
-            Open the agent's Overview tab to re-run the check once it's up.
+            {{ reportMessage || uiText("The workspace wasn't readable while the agent was starting.") }}
+            {{ uiText("Open the agent's Overview tab to re-run the check once it's up.") }}
           </p>
         </template>
 
@@ -118,22 +118,19 @@
         <template v-else-if="phase === 'failed'">
           <div class="p-3 rounded-lg border border-status-danger-200 dark:border-status-danger-800 bg-status-danger-50 dark:bg-status-danger-900/30">
             <p class="text-sm font-medium text-status-danger-700 dark:text-status-danger-300">
-              The agent didn't start — the initial clone may have failed.
+              {{ uiText("The agent didn't start — the initial clone may have failed.") }}
             </p>
             <p class="mt-1 text-xs text-gray-600 dark:text-gray-300">
-              Open the agent page to check its logs, and verify the repository is
-              reachable (correct <span class="font-mono">owner/repo</span>, and a token if it's private).
-              The agent itself was created — nothing is lost.
+              {{ uiText("Open the agent page to check its logs, and verify the repository is reachable (correct") }} <span class="font-mono">owner/repo</span>{{ uiText(", and a token if it's private). The agent itself was created — nothing is lost.") }}
             </p>
           </div>
         </template>
 
         <!-- workspace still preparing after the polling window -->
         <template v-else-if="phase === 'timeout'">
-          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Workspace is still being prepared</p>
+          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Workspace is still being prepared") }}</p>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Setup is taking longer than a minute — large repositories can. It continues in the
-            background; the compatibility check runs on the agent's Overview tab when it's ready.
+            {{ uiText("Setup is taking longer than a minute — large repositories can. It continues in the background; the compatibility check runs on the agent's Overview tab when it's ready.") }}
           </p>
         </template>
       </div>
@@ -147,21 +144,21 @@
         @click="goTo('overview')"
         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-action-primary-600 text-base font-medium text-white hover:bg-action-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-action-primary-500 sm:ml-3 sm:w-auto sm:text-sm"
       >
-        Open agent
+        {{ uiText("Open agent") }}
       </button>
       <button
         type="button"
         @click="goTo('credentials')"
         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-action-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
       >
-        Add credentials
+        {{ uiText("Add credentials") }}
       </button>
       <button
         type="button"
         @click="$emit('close')"
         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 focus:ring-action-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
       >
-        Close
+        {{ uiText("Close") }}
       </button>
     </div>
   </div>
@@ -298,4 +295,6 @@ onUnmounted(() => {
   document.removeEventListener('keydown', onKeydown)
   if (timer) clearTimeout(timer)
 })
+
+import { t as uiText } from '@/i18n'
 </script>

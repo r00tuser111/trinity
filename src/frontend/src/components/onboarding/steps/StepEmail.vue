@@ -11,8 +11,8 @@
 <template>
   <div data-testid="first-run-step-email">
     <FirstRunStepHeader
-      kicker="Sign-in"
-      :title="ctx.hasEmail ? 'Sign-in email is set' : 'Add a sign-in email'"
+      :kicker="uiText(&quot;Sign-in&quot;)"
+      :title="ctx.hasEmail ? uiText(&quot;Sign-in email is set&quot;) : uiText(&quot;Add a sign-in email&quot;)"
       :lead="lead"
       :badge="ctx.hasEmail ? 'Done' : 'Optional'"
       schematic="email"
@@ -22,12 +22,12 @@
       <BaseInput
         v-model="email"
         type="email"
-        label="Email"
+        :label="uiText(&quot;Email&quot;)"
         placeholder="you@company.com"
         autocomplete="email"
         :error="fieldError"
         :disabled="saving"
-        help="No verification email is sent."
+        :help="uiText(&quot;No verification email is sent.&quot;)"
         data-testid="first-run-email-input"
       />
       <BaseButton
@@ -39,7 +39,7 @@
         :disabled="!email.trim()"
         data-testid="first-run-email-save"
       >
-        Save email
+        {{ uiText("Save email") }}
       </BaseButton>
     </form>
     <InlineError v-if="saveError" class="mt-3" :message="saveError" @dismiss="saveError = ''" />
@@ -64,8 +64,8 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s.]+$/
 
 const lead = computed(() =>
   props.ctx.hasEmail
-    ? `You can sign in with ${props.ctx.userEmail} and your password. Change it in Settings → General.`
-    : 'You sign in with the username admin today. Bind an email and you can sign in with that and your password instead.'
+    ? uiText('You can sign in with {email} and your password. Change it in Settings → General.', { email: props.ctx.userEmail })
+    : uiText('You sign in with the username admin today. Bind an email and you can sign in with that and your password instead.')
 )
 
 const email = ref('')
@@ -76,7 +76,7 @@ const saveError = ref('')
 async function save() {
   const value = email.value.trim()
   if (!EMAIL_RE.test(value)) {
-    fieldError.value = 'Enter a full email address — for example you@company.com'
+    fieldError.value = uiText("Enter a full email address — for example you@company.com")
     return
   }
   fieldError.value = ''
@@ -88,9 +88,11 @@ async function save() {
     emit('complete')
   } catch (e) {
     const detail = e?.response?.data?.detail
-    saveError.value = typeof detail === 'string' ? detail : 'Could not save the email. Try again.'
+    saveError.value = typeof detail === 'string' ? detail : uiText("Could not save the email. Try again.")
   } finally {
     saving.value = false
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

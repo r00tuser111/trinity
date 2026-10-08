@@ -73,7 +73,7 @@ async function load({ includeAi = false } = {}) {
   try {
     report.value = await agentsStore.getCompatibility(name, { includeAi })
   } catch (e) {
-    error.value = e?.response?.data?.detail || 'Failed to load compatibility report'
+    error.value = e?.response?.data?.detail || uiText("Failed to load compatibility report")
   } finally {
     loading.value = false
     aiLoading.value = false
@@ -104,7 +104,7 @@ async function applyFix(checkId) {
     // Refresh STATIC checks to reflect the fix (AI verdicts come from cache).
     await load({ includeAi: false })
   } catch (e) {
-    fixMessage.value = { text: e?.response?.data?.detail || 'Fix failed', ok: false }
+    fixMessage.value = { text: e?.response?.data?.detail || uiText("Fix failed"), ok: false }
   } finally {
     const next = { ...fixing.value }
     delete next[checkId]
@@ -120,6 +120,8 @@ function statusIcon(c) {
 
 onMounted(loadInitial)
 watch(() => agentName.value, loadInitial)
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <template>
@@ -146,17 +148,17 @@ watch(() => agentName.value, loadInitial)
         <svg class="w-5 h-5 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <template v-if="loading && !report">Checking agent compatibility…</template>
-        <template v-else-if="isUnavailable">Compatibility — {{ report?.message || 'unavailable' }}</template>
-        <template v-else-if="issueCount === 0">Compatible — all checks passing</template>
+        <template v-if="loading && !report">{{ uiText("Checking agent compatibility…") }}</template>
+        <template v-else-if="isUnavailable">{{ uiText("Compatibility —") }} {{ report?.message || uiText("unavailable") }}</template>
+        <template v-else-if="issueCount === 0">{{ uiText("Compatible — all checks passing") }}</template>
         <template v-else>
-          {{ issueCount }} compatibility {{ issueCount === 1 ? 'issue' : 'issues' }}
-          <span v-if="hardCount > 0" class="ml-1 text-status-danger-700 dark:text-status-danger-400">({{ hardCount }} must-fix)</span>
+          {{ issueCount }} {{ uiText("compatibility") }} {{ issueCount === 1 ? uiText("issue") : uiText("issues") }}
+          <span v-if="hardCount > 0" class="ml-1 text-status-danger-700 dark:text-status-danger-400">({{ hardCount }} {{ uiText("must-fix)") }}</span>
         </template>
       </span>
       <span class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-        <span v-if="aiLoading">analyzing…</span>
-        <span>{{ expanded ? 'Hide' : 'Details' }} {{ expanded ? '▲' : '▼' }}</span>
+        <span v-if="aiLoading">{{ uiText("analyzing…") }}</span>
+        <span>{{ expanded ? uiText("Hide") : uiText("Details") }} {{ expanded ? '▲' : '▼' }}</span>
       </span>
     </button>
 
@@ -164,14 +166,14 @@ watch(() => agentName.value, loadInitial)
     <div v-if="expanded" class="mt-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
       <div class="flex items-center justify-between px-4 py-2 border-b border-gray-100 dark:border-gray-700">
         <span class="text-xs text-gray-500 dark:text-gray-400">
-          <template v-if="report?.ai_ran_at">AI checks last run {{ fmtTime(report.ai_ran_at) }}</template>
-          <template v-else>AI checks not yet run</template>
+          <template v-if="report?.ai_ran_at">{{ uiText("AI checks last run") }} {{ fmtTime(report.ai_ran_at) }}</template>
+          <template v-else>{{ uiText("AI checks not yet run") }}</template>
         </span>
         <button
           class="text-xs font-medium text-action-primary-600 dark:text-action-primary-400 hover:underline disabled:opacity-50"
           :disabled="aiLoading || !report?.container_running"
           @click="rerun"
-        >{{ aiLoading ? 'Running…' : 'Re-run analysis' }}</button>
+        >{{ aiLoading ? uiText("Running…") : uiText("Re-run analysis") }}</button>
       </div>
 
       <p v-if="error" class="px-4 py-2 text-sm text-status-danger-600 dark:text-status-danger-400">{{ error }}</p>
@@ -204,7 +206,7 @@ watch(() => agentName.value, loadInitial)
                 v-html="renderMarkdown(c.explanation)"
               ></div>
               <p v-else-if="c.status === 'skipped' && c.skip_reason === 'no_api_key'" class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-                Skipped — no Anthropic API key configured
+                {{ uiText("Skipped — no Anthropic API key configured") }}
               </p>
             </div>
             <!-- Fix button for auto-fixable failures -->
@@ -213,7 +215,7 @@ watch(() => agentName.value, loadInitial)
               class="shrink-0 text-xs font-medium px-2 py-1 rounded bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-50"
               :disabled="fixing[c.check_id]"
               @click="applyFix(c.check_id)"
-            >{{ fixing[c.check_id] ? 'Fixing…' : 'Fix' }}</button>
+            >{{ fixing[c.check_id] ? uiText("Fixing…") : uiText("Fix") }}</button>
           </li>
         </ul>
       </div>

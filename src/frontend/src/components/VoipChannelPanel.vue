@@ -1,9 +1,8 @@
 <template>
   <div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Voice Calls (Twilio / VoIP)</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Voice Calls (Twilio / VoIP)") }}</h3>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      Connect a Twilio voice sender so this agent can place outbound phone calls.
-      Each agent brings its own Twilio account. Outbound only.
+      {{ uiText("Connect a Twilio voice sender so this agent can place outbound phone calls. Each agent brings its own Twilio account. Outbound only.") }}
     </p>
 
     <!-- Loading -->
@@ -12,12 +11,12 @@
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      Loading...
+      {{ uiText("Loading...") }}
     </div>
 
     <!-- Access Denied -->
     <div v-else-if="accessDenied" class="text-sm text-gray-500 dark:text-gray-400">
-      Only the agent owner can manage voice-call settings.
+      {{ uiText("Only the agent owner can manage voice-call settings.") }}
     </div>
 
     <!-- Connected State -->
@@ -35,10 +34,10 @@
                 <span
                   v-if="!binding.enabled"
                   class="ml-2 px-1.5 py-0.5 text-xs rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
-                >Disabled</span>
+                >{{ uiText("Disabled") }}</span>
               </p>
               <p class="text-xs text-gray-500 dark:text-gray-400">
-                AccountSid: {{ truncatedSid }}
+                {{ uiText("AccountSid:") }} {{ truncatedSid }}
                 <span v-if="binding.display_name"> · {{ binding.display_name }}</span>
               </p>
             </div>
@@ -49,14 +48,14 @@
               :disabled="toggling"
               class="text-sm text-action-primary-600 dark:text-action-primary-400 hover:text-action-primary-800 dark:hover:text-action-primary-300 disabled:opacity-50"
             >
-              {{ toggling ? 'Saving...' : (binding.enabled ? 'Disable' : 'Enable') }}
+              {{ toggling ? uiText("Saving...") : (binding.enabled ? uiText("Disable") : uiText("Enable")) }}
             </button>
             <button
               @click="disconnectBinding"
               :disabled="disconnecting"
               class="text-sm text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-800 dark:hover:text-status-danger-300 disabled:opacity-50"
             >
-              {{ disconnecting ? 'Removing...' : 'Disconnect' }}
+              {{ disconnecting ? uiText("Removing...") : uiText("Disconnect") }}
             </button>
           </div>
         </div>
@@ -64,13 +63,13 @@
 
       <!-- Daily cap -->
       <div v-if="binding.daily_call_cap" class="text-xs text-gray-500 dark:text-gray-400">
-        Daily call cap: <strong>{{ binding.daily_call_cap }}</strong> calls / 24h
+        {{ uiText("Daily call cap:") }} <strong>{{ binding.daily_call_cap }}</strong> {{ uiText("calls / 24h") }}
       </div>
 
       <!-- Voice picker (persisted per-agent voice, #28) -->
       <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700">
         <label for="voip-voice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Agent voice
+          {{ uiText("Agent voice") }}
         </label>
         <div class="flex items-center gap-2">
           <select
@@ -86,11 +85,11 @@
             :disabled="savingVoice || selectedVoice === binding.voice_name"
             class="px-3 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ savingVoice ? 'Saving...' : 'Save' }}
+            {{ savingVoice ? uiText("Saving...") : uiText("Save") }}
           </button>
         </div>
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          Applies to outbound calls and the in-app voice overlay. Default is Kore.
+          {{ uiText("Applies to outbound calls and the in-app voice overlay. Default is Kore.") }}
         </p>
       </div>
     </div>
@@ -100,36 +99,36 @@
       <form @submit.prevent="connectBinding" class="space-y-3 max-w-lg">
         <div>
           <label for="voip-account-sid" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Twilio Account SID
+            {{ uiText("Twilio Account SID") }}
           </label>
           <input
             id="voip-account-sid"
             v-model="form.accountSid"
             type="text"
-            placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            :placeholder="uiText(&quot;ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;)"
             :disabled="connecting"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-900 font-mono text-xs"
           />
         </div>
         <div>
           <label for="voip-auth-token" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Auth Token
+            {{ uiText("Auth Token") }}
           </label>
           <input
             id="voip-auth-token"
             v-model="form.authToken"
             type="password"
-            placeholder="Paste your Twilio Auth Token"
+            :placeholder="uiText(&quot;Paste your Twilio Auth Token&quot;)"
             :disabled="connecting"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-900"
           />
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            From Twilio Console — stored encrypted, never displayed back.
+            {{ uiText("From Twilio Console — stored encrypted, never displayed back.") }}
           </p>
         </div>
         <div>
           <label for="voip-from" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            From Number
+            {{ uiText("From Number") }}
           </label>
           <input
             id="voip-from"
@@ -140,12 +139,12 @@
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-900 font-mono text-xs"
           />
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            A Twilio voice-capable number in E.164 format (e.g. <code class="font-mono">+14155551234</code>).
+            {{ uiText("A Twilio voice-capable number in E.164 format (e.g.") }} <code class="font-mono">+14155551234</code>).
           </p>
         </div>
         <div>
           <label for="voip-cap" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Daily call cap <span class="text-gray-400 dark:text-gray-500">(optional)</span>
+            {{ uiText("Daily call cap") }} <span class="text-gray-400 dark:text-gray-500">{{ uiText("(optional)") }}</span>
           </label>
           <input
             id="voip-cap"
@@ -157,7 +156,7 @@
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-900 text-sm"
           />
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Maximum outbound calls per 24h. Defaults to 50 if left blank.
+            {{ uiText("Maximum outbound calls per 24h. Defaults to 50 if left blank.") }}
           </p>
         </div>
         <button
@@ -169,7 +168,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          {{ connecting ? 'Validating...' : 'Connect' }}
+          {{ connecting ? uiText("Validating...") : uiText("Connect") }}
         </button>
       </form>
     </div>
@@ -276,9 +275,9 @@ async function connectBinding() {
     form.value = { accountSid: '', authToken: '', fromNumber: '', dailyCallCap: null }
     binding.value = response.data
     await loadVoice()
-    flash('success', 'Voice binding configured')
+    flash('success', uiText('Voice binding configured'))
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to configure binding'
+    const detail = e.response?.data?.detail || uiText('Failed to configure binding')
     message.value = { type: 'error', text: detail }
   } finally {
     connecting.value = false
@@ -293,9 +292,9 @@ async function toggleEnabled() {
       enabled: !binding.value.enabled,
     })
     binding.value = { ...response.data, voice_name: binding.value.voice_name }
-    flash('success', binding.value.enabled ? 'Voice calls enabled' : 'Voice calls disabled')
+    flash('success', binding.value.enabled ? uiText('Voice calls enabled') : uiText('Voice calls disabled'))
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to update status'
+    const detail = e.response?.data?.detail || uiText('Failed to update status')
     message.value = { type: 'error', text: detail }
   } finally {
     toggling.value = false
@@ -312,9 +311,9 @@ async function saveVoice() {
     const voiceName = r.data?.voice_name || selectedVoice.value
     binding.value = { ...binding.value, voice_name: voiceName }
     selectedVoice.value = voiceName
-    flash('success', 'Voice updated')
+    flash('success', uiText('Voice updated'))
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to update voice'
+    const detail = e.response?.data?.detail || uiText('Failed to update voice')
     message.value = { type: 'error', text: detail }
   } finally {
     savingVoice.value = false
@@ -327,9 +326,9 @@ async function disconnectBinding() {
   try {
     await api.delete(`/api/agents/${props.agentName}/voip`)
     binding.value = { configured: false }
-    flash('success', 'Voice binding removed')
+    flash('success', uiText('Voice binding removed'))
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to remove binding'
+    const detail = e.response?.data?.detail || uiText('Failed to remove binding')
     message.value = { type: 'error', text: detail }
   } finally {
     disconnecting.value = false
@@ -338,4 +337,6 @@ async function disconnectBinding() {
 
 watch(() => props.agentName, () => loadBinding())
 onMounted(() => loadBinding())
+
+import { t as uiText } from '@/i18n'
 </script>

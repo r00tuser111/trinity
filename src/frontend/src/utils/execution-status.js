@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Execution Status Utility (THINK-001)
  *
@@ -24,7 +26,7 @@ export function getStatusFromStreamEvent(event) {
   if (!event) return null
 
   // Init event
-  if (event.type === 'init') return 'Starting session...'
+  if (event.type === 'init') return uiText("Starting session...")
 
   // Result / stream end / error = no status change here
   if (event.type === 'result' || event.type === 'stream_end' || event.type === 'error') return null
@@ -32,7 +34,7 @@ export function getStatusFromStreamEvent(event) {
   // A tool result is a beat of its own on this surface (the card says "Thinking").
   const content = event.message?.content || event.content || []
   if (Array.isArray(content) && content.some((b) => b && b.type === 'tool_result')) {
-    return 'Processing results...'
+    return uiText("Processing results...")
   }
 
   const facts = activityFromStreamEvent(event)

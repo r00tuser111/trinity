@@ -8,10 +8,9 @@
   <BaseCard>
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="min-w-0">
-        <h2 class="text-sm font-[550] text-gray-900 dark:text-gray-100">First-run setup</h2>
+        <h2 class="text-sm font-[550] text-gray-900 dark:text-gray-100">{{ uiText("First-run setup") }}</h2>
         <p class="mt-0.5 text-[12.5px] text-gray-500 dark:text-gray-400">
-          Walk through the setup sequence again. Finished steps stay finished; anything you
-          skipped is waiting where you left it.
+          {{ uiText("Walk through the setup sequence again. Finished steps stay finished; anything you skipped is waiting where you left it.") }}
         </p>
       </div>
       <BaseButton
@@ -20,7 +19,7 @@
         data-testid="first-run-rerun"
         @click="router.push({ path: '/', query: { onboarding: '1' } })"
       >
-        Re-run setup
+        {{ uiText("Re-run setup") }}
       </BaseButton>
     </div>
   </BaseCard>
@@ -32,4 +31,6 @@ import BaseCard from '../base/BaseCard.vue'
 import BaseButton from '../base/BaseButton.vue'
 
 const router = useRouter()
+
+import { t as uiText } from '@/i18n'
 </script>

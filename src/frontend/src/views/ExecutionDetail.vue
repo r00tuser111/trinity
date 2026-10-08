@@ -9,7 +9,7 @@
             <router-link
               :to="{ name: 'AgentDetail', params: { name: agentName }, query: { tab: 'tasks' } }"
               class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              title="Back to Tasks"
+              :title="uiText(&quot;Back to Tasks&quot;)"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -18,7 +18,7 @@
 
             <div>
               <div class="flex items-center space-x-2">
-                <h1 class="text-xl font-bold text-gray-900 dark:text-white">Execution Details</h1>
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ uiText("Execution Details") }}</h1>
                 <span
                   v-if="execution"
                   :class="statusClass"
@@ -49,30 +49,30 @@
               @click="stopExecution"
               :disabled="isStopping"
               class="px-3 py-1.5 bg-status-danger-600 hover:bg-status-danger-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center space-x-1"
-              title="Stop execution"
+              :title="uiText(&quot;Stop execution&quot;)"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
               </svg>
-              <span>{{ isStopping ? 'Stopping...' : 'Stop' }}</span>
+              <span>{{ isStopping ? uiText("Stopping...") : uiText("Stop") }}</span>
             </button>
             <!-- Continue as Chat button (EXEC-023) -->
             <button
               v-if="canContinueAsChat"
               @click="continueAsChat"
               class="px-3 py-1.5 bg-action-primary-600 hover:bg-action-primary-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center space-x-1"
-              title="Continue this execution as an interactive chat"
+              :title="uiText(&quot;Continue this execution as an interactive chat&quot;)"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              <span>Continue as Chat</span>
+              <span>{{ uiText("Continue as Chat") }}</span>
             </button>
             <button
               @click="copyExecutionId"
               class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              title="Copy execution ID"
+              :title="uiText(&quot;Copy execution ID&quot;)"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -94,13 +94,13 @@
         <svg class="w-12 h-12 text-status-danger-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
-        <h3 class="text-lg font-medium text-status-danger-800 dark:text-status-danger-300 mb-2">Failed to load execution</h3>
+        <h3 class="text-lg font-medium text-status-danger-800 dark:text-status-danger-300 mb-2">{{ uiText("Failed to load execution") }}</h3>
         <p class="text-status-danger-600 dark:text-status-danger-400">{{ error }}</p>
         <button
           @click="loadExecution"
           class="mt-4 px-4 py-2 bg-status-danger-100 dark:bg-status-danger-800 text-status-danger-700 dark:text-status-danger-200 rounded-lg hover:bg-status-danger-200 dark:hover:bg-status-danger-700 transition-colors"
         >
-          Try Again
+          {{ uiText("Try Again") }}
         </button>
       </div>
     </div>
@@ -118,7 +118,7 @@
               </svg>
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Duration</p>
+              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ uiText("Duration") }}</p>
               <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ formatDuration(execution.duration_ms) }}</p>
             </div>
           </div>
@@ -133,7 +133,7 @@
               </svg>
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Cost</p>
+              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ uiText("Cost") }}</p>
               <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ formatCost(execution.cost || 0) }}</p>
             </div>
           </div>
@@ -148,7 +148,7 @@
               </svg>
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Context</p>
+              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ uiText("Context") }}</p>
               <p class="text-lg font-semibold text-gray-900 dark:text-white">
                 {{ formatTokens(execution.context_used) }} / {{ formatTokens(execution.context_max) }}
               </p>
@@ -167,7 +167,7 @@
               </svg>
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Triggered By</p>
+              <p class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ uiText("Triggered By") }}</p>
               <p class="text-lg font-semibold text-gray-900 dark:text-white capitalize">{{ execution.triggered_by }}</p>
             </div>
           </div>
@@ -176,16 +176,16 @@
 
       <!-- Origin Information (AUDIT-001) -->
       <div v-if="hasOriginInfo" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">Execution Origin</h3>
+        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">{{ uiText("Execution Origin") }}</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <!-- User -->
           <div v-if="execution.source_user_email">
-            <span class="text-gray-500 dark:text-gray-400">User:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ uiText("User:") }}</span>
             <span class="ml-2 text-gray-900 dark:text-white font-medium">{{ execution.source_user_email }}</span>
           </div>
           <!-- Source Agent (for agent-to-agent) -->
           <div v-if="execution.source_agent_name">
-            <span class="text-gray-500 dark:text-gray-400">Source Agent:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ uiText("Source Agent:") }}</span>
             <router-link
               :to="{ name: 'AgentDetail', params: { name: execution.source_agent_name } }"
               :title="agentNameTooltip(agentsStore.agentRefForSlug(execution.source_agent_name))"
@@ -196,7 +196,7 @@
           </div>
           <!-- MCP Key (for MCP calls) -->
           <div v-if="execution.source_mcp_key_name">
-            <span class="text-gray-500 dark:text-gray-400">MCP Key:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ uiText("MCP Key:") }}</span>
             <span class="ml-2 text-gray-900 dark:text-white font-medium">{{ execution.source_mcp_key_name }}</span>
             <span v-if="execution.source_mcp_key_id" class="ml-1 text-xs text-gray-400 dark:text-gray-500 font-mono">({{ execution.source_mcp_key_id.substring(0, 8) }}...)</span>
           </div>
@@ -207,19 +207,19 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
-            <span class="text-gray-500 dark:text-gray-400">Started:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ uiText("Started:") }}</span>
             <span class="ml-2 text-gray-900 dark:text-white font-medium">
               {{ formatDate(execution.started_at) }}
             </span>
           </div>
           <div>
-            <span class="text-gray-500 dark:text-gray-400">Completed:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ uiText("Completed:") }}</span>
             <span class="ml-2 text-gray-900 dark:text-white font-medium">
-              {{ execution.completed_at ? formatDate(execution.completed_at) : 'In progress...' }}
+              {{ execution.completed_at ? formatDate(execution.completed_at) : uiText("In progress...") }}
             </span>
           </div>
           <div>
-            <span class="text-gray-500 dark:text-gray-400">Execution ID:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ uiText("Execution ID:") }}</span>
             <span class="ml-2 text-gray-900 dark:text-white font-mono text-xs">{{ executionId }}</span>
           </div>
         </div>
@@ -228,7 +228,7 @@
       <!-- Task Input -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Task Input</h2>
+          <h2 class="text-sm font-semibold text-gray-900 dark:text-white">{{ uiText("Task Input") }}</h2>
         </div>
         <div class="p-4">
           <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 font-mono text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap">{{ execution.message }}</div>
@@ -242,7 +242,7 @@
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Error
+            {{ uiText("Error") }}
           </h2>
         </div>
         <div class="p-4">
@@ -253,7 +253,7 @@
       <!-- Response Summary -->
       <div v-if="execution.response" class="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Response Summary</h2>
+          <h2 class="text-sm font-semibold text-gray-900 dark:text-white">{{ uiText("Response Summary") }}</h2>
         </div>
         <div class="p-4">
           <div class="prose prose-sm dark:prose-invert max-w-none" v-html="renderedResponse"></div>
@@ -272,7 +272,7 @@
           @click="retryStream"
           class="flex-shrink-0 px-3 py-1 text-xs font-medium text-state-autonomous-700 dark:text-state-autonomous-300 bg-state-autonomous-100 dark:bg-state-autonomous-800/50 rounded hover:bg-state-autonomous-200 dark:hover:bg-state-autonomous-700 transition-colors"
         >
-          Retry
+          {{ uiText("Retry") }}
         </button>
       </div>
 
@@ -280,14 +280,14 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
         <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">Execution Transcript</h2>
+            <h2 class="text-sm font-semibold text-gray-900 dark:text-white">{{ uiText("Execution Transcript") }}</h2>
             <!-- Streaming indicator -->
             <div v-if="isStreaming" class="flex items-center space-x-2">
               <span class="relative flex h-2 w-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-status-success-500"></span>
               </span>
-              <span class="text-xs text-status-success-600 dark:text-status-success-400 font-medium">Live</span>
+              <span class="text-xs text-status-success-600 dark:text-status-success-400 font-medium">{{ uiText("Live") }}</span>
             </div>
           </div>
           <div class="flex items-center space-x-3">
@@ -297,12 +297,12 @@
               @click="toggleAutoScroll"
               :class="autoScroll ? 'text-action-primary-600 dark:text-action-primary-400' : 'text-gray-400 dark:text-gray-500'"
               class="text-xs font-medium hover:underline"
-              title="Toggle auto-scroll"
+              :title="uiText(&quot;Toggle auto-scroll&quot;)"
             >
-              {{ autoScroll ? 'Auto-scroll ON' : 'Auto-scroll OFF' }}
+              {{ autoScroll ? uiText("Auto-scroll ON") : uiText("Auto-scroll OFF") }}
             </button>
             <span v-if="logEntries.length" class="text-xs text-gray-500 dark:text-gray-400">
-              {{ logEntries.length }} entries
+              {{ logEntries.length }} {{ uiText("entries") }}
             </span>
           </div>
         </div>
@@ -310,7 +310,7 @@
           <!-- Streaming - waiting for entries -->
           <div v-if="isStreaming && logEntries.length === 0" class="text-center py-8">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-action-primary-500 mx-auto mb-4"></div>
-            <p class="text-gray-500 dark:text-gray-400">Waiting for execution output...</p>
+            <p class="text-gray-500 dark:text-gray-400">{{ uiText("Waiting for execution output...") }}</p>
           </div>
 
           <!-- No log available (completed execution without log) -->
@@ -318,7 +318,7 @@
             <svg class="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <p class="text-gray-500 dark:text-gray-400">No execution transcript available for this task.</p>
+            <p class="text-gray-500 dark:text-gray-400">{{ uiText("No execution transcript available for this task.") }}</p>
           </div>
 
           <!-- Log entries -->
@@ -327,11 +327,11 @@
               <!-- Session Init -->
               <div v-if="entry.type === 'init'" class="bg-gray-100 dark:bg-gray-900 rounded-lg p-3 text-xs">
                 <div class="flex items-center space-x-2 text-gray-500 dark:text-gray-400 mb-1">
-                  <span class="font-semibold">Session Started</span>
+                  <span class="font-semibold">{{ uiText("Session Started") }}</span>
                   <span>•</span>
                   <span>{{ entry.model }}</span>
                   <span>•</span>
-                  <span>{{ entry.toolCount }} tools</span>
+                  <span>{{ entry.toolCount }} {{ uiText("tools") }}</span>
                 </div>
                 <div v-if="entry.mcpServers.length" class="text-gray-400 dark:text-gray-500">
                   MCP: {{ entry.mcpServers.join(', ') }}
@@ -375,7 +375,7 @@
                   </svg>
                 </div>
                 <div class="flex-1 min-w-0 bg-status-success-50 dark:bg-status-success-900/20 rounded-lg p-3">
-                  <div class="text-xs font-medium text-status-success-700 dark:text-status-success-300 mb-1">Result</div>
+                  <div class="text-xs font-medium text-status-success-700 dark:text-status-success-300 mb-1">{{ uiText("Result") }}</div>
                   <pre class="text-xs text-gray-600 dark:text-gray-400 bg-white/50 dark:bg-black/20 rounded p-2 whitespace-pre-wrap break-words max-h-96 overflow-y-auto">{{ entry.content }}</pre>
                 </div>
               </div>
@@ -384,8 +384,8 @@
               <div v-else-if="entry.type === 'result'" class="bg-gray-100 dark:bg-gray-900 rounded-lg p-3 text-xs border-t-2 border-gray-300 dark:border-gray-600">
                 <div class="flex items-center justify-between text-gray-500 dark:text-gray-400">
                   <div class="flex items-center space-x-3">
-                    <span class="font-semibold text-status-success-600 dark:text-status-success-400">Completed</span>
-                    <span>{{ entry.numTurns }} turns</span>
+                    <span class="font-semibold text-status-success-600 dark:text-status-success-400">{{ uiText("Completed") }}</span>
+                    <span>{{ entry.numTurns }} {{ uiText("turns") }}</span>
                   </div>
                   <div class="flex items-center space-x-3 font-mono">
                     <span>{{ entry.duration }}</span>
@@ -517,7 +517,7 @@ async function loadExecution() {
     )
     logData.value = logResponse.data
   } catch (err) {
-    error.value = err.response?.data?.detail || err.message || 'Failed to load execution'
+    error.value = err.response?.data?.detail || err.message || uiText("Failed to load execution")
   } finally {
     loading.value = false
   }
@@ -575,7 +575,7 @@ function startStreaming() {
                 // Show retryable errors subtly (polling will handle reconnect)
                 // Show non-retryable errors prominently
                 if (!data.retryable) {
-                  streamError.value = data.message || 'Stream error occurred'
+                  streamError.value = data.message || uiText("Stream error occurred")
                 }
                 continue
               }
@@ -656,7 +656,7 @@ function startPollingFallback() {
         // Max retries exceeded — stop polling, keep showing what we have
         stopPolling()
         isStreaming.value = false
-        streamError.value = 'Unable to connect to live stream. The execution is still running — refresh the page to check for updates.'
+        streamError.value = uiText("Unable to connect to live stream. The execution is still running — refresh the page to check for updates.")
       }
     } catch (err) {
       console.error('Polling error:', err)
@@ -899,4 +899,6 @@ onUnmounted(() => {
   stopPolling()
   isStreaming.value = false
 })
+
+import { t as uiText } from '@/i18n'
 </script>

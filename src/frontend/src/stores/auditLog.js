@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Audit log dashboard store (#941).
  *
@@ -84,7 +86,7 @@ export const useAuditLogStore = defineStore('auditLog', {
     hasNext: (state) => state.offset + state.limit < state.total,
     hasPrev: (state) => state.offset > 0,
     rangeLabel: (state) => {
-      if (state.total === 0) return 'No entries'
+      if (state.total === 0) return uiText("No entries")
       const start = state.offset + 1
       const end = Math.min(state.offset + state.entries.length, state.total)
       return `Showing ${start}–${end} of ${state.total}`
@@ -113,7 +115,7 @@ export const useAuditLogStore = defineStore('auditLog', {
     },
     timeWindowLabel: (state) => {
       const f = state.filters
-      if (!f.start_time && !f.end_time) return 'All time'
+      if (!f.start_time && !f.end_time) return uiText("All time")
       const start = f.start_time
         ? new Date(f.start_time).toISOString().replace('T', ' ').slice(0, 16) +
           ' UTC'
@@ -165,7 +167,7 @@ export const useAuditLogStore = defineStore('auditLog', {
         this.error =
           e?.response?.data?.detail ||
           e?.message ||
-          'Failed to load audit entries'
+          uiText("Failed to load audit entries")
       } finally {
         this.loading = false
       }
@@ -190,7 +192,7 @@ export const useAuditLogStore = defineStore('auditLog', {
         // Wiping it on a transient detail-fetch failure would hide the
         // row the user just clicked.
         this.error =
-          e?.response?.data?.detail || e?.message || 'Failed to load detail'
+          e?.response?.data?.detail || e?.message || uiText("Failed to load detail")
       } finally {
         this.detailLoading = false
       }
@@ -452,7 +454,7 @@ export const useAuditLogStore = defineStore('auditLog', {
         this.error =
           e?.response?.data?.detail ||
           e?.message ||
-          'Failed to verify hash chain'
+          uiText("Failed to verify hash chain")
       }
     },
 
@@ -500,7 +502,7 @@ export const useAuditLogStore = defineStore('auditLog', {
         window.URL.revokeObjectURL(url)
       } catch (e) {
         this.error =
-          e?.response?.data?.detail || e?.message || 'Export failed'
+          e?.response?.data?.detail || e?.message || uiText("Export failed")
       } finally {
         this.exporting = false
       }

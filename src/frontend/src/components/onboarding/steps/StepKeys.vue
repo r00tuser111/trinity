@@ -9,9 +9,9 @@
 <template>
   <div data-testid="first-run-step-keys">
     <FirstRunStepHeader
-      kicker="Integrations"
-      title="Other keys"
-      lead="Each of these switches on one more capability. None of them blocks your first run — fill in what you have now and skip the rest."
+      :kicker="uiText(&quot;Integrations&quot;)"
+      :title="uiText(&quot;Other keys&quot;)"
+      :lead="uiText(&quot;Each of these switches on one more capability. None of them blocks your first run — fill in what you have now and skip the rest.&quot;)"
       badge="Optional"
       schematic="keys"
     />
@@ -32,4 +32,6 @@ import { KEY_ORDER } from './credentialSteps'
 
 defineProps({ ctx: { type: Object, default: () => ({}) } })
 const emit = defineEmits(['complete', 'skip'])
+
+import { t as uiText } from '@/i18n'
 </script>

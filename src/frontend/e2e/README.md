@@ -164,3 +164,12 @@ tests catch:
 
 Type checking is still a #556 follow-up; the Vitest layer landed and lives next
 to the specs it covers.
+
+## Interface language checks (no backend)
+
+`npm run test:i18n` uses `playwright.i18n.config.js` and local HTTP fixtures to
+verify English/Simplified Chinese switching, form preservation, saved selection,
+browser-language detection and responsive navigation in both themes. It starts
+Vite on port 5173 and does not create users or agents. Install Playwright Chromium
+first, or set `PLAYWRIGHT_CHANNEL=chrome` to use an installed Chrome browser.
+These checks exercise the interface only; they do not replace live-stack tests.

@@ -12,19 +12,16 @@
     <div class="flex items-start justify-between gap-4">
       <div>
         <h3 class="text-sm font-medium text-gray-900 dark:text-white">
-          Bind to your own repo
+          {{ uiText("Bind to your own repo") }}
         </h3>
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
           <template v-if="isTokenless">
-            This agent tracks a public template read-only, so its work can't be
-            pushed anywhere. Point it at a GitHub repository you own — it keeps
-            everything it has learned.
+            {{ uiText("This agent tracks a public template read-only, so its work can't be pushed anywhere. Point it at a GitHub repository you own — it keeps everything it has learned.") }}
           </template>
           <template v-else>
-            Move this agent to a different GitHub repository you own. Its current
-            history is pushed to the new repository and
+            {{ uiText("Move this agent to a different GitHub repository you own. Its current history is pushed to the new repository and") }}
             <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">origin</code>
-            is repointed there.
+            {{ uiText("is repointed there.") }}
           </template>
         </p>
       </div>
@@ -33,10 +30,10 @@
         type="button"
         @click="openForm"
         :disabled="!isRunning"
-        :title="isRunning ? '' : 'The agent must be running — its current workspace is what gets pushed.'"
+        :title="isRunning ? '' : uiText(&quot;The agent must be running — its current workspace is what gets pushed.&quot;)"
         class="shrink-0 inline-flex items-center px-3 py-1.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-action-primary-600 hover:bg-action-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Bind repo
+        {{ uiText("Bind repo") }}
       </button>
     </div>
 
@@ -46,7 +43,7 @@
       class="mt-3 rounded-md border border-status-success-200 dark:border-status-success-500/30 bg-status-success-50 dark:bg-status-success-500/10 p-3"
     >
       <p class="text-sm font-medium text-status-success-800 dark:text-status-success-300">
-        Bound to {{ result.github_repo }}
+        {{ uiText("Bound to") }} {{ result.github_repo }}
       </p>
       <p class="mt-1 text-sm text-status-success-700 dark:text-status-success-400">
         {{ result.message }}
@@ -57,7 +54,7 @@
         rel="noopener noreferrer"
         class="mt-2 inline-block text-sm font-medium text-action-primary-600 dark:text-action-primary-400 hover:underline"
       >
-        Open {{ result.github_repo }} on GitHub →
+        {{ uiText("Open") }} {{ result.github_repo }} {{ uiText("on GitHub →") }}
       </a>
     </div>
 
@@ -77,7 +74,7 @@
           ? 'text-status-warning-800 dark:text-status-warning-300'
           : 'text-status-danger-800 dark:text-status-danger-300'"
       >
-        {{ error.partial ? 'Partly applied — action needed' : 'Could not bind this agent' }}
+        {{ error.partial ? uiText("Partly applied — action needed") : uiText("Could not bind this agent") }}
       </p>
       <p
         class="mt-1 text-sm"
@@ -95,7 +92,7 @@
     <form v-if="showForm" class="mt-4 space-y-4" @submit.prevent="submit">
       <div>
         <label :for="`bind-dest-${agentName}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Destination repository
+          {{ uiText("Destination repository") }}
         </label>
         <input
           :id="`bind-dest-${agentName}`"
@@ -110,14 +107,13 @@
           {{ destinationError }}
         </p>
         <p v-else class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">owner/name</code>.
-          Trinity creates it if it doesn't exist; an existing repository must be empty.
+          <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">owner/name</code>{{ uiText(". Trinity creates it if it doesn't exist; an existing repository must be empty.") }}
         </p>
       </div>
 
       <div>
         <label :for="`bind-pat-${agentName}`" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          GitHub token
+          {{ uiText("GitHub token") }}
         </label>
         <input
           :id="`bind-pat-${agentName}`"
@@ -129,16 +125,13 @@
           class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-action-primary-500 focus:ring-action-primary-500 sm:text-sm disabled:opacity-50"
         />
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          Needs permission to create the repository and push — a classic token with
-          <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">repo</code> scope, or a
-          fine-grained token with Administration + Contents write. It is stored as this
-          agent's git credential; the agent can read its own git credential, so prefer
-          the narrow token.
+          {{ uiText("Needs permission to create the repository and push — a classic token with") }}
+          <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">repo</code> {{ uiText("scope, or a fine-grained token with Administration + Contents write. It is stored as this agent's git credential; the agent can read its own git credential, so prefer the narrow token.") }}
         </p>
       </div>
 
       <fieldset>
-        <legend class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibility</legend>
+        <legend class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ uiText("Visibility") }}</legend>
         <div class="mt-2 flex gap-4">
           <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input
@@ -149,7 +142,7 @@
               :disabled="binding"
               class="text-action-primary-600 focus:ring-action-primary-500 border-gray-300 dark:border-gray-600"
             />
-            Private <span class="text-gray-500 dark:text-gray-400">(recommended)</span>
+            {{ uiText("Private") }} <span class="text-gray-500 dark:text-gray-400">{{ uiText("(recommended)") }}</span>
           </label>
           <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <input
@@ -160,7 +153,7 @@
               :disabled="binding"
               class="text-action-primary-600 focus:ring-action-primary-500 border-gray-300 dark:border-gray-600"
             />
-            Public
+            {{ uiText("Public") }}
           </label>
         </div>
       </fieldset>
@@ -168,12 +161,10 @@
       <!-- Principle 26: a non-instant action states what happens and how long. -->
       <div class="rounded-md border border-status-warning-200 dark:border-status-warning-500/30 bg-status-warning-50 dark:bg-status-warning-500/10 p-3">
         <p class="text-sm font-medium text-status-warning-800 dark:text-status-warning-300">
-          This restarts the agent
+          {{ uiText("This restarts the agent") }}
         </p>
         <p class="mt-1 text-sm text-status-warning-700 dark:text-status-warning-400">
-          The container is rebuilt so it picks up the new repository — any work in
-          flight is lost, and the agent is briefly unavailable. Files and history are
-          preserved. This usually takes under a minute; leave the tab open.
+          {{ uiText("The container is rebuilt so it picks up the new repository — any work in flight is lost, and the agent is briefly unavailable. Files and history are preserved. This usually takes under a minute; leave the tab open.") }}
         </p>
       </div>
 
@@ -187,7 +178,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
           </svg>
-          {{ binding ? 'Binding…' : 'Bind to this repo' }}
+          {{ binding ? uiText("Binding…") : uiText("Bind to this repo") }}
         </button>
         <button
           type="button"
@@ -195,7 +186,7 @@
           :disabled="binding"
           class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 disabled:opacity-50"
         >
-          Cancel
+          {{ uiText("Cancel") }}
         </button>
       </div>
     </form>
@@ -260,9 +251,10 @@ const resolveTimeout = async () => {
       result.value = {
         github_repo: st.github_repo,
         repo_url: `https://github.com/${st.github_repo}`,
-        message:
-          'The request timed out, but the binding completed: this agent now ' +
-          `points at ${st.github_repo} on branch ${st.branch || 'its default branch'}.`,
+        message: uiText(
+          'The request timed out, but the binding completed: this agent now points at {repo} on branch {branch}.',
+          { repo: st.github_repo, branch: st.branch || uiText('its default branch') }
+        ),
       }
       showForm.value = false
       destination.value = ''
@@ -271,10 +263,8 @@ const resolveTimeout = async () => {
     }
     error.value = {
       message: st.bound
-        ? `The request timed out and the binding is only partly applied: Trinity has ` +
-          `recorded ${st.github_repo}, but the agent's origin reads as ` +
-          `${st.container_origin || 'unset'}. Re-run the bind to finish — it is idempotent.`
-        : 'The request timed out and no binding was recorded. It is safe to retry.',
+        ? uiText("The request timed out and the binding is only partly applied: Trinity has recorded {arg1}, but the agent's origin reads as {arg2}. Re-run the bind to finish — it is idempotent.", { arg1: st.github_repo, arg2: st.container_origin || 'unset' })
+        : uiText("The request timed out and no binding was recorded. It is safe to retry."),
       code: 'BIND_TIMEOUT',
       partial: !!st.bound,
     }
@@ -283,9 +273,7 @@ const resolveTimeout = async () => {
     // outcome for an operation whose result we genuinely do not know.
     error.value = {
       message:
-        'The request timed out and Trinity could not be reached to check the ' +
-        'outcome. Reload this tab to see the agent\'s current repository ' +
-        'before retrying.',
+        uiText("The request timed out and Trinity could not be reached to check the outcome. Reload this tab to see the agent's current repository before retrying."),
       code: 'BIND_TIMEOUT',
       partial: true,
     }
@@ -298,7 +286,7 @@ const submit = async () => {
 
   if (!DESTINATION_RE.test(dest) || dest.includes('..')) {
     destinationError.value =
-      'Use owner/name — for example your-github-username/my-agent-brain.'
+      uiText("Use owner/name — for example your-github-username/my-agent-brain.")
     return
   }
 
@@ -325,7 +313,7 @@ const submit = async () => {
     const detail = e?.response?.data?.detail
     if (detail && typeof detail === 'object') {
       error.value = {
-        message: detail.error || 'Binding failed.',
+        message: detail.error || uiText("Binding failed."),
         code: detail.code || null,
         partial: !!detail.partial,
       }
@@ -336,7 +324,7 @@ const submit = async () => {
       await resolveTimeout()
     } else {
       error.value = {
-        message: detail || e?.message || 'Binding failed.',
+        message: detail || e?.message || uiText("Binding failed."),
         code: null,
         partial: false,
       }
@@ -345,4 +333,6 @@ const submit = async () => {
     binding.value = false
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

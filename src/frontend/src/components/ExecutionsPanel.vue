@@ -16,7 +16,7 @@
           class="inline-block w-2 h-2 rounded-full"
           :class="isConnected ? 'bg-status-success-500' : 'bg-status-warning-500 animate-pulse'"
         ></span>
-        {{ isConnected ? 'Live' : 'Polling' }}
+        {{ isConnected ? t('Live') : t('Polling') }}
       </span>
       <button
         @click="store.refresh()"
@@ -26,7 +26,7 @@
         <svg class="w-3.5 h-3.5" :class="{ 'animate-spin': store.loading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
-        Refresh
+        {{ t('Refresh') }}
       </button>
     </div>
 
@@ -39,7 +39,7 @@
       :message="stopError"
       :detail="stopErrorDetail"
       retryable
-      retry-label="Open the execution"
+      :retry-label="t('Open the execution')"
       @retry="openFailedStopTarget"
       @dismiss="clearStopError"
     />
@@ -47,23 +47,23 @@
     <!-- Stat cards -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Total</p>
+        <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ t('Total') }}</p>
         <p class="text-base font-semibold text-gray-900 dark:text-white">{{ store.stats?.total ?? '—' }}</p>
       </div>
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400" title="Runs that finished without erroring — completion, not answer quality (ent#206)">Completion</p>
+        <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400" :title="t('Runs that finished without erroring — completion, not answer quality (ent#206)')">{{ t('Completion') }}</p>
         <p class="text-base font-semibold" :class="successRateClass">
           {{ store.stats ? store.stats.success_rate + '%' : '—' }}
         </p>
       </div>
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Failed</p>
+        <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ t('Failed') }}</p>
         <p class="text-base font-semibold" :class="store.stats?.failed_count > 0 ? 'text-status-danger-600 dark:text-status-danger-400' : 'text-gray-900 dark:text-white'">
           {{ store.stats?.failed_count ?? '—' }}
         </p>
       </div>
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">Cost</p>
+        <p class="text-[10px] uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ t('Cost') }}</p>
         <p class="text-base font-semibold text-gray-900 dark:text-white">
           {{ store.stats ? formatCostCompact(store.stats.total_cost) : '—' }}
         </p>
@@ -81,11 +81,10 @@
       v-if="store.stats?.deleted_agent_count > 0"
       class="-mt-2 mb-4 text-xs text-gray-500 dark:text-gray-400"
     >
-      Includes
+      {{ t('Includes') }}
       <span class="font-medium text-gray-700 dark:text-gray-300">{{ store.stats.deleted_agent_count }}</span>
-      execution<span v-if="store.stats.deleted_agent_count !== 1">s</span>
-      ({{ formatCostCompact(store.stats.deleted_agent_cost) }})
-      from deleted agents, which have no tile on the dashboard.
+      {{ t('execution') }}<span v-if="store.stats.deleted_agent_count !== 1">s</span>
+      ({{ formatCostCompact(store.stats.deleted_agent_cost) }}{{ t(') from deleted agents, which have no tile on the dashboard.') }}
     </p>
 
     <!-- Filter bar -->
@@ -101,7 +100,7 @@
               ? 'border-2 border-action-primary-500 font-medium'
               : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'"
           >
-            <option value="">All agents</option>
+            <option value="">{{ t('All agents') }}</option>
             <option v-for="name in agentNames" :key="name" :value="name">{{ agentOptionLabel(agentsStore.agentRefForSlug(name)) }}</option>
           </select>
           <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
@@ -117,14 +116,14 @@
               ? 'border-2 border-action-primary-500 font-medium'
               : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'"
           >
-            <option value="">All statuses</option>
-            <option value="running">running</option>
-            <option value="queued">queued</option>
-            <option value="success">success</option>
-            <option value="failed">failed</option>
-            <option value="error">error</option>
-            <option value="cancelled">cancelled</option>
-            <option value="skipped">skipped</option>
+            <option value="">{{ t('All statuses') }}</option>
+            <option value="running">{{ t('running') }}</option>
+            <option value="queued">{{ t('queued') }}</option>
+            <option value="success">{{ t('success') }}</option>
+            <option value="failed">{{ t('failed') }}</option>
+            <option value="error">{{ t('error') }}</option>
+            <option value="cancelled">{{ t('cancelled') }}</option>
+            <option value="skipped">{{ t('skipped') }}</option>
           </select>
           <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
         </div>
@@ -139,17 +138,17 @@
               ? 'border-2 border-action-primary-500 font-medium'
               : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'"
           >
-            <option value="">All triggers</option>
-            <option value="schedule">schedule</option>
-            <option value="manual">manual</option>
-            <option value="chat">chat</option>
-            <option value="session">session</option>
-            <option value="agent">agent</option>
-            <option value="mcp">mcp</option>
-            <option value="public">public</option>
-            <option value="webhook">webhook</option>
-            <option value="fan_out">fan_out</option>
-            <option value="loop">loop</option>
+            <option value="">{{ t('All triggers') }}</option>
+            <option value="schedule">{{ t('schedule') }}</option>
+            <option value="manual">{{ t('manual') }}</option>
+            <option value="chat">{{ t('chat') }}</option>
+            <option value="session">{{ t('session') }}</option>
+            <option value="agent">{{ t('agent') }}</option>
+            <option value="mcp">{{ t('mcp') }}</option>
+            <option value="public">{{ t('public') }}</option>
+            <option value="webhook">{{ t('webhook') }}</option>
+            <option value="fan_out">{{ t('fan_out') }}</option>
+            <option value="loop">{{ t('loop') }}</option>
           </select>
           <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
         </div>
@@ -164,12 +163,12 @@
               ? 'border-2 border-action-primary-500 font-medium'
               : 'border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'"
           >
-            <option :value="1">Last 1h</option>
-            <option :value="6">Last 6h</option>
-            <option :value="24">Last 24h</option>
-            <option :value="168">Last 7d</option>
-            <option :value="720">Last 30d</option>
-            <option :value="0">All time</option>
+            <option :value="1">{{ t('Last 1h') }}</option>
+            <option :value="6">{{ t('Last 6h') }}</option>
+            <option :value="24">{{ t('Last 24h') }}</option>
+            <option :value="168">{{ t('Last 7d') }}</option>
+            <option :value="720">{{ t('Last 30d') }}</option>
+            <option :value="0">{{ t('All time') }}</option>
           </select>
           <svg class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
         </div>
@@ -179,20 +178,20 @@
           type="text"
           :value="store.filters.search"
           @input="onSearchInput"
-          placeholder="Search tasks…"
+          :placeholder="t('Search tasks…')"
           class="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 w-44"
         />
       </div>
 
       <!-- Result count + clear -->
       <div class="flex items-center px-4 py-2 text-xs text-gray-500 dark:text-gray-400 gap-3">
-        <span>{{ store.rows.length }} shown</span>
+        <span>{{ store.rows.length }} {{ t('shown') }}</span>
         <button
           v-if="store.hasActiveFilters"
           @click="store.clearFilters()"
           class="text-action-primary-600 dark:text-action-primary-400 hover:underline"
         >
-          Clear filters
+          {{ t('Clear filters') }}
         </button>
       </div>
     </div>
@@ -203,7 +202,7 @@
       class="flex items-center gap-2 px-4 py-2.5 mb-2 bg-status-warning-50 dark:bg-status-warning-900/10 border border-status-warning-200 dark:border-status-warning-800 rounded-lg text-sm text-status-warning-800 dark:text-status-warning-300"
     >
       <span class="w-2 h-2 rounded-full bg-status-warning-500 animate-pulse flex-shrink-0"></span>
-      {{ store.runningCount }} running now
+      {{ store.runningCount }} {{ t('running now') }}
     </div>
 
     <!-- Execution list -->
@@ -227,8 +226,8 @@
         <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
-        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No executions yet</p>
-        <p class="text-xs text-gray-400 dark:text-gray-500">Run a task or wait for a schedule to fire.</p>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ t('No executions yet') }}</p>
+        <p class="text-xs text-gray-400 dark:text-gray-500">{{ t('Run a task or wait for a schedule to fire.') }}</p>
       </div>
 
       <!-- Empty — filters returned nothing -->
@@ -236,8 +235,8 @@
         <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
         </svg>
-        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">No matching executions</p>
-        <button @click="store.clearFilters()" class="mt-1 text-xs text-action-primary-600 dark:text-action-primary-400 hover:underline">Clear filters</button>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ t('No matching executions') }}</p>
+        <button @click="store.clearFilters()" class="mt-1 text-xs text-action-primary-600 dark:text-action-primary-400 hover:underline">{{ t('Clear filters') }}</button>
       </div>
 
       <!-- Rows -->
@@ -294,7 +293,7 @@
                 @click.stop="stopExecution(row)"
                 class="px-2 py-1 text-xs font-medium text-status-danger-600 dark:text-status-danger-400 border border-status-danger-300 dark:border-status-danger-700 rounded-md hover:bg-status-danger-50 dark:hover:bg-status-danger-900/20 transition-colors"
               >
-                Stop
+                {{ t('Stop') }}
               </button>
               <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 hidden sm:block transition-transform group-hover:translate-x-0.5 group-hover:text-action-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -311,7 +310,7 @@
           :disabled="store.loading"
           class="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
         >
-          {{ store.loading ? 'Loading…' : 'Load more' }}
+          {{ store.loading ? t('Loading…') : t('Load more') }}
         </button>
       </div>
     </div>
@@ -319,6 +318,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import SkeletonLoader from './SkeletonLoader.vue'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -349,7 +351,7 @@ const agentNames = computed(() =>
 )
 
 const wsTooltip = computed(() =>
-  isConnected.value ? 'Live updates connected' : 'Polling every 30s'
+  isConnected.value ? uiText('Live updates connected') : uiText('Polling every 30s')
 )
 
 // Threshold ladder for success rate (DS §3.4, inverted: good rate = low danger)
@@ -415,10 +417,10 @@ function triggerLabelClass(trigger) {
 function timeAgo(iso) {
   if (!iso) return ''
   const diff = Math.floor((Date.now() - parseUTC(iso)) / 1000)
-  if (diff < 60) return 'just now'
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
-  return `${Math.floor(diff / 86400)}d ago`
+  if (diff < 60) return uiText("just now")
+  if (diff < 3600) return uiText("{arg1}m ago", { arg1: (Math.floor(diff / 60)) })
+  if (diff < 86400) return uiText("{arg1}h ago", { arg1: (Math.floor(diff / 3600)) })
+  return uiText("{arg1}d ago", { arg1: (Math.floor(diff / 86400)) })
 }
 
 function truncId(id) {
@@ -433,7 +435,7 @@ function formatDuration(ms) {
 }
 
 function formatTokens(n) {
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}K tokens`
+  if (n >= 1000) return uiText("{arg1}K tokens", { arg1: ((n / 1000).toFixed(1)) })
   return `${n} tokens`
 }
 
@@ -459,8 +461,8 @@ async function stopExecution(row) {
     // offer the detail page as an explicit next step rather than a redirect.
     console.error('Failed to stop execution:', err)
     stopTarget.value = row
-    stopError.value = `Couldn't stop ${row.agent_name}'s execution — it is still running. Try again, or open it for more detail.`
-    stopErrorDetail.value = apiErrorMessage(err, 'Request failed')
+    stopError.value = uiText("Couldn't stop {arg1}'s execution — it is still running. Try again, or open it for more detail.", { arg1: (row.agent_name) })
+    stopErrorDetail.value = apiErrorMessage(err, uiText("Request failed"))
   }
 }
 

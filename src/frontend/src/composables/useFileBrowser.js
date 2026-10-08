@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { ref, computed } from 'vue'
 
 /**
@@ -58,7 +60,7 @@ export function useFileBrowser(agentRef, agentsStore, showNotification) {
       totalFileCount.value = response.total_files || 0
     } catch (err) {
       console.error('Failed to load files:', err)
-      filesError.value = err.response?.data?.detail || 'Failed to load files'
+      filesError.value = err.response?.data?.detail || uiText("Failed to load files")
     } finally {
       filesLoading.value = false
     }
@@ -88,10 +90,10 @@ export function useFileBrowser(agentRef, agentsStore, showNotification) {
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
-      showNotification(`Downloaded ${fileName}`, 'success')
+      showNotification(uiText("Downloaded {arg1}", { arg1: (fileName) }), 'success')
     } catch (err) {
       console.error('Failed to download file:', err)
-      showNotification(err.response?.data?.detail || 'Failed to download file', 'error')
+      showNotification(err.response?.data?.detail || uiText("Failed to download file"), 'error')
     }
   }
 

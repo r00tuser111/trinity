@@ -11,13 +11,11 @@
   <div class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
       <div class="flex items-center gap-2">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white">Template registry</h2>
-        <BaseBadge v-if="config.source === 'default'">Default</BaseBadge>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Template registry") }}</h2>
+        <BaseBadge v-if="config.source === 'default'">{{ uiText("Default") }}</BaseBadge>
       </div>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Where Trinity reads its list of GitHub starter templates from. If it can't be
-        reached, the catalog falls back to your bundled templates — browsing degrades,
-        creating never does: <code class="text-xs">github:owner/repo</code> always works.
+        {{ uiText("Where Trinity reads its list of GitHub starter templates from. If it can't be reached, the catalog falls back to your bundled templates — browsing degrades, creating never does:") }} <code class="text-xs">github:owner/repo</code> {{ uiText("always works.") }}
       </p>
     </div>
 
@@ -26,7 +24,7 @@
       <LoadFailed
         v-if="loadError"
         dense
-        title="Couldn't load the registry settings"
+        :title="uiText(&quot;Couldn't load the registry settings&quot;)"
         :message="loadError"
         :retrying="loading"
         @retry="load"
@@ -46,9 +44,7 @@
           v-if="config.hard_disabled"
           class="rounded-md border border-status-warning-200 dark:border-status-warning-500/30 bg-status-warning-50 dark:bg-status-warning-500/10 px-4 py-3 text-sm text-status-warning-700 dark:text-status-warning-300"
         >
-          The registry is disabled by configuration
-          (<code class="text-xs">TEMPLATE_REGISTRY_ENABLED=false</code>). Nothing is
-          fetched, and no setting here can turn it back on.
+          {{ uiText("The registry is disabled by configuration (") }}<code class="text-xs">TEMPLATE_REGISTRY_ENABLED=false</code>{{ uiText("). Nothing is fetched, and no setting here can turn it back on.") }}
         </div>
 
         <!-- An admin-curated GitHub list wins outright, so say so rather than
@@ -57,23 +53,22 @@
           v-else-if="config.suppressed_by_github_templates"
           class="rounded-md border border-status-info-200 dark:border-status-info-500/30 bg-status-info-50 dark:bg-status-info-500/10 px-4 py-3 text-sm text-status-info-700 dark:text-status-info-300"
         >
-          You've curated your own GitHub Templates list, which takes full precedence.
-          The registry isn't consulted while that list exists.
+          {{ uiText("You've curated your own GitHub Templates list, which takes full precedence. The registry isn't consulted while that list exists.") }}
         </div>
 
         <!-- Toggle -->
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Use the remote registry</p>
+            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Use the remote registry") }}</p>
             <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-              <template v-if="config.enabled">Fetched hourly and cached.</template>
-              <template v-else>Off — only your bundled templates are listed.</template>
+              <template v-if="config.enabled">{{ uiText("Fetched hourly and cached.") }}</template>
+              <template v-else>{{ uiText("Off — only your bundled templates are listed.") }}</template>
             </p>
           </div>
           <BaseToggle
             :model-value="!!config.enabled"
             :disabled="saving || config.hard_disabled"
-            aria-label="Use the remote template registry"
+            :aria-label="uiText(&quot;Use the remote template registry&quot;)"
             @update:model-value="toggle"
           />
         </div>
@@ -81,7 +76,7 @@
         <!-- URL -->
         <div>
           <label for="template-registry-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Registry URL
+            {{ uiText("Registry URL") }}
           </label>
           <div class="mt-1 flex flex-col gap-2 sm:flex-row">
             <BaseInput
@@ -101,21 +96,19 @@
                 loading-label="Saving…"
                 @click="save"
               >
-                Save
+                {{ uiText("Save") }}
               </BaseButton>
               <BaseButton
                 variant="secondary"
                 :disabled="saving || config.source !== 'settings'"
                 @click="reset"
               >
-                Reset
+                {{ uiText("Reset") }}
               </BaseButton>
             </div>
           </div>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            HTTPS only, no embedded credentials, must resolve to a public address.
-            Leave blank to use the default
-            (<span class="font-mono break-all">{{ config.default_url }}</span>).
+            {{ uiText("HTTPS only, no embedded credentials, must resolve to a public address. Leave blank to use the default (") }}<span class="font-mono break-all">{{ config.default_url }}</span>).
           </p>
         </div>
 
@@ -130,17 +123,17 @@
               {{ statusLabel }}
             </BaseBadge>
             <span class="text-xs text-gray-500 dark:text-gray-400 tabular-nums">
-              {{ status.template_count }} template{{ status.template_count === 1 ? '' : 's' }}
+              {{ status.template_count }} {{ uiText("template") }}{{ status.template_count === 1 ? '' : 's' }}
             </span>
             <span
               v-if="status.last_fetch_at"
               class="text-xs text-gray-500 dark:text-gray-400"
               :title="status.last_fetch_at"
             >
-              last read {{ fmt(status.last_fetch_at) }}
+              {{ uiText("last read") }} {{ fmt(status.last_fetch_at) }}
             </span>
             <span v-if="status.stale" class="text-xs text-status-warning-700 dark:text-status-warning-300">
-              serving the last known good copy
+              {{ uiText("serving the last known good copy") }}
             </span>
           </div>
 
@@ -150,7 +143,7 @@
 
           <details v-if="status.errors && status.errors.length" class="mt-2">
             <summary class="cursor-pointer text-xs text-gray-500 dark:text-gray-400 select-none">
-              {{ status.errors.length }} problem{{ status.errors.length === 1 ? '' : 's' }} in the document
+              {{ status.errors.length }} {{ uiText("problem") }}{{ status.errors.length === 1 ? '' : 's' }} {{ uiText("in the document") }}
             </summary>
             <ul class="mt-1 space-y-0.5">
               <li
@@ -211,33 +204,33 @@ const dirty = computed(() => urlDraft.value.trim() !== (config.value.url || '').
 // never sends prose — a hostile registry's response text must not reach this
 // panel — so the explanation is ours, keyed by code.
 const ERROR_COPY = {
-  disabled: 'The registry is switched off, so nothing is fetched.',
-  invalid_url: 'The configured URL is not a valid public HTTPS address. Fix it and save again.',
-  unreachable: "Trinity couldn't connect to the registry host. Check the URL and this machine's outbound network access.",
-  timeout: 'The registry took too long to respond. It will be retried automatically.',
-  http_error: 'The registry URL returned an error response — most often a wrong path or a private file.',
-  redirect: 'The registry URL redirects. Redirects are refused for safety; point this at the final URL directly.',
-  too_large: 'The registry document is larger than Trinity will read. It is capped at 256 KiB.',
-  encoding_refused: 'The registry host returned a compressed response. Trinity reads this document uncompressed so the size cap applies to what actually arrives — serve it without Content-Encoding.',
-  parse_refused: 'The registry document was refused by the YAML parser — likely a syntax error, a duplicate key, or an anchor/alias (which are not allowed here).',
-  unsupported_version: 'The registry declares a schema version this Trinity does not understand. Upgrade Trinity, or serve a version 1 document.',
-  bad_shape: 'The document was read but is not a registry — it needs a top-level `templates:` list.',
+  disabled: msg('The registry is switched off, so nothing is fetched.'),
+  invalid_url: msg('The configured URL is not a valid public HTTPS address. Fix it and save again.'),
+  unreachable: msg("Trinity couldn't connect to the registry host. Check the URL and this machine's outbound network access."),
+  timeout: msg('The registry took too long to respond. It will be retried automatically.'),
+  http_error: msg('The registry URL returned an error response — most often a wrong path or a private file.'),
+  redirect: msg('The registry URL redirects. Redirects are refused for safety; point this at the final URL directly.'),
+  too_large: msg('The registry document is larger than Trinity will read. It is capped at 256 KiB.'),
+  encoding_refused: msg('The registry host returned a compressed response. Trinity reads this document uncompressed so the size cap applies to what actually arrives — serve it without Content-Encoding.'),
+  parse_refused: msg('The registry document was refused by the YAML parser — likely a syntax error, a duplicate key, or an anchor/alias (which are not allowed here).'),
+  unsupported_version: msg('The registry declares a schema version this Trinity does not understand. Upgrade Trinity, or serve a version 1 document.'),
+  bad_shape: msg('The document was read but is not a registry — it needs a top-level `templates:` list.'),
 }
 
 const errorExplanation = computed(() => {
   const code = status.value.last_error_code
   if (!code) return ''
-  const copy = ERROR_COPY[code] || 'The registry could not be read.'
+  const copy = ERROR_COPY[code] ? uiText(ERROR_COPY[code]) : uiText('The registry could not be read.')
   return status.value.stale
-    ? `${copy} Trinity is still serving the last copy it read successfully.`
-    : `${copy} Only your bundled templates are listed until this resolves.`
+    ? uiText("{arg1} Trinity is still serving the last copy it read successfully.", { arg1: (copy) })
+    : uiText("{arg1} Only your bundled templates are listed until this resolves.", { arg1: (copy) })
 })
 
 const statusLabel = computed(() => {
   if (status.value.last_status === 'ok') return 'Reachable'
   if (status.value.last_status === 'disabled') return 'Disabled'
   if (status.value.last_status === 'failed') return status.value.stale ? 'Stale' : 'Unreachable'
-  return 'Not read yet'
+  return uiText("Not read yet")
 })
 
 const statusGlyph = computed(() => {
@@ -286,7 +279,7 @@ async function load() {
     const { data } = await api.get('/api/settings/template-registry')
     apply(data)
   } catch (e) {
-    loadError.value = failureMessage(e, 'The settings request failed. Retry, or check the backend logs.')
+    loadError.value = failureMessage(e, uiText('The settings request failed. Retry, or check the backend logs.'))
   } finally {
     loading.value = false
   }
@@ -301,7 +294,7 @@ async function save() {
     })
     apply(data)
   } catch (e) {
-    saveError.value = failureMessage(e, "Couldn't save the registry URL.")
+    saveError.value = failureMessage(e, uiText("Couldn't save the registry URL."))
     saveErrorDetail.value = e?.message || ''
   } finally {
     saving.value = false
@@ -317,7 +310,7 @@ async function toggle() {
     })
     apply(data)
   } catch (e) {
-    saveError.value = failureMessage(e, "Couldn't change the registry setting.")
+    saveError.value = failureMessage(e, uiText("Couldn't change the registry setting."))
     saveErrorDetail.value = e?.message || ''
   } finally {
     saving.value = false
@@ -331,7 +324,7 @@ async function reset() {
     await api.delete('/api/settings/template-registry')
     await load()
   } catch (e) {
-    saveError.value = failureMessage(e, "Couldn't reset the registry to its default.")
+    saveError.value = failureMessage(e, uiText("Couldn't reset the registry to its default."))
     saveErrorDetail.value = e?.message || ''
   } finally {
     saving.value = false
@@ -339,4 +332,6 @@ async function reset() {
 }
 
 onMounted(load)
+
+import { t as uiText, msg } from '@/i18n'
 </script>

@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '../api'
@@ -55,7 +57,7 @@ export const useRoomsStore = defineStore('rooms', () => {
       const { data } = await api.get('/api/rooms')
       rooms.value = data.rooms || []
     } catch (e) {
-      error.value = e?.response?.data?.detail?.message || 'Failed to load rooms'
+      error.value = e?.response?.data?.detail?.message || uiText("Failed to load rooms")
     } finally {
       roomsLoading.value = false
     }
@@ -179,7 +181,7 @@ export const useRoomsStore = defineStore('rooms', () => {
         activeRoom.value.messages = activeRoom.value.messages.filter((m) => m.id !== optimistic.id)
       }
       const d = e?.response?.data?.detail
-      error.value = (d && (d.message || d)) || 'Failed to send'
+      error.value = (d && (d.message || d)) || uiText("Failed to send")
       throw e
     } finally {
       posting.value = false

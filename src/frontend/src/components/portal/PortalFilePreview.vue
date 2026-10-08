@@ -39,7 +39,7 @@
       class="fixed inset-0 z-40 flex flex-col bg-gray-950/55 p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
-      :aria-label="`Preview: ${filename}`"
+      :aria-label="uiText(&quot;Preview: {arg1}&quot;, { arg1: (filename) })"
       data-testid="portal-file-preview"
       @click.self="$emit('close')"
     >
@@ -60,7 +60,7 @@
               type="button"
               class="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 disabled:opacity-45 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action-primary-500/40 dark:text-gray-400 dark:hover:bg-gray-750 dark:focus-visible:ring-action-primary-400/40"
               :disabled="prevIndex === null"
-              aria-label="Previous file"
+              :aria-label="uiText(&quot;Previous file&quot;)"
               data-testid="portal-file-preview-prev"
               @click="$emit('navigate', prevIndex)"
             >
@@ -70,17 +70,17 @@
               type="button"
               class="rounded-md p-1.5 text-gray-600 hover:bg-gray-100 disabled:opacity-45 disabled:hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action-primary-500/40 dark:text-gray-400 dark:hover:bg-gray-750 dark:focus-visible:ring-action-primary-400/40"
               :disabled="nextIndex === null"
-              aria-label="Next file"
+              :aria-label="uiText(&quot;Next file&quot;)"
               data-testid="portal-file-preview-next"
               @click="$emit('navigate', nextIndex)"
             >
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
             </button>
             <BaseButton size="sm" variant="secondary" data-testid="portal-file-preview-download" @click="$emit('download')">
-              Download
+              {{ uiText("Download") }}
             </BaseButton>
             <BaseButton size="sm" variant="ghost" data-testid="portal-file-preview-close" @click="$emit('close')">
-              Close
+              {{ uiText("Close") }}
             </BaseButton>
           </div>
         </div>
@@ -124,7 +124,7 @@
                 {{ humanSize(size) }}<span v-if="typeLabel"> · {{ typeLabel }}</span>
               </p>
               <p class="mt-2 text-[12.5px] text-gray-600 dark:text-gray-400">{{ cardReason }}</p>
-              <BaseButton size="sm" variant="primary" class="mt-3" @click="$emit('download')">Download</BaseButton>
+              <BaseButton size="sm" variant="primary" class="mt-3" @click="$emit('download')">{{ uiText("Download") }}</BaseButton>
             </div>
           </div>
         </div>
@@ -197,9 +197,9 @@ const capNotice = computed(() =>
     : ''
 )
 const cardReason = computed(() => {
-  if (failed.value) return "This file couldn't be read just now — you can still download it."
-  if (kind.value === 'image') return 'This image is too large to preview here.'
-  return "This file type can't be previewed here."
+  if (failed.value) return uiText("This file couldn't be read just now — you can still download it.")
+  if (kind.value === 'image') return uiText("This image is too large to preview here.")
+  return uiText("This file type can't be previewed here.")
 })
 
 // The CanvasImage.vue pattern: a monotonic sequence, so a slow fetch that
@@ -331,4 +331,6 @@ onBeforeUnmount(() => {
   fetchSeq++
   revoke()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

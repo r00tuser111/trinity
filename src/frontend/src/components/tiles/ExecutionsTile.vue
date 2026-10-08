@@ -1,7 +1,7 @@
 <template>
   <InfoTile
     scope="Fleet"
-    title="Executions"
+    :title="uiText(&quot;Executions&quot;)"
     :stamp="stamp"
     stamp-title="Rolling 24 hours, UTC hours"
     :state="state"
@@ -31,19 +31,19 @@
            "0 runs · 100% ok" before the first read is a claim about the fleet,
            not a placeholder. -->
       <span class="ex-total">{{ face.total }}</span>
-      <span class="ex-unit">runs</span>
+      <span class="ex-unit">{{ uiText("runs") }}</span>
       <span class="ex-sep">·</span>
       <span class="ex-ok">{{ face.ok }}</span>
-      <span class="ex-unit">ok</span>
+      <span class="ex-unit">{{ uiText("ok") }}</span>
       <template v-if="face.failed">
         <span class="ex-sep">·</span>
-        <span class="ex-fail">{{ face.failed }} failed</span>
+        <span class="ex-fail">{{ face.failed }} {{ uiText("failed") }}</span>
       </template>
       <span class="ex-chips">
         <!-- Live, not windowed: /stats reports running/queued as of now, which
              is why they sit beside a 24h chart rather than inside it. -->
-        <span v-if="live.running" class="ex-chip ex-chip-run">{{ live.running }} running</span>
-        <span v-if="live.queued" class="ex-chip">{{ live.queued }} queued</span>
+        <span v-if="live.running" class="ex-chip ex-chip-run">{{ live.running }} {{ uiText("running") }}</span>
+        <span v-if="live.queued" class="ex-chip">{{ live.queued }} {{ uiText("queued") }}</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
         :key="k.fail ? '\u0000failed' : k.name"
         class="ex-key"
         :class="{ 'ex-key-fail': k.fail }"
-        :title="`${k.name}: ${k.total}`"
+        :title="uiText(&quot;{arg1}: {arg2}&quot;, { arg1: (k.name), arg2: (k.total) })"
       >
         <i class="ex-dot" :class="k.fail ? 'ex-dot-fail' : 'ex-bk-' + k.token"></i>{{ k.name }}
       </span>
@@ -187,7 +187,7 @@ const legend = computed(() =>
  * same backend vocabulary the columns already report on hover.
  */
 const hiddenTitle = computed(
-  () => `Not shown: ${legend.value.hidden.map((k) => `${k.name}: ${k.total}`).join(' · ')}`,
+  () => uiText('Not shown: {items}', { items: legend.value.hidden.map((k) => `${k.name}: ${k.total}`).join(' · ') }),
 )
 
 const state = computed(() =>
@@ -219,18 +219,20 @@ const live = computed(() => {
 const stamp = computed(() => (gridStore.execTimelineError ? '24h · stale' : '24h'))
 
 const chartLabel = computed(
-  () => `Executions per hour over the last 24 hours: ${head.value.total} runs, ${head.value.failed} failed`,
+  () => uiText('Executions per hour over the last 24 hours: {total} runs, {failed} failed', { total: head.value.total, failed: head.value.failed }),
 )
 
 function tooltip(col) {
   // Absolute detail on hover, relative on the face (design principle 22). Bound
   // as an attribute and built from numbers + backend bucket names only.
-  const lines = [`${col.hour}:00 UTC — ${col.total} run${col.total === 1 ? '' : 's'}`]
+  const lines = [col.total === 1
+    ? uiText('{hour}:00 UTC — {count} run', { hour: col.hour, count: col.total })
+    : uiText('{hour}:00 UTC — {count} runs', { hour: col.hour, count: col.total })]
   for (const seg of col.segments) {
-    lines.push(`  ${seg.name}: ${seg.total}${seg.failed ? ` (${seg.failed} failed)` : ''}`)
+    lines.push(`  ${seg.name}: ${seg.total}${seg.failed ? ` ${uiText('({count} failed)', { count: seg.failed })}` : ''}`)
   }
-  if (!col.total) lines.push('  no executions')
-  else if (col.failed) lines.push(`  ${col.failed} failed in total`)
+  if (!col.total) lines.push(`  ${uiText('no executions')}`)
+  else if (col.failed) lines.push(`  ${uiText('{count} failed in total', { count: col.failed })}`)
   return lines.join('\n')
 }
 
@@ -238,6 +240,8 @@ function retry() {
   gridStore.fetchExecutionsTimeline()
   gridStore.fetchExecutionsLive()
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

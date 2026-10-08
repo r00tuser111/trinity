@@ -15,7 +15,7 @@
           <router-link to="/" class="flex-shrink-0 flex items-center hover:opacity-80 transition-opacity">
             <img src="../assets/trinity-logo.svg" alt="Trinity Logo" class="h-8 w-8 mr-2 dark:hidden" />
             <img src="../assets/trinity-logo-white.svg" alt="Trinity Logo" class="h-8 w-8 mr-2 hidden dark:block" />
-            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Trinity</h1>
+            <h1 class="hidden sm:block text-xl font-bold text-gray-900 dark:text-white">Trinity</h1>
           </router-link>
           <!-- #1789 — the link row is the elastic side: it scrolls when the
                full set can't fit, so every link stays reachable instead of
@@ -31,14 +31,14 @@
               class="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200 inline-flex flex-shrink-0 whitespace-nowrap items-center px-1 pt-1 border-b-2 text-sm font-medium"
               :class="{ 'border-blue-500 dark:border-blue-400 text-gray-900 dark:text-white': $route.path === '/' || isAgentSection }"
             >
-              Dashboard
+              {{ t('Dashboard') }}
             </router-link>
             <router-link
               to="/library"
               class="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200 inline-flex flex-shrink-0 whitespace-nowrap items-center px-1 pt-1 border-b-2 text-sm font-medium"
               :class="{ 'border-blue-500 dark:border-blue-400 text-gray-900 dark:text-white': $route.path.startsWith('/library') }"
             >
-              Library
+              {{ t('Library') }}
             </router-link>
             <!-- #1109 — single Operations entry replaces the former
                  Health / Ops / Executions links. One unified badge carries
@@ -49,7 +49,7 @@
               class="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200 inline-flex flex-shrink-0 whitespace-nowrap items-center px-1 pt-1 border-b-2 text-sm font-medium relative"
               :class="{ 'border-blue-500 dark:border-blue-400 text-gray-900 dark:text-white': $route.path === '/operations' }"
             >
-              Operations
+              {{ t('Operations') }}
               <span
                 v-if="combinedOpsCount > 0"
                 class="ml-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white rounded-full"
@@ -70,7 +70,7 @@
               class="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200 inline-flex flex-shrink-0 whitespace-nowrap items-center px-1 pt-1 border-b-2 text-sm font-medium"
               :class="{ 'border-blue-500 dark:border-blue-400 text-gray-900 dark:text-white': $route.path === '/settings' }"
             >
-              Settings
+              {{ t('Settings') }}
             </router-link>
             <!-- #847 Phase 0 — Enterprise catalogue landing. Visible
                  iff ANY enterprise feature is entitled
@@ -115,7 +115,7 @@
               class="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200 inline-flex flex-shrink-0 whitespace-nowrap items-center px-1 pt-1 border-b-2 text-sm font-medium"
               :class="{ 'border-blue-500 dark:border-blue-400 text-gray-900 dark:text-white': $route.path.startsWith('/workspace') }"
             >
-              Workspace
+              {{ t('Workspace') }}
             </router-link>
             <router-link
               v-if="enterpriseStore.hasAnyEnterprise"
@@ -123,7 +123,7 @@
               class="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200 inline-flex flex-shrink-0 whitespace-nowrap items-center px-1 pt-1 border-b-2 text-sm font-medium"
               :class="{ 'border-blue-500 dark:border-blue-400 text-gray-900 dark:text-white': $route.path.startsWith('/enterprise') }"
             >
-              Enterprise
+              {{ t('Enterprise') }}
               <span class="ml-1 px-1.5 py-0.5 text-[10px] font-bold leading-none rounded bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200">PRO</span>
             </router-link>
           </div>
@@ -132,20 +132,21 @@
              and the user menu that owns Sign out). They must never be
              compressed or pushed past the viewport edge, so the link row above
              absorbs all the width pressure instead. -->
-        <div class="flex flex-shrink-0 items-center space-x-4">
+        <div class="flex flex-shrink-0 items-center space-x-1 sm:space-x-3">
+          <LanguageSelect />
           <!-- WebSocket Status — dot only (#1789). The word cost ~80px of a
                budget the bar does not have at the `max-w-7xl` cap; the state is
                conveyed by colour, a tooltip, and the sr-only label, and a lost
                connection additionally pulses. -->
           <span
             class="flex items-center text-sm text-gray-500 dark:text-gray-400"
-            :title="isConnected ? 'Connected' : 'Disconnected'"
+            :title="isConnected ? t('Connected') : t('Disconnected')"
           >
             <span
               class="inline-block h-2 w-2 rounded-full"
               :class="isConnected ? 'bg-status-success-400' : 'bg-status-warning-500 animate-pulse'"
             ></span>
-            <span class="sr-only">{{ isConnected ? 'Connected' : 'Disconnected' }}</span>
+            <span class="sr-only">{{ isConnected ? t('Connected') : t('Disconnected') }}</span>
           </span>
 
           <!-- Build Info Chip (#926) — small muted version label; click opens detail modal.
@@ -156,7 +157,7 @@
             v-if="buildInfo.info.value"
             @click="showBuildInfoModal = true"
             class="hidden xl:block text-xs text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 font-mono whitespace-nowrap"
-            :title="`Click for build info — commit ${buildInfo.info.value.git_commit_short}`"
+            :title="uiText(&quot;Click for build info — commit {arg1}&quot;, { arg1: (buildInfo.info.value.git_commit_short) })"
           >
             v{{ buildInfo.displayVersion.value }}<span
               v-if="buildInfo.info.value.git_commit_short && buildInfo.info.value.git_commit_short !== 'unknown'"
@@ -171,8 +172,8 @@
             target="_blank"
             rel="noopener noreferrer"
             class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            title="Documentation (opens docs.ability.ai)"
-            aria-label="Documentation"
+            :title="t('Documentation (opens docs.ability.ai)')"
+            :aria-label="t('Documentation')"
           >
             <!-- Question-mark-in-circle icon -->
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,7 +185,7 @@
           <button
             @click="cycleTheme"
             class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            :title="themeTitle"
+            :title="t(themeTitle)"
           >
             <!-- Sun icon for light mode -->
             <svg v-if="themeStore.theme === 'light'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -237,10 +238,10 @@
               </div>
               <!-- Theme Selector in Menu -->
               <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Theme</p>
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{{ t('Theme') }}</p>
                 <!-- ent#625: the same picker the Workspace switch uses — one
                      primitive, so the two cannot drift. -->
-                <ThemeChoice :theme="themeStore.theme" aria-label="Theme" @select="setTheme" />
+                <ThemeChoice :theme="themeStore.theme" :aria-label="t('Theme')" @select="setTheme" />
               </div>
               <!-- Documentation link (trinity-enterprise#53) -->
               <a
@@ -253,7 +254,7 @@
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Documentation
+                {{ t('Documentation') }}
               </a>
               <button
                 @click="handleLogout"
@@ -262,7 +263,7 @@
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                Sign out
+                {{ t('Sign out') }}
               </button>
             </div>
           </div>
@@ -278,11 +279,11 @@
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full mx-4 p-6">
         <div class="flex justify-between items-start mb-2">
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Build Info</h2>
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ t('Build Info') }}</h2>
           <button
             @click="showBuildInfoModal = false"
             class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-            aria-label="Close"
+            :aria-label="t('Close')"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -290,41 +291,41 @@
           </button>
         </div>
         <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
-          Commit, branch, and build date the running platform was built from.
+          {{ t('Commit, branch, and build date the running platform was built from.') }}
         </p>
         <div
           v-if="buildInfo.isMissing.value"
           class="mb-4 p-3 rounded bg-gray-50 dark:bg-gray-900 text-xs text-gray-600 dark:text-gray-400"
         >
-          Build metadata not available — rebuild with
-          <code class="font-mono">scripts/deploy/start.sh</code> to populate.
+          {{ t('Build metadata not available — rebuild with') }}
+          <code class="font-mono">scripts/deploy/start.sh</code> {{ t('to populate.') }}
         </div>
         <dl class="space-y-2 text-sm">
           <div class="flex justify-between">
-            <dt class="text-gray-500 dark:text-gray-400">Version</dt>
+            <dt class="text-gray-500 dark:text-gray-400">{{ t('Version') }}</dt>
             <dd class="font-mono text-gray-900 dark:text-white">{{ buildInfo.displayVersion.value }}</dd>
           </div>
           <div class="flex justify-between">
-            <dt class="text-gray-500 dark:text-gray-400">Branch</dt>
+            <dt class="text-gray-500 dark:text-gray-400">{{ t('Branch') }}</dt>
             <dd class="font-mono text-gray-900 dark:text-white">{{ buildInfo.info.value.git_branch }}</dd>
           </div>
           <div class="flex justify-between">
-            <dt class="text-gray-500 dark:text-gray-400">Commit</dt>
+            <dt class="text-gray-500 dark:text-gray-400">{{ t('Commit') }}</dt>
             <dd class="font-mono text-gray-900 dark:text-white text-right break-all">
               <span>{{ buildInfo.info.value.git_commit_short }}</span>
               <div class="text-xs opacity-60">{{ buildInfo.info.value.git_commit }}</div>
             </dd>
           </div>
           <div class="border-t border-gray-200 dark:border-gray-700 pt-2">
-            <dt class="text-gray-500 dark:text-gray-400 mb-1">Commit subject</dt>
+            <dt class="text-gray-500 dark:text-gray-400 mb-1">{{ t('Commit subject') }}</dt>
             <dd class="text-gray-900 dark:text-white break-words">{{ buildInfo.info.value.git_commit_subject }}</dd>
           </div>
           <div class="flex justify-between">
-            <dt class="text-gray-500 dark:text-gray-400">Commit timestamp</dt>
+            <dt class="text-gray-500 dark:text-gray-400">{{ t('Commit timestamp') }}</dt>
             <dd class="font-mono text-gray-900 dark:text-white text-xs">{{ buildInfo.info.value.git_commit_timestamp }}</dd>
           </div>
           <div class="flex justify-between">
-            <dt class="text-gray-500 dark:text-gray-400">Build date</dt>
+            <dt class="text-gray-500 dark:text-gray-400">{{ t('Build date') }}</dt>
             <dd class="font-mono text-gray-900 dark:text-white text-xs">{{ buildInfo.info.value.build_date }}</dd>
           </div>
         </dl>
@@ -334,6 +335,8 @@
 </template>
 
 <script setup>
+import LanguageSelect from '@/components/LanguageSelect.vue'
+import { t } from '@/i18n'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
@@ -397,9 +400,9 @@ const hasCriticalOpsItem = computed(() =>
 // Theme management
 const themeTitle = computed(() => {
   const titles = {
-    light: 'Light mode (click to switch)',
-    dark: 'Dark mode (click to switch)',
-    system: 'System theme (click to switch)'
+    light: uiText('Light mode (click to switch)'),
+    dark: uiText('Dark mode (click to switch)'),
+    system: uiText('System theme (click to switch)')
   }
   return titles[themeStore.theme]
 })
@@ -458,6 +461,8 @@ const handleLogout = () => {
   // Redirect to login
   router.push('/login')
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

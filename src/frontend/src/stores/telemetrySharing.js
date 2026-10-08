@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import api from '../api'
 
@@ -73,7 +75,7 @@ export const useTelemetrySharingStore = defineStore('telemetrySharing', {
         }
         this.loaded = true
       } catch (e) {
-        this.error = e?.response?.data?.detail || 'Failed to load sharing status.'
+        this.error = e?.response?.data?.detail || uiText("Failed to load sharing status.")
         // A failed status read still counts as a completed attempt: the
         // consumers render LoadFailed rather than a loading state forever.
         this.loaded = true
@@ -94,7 +96,7 @@ export const useTelemetrySharingStore = defineStore('telemetrySharing', {
         this.previewLoaded = false
         return true
       } catch (e) {
-        this.error = e?.response?.data?.detail || 'Failed to update sharing.'
+        this.error = e?.response?.data?.detail || uiText("Failed to update sharing.")
         return false
       } finally {
         this.saving = false
@@ -110,7 +112,7 @@ export const useTelemetrySharingStore = defineStore('telemetrySharing', {
         this.status = { ...this.status, ...(r.data || {}) }
         return true
       } catch (e) {
-        this.error = e?.response?.data?.detail || 'Failed to save your choice.'
+        this.error = e?.response?.data?.detail || uiText("Failed to save your choice.")
         return false
       } finally {
         this.saving = false

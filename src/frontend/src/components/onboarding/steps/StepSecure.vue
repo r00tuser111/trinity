@@ -20,8 +20,8 @@
 <template>
   <div data-testid="first-run-step-secure">
     <FirstRunStepHeader
-      kicker="Network"
-      title="Secure this instance"
+      :kicker="uiText(&quot;Network&quot;)"
+      :title="uiText(&quot;Secure this instance&quot;)"
       :lead="copy.headline"
       :badge="stage === 'tunnel' && reached ? 'Done' : 'Recommended'"
       schematic="secure"
@@ -47,18 +47,18 @@
         <BaseInput
           v-model="url"
           type="url"
-          label="Public URL"
+          :label="uiText(&quot;Public URL&quot;)"
           placeholder="https://your-domain.com"
           :error="fieldError"
           :disabled="saving"
-          :help="DOMAIN_BENEFIT"
+          :help="uiText(DOMAIN_BENEFIT)"
           data-testid="first-run-public-url"
         />
         <p
           class="text-[12.5px] leading-[1.5] text-gray-500 dark:text-gray-400"
           data-testid="first-run-public-url-prerequisite"
         >
-          {{ DOMAIN_PREREQUISITE }}
+          {{ uiText(DOMAIN_PREREQUISITE) }}
         </p>
         <BaseButton
           type="submit"
@@ -69,7 +69,7 @@
           :disabled="!url.trim()"
           data-testid="first-run-public-url-save"
         >
-          Save domain
+          {{ uiText("Save domain") }}
         </BaseButton>
       </form>
       <InlineError v-if="saveError" :message="saveError" @dismiss="saveError = ''" />
@@ -91,9 +91,9 @@
         data-testid="first-run-public-url-saved"
         role="status"
       >
-        Saved. Nothing has reached
+        {{ uiText("Saved. Nothing has reached") }}
         <span class="font-mono">{{ savedUrl }}</span>
-        yet — open it in a browser to confirm it works.
+        {{ uiText("yet — open it in a browser to confirm it works.") }}
       </p>
 
       <!-- Native <details>: keyboard-accessible, no JS, no state. The reasoning
@@ -102,7 +102,7 @@
         <summary
           class="cursor-pointer select-none text-[12.5px] text-action-primary-600 hover:text-action-primary-700 dark:text-action-primary-500 dark:hover:text-action-primary-400"
         >
-          Why this matters
+          {{ uiText("Why this matters") }}
         </summary>
 
         <div class="mt-3 space-y-3 border-t border-gray-200 dark:border-gray-750 pt-3">
@@ -117,7 +117,7 @@
           -->
           <div v-if="stage === 'address'" class="min-w-0">
             <h3 class="text-sm font-[550] text-gray-900 dark:text-gray-100">
-              Give it a real name
+              {{ uiText("Give it a real name") }}
             </h3>
             <!--
               Trinity issues no certificates: `public_chat_url` is a display and
@@ -128,24 +128,15 @@
               other name. Still no verdict on the live connection.
             -->
             <p class="mt-1 text-[12.5px] leading-[1.5] text-gray-500 dark:text-gray-400">
-              Point your domain’s A record at this server, then save it as the
-              <span class="text-gray-600 dark:text-gray-300">Public URL</span>
-              above (it also lives in Settings → General). Trinity does not issue certificates
-              itself — the web server in front of it is configured to obtain one for the name
-              you save, the first time someone visits. After that Trinity hands out the name
-              instead of the IP. Only the name you save is allowed, so nobody else can point a
-              domain here and have certificates issued. Point the domain at this server before
-              you save: the certificate is
-              obtained on the first request that arrives for the name, so if the record is
-              missing or points elsewhere, that request never gets here — the visitor sees a
-              certificate error, and Trinity, which is not part of that exchange, carries on
-              showing the name as saved.
+              {{ uiText("Point your domain’s A record at this server, then save it as the") }}
+              <span class="text-gray-600 dark:text-gray-300">{{ uiText("Public URL") }}</span>
+              {{ uiText("above (it also lives in Settings → General). Trinity does not issue certificates itself — the web server in front of it is configured to obtain one for the name you save, the first time someone visits. After that Trinity hands out the name instead of the IP. Only the name you save is allowed, so nobody else can point a domain here and have certificates issued. Point the domain at this server before you save: the certificate is obtained on the first request that arrives for the name, so if the record is missing or points elsewhere, that request never gets here — the visitor sees a certificate error, and Trinity, which is not part of that exchange, carries on showing the name as saved.") }}
             </p>
           </div>
 
           <div class="min-w-0">
             <h3 class="text-sm font-[550] text-gray-900 dark:text-gray-100">
-              Serve it without exposing it
+              {{ uiText("Serve it without exposing it") }}
             </h3>
             <!--
               #2380, decided 2026-09-01: a Cloudflare Tunnel, NOT a VPN. A VPN
@@ -156,20 +147,13 @@
               carries no button that could not finish the job.
             -->
             <p class="mt-1 text-[12.5px] leading-[1.5] text-gray-500 dark:text-gray-400">
-              <template v-if="stage === 'address'">With that domain on Cloudflare, a</template><template v-else>With your domain on Cloudflare, a</template>
-              tunnel lets this server stop listening on the public internet altogether:
-              Cloudflare holds a connection open from the inside, and visitors arrive
-              through it. Telegram, WhatsApp, voice calls, public agent links and webhooks
-              keep working, because they still reach a public address. Setting it up takes a
-              few minutes on the server itself, so it happens on the host rather than from
-              this page — the guide below walks through it.
+              <template v-if="stage === 'address'">{{ uiText("With that domain on Cloudflare, a") }}</template><template v-else>{{ uiText("With your domain on Cloudflare, a") }}</template>
+              {{ uiText("tunnel lets this server stop listening on the public internet altogether: Cloudflare holds a connection open from the inside, and visitors arrive through it. Telegram, WhatsApp, voice calls, public agent links and webhooks keep working, because they still reach a public address. Setting it up takes a few minutes on the server itself, so it happens on the host rather than from this page — the guide below walks through it.") }}
             </p>
           </div>
 
           <p v-if="stage === 'address'" class="text-[12.5px] leading-[1.5] text-gray-500 dark:text-gray-400">
-            These two stack. A name settles how the instance is addressed; a tunnel
-            settles who can reach it at all. The tunnel needs the name, so it is the
-            second step rather than a different one.
+            {{ uiText("These two stack. A name settles how the instance is addressed; a tunnel settles who can reach it at all. The tunnel needs the name, so it is the second step rather than a different one.") }}
           </p>
 
           <!-- #2692: the full walkthrough — both steps end to end, plus the VPN
@@ -184,10 +168,9 @@
               class="text-action-primary-600 hover:text-action-primary-700 dark:text-action-primary-500 dark:hover:text-action-primary-400"
               data-testid="first-run-secure-docs"
             >
-              Read the full hardening guide
+              {{ uiText("Read the full hardening guide") }}
             </a>
-            — both steps end to end, and a private-network option for an instance only you
-            need to reach.
+            {{ uiText("— both steps end to end, and a private-network option for an instance only you need to reach.") }}
           </p>
         </div>
       </details>
@@ -244,7 +227,7 @@ async function save() {
   // "Advertises HTTP" — the step congratulating the operator for reaching the
   // posture it exists to move them off.
   if (!/^https:\/\/[^\s/]+\.[^\s/]+/.test(value)) {
-    fieldError.value = 'Enter the full address, including https:// — for example https://trinity.example.com'
+    fieldError.value = uiText("Enter the full address, including https:// — for example https://trinity.example.com")
     return
   }
   fieldError.value = ''
@@ -262,9 +245,11 @@ async function save() {
   } catch (e) {
     const detail = e?.response?.data?.detail
     saveError.value =
-      typeof detail === 'string' ? detail : 'Could not save the Public URL. Check the address and try again.'
+      typeof detail === 'string' ? detail : uiText("Could not save the Public URL. Check the address and try again.")
   } finally {
     saving.value = false
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

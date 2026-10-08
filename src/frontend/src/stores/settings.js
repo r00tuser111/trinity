@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
@@ -35,7 +37,7 @@ export const useSettingsStore = defineStore('settings', {
         return this.settings
       } catch (error) {
         console.error('Failed to fetch settings:', error)
-        this.error = error.response?.data?.detail || 'Failed to fetch settings'
+        this.error = error.response?.data?.detail || uiText("Failed to fetch settings")
         throw error
       } finally {
         this.loading = false
@@ -136,7 +138,7 @@ export const useSettingsStore = defineStore('settings', {
         return response.data
       } catch (error) {
         console.error(`Failed to update setting ${key}:`, error)
-        this.error = error.response?.data?.detail || 'Failed to update setting'
+        this.error = error.response?.data?.detail || uiText("Failed to update setting")
         throw error
       } finally {
         this.saving = false
@@ -157,7 +159,7 @@ export const useSettingsStore = defineStore('settings', {
         return true
       } catch (error) {
         console.error(`Failed to delete setting ${key}:`, error)
-        this.error = error.response?.data?.detail || 'Failed to delete setting'
+        this.error = error.response?.data?.detail || uiText("Failed to delete setting")
         throw error
       } finally {
         this.saving = false

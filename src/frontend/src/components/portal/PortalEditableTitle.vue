@@ -19,9 +19,9 @@
         <span
           class="min-w-0 truncate"
           :class="[textClass, value ? '' : 'text-gray-500 dark:text-gray-400']"
-          :title="value || placeholder"
+          :title="value || uiText(placeholder)"
           @dblclick="rename && !dense ? begin() : null"
-        >{{ value || placeholder }}</span>
+        >{{ value || uiText(placeholder) }}</span>
         <!-- Reveal-on-hover from `sm:` up in the dense row, for the same
              reason the star does: a pencil on every row is noise, and a touch
              screen has no hover, so below `sm` it is simply visible. -->
@@ -30,8 +30,8 @@
           type="button"
           class="shrink-0 rounded p-0.5 transition text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:opacity-100"
           :class="dense ? 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100' : ''"
-          :title="label"
-          :aria-label="label"
+          :title="uiText(label)"
+          :aria-label="uiText(label)"
           data-testid="rename-chat"
           @click.stop="begin"
           @keydown.stop
@@ -53,9 +53,9 @@
         v-model="draft"
         type="text"
         :maxlength="CHAT_TITLE_MAX_CHARS + 20"
-        :placeholder="placeholder"
+        :placeholder="uiText(placeholder)"
         :disabled="saving"
-        :aria-label="label"
+        :aria-label="uiText(label)"
         :aria-invalid="!!error"
         data-testid="rename-chat-field"
         class="w-full min-w-0 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-2 py-1 focus:ring-2 focus:ring-action-primary-500/40 focus:border-action-primary-500 focus:outline-none disabled:opacity-50"
@@ -75,15 +75,16 @@
 <script setup>
 import { ref, nextTick } from 'vue'
 import InlineError from '@/components/InlineError.vue'
+import { msg, t as uiText } from '@/i18n'
 import { CHAT_TITLE_MAX_CHARS, normalizeChatTitle, renameFailureMessage } from './portalUtils'
 
 const props = defineProps({
   // The stored title ('' when the thread has none yet).
   value: { type: String, default: '' },
-  placeholder: { type: String, default: 'New chat' },
+  placeholder: { type: String, default: msg('New chat') },
   // async (title) => void — rejects with the request error. Null = read-only.
   rename: { type: Function, default: null },
-  label: { type: String, default: 'Rename this chat' },
+  label: { type: String, default: msg('Rename this chat') },
   // The sidebar-row form: smaller pencil, revealed on hover — and no
   // double-click-to-edit, since a click there is the row's open.
   dense: { type: Boolean, default: false },

@@ -1,3 +1,5 @@
+import { t as uiText, msg } from '../i18n/index.js'
+
 /**
  * Workspace / client portal store (epic #78 / #79; OSS core since ent#356).
  *
@@ -171,7 +173,7 @@ const SESSION_ROTATION_HEADER = 'x-trinity-session-token'
 // operator's customer, who can neither buy the missing module nor act on
 // knowing it exists.
 export const MULTI_AGENT_UNAVAILABLE =
-  'Chats with more than one agent are not available on this instance.'
+  msg('Chats with more than one agent are not available on this instance.')
 
 // ent#375 — adopt a rotated session token wherever it arrives.
 //
@@ -746,7 +748,7 @@ export const useClientPortalStore = defineStore('clientPortal', {
     // three lines. Deliberate, not oversight.
     _requireRooms() {
       if (this.multiAgentChatAvailable) return
-      const err = new Error(MULTI_AGENT_UNAVAILABLE)
+      const err = new Error(uiText(MULTI_AGENT_UNAVAILABLE))
       // A typed code, never message-sniffing: the view has to tell this apart
       // from a transport failure, which needs different copy.
       err.code = 'rooms_unavailable'
@@ -797,7 +799,7 @@ export const useClientPortalStore = defineStore('clientPortal', {
       if (detail && typeof detail === 'object' && detail.code) return err
       this.multiAgentChatAvailable = false
       err.code = 'rooms_unavailable'
-      err.message = MULTI_AGENT_UNAVAILABLE
+      err.message = uiText(MULTI_AGENT_UNAVAILABLE)
       return err
     },
 
@@ -947,7 +949,7 @@ export const useClientPortalStore = defineStore('clientPortal', {
         if (gen !== this._reportsGeneration) return
         // Paired with `LoadFailed`'s title ("Couldn't load reports"), so this
         // says what to DO rather than restating what happened (contract #25).
-        this.reportsError = 'The request failed. Check your connection and try again.'
+        this.reportsError = uiText("The request failed. Check your connection and try again.")
       }
     },
 
@@ -985,7 +987,7 @@ export const useClientPortalStore = defineStore('clientPortal', {
         // tell a transient failure from a gone report — and stranding someone on
         // a transient one is the worse of the two mistakes.
         this.reportErrors = {
-          ...this.reportErrors, [reportId]: 'Could not load this report.',
+          ...this.reportErrors, [reportId]: uiText('Could not load this report.'),
         }
       } finally {
         // Generation-guarded like every other write: a reset already emptied
@@ -1039,7 +1041,7 @@ export const useClientPortalStore = defineStore('clientPortal', {
       } catch {
         if (gen !== this._reportsGeneration) return
         this.reportErrors = {
-          ...this.reportErrors, [reportId]: 'Could not load more rows.',
+          ...this.reportErrors, [reportId]: uiText('Could not load more rows.'),
         }
       } finally {
         // Generation-guarded like every other write: a reset already emptied
@@ -1800,8 +1802,8 @@ export const useClientPortalStore = defineStore('clientPortal', {
         // yet" with no way to tell that from an actually-empty share list.
         this.unavailable = err.response?.status === 404
         this.error = this.unavailable
-          ? 'The workspace is not available on this instance.'
-          : (err.response?.data?.detail || 'Failed to load your agents.')
+          ? uiText("The workspace is not available on this instance.")
+          : (err.response?.data?.detail || uiText("Failed to load your agents."))
         this.agents = []
         // #2128: the attempt reached a verdict — the room route may stop
         // showing its neutral placeholder and render the honest failure copy.

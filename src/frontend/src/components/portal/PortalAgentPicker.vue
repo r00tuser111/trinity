@@ -1,19 +1,19 @@
 <template>
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Start a chat">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" :aria-label="uiText(&quot;Start a chat&quot;)">
     <div class="absolute inset-0 bg-black/40" @click="$emit('cancel')"></div>
 
     <div class="relative w-full max-w-md rounded-2xl bg-white dark:bg-gray-900 shadow-xl ring-1 ring-gray-200 dark:ring-gray-800 flex flex-col max-h-[80vh]">
       <div class="shrink-0 px-4 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-        <h2 class="text-sm font-semibold">Start a chat</h2>
+        <h2 class="text-sm font-semibold">{{ uiText("Start a chat") }}</h2>
         <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-          {{ multi ? 'Pick one agent, or several to put them in the same conversation.'
-            : 'Pick an agent to chat with.' }}
+          {{ multi ? uiText("Pick one agent, or several to put them in the same conversation.")
+            : uiText("Pick an agent to chat with.") }}
         </p>
       </div>
 
       <div class="flex-1 min-h-0 overflow-y-auto p-2">
         <p v-if="!agents.length" class="px-2 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
-          No agents are shared with you yet.
+          {{ uiText("No agents are shared with you yet.") }}
         </p>
         <button
           v-for="a in agents"
@@ -55,22 +55,22 @@
              an explanation here would put the operator's billing tier in front
              of their customer to no purpose. -->
         <span class="text-xs text-gray-500 dark:text-gray-400 flex-1">
-          {{ selected.length === 0 ? 'Nobody selected'
-            : selected.length === 1 ? '1 agent'
-            : multi ? `${selected.length} agents — they will share this conversation`
-            : `${selected.length} agents` }}
+          {{ selected.length === 0 ? uiText("Nobody selected")
+            : selected.length === 1 ? uiText("1 agent")
+            : multi ? uiText("{arg1} agents — they will share this conversation", { arg1: (selected.length) })
+            : uiText("{arg1} agents", { arg1: (selected.length) }) }}
         </span>
         <button
           type="button"
           class="px-3 py-1.5 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
           @click="$emit('cancel')"
-        >Cancel</button>
+        >{{ uiText("Cancel") }}</button>
         <button
           type="button"
           class="px-3 py-1.5 rounded-lg text-sm font-medium bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-40 transition"
           :disabled="!selected.length || busy"
           @click="confirm"
-        >{{ busy ? 'Starting…' : 'Start' }}</button>
+        >{{ busy ? uiText("Starting…") : uiText("Start") }}</button>
       </div>
     </div>
   </div>
@@ -129,4 +129,6 @@ function confirm() {
   if (!selected.value.length) return
   emit('confirm', [...selected.value])
 }
+
+import { t as uiText } from '@/i18n'
 </script>

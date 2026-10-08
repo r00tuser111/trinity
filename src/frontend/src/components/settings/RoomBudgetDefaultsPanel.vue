@@ -30,14 +30,13 @@
   <div class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
     <div class="px-6 py-5">
       <div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Room budgets</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ uiText("Room budgets") }}</h3>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          The limits applied to a multi-agent room started from the Workspace. A room
-          closes with a visible reason when it reaches one. Clients cannot change these.
+          {{ uiText("The limits applied to a multi-agent room started from the Workspace. A room closes with a visible reason when it reaches one. Clients cannot change these.") }}
         </p>
       </div>
 
-      <div v-if="loading" class="mt-4 text-sm text-gray-500 dark:text-gray-400">Loading…</div>
+      <div v-if="loading" class="mt-4 text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading…") }}</div>
 
       <!-- A failure to LOAD is a different fact from a failure to SAVE. -->
       <div
@@ -45,13 +44,13 @@
         class="mt-4 rounded-md bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-4"
       >
         <p class="text-sm text-red-700 dark:text-red-300">{{ loadError }}</p>
-        <button type="button" class="mt-2 text-sm font-medium text-red-700 dark:text-red-300 underline" @click="load">Retry</button>
+        <button type="button" class="mt-2 text-sm font-medium text-red-700 dark:text-red-300 underline" @click="load">{{ uiText("Retry") }}</button>
       </div>
 
       <div v-else-if="state" class="mt-5 space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label for="rbd-messages" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Messages</label>
+            <label for="rbd-messages" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ uiText("Messages") }}</label>
             <div class="mt-1 flex items-center gap-2">
               <input
                 id="rbd-messages"
@@ -66,24 +65,24 @@
           </div>
 
           <div>
-            <label for="rbd-cost" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cost cap (USD)</label>
+            <label for="rbd-cost" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ uiText("Cost cap (USD)") }}</label>
             <div class="mt-1 flex items-center gap-2">
               <input
                 id="rbd-cost"
                 v-model="form.max_cost_usd"
                 type="number" min="0" step="0.5"
-                placeholder="none"
+                :placeholder="uiText(&quot;none&quot;)"
                 :disabled="saving"
                 data-testid="rbd-max-cost"
                 :class="SETTINGS_NUMBER_INPUT_CLASS"
               />
               <span class="text-xs text-gray-400 dark:text-gray-500">{{ sourceLabel('room_default_max_cost_usd') }}</span>
             </div>
-            <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Empty means no cap.</p>
+            <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ uiText("Empty means no cap.") }}</p>
           </div>
 
           <div>
-            <label for="rbd-ttl" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Expires after</label>
+            <label for="rbd-ttl" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ uiText("Expires after") }}</label>
             <div class="mt-1 flex items-center gap-2">
               <input
                 id="rbd-ttl"
@@ -93,10 +92,10 @@
                 data-testid="rbd-ttl"
                 :class="SETTINGS_NUMBER_INPUT_CLASS"
               />
-              <span class="text-sm text-gray-500 dark:text-gray-400">hours</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ uiText("hours") }}</span>
               <span class="text-xs text-gray-400 dark:text-gray-500">{{ sourceLabel('room_default_ttl_hours') }}</span>
             </div>
-            <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">0 means no expiry.</p>
+            <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ uiText("0 means no expiry.") }}</p>
           </div>
         </div>
 
@@ -107,14 +106,14 @@
             data-testid="rbd-save"
             class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50"
             @click="save"
-          >{{ saving ? 'Saving…' : 'Save' }}</button>
+          >{{ saving ? uiText("Saving…") : uiText("Save") }}</button>
           <button
             v-if="dirty"
             type="button"
             class="text-sm text-gray-500 dark:text-gray-400 underline"
             @click="reset"
-          >Reset</button>
-          <span v-if="saved" class="text-sm text-status-success-600 dark:text-status-success-400">Saved</span>
+          >{{ uiText("Reset") }}</button>
+          <span v-if="saved" class="text-sm text-status-success-600 dark:text-status-success-400">{{ uiText("Saved") }}</span>
         </div>
 
         <p v-if="saveError" class="text-sm text-red-600 dark:text-red-400">{{ saveError }}</p>
@@ -159,7 +158,7 @@ async function load() {
     const { data } = await api.get('/api/enterprise/room-budget-defaults')
     adopt(data)
   } catch (e) {
-    loadError.value = e.response?.data?.detail || 'Could not load the room budget defaults.'
+    loadError.value = e.response?.data?.detail || uiText("Could not load the room budget defaults.")
   } finally {
     loading.value = false
   }
@@ -183,11 +182,13 @@ async function save() {
     adopt(data)
     saved.value = true
   } catch (e) {
-    saveError.value = e.response?.data?.detail || 'Could not save the room budget defaults.'
+    saveError.value = e.response?.data?.detail || uiText("Could not save the room budget defaults.")
   } finally {
     saving.value = false
   }
 }
 
 onMounted(load)
+
+import { t as uiText } from '@/i18n'
 </script>

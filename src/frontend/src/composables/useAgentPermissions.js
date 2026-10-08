@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { ref, computed } from 'vue'
 
 /**
@@ -29,7 +31,7 @@ export function useAgentPermissions(agentRef, agentsStore) {
       console.error('Failed to load permissions:', err)
       permissionsMessage.value = {
         type: 'error',
-        text: err.response?.data?.detail || 'Failed to load permissions'
+        text: err.response?.data?.detail || uiText("Failed to load permissions")
       }
     } finally {
       permissionsLoading.value = false
@@ -51,14 +53,14 @@ export function useAgentPermissions(agentRef, agentsStore) {
       permissionsDirty.value = false
       permissionsMessage.value = {
         type: 'success',
-        text: `Permissions saved (${permittedAgentNames.length} agents allowed)`
+        get "text"() { return uiText("Permissions saved ({arg1} agents allowed)", { arg1: (permittedAgentNames.length) }) }
       }
       setTimeout(() => { permissionsMessage.value = null }, 3000)
     } catch (err) {
       console.error('Failed to save permissions:', err)
       permissionsMessage.value = {
         type: 'error',
-        text: err.response?.data?.detail || 'Failed to save permissions'
+        text: err.response?.data?.detail || uiText("Failed to save permissions")
       }
     } finally {
       permissionsSaving.value = false

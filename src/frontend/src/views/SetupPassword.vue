@@ -3,6 +3,7 @@
        no theme preference exists yet). trinity-enterprise#49: setup-token field
        removed, admin email required, welcoming animated first-run page. -->
   <div class="setup-root">
+    <div class="absolute top-4 right-4 z-50 dark"><LanguageSelect /></div>
     <div class="aurora" aria-hidden="true"></div>
     <div class="grid-fade" aria-hidden="true"></div>
 
@@ -19,26 +20,26 @@
           <div class="orbit o3"><span class="node green n-left"></span><span class="node indigo n-right"></span></div>
         </div>
 
-        <div class="eyebrow">Trinity · First-time setup</div>
-        <h1>Welcome to <span class="grad">Trinity</span></h1>
-        <p class="lede">Sovereign infrastructure for your fleet of autonomous agents. Let's create your admin account.</p>
+        <div class="eyebrow">{{ t('Trinity · First-time setup') }}</div>
+        <h1>{{ t('Welcome to') }} <span class="grad">Trinity</span></h1>
+        <p class="lede">{{ t('Sovereign infrastructure for your fleet of autonomous agents. Let\'s create your admin account.') }}</p>
         <div class="props">
-          <span><i></i> Governed</span>
-          <span><i></i> Auditable</span>
-          <span><i></i> Your infrastructure</span>
+          <span><i></i> {{ t('Governed') }}</span>
+          <span><i></i> {{ t('Auditable') }}</span>
+          <span><i></i> {{ t('Your infrastructure') }}</span>
         </div>
       </section>
 
       <!-- RIGHT: setup form -->
       <section class="formwrap">
         <div class="card">
-          <h2>Create your admin account</h2>
-          <p class="sub">This sets up the owner of this Trinity instance.</p>
+          <h2>{{ t('Create your admin account') }}</h2>
+          <p class="sub">{{ t('This sets up the owner of this Trinity instance.') }}</p>
 
           <form @submit.prevent="handleSubmit" novalidate>
             <!-- Admin email (required) -->
             <div class="field">
-              <label for="adminEmail">Admin email <span class="req">*</span></label>
+              <label for="adminEmail">{{ t('Admin email') }} <span class="req">*</span></label>
               <div class="ipt">
                 <input
                   type="email"
@@ -50,19 +51,19 @@
                   required
                 />
               </div>
-              <p class="hint">You'll sign in with this email and your password.</p>
+              <p class="hint">{{ t('You\'ll sign in with this email and your password.') }}</p>
             </div>
 
             <!-- Password -->
             <div class="field">
-              <label for="password">Password <span class="req">*</span></label>
+              <label for="password">{{ t('Password') }} <span class="req">*</span></label>
               <div class="ipt">
                 <input
                   :type="showPassword ? 'text' : 'password'"
                   id="password"
                   v-model="password"
                   :disabled="loading"
-                  placeholder="Enter password (12+ characters)"
+                  :placeholder="t('Enter password (12+ characters)')"
                   autocomplete="new-password"
                   required
                   minlength="12"
@@ -75,12 +76,12 @@
 
               <template v-if="password">
                 <div class="meter"><i :style="{ width: `${passwordStrength * 20}%`, background: strengthColor }"></i></div>
-                <div class="strength"><span>Strength</span><b :style="{ color: strengthColor }">{{ passwordStrengthText }}</b></div>
+                <div class="strength"><span>{{ t('Strength') }}</span><b :style="{ color: strengthColor }">{{ t(passwordStrengthText) }}</b></div>
                 <div class="reqs">
                   <div v-for="req in passwordRequirements" :key="req.label" :class="{ met: req.met }">
                     <svg v-if="req.met" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                     <svg v-else fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"/></svg>
-                    {{ req.label }}
+                    {{ t(req.label) }}
                   </div>
                 </div>
               </template>
@@ -88,14 +89,14 @@
 
             <!-- Confirm password -->
             <div class="field">
-              <label for="confirmPassword">Confirm password <span class="req">*</span></label>
+              <label for="confirmPassword">{{ t('Confirm password') }} <span class="req">*</span></label>
               <div class="ipt">
                 <input
                   :type="showConfirmPassword ? 'text' : 'password'"
                   id="confirmPassword"
                   v-model="confirmPassword"
                   :disabled="loading"
-                  placeholder="Confirm your password"
+                  :placeholder="t('Confirm your password')"
                   autocomplete="new-password"
                   required
                   minlength="12"
@@ -108,7 +109,7 @@
               <div v-if="password && confirmPassword" class="match" :class="{ bad: !passwordsMatch }">
                 <svg v-if="passwordsMatch" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 <svg v-else fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                {{ passwordsMatch ? 'Passwords match' : 'Passwords do not match' }}
+                {{ passwordsMatch ? t('Passwords match') : t('Passwords do not match') }}
               </div>
             </div>
 
@@ -116,36 +117,36 @@
 
             <!-- Company / organization (optional) -->
             <div class="field">
-              <label for="company">Company / organization <span class="opt">(optional)</span></label>
+              <label for="company">{{ t('Company / organization') }} <span class="opt">{{ t('(optional)') }}</span></label>
               <div class="ipt">
-                <input type="text" id="company" v-model="company" :disabled="loading" placeholder="Acme Inc." autocomplete="organization" />
+                <input type="text" id="company" v-model="company" :disabled="loading" :placeholder="t('Acme Inc.')" autocomplete="organization" />
               </div>
             </div>
 
             <!-- Updates opt-in -->
             <div class="checkrow">
               <input id="consentUpdates" type="checkbox" v-model="consentUpdates" :disabled="loading" />
-              <label for="consentUpdates">Occasionally email me important security &amp; product updates.
-                <small>Sends your email{{ company ? ' + company' : '' }} to ability.ai — nothing else. Skippable; disable via env on air-gapped installs.</small>
+              <label for="consentUpdates">{{ t('Occasionally email me important security & product updates.') }}
+                <small>{{ t('Sends your email') }}{{ company ? t(' + company') : '' }} {{ t('to ability.ai — nothing else. Skippable; disable via env on air-gapped installs.') }}</small>
               </label>
             </div>
 
             <!-- Error -->
             <div v-if="error" class="errbox">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span>{{ error }}</span>
+              <span>{{ t(error) }}</span>
             </div>
 
             <button class="cta" type="submit" :disabled="!isValid || loading">
               <svg v-if="loading" class="spin" fill="none" viewBox="0 0 24 24"><circle class="o25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="o75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-              {{ loading ? 'Creating account…' : 'Create admin account & continue →' }}
+              {{ loading ? t('Creating account…') : t('Create admin account & continue →') }}
             </button>
 
             <div class="secnote">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-              Available only until your admin account is created.
+              {{ t('Available only until your admin account is created.') }}
             </div>
-            <p class="footnote">Prefer the classic login? Sign in as <code>admin</code> with this password anytime.</p>
+            <p class="footnote">{{ t('Prefer the classic login? Sign in as') }} <code>admin</code> {{ t('with this password anytime.') }}</p>
           </form>
         </div>
       </section>
@@ -154,6 +155,10 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import LanguageSelect from '@/components/LanguageSelect.vue'
+import { t } from '@/i18n'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
@@ -183,19 +188,19 @@ const passwordsMatch = computed(() => password.value === confirmPassword.value)
 const passwordRequirements = computed(() => {
   const p = password.value
   return [
-    { label: 'At least 12 characters', met: p.length >= 12 },
-    { label: 'Uppercase letter (A-Z)', met: /[A-Z]/.test(p) },
-    { label: 'Lowercase letter (a-z)', met: /[a-z]/.test(p) },
-    { label: 'Number (0-9)', met: /[0-9]/.test(p) },
-    { label: 'Special character (!@#$…)', met: /[^A-Za-z0-9]/.test(p) },
+    { get "label"() { return uiText("At least 12 characters") }, met: p.length >= 12 },
+    { get "label"() { return uiText("Uppercase letter (A-Z)") }, met: /[A-Z]/.test(p) },
+    { get "label"() { return uiText("Lowercase letter (a-z)") }, met: /[a-z]/.test(p) },
+    { get "label"() { return uiText("Number (0-9)") }, met: /[0-9]/.test(p) },
+    { get "label"() { return uiText("Special character (!@#$…)") }, met: /[^A-Za-z0-9]/.test(p) },
   ]
 })
 
 const passwordStrength = computed(() => passwordRequirements.value.filter(r => r.met).length)
 
 const passwordStrengthText = computed(() => {
-  const texts = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong', 'Excellent']
-  return texts[passwordStrength.value] || 'Very Weak'
+  const texts = [uiText('Very Weak'), uiText('Weak'), uiText('Fair'), uiText('Good'), uiText('Strong'), uiText('Excellent')]
+  return texts[passwordStrength.value] || uiText("Very Weak")
 })
 
 const strengthColor = computed(() => {
@@ -237,10 +242,10 @@ async function handleSubmit() {
   } catch (e) {
     if (e.response?.status === 403) {
       // Setup already completed — endpoint self-disabled. Send them to login.
-      error.value = 'Setup has already been completed.'
+      error.value = uiText("Setup has already been completed.")
       setTimeout(() => router.push('/login'), 2000)
     } else {
-      error.value = e.response?.data?.detail || 'Failed to create the admin account. Please try again.'
+      error.value = e.response?.data?.detail || uiText("Failed to create the admin account. Please try again.")
     }
   } finally {
     loading.value = false

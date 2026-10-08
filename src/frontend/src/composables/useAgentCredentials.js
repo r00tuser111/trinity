@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { ref } from 'vue'
 
 /**
@@ -55,13 +57,13 @@ export function useAgentCredentials(agentRef, agentsStore, showNotification) {
       const result = await agentsStore.injectCredentials(agentRef.value.name, files)
       await loadCredentials()
       if (showNotification) {
-        showNotification(`Injected ${result.files_written.length} file(s)`, 'success')
+        showNotification(uiText("Injected {arg1} file(s)", { arg1: (result.files_written.length) }), 'success')
       }
       return result
     } catch (err) {
       console.error('Failed to inject credentials:', err)
       if (showNotification) {
-        showNotification(err.response?.data?.detail || 'Failed to inject credentials', 'error')
+        showNotification(err.response?.data?.detail || uiText("Failed to inject credentials"), 'error')
       }
       throw err
     } finally {
@@ -80,13 +82,13 @@ export function useAgentCredentials(agentRef, agentsStore, showNotification) {
       const result = await agentsStore.exportCredentials(agentRef.value.name)
       await loadCredentials()
       if (showNotification) {
-        showNotification(`Exported ${result.files_exported} file(s) to .credentials.enc`, 'success')
+        showNotification(uiText("Exported {arg1} file(s) to .credentials.enc", { arg1: (result.files_exported) }), 'success')
       }
       return result
     } catch (err) {
       console.error('Failed to export credentials:', err)
       if (showNotification) {
-        showNotification(err.response?.data?.detail || 'Failed to export credentials', 'error')
+        showNotification(err.response?.data?.detail || uiText("Failed to export credentials"), 'error')
       }
       throw err
     } finally {
@@ -105,13 +107,13 @@ export function useAgentCredentials(agentRef, agentsStore, showNotification) {
       const result = await agentsStore.importCredentials(agentRef.value.name)
       await loadCredentials()
       if (showNotification) {
-        showNotification(`Imported ${result.files_imported.length} file(s)`, 'success')
+        showNotification(uiText("Imported {arg1} file(s)", { arg1: (result.files_imported.length) }), 'success')
       }
       return result
     } catch (err) {
       console.error('Failed to import credentials:', err)
       if (showNotification) {
-        showNotification(err.response?.data?.detail || 'Failed to import credentials', 'error')
+        showNotification(err.response?.data?.detail || uiText("Failed to import credentials"), 'error')
       }
       throw err
     } finally {
@@ -188,7 +190,7 @@ export function useAgentCredentials(agentRef, agentsStore, showNotification) {
       if (credCount === 0) {
         quickAddResult.value = {
           success: false,
-          message: 'No valid KEY=VALUE pairs found'
+          get "message"() { return uiText("No valid KEY=VALUE pairs found") }
         }
         return
       }
@@ -216,20 +218,20 @@ export function useAgentCredentials(agentRef, agentsStore, showNotification) {
 
       quickAddResult.value = {
         success: true,
-        message: `Injected ${credCount} credential(s)`,
+        get "message"() { return uiText("Injected {arg1} credential(s)", { arg1: (credCount) }) },
         credentials: Object.keys(newCredentials)
       }
       quickAddText.value = ''
       await loadCredentials()
 
       if (showNotification) {
-        showNotification('Credentials added', 'success')
+        showNotification(uiText("Credentials added"), 'success')
       }
     } catch (err) {
       console.error('Quick add failed:', err)
       quickAddResult.value = {
         success: false,
-        message: err.response?.data?.detail || err.message || 'Failed to add credentials'
+        message: err.response?.data?.detail || err.message || uiText('Failed to add credentials')
       }
     } finally {
       quickAddLoading.value = false

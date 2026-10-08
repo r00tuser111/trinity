@@ -17,6 +17,8 @@
  * something to smuggle into a readability fix.
  */
 
+import { msg } from '../i18n/index.js'
+
 /**
  * Copy text to clipboard with a fallback for hostile environments.
  *
@@ -88,15 +90,15 @@ function execCommandFallback(text) {
 
 export const COPY_FEEDBACK_TTL_MS = 2000
 
-export const COPY_CODE_LABEL = 'Copy'
-export const COPY_CODE_ARIA = 'Copy code'
-export const COPY_MESSAGE_ARIA = 'Copy message'
+export const COPY_CODE_LABEL = msg('Copy')
+export const COPY_CODE_ARIA = msg('Copy code')
+export const COPY_MESSAGE_ARIA = msg('Copy message')
 
 const FEEDBACK = Object.freeze({
-  ok: Object.freeze({ label: 'Copied', tone: 'ok' }),
-  unavailable: Object.freeze({ label: 'Copy unavailable', tone: 'error' }),
-  denied: Object.freeze({ label: 'Copy blocked', tone: 'error' }),
-  error: Object.freeze({ label: 'Copy failed', tone: 'error' }),
+  ok: Object.freeze({ label: msg('Copied'), tone: 'ok' }),
+  unavailable: Object.freeze({ label: msg('Copy unavailable'), tone: 'error' }),
+  denied: Object.freeze({ label: msg('Copy blocked'), tone: 'error' }),
+  error: Object.freeze({ label: msg('Copy failed'), tone: 'error' }),
 })
 
 /**

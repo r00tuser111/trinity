@@ -2,7 +2,7 @@
   <div class="schedule-analytics-card mt-3 border-t border-gray-100 dark:border-gray-700 pt-3">
     <div class="flex items-center justify-between mb-3">
       <h4 class="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-        Analytics
+        {{ uiText("Analytics") }}
       </h4>
       <div class="flex items-center gap-1">
         <button
@@ -31,19 +31,19 @@
     <div
       v-else-if="!data || data.total_executions === 0"
       class="text-center py-6 text-xs text-gray-400 dark:text-gray-500"
-    >No executions in selected window</div>
+    >{{ uiText("No executions in selected window") }}</div>
 
     <div v-else class="space-y-3">
       <!-- Stat tiles -->
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
         <div class="px-3 py-2 rounded bg-gray-50 dark:bg-gray-800/50">
-          <div class="text-xs text-gray-500 dark:text-gray-400">Runs</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Runs") }}</div>
           <div class="text-sm font-semibold text-gray-900 dark:text-white">
             {{ data.total_executions }}
           </div>
         </div>
         <div class="px-3 py-2 rounded bg-gray-50 dark:bg-gray-800/50">
-          <div class="text-xs text-gray-500 dark:text-gray-400" title="Runs that finished without erroring — completion, not answer quality (ent#206)">Completion</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400" :title="uiText(&quot;Runs that finished without erroring — completion, not answer quality (ent#206)&quot;)">{{ uiText("Completion") }}</div>
           <div :class="['text-sm font-semibold', successRateColor]">
             {{ successRatePercent }}
           </div>
@@ -55,13 +55,13 @@
           </div>
         </div>
         <div class="px-3 py-2 rounded bg-gray-50 dark:bg-gray-800/50">
-          <div class="text-xs text-gray-500 dark:text-gray-400">Cost</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Cost") }}</div>
           <div class="text-sm font-semibold text-gray-900 dark:text-white">
             {{ formatCostCompact(data.cost.total) }}
           </div>
         </div>
         <div class="px-3 py-2 rounded bg-gray-50 dark:bg-gray-800/50">
-          <div class="text-xs text-gray-500 dark:text-gray-400">Tool calls</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Tool calls") }}</div>
           <div class="text-sm font-semibold text-gray-900 dark:text-white">
             {{ data.tool_calls.total_calls }}
           </div>
@@ -71,7 +71,7 @@
       <!-- Tool top-5 -->
       <div v-if="data.tool_calls.top.length > 0">
         <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">
-          Top tools by total wall time
+          {{ uiText("Top tools by total wall time") }}
         </div>
         <div class="space-y-1">
           <div
@@ -99,20 +99,20 @@
       <div>
         <div class="flex items-center justify-between mb-1">
           <div class="text-xs text-gray-500 dark:text-gray-400">
-            Daily activity (UTC)
+            {{ uiText("Daily activity (UTC)") }}
           </div>
           <div class="flex items-center gap-3 text-xs">
             <span class="flex items-center gap-1">
               <span class="w-2 h-2 rounded-sm bg-status-success-500"></span>
-              <span class="text-gray-500 dark:text-gray-400">success</span>
+              <span class="text-gray-500 dark:text-gray-400">{{ uiText("success") }}</span>
             </span>
             <span class="flex items-center gap-1">
               <span class="w-2 h-2 rounded-sm bg-status-danger-500"></span>
-              <span class="text-gray-500 dark:text-gray-400">failed</span>
+              <span class="text-gray-500 dark:text-gray-400">{{ uiText("failed") }}</span>
             </span>
             <span class="flex items-center gap-1">
               <span class="w-2 h-2 rounded-sm bg-status-info-500"></span>
-              <span class="text-gray-500 dark:text-gray-400">cost</span>
+              <span class="text-gray-500 dark:text-gray-400">{{ uiText("cost") }}</span>
             </span>
           </div>
         </div>
@@ -121,7 +121,7 @@
             v-for="bucket in data.timeline"
             :key="bucket.date"
             class="flex-1 flex flex-col items-stretch group relative min-w-[2px]"
-            :title="`${bucket.date} • ${bucket.success} ok / ${bucket.failed} fail • ${formatCost(bucket.cost)}`"
+            :title="uiText(&quot;{arg1} • {arg2} ok / {arg3} fail • {arg4}&quot;, { arg1: (bucket.date), arg2: (bucket.success), arg3: (bucket.failed), arg4: (formatCost(bucket.cost)) })"
           >
             <!-- Tooltip -->
             <div
@@ -163,7 +163,7 @@
         v-if="data.sampled"
         class="text-xs text-status-warning-700 dark:text-status-warning-300 bg-status-warning-50 dark:bg-status-warning-900/20 px-2 py-1 rounded"
       >
-        Showing latest {{ data.sample_size.toLocaleString() }} successful runs — older runs excluded from distribution.
+        {{ uiText("Showing latest") }} {{ data.sample_size.toLocaleString() }} {{ uiText("successful runs — older runs excluded from distribution.") }}
       </div>
     </div>
   </div>
@@ -216,7 +216,7 @@ async function fetchAnalytics() {
     )
     data.value = res.data
   } catch (err) {
-    error.value = err.response?.data?.detail || 'Failed to load analytics'
+    error.value = err.response?.data?.detail || uiText("Failed to load analytics")
     data.value = null
   } finally {
     loading.value = false
@@ -300,4 +300,6 @@ const maxToolDuration = computed(() => {
 function toolBarWidth(ms) {
   return Math.max((ms / maxToolDuration.value) * 100, 2)
 }
+
+import { t as uiText } from '@/i18n'
 </script>

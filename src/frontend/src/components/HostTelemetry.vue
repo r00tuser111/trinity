@@ -92,6 +92,8 @@ onMounted(async () => {
 onUnmounted(() => {
   if (pollInterval) clearInterval(pollInterval)
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <template>
@@ -102,7 +104,7 @@ onUnmounted(() => {
       <span class="text-gray-300 dark:text-gray-500">·</span>
 
       <!-- CPU -->
-      <span class="stat-item" data-metric="cpu" :title="`CPU ${formatPercent(hostStats?.cpu?.percent)}%`">
+      <span class="stat-item" data-metric="cpu" :title="uiText(&quot;CPU {arg1}%&quot;, { arg1: (formatPercent(hostStats?.cpu?.percent)) })">
         <span class="dot bg-blue-500"></span>
         <span class="stat-label">CPU</span>
         <span class="spark">
@@ -123,10 +125,10 @@ onUnmounted(() => {
       <span
         class="stat-item"
         data-metric="mem"
-        :title="`Memory ${formatMemory(hostStats?.memory?.used_gb, hostStats?.memory?.total_gb)}`"
+        :title="uiText(&quot;Memory {arg1}&quot;, { arg1: (formatMemory(hostStats?.memory?.used_gb, hostStats?.memory?.total_gb)) })"
       >
         <span class="dot bg-accent-purple-500"></span>
-        <span class="stat-label">Mem</span>
+        <span class="stat-label">{{ uiText("Mem") }}</span>
         <span class="spark">
           <SparklineChart
             :data="memHistory"
@@ -142,9 +144,9 @@ onUnmounted(() => {
       <span class="text-gray-300 dark:text-gray-500" data-sep="disk">·</span>
 
       <!-- Disk -->
-      <span class="stat-item" data-metric="disk" :title="`Disk ${formatPercent(hostStats?.disk?.percent)}%`">
+      <span class="stat-item" data-metric="disk" :title="uiText(&quot;Disk {arg1}%&quot;, { arg1: (formatPercent(hostStats?.disk?.percent)) })">
         <span class="dot bg-status-success-500"></span>
-        <span class="stat-label">Disk</span>
+        <span class="stat-label">{{ uiText("Disk") }}</span>
         <span class="disk-bar">
           <span
             class="disk-fill"

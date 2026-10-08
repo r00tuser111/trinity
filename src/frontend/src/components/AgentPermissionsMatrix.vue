@@ -2,30 +2,28 @@
   <div class="p-6">
     <!-- Header + intro -->
     <div class="mb-4">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">Agent Permissions Matrix</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">{{ uiText("Agent Permissions Matrix") }}</h3>
       <p class="text-sm text-gray-500 dark:text-gray-400">
-        Fleet-wide view of which agent may call which over the Trinity MCP tools.
-        A check at <span class="font-medium">(caller&nbsp;row, target&nbsp;column)</span>
-        means the row agent may call the column agent — grants are one-directional.
-        Writes go through the same grant/revoke path as each agent's Permissions tab.
+        {{ uiText("Fleet-wide view of which agent may call which over the Trinity MCP tools. A check at") }} <span class="font-medium">{{ uiText("(caller row, target column)") }}</span>
+        {{ uiText("means the row agent may call the column agent — grants are one-directional. Writes go through the same grant/revoke path as each agent's Permissions tab.") }}
       </p>
     </div>
 
     <!-- Loading -->
     <div v-if="loading" class="text-center py-10">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-action-primary-500 mx-auto"></div>
-      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Loading permissions…</p>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading permissions…") }}</p>
     </div>
 
     <!-- Load error -->
     <div v-else-if="loadError" class="rounded-lg border border-status-danger-200 dark:border-status-danger-800 bg-status-danger-50 dark:bg-status-danger-900/30 p-4 text-sm text-status-danger-700 dark:text-status-danger-300">
       {{ loadError }}
-      <button class="ml-2 underline" @click="reload">Retry</button>
+      <button class="ml-2 underline" @click="reload">{{ uiText("Retry") }}</button>
     </div>
 
     <!-- Empty -->
     <div v-else-if="agents.length === 0" class="text-center py-10 text-sm text-gray-500 dark:text-gray-400">
-      No agents available to display. Create at least two agents to manage cross-agent permissions.
+      {{ uiText("No agents available to display. Create at least two agents to manage cross-agent permissions.") }}
     </div>
 
     <div v-else>
@@ -35,28 +33,28 @@
           <input
             v-model="filter"
             type="text"
-            placeholder="Filter agents (both axes)…"
+            :placeholder="uiText(&quot;Filter agents (both axes)…&quot;)"
             class="w-64 pl-3 pr-8 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-action-primary-500 focus:border-action-primary-500"
           />
           <button
             v-if="filter"
             @click="filter = ''"
             class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-            aria-label="Clear filter"
+            :aria-label="uiText(&quot;Clear filter&quot;)"
           >×</button>
         </div>
 
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-action-primary-50 dark:bg-action-primary-900/40 text-action-primary-700 dark:text-action-primary-300">
-          {{ grantCount }} grants / {{ possibleCount }} possible
+          {{ grantCount }} {{ uiText("grants /") }} {{ possibleCount }} {{ uiText("possible") }}
         </span>
 
         <span v-if="busy" class="inline-flex items-center gap-1.5 text-xs text-state-autonomous-600 dark:text-state-autonomous-400">
           <span class="animate-spin rounded-full h-3 w-3 border-b-2 border-current"></span>
-          Saving…
+          {{ uiText("Saving…") }}
         </span>
 
         <span v-if="visibleAgents.length !== agents.length" class="text-xs text-gray-400">
-          showing {{ visibleAgents.length }} of {{ agents.length }}
+          {{ uiText("showing") }} {{ visibleAgents.length }} {{ uiText("of") }} {{ agents.length }}
         </span>
       </div>
 
@@ -71,7 +69,7 @@
       </div>
 
       <div v-if="visibleAgents.length === 0" class="text-sm text-gray-500 dark:text-gray-400 py-6">
-        No agents match “{{ filter }}”.
+        {{ uiText("No agents match “") }}{{ filter }}”.
       </div>
 
       <div v-else class="flex gap-4 items-start">
@@ -86,7 +84,7 @@
                   :colspan="visibleAgents.length"
                   class="sticky top-0 z-20 bg-gray-50 dark:bg-gray-800 px-2 py-1 text-center font-semibold text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700"
                 >
-                  Target — receives the call →
+                  {{ uiText("Target — receives the call →") }}
                 </th>
               </tr>
               <!-- Column headers -->
@@ -94,8 +92,8 @@
                 <!-- Split corner cell -->
                 <th class="sticky left-0 top-7 z-30 bg-gray-100 dark:bg-gray-800 w-40 min-w-40 h-16 p-0 border-b border-r border-gray-200 dark:border-gray-700">
                   <div class="relative w-full h-full corner-split">
-                    <span class="absolute top-1 right-1 text-xs text-gray-500 dark:text-gray-400">target →</span>
-                    <span class="absolute bottom-1 left-1 text-xs text-gray-500 dark:text-gray-400">caller ↓</span>
+                    <span class="absolute top-1 right-1 text-xs text-gray-500 dark:text-gray-400">{{ uiText("target →") }}</span>
+                    <span class="absolute bottom-1 left-1 text-xs text-gray-500 dark:text-gray-400">{{ uiText("caller ↓") }}</span>
                   </div>
                 </th>
                 <th
@@ -110,7 +108,7 @@
                   <div class="flex flex-col items-center gap-1">
                     <button
                       class="text-gray-400 hover:text-action-primary-600 dark:hover:text-action-primary-400"
-                      :title="`Column actions for → ${t.name}`"
+                      :title="uiText(&quot;Column actions for → {arg1}&quot;, { arg1: (t.name) })"
                       @click="openHeaderMenu('col', t.name, $event)"
                     >⋯</button>
                     <span class="col-label text-gray-700 dark:text-gray-300 font-medium" :title="'→ ' + t.name">→ {{ t.name }}</span>
@@ -135,7 +133,7 @@
                     <span class="text-gray-700 dark:text-gray-300 font-medium" :title="s.name + ' →'">{{ s.name }} →</span>
                     <button
                       class="text-gray-400 hover:text-action-primary-600 dark:hover:text-action-primary-400"
-                      :title="`Row actions for ${s.name} →`"
+                      :title="uiText(&quot;Row actions for {arg1} →&quot;, { arg1: (s.name) })"
                       @click="openHeaderMenu('row', s.name, $event)"
                     >⋯</button>
                   </div>
@@ -150,10 +148,10 @@
                   @click="onCellClick(s, t, $event)"
                 >
                   <template v-if="s.name === t.name">
-                    <span class="sr-only">self</span>
+                    <span class="sr-only">{{ uiText("self") }}</span>
                   </template>
                   <template v-else-if="hasGrant(s.name, t.name)">
-                    <span class="text-action-primary-600 dark:text-action-primary-400 font-bold text-base" aria-label="granted">✓</span>
+                    <span class="text-action-primary-600 dark:text-action-primary-400 font-bold text-base" :aria-label="uiText(&quot;granted&quot;)">✓</span>
                   </template>
                 </td>
               </tr>
@@ -165,8 +163,8 @@
         <div class="w-72 shrink-0" v-if="selected">
           <div class="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-4 sticky top-4">
             <div class="flex items-center justify-between mb-2">
-              <h4 class="text-sm font-semibold text-gray-900 dark:text-white">Selected pair</h4>
-              <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="selected = null" aria-label="Close">×</button>
+              <h4 class="text-sm font-semibold text-gray-900 dark:text-white">{{ uiText("Selected pair") }}</h4>
+              <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200" @click="selected = null" :aria-label="uiText(&quot;Close&quot;)">×</button>
             </div>
 
             <!-- Direction sentence -->
@@ -178,42 +176,39 @@
 
             <template v-if="selectedGranted">
               <p class="text-sm text-gray-700 dark:text-gray-300 mb-1">
-                <span class="font-medium">{{ selected.source }}</span> may call
-                <span class="font-medium">{{ selected.target }}</span>.
-                The reverse direction
-                <span v-if="reverseGranted">also has a grant.</span>
-                <span v-else>has no grant.</span>
+                <span class="font-medium">{{ selected.source }}</span> {{ uiText("may call") }}
+                <span class="font-medium">{{ selected.target }}</span>{{ uiText(". The reverse direction") }}
+                <span v-if="reverseGranted">{{ uiText("also has a grant.") }}</span>
+                <span v-else>{{ uiText("has no grant.") }}</span>
               </p>
               <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                Granted by {{ grantMeta.granted_by || 'unknown' }}<span v-if="grantMeta.granted_at"> · {{ formatDate(grantMeta.granted_at) }}</span>.
-                This does <span class="font-semibold">not</span> let {{ selected.target }} call {{ selected.source }}.
+                {{ uiText("Granted by") }} {{ grantMeta.granted_by || uiText("unknown") }}<span v-if="grantMeta.granted_at"> · {{ formatDate(grantMeta.granted_at) }}</span>{{ uiText(". This does") }} <span class="font-semibold">{{ uiText("not") }}</span> {{ uiText("let") }} {{ selected.target }} {{ uiText("call") }} {{ selected.source }}.
               </p>
               <div class="flex flex-col gap-2">
                 <button
                   class="w-full text-sm px-3 py-1.5 rounded-md bg-status-danger-600 hover:bg-status-danger-700 text-white disabled:opacity-50"
                   :disabled="busy"
                   @click="revoke(selected.source, selected.target)"
-                >Revoke {{ selected.source }} → {{ selected.target }}</button>
+                >{{ uiText("Revoke") }} {{ selected.source }} → {{ selected.target }}</button>
                 <button
                   v-if="!reverseGranted"
                   class="w-full text-sm px-3 py-1.5 rounded-md border border-action-primary-500 text-action-primary-600 dark:text-action-primary-400 hover:bg-action-primary-50 dark:hover:bg-action-primary-900/30 disabled:opacity-50"
                   :disabled="busy"
                   @click="grant(selected.target, selected.source)"
-                >Grant reverse ({{ selected.target }} → {{ selected.source }})</button>
+                >{{ uiText("Grant reverse (") }}{{ selected.target }} → {{ selected.source }})</button>
               </div>
             </template>
 
             <template v-else>
               <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                No grant yet. Granting lets <span class="font-medium">{{ selected.source }}</span>
-                call <span class="font-medium">{{ selected.target }}</span> — one direction only.
-                This does <span class="font-semibold">not</span> let {{ selected.target }} call {{ selected.source }}.
+                {{ uiText("No grant yet. Granting lets") }} <span class="font-medium">{{ selected.source }}</span>
+                {{ uiText("call") }} <span class="font-medium">{{ selected.target }}</span> {{ uiText("— one direction only. This does") }} <span class="font-semibold">{{ uiText("not") }}</span> {{ uiText("let") }} {{ selected.target }} {{ uiText("call") }} {{ selected.source }}.
               </p>
               <button
                 class="w-full text-sm px-3 py-1.5 rounded-md bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-50"
                 :disabled="busy"
                 @click="grant(selected.source, selected.target)"
-              >Grant {{ selected.source }} → {{ selected.target }}</button>
+              >{{ uiText("Grant") }} {{ selected.source }} → {{ selected.target }}</button>
             </template>
           </div>
         </div>
@@ -232,20 +227,20 @@
         @click.stop
       >
         <div class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-700">
-          <template v-if="headerMenu.kind === 'row'">Caller: <span class="font-medium">{{ headerMenu.agent }} →</span></template>
-          <template v-else>Target: <span class="font-medium">→ {{ headerMenu.agent }}</span></template>
+          <template v-if="headerMenu.kind === 'row'">{{ uiText("Caller:") }} <span class="font-medium">{{ headerMenu.agent }} →</span></template>
+          <template v-else>{{ uiText("Target:") }} <span class="font-medium">→ {{ headerMenu.agent }}</span></template>
         </div>
-        <button class="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50" :disabled="busy" @click="bulkGrant(headerMenu)">Grant all</button>
-        <button class="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 text-status-danger-600 dark:text-status-danger-400 disabled:opacity-50" :disabled="busy" @click="bulkRevoke(headerMenu)">Revoke all</button>
+        <button class="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50" :disabled="busy" @click="bulkGrant(headerMenu)">{{ uiText("Grant all") }}</button>
+        <button class="w-full text-left px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 text-status-danger-600 dark:text-status-danger-400 disabled:opacity-50" :disabled="busy" @click="bulkRevoke(headerMenu)">{{ uiText("Revoke all") }}</button>
         <template v-if="headerMenu.kind === 'row'">
           <div class="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1">
-            <div class="px-3 py-1 text-xs text-gray-500 dark:text-gray-400">Copy grants from…</div>
+            <div class="px-3 py-1 text-xs text-gray-500 dark:text-gray-400">{{ uiText("Copy grants from…") }}</div>
             <select
               class="mx-3 mb-2 w-[calc(100%-1.5rem)] text-xs rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 py-1"
               :disabled="busy"
               @change="copyGrants(headerMenu.agent, $event.target.value); $event.target.value = ''"
             >
-              <option value="">Select agent…</option>
+              <option value="">{{ uiText("Select agent…") }}</option>
               <option v-for="a in agents.filter(x => x.name !== headerMenu.agent)" :key="a.name" :value="a.name">{{ a.name }}</option>
             </select>
           </div>
@@ -369,7 +364,7 @@ async function reload() {
     agents.value = [...m.agents].sort((a, b) => a.name.localeCompare(b.name))
     applyEdges(m.edges)
   } catch (err) {
-    loadError.value = err.response?.data?.detail || 'Failed to load permissions matrix.'
+    loadError.value = err.response?.data?.detail || uiText("Failed to load permissions matrix.")
   } finally {
     loading.value = false
   }
@@ -411,9 +406,9 @@ async function revoke(source, target) {
 
 function writeError(err, source) {
   const detail = err.response?.data?.detail
-  if (err.response?.status === 404) return `Can't modify grants for "${source}" — it has no container (never started or deleted).`
-  if (err.response?.status === 403) return `You can only modify grants for agents you own.`
-  return detail || 'Permission change failed.'
+  if (err.response?.status === 404) return uiText("Can't modify grants for \"{arg1}\" — it has no container (never started or deleted).", { arg1: (source) })
+  if (err.response?.status === 403) return uiText("You can only modify grants for agents you own.")
+  return detail || uiText("Permission change failed.")
 }
 
 // Bulk over a caller row or a target column.
@@ -450,7 +445,7 @@ async function copyGrants(to, from) {
 }
 
 async function runBatch(pairs, isRevoke = false) {
-  if (pairs.length === 0) { flash('success', 'Nothing to change.'); return }
+  if (pairs.length === 0) { flash('success', uiText('Nothing to change.')); return }
   busy.value = true
   let ok = 0, fail = 0
   for (const [s, t] of pairs) {
@@ -467,6 +462,8 @@ async function runBatch(pairs, isRevoke = false) {
 }
 
 onMounted(reload)
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

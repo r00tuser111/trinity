@@ -1,7 +1,7 @@
 <template>
   <InfoTile
     scope="Fleet"
-    title="Fleet summary"
+    :title="uiText(&quot;Fleet summary&quot;)"
     :stamp="`${agents.length} agent${agents.length === 1 ? '' : 's'}`"
     :state="agents.length ? 'ready' : 'empty'"
     empty-title="No agents yet"
@@ -52,11 +52,13 @@ const stats = computed(() => {
   const running = props.agents.filter((a) => a.status === 'running').length
   const autonomous = props.agents.filter((a) => a.autonomy_enabled).length
   return [
-    { label: 'Running', value: `${running}/${total}`, tone: running ? 'ok' : 'muted' },
-    { label: 'Autonomous', value: String(autonomous), tone: 'muted' },
-    { label: 'Stopped', value: String(total - running), tone: total - running ? 'warn' : 'muted' },
+    { get "label"() { return uiText("Running") }, value: `${running}/${total}`, tone: running ? 'ok' : 'muted' },
+    { get "label"() { return uiText("Autonomous") }, value: String(autonomous), tone: 'muted' },
+    { get "label"() { return uiText("Stopped") }, value: String(total - running), tone: total - running ? 'warn' : 'muted' },
   ]
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

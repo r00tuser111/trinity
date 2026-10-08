@@ -2,14 +2,14 @@
   <div class="template-selector">
     <!-- Header -->
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Process Templates</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Process Templates") }}</h3>
       <div class="flex items-center gap-2">
         <!-- Category filter -->
         <select
           v-model="selectedCategory"
           class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
         >
-          <option value="">All Categories</option>
+          <option value="">{{ uiText("All Categories") }}</option>
           <option v-for="cat in categories" :key="cat.id" :value="cat.id">
             {{ cat.name }}
           </option>
@@ -32,14 +32,14 @@
         <div class="h-3 w-full rounded bg-gray-100 dark:bg-gray-800/60"></div>
         <div class="h-3 w-3/4 rounded bg-gray-100 dark:bg-gray-800/60"></div>
       </div>
-      <span class="sr-only">Loading…</span>
+      <span class="sr-only">{{ uiText("Loading…") }}</span>
     </div>
 
     <!-- Failed state (#1926) — a failed fetch is NOT "no templates found":
          that copy sends the user to create a template when the fix is retry. -->
     <LoadFailed
       v-else-if="loadError"
-      title="Couldn't load templates"
+      :title="uiText(&quot;Couldn't load templates&quot;)"
       message="The template list didn't load. Check your connection and try again."
       :detail="loadError"
       :retrying="loading"
@@ -52,8 +52,8 @@
       class="text-center py-12 text-gray-500 dark:text-gray-400"
     >
       <DocumentPlusIcon class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-      <p class="font-medium">No templates found</p>
-      <p class="text-sm mt-1">Try a different category or create your own</p>
+      <p class="font-medium">{{ uiText("No templates found") }}</p>
+      <p class="text-sm mt-1">{{ uiText("Try a different category or create your own") }}</p>
     </div>
 
     <!-- Template grid -->
@@ -72,8 +72,8 @@
           <PlusIcon class="w-6 h-6 text-gray-500 dark:text-gray-400" />
         </div>
         <div class="ml-4 flex-1">
-          <p class="font-medium text-gray-900 dark:text-white">Blank Process</p>
-          <p class="text-xs text-gray-500 dark:text-gray-400">Start from scratch</p>
+          <p class="font-medium text-gray-900 dark:text-white">{{ uiText("Blank Process") }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Start from scratch") }}</p>
         </div>
         <CheckCircleIcon
           v-if="selectedId === null"
@@ -105,7 +105,7 @@
               v-if="template.source === 'user'"
               class="px-1.5 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
             >
-              User
+              {{ uiText("User") }}
             </span>
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
@@ -153,14 +153,14 @@
           <p class="text-gray-600 dark:text-gray-400 mb-4">{{ previewTemplate.description }}</p>
 
           <div v-if="previewTemplate.use_cases?.length" class="mb-4">
-            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Use Cases</h4>
+            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Use Cases") }}</h4>
             <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400">
               <li v-for="(useCase, i) in previewTemplate.use_cases" :key="i">{{ useCase }}</li>
             </ul>
           </div>
 
           <div v-if="previewTemplate.step_types_used?.length" class="mb-4">
-            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Step Types</h4>
+            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Step Types") }}</h4>
             <div class="flex flex-wrap gap-1">
               <span
                 v-for="stepType in previewTemplate.step_types_used"
@@ -173,7 +173,7 @@
           </div>
 
           <div>
-            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Definition Preview</h4>
+            <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Definition Preview") }}</h4>
             <pre class="bg-gray-100 dark:bg-gray-900 rounded-lg p-4 text-xs overflow-x-auto max-h-60">{{ previewTemplate.definition_yaml }}</pre>
           </div>
         </div>
@@ -182,13 +182,13 @@
             @click="previewTemplate = null"
             class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600"
           >
-            Cancel
+            {{ uiText("Cancel") }}
           </button>
           <button
             @click="$emit('select', previewTemplate.id); previewTemplate = null"
             class="px-4 py-2 text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 rounded-lg"
           >
-            Use Template
+            {{ uiText("Use Template") }}
           </button>
         </div>
       </div>
@@ -266,7 +266,7 @@ async function fetchTemplates() {
     templates.value = response.data.templates || []
   } catch (err) {
     console.error('Failed to fetch templates:', err)
-    loadError.value = apiErrorMessage(err, 'Request failed')
+    loadError.value = apiErrorMessage(err, uiText("Request failed"))
   } finally {
     loading.value = false
   }
@@ -307,6 +307,8 @@ async function showPreview(template) {
     console.error('Failed to fetch template preview:', err)
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

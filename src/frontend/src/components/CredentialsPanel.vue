@@ -3,7 +3,7 @@
     <!-- Loading State -->
     <div v-if="loading" class="text-center py-8">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-action-primary-500 mx-auto"></div>
-      <p class="text-gray-500 dark:text-gray-400 mt-2">Loading credentials...</p>
+      <p class="text-gray-500 dark:text-gray-400 mt-2">{{ t('Loading credentials...') }}</p>
     </div>
 
     <template v-else>
@@ -25,9 +25,9 @@
       <!-- Credential Files Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Credential Files</h3>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Credential Files') }}</h3>
           <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Manage credential files in the agent workspace
+            {{ t('Manage credential files in the agent workspace') }}
           </p>
         </div>
 
@@ -54,10 +54,10 @@
               <div>
                 <p class="font-mono text-sm text-gray-900 dark:text-white">{{ file.name }}</p>
                 <p v-if="file.exists" class="text-xs text-gray-500 dark:text-gray-400">
-                  {{ formatFileSize(file.size) }} &middot; Modified {{ formatDate(file.modified) }}
+                  {{ formatFileSize(file.size) }} {{ t('· Modified') }} {{ formatDate(file.modified) }}
                 </p>
                 <p v-else class="text-xs text-gray-400 dark:text-gray-500">
-                  Not present
+                  {{ t('Not present') }}
                 </p>
               </div>
             </div>
@@ -68,14 +68,14 @@
                 :disabled="agentStatus !== 'running'"
                 class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                View
+                {{ t('View') }}
               </button>
               <button
                 @click="editFile(file.name)"
                 :disabled="agentStatus !== 'running'"
                 class="text-sm text-action-primary-600 hover:text-action-primary-700 dark:text-action-primary-400 dark:hover:text-action-primary-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {{ file.exists ? 'Edit' : 'Add' }}
+                {{ file.exists ? t('Edit') : t('Add') }}
               </button>
             </div>
           </div>
@@ -96,7 +96,7 @@
               <svg v-else class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
               </svg>
-              {{ exporting ? 'Exporting...' : 'Export to Git' }}
+              {{ exporting ? t('Exporting...') : t('Export to Git') }}
             </button>
             <button
               @click="importFromGit"
@@ -110,15 +110,15 @@
               <svg v-else class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              {{ importing ? 'Importing...' : 'Import from Git' }}
+              {{ importing ? t('Importing...') : t('Import from Git') }}
             </button>
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400">
             <span v-if="hasEncryptedFile" class="text-status-success-600 dark:text-status-success-400">
-              .credentials.enc exists
+              {{ t('.credentials.enc exists') }}
             </span>
             <span v-else class="text-gray-400 dark:text-gray-500">
-              No encrypted backup
+              {{ t('No encrypted backup') }}
             </span>
           </p>
         </div>
@@ -127,9 +127,9 @@
       <!-- Quick Inject Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Quick Inject</h3>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Quick Inject') }}</h3>
           <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Paste KEY=VALUE pairs to add credentials to .env
+            {{ t('Paste KEY=VALUE pairs to add credentials to .env') }}
           </p>
         </div>
 
@@ -146,13 +146,13 @@
               v-if="agentStatus !== 'running'"
               class="absolute top-2 right-2 px-2 py-1 text-xs bg-status-warning-100 dark:bg-status-warning-900/50 text-status-warning-700 dark:text-status-warning-300 rounded"
             >
-              Agent must be running
+              {{ t('Agent must be running') }}
             </span>
           </div>
 
           <div class="flex items-center justify-between">
             <span class="text-sm text-gray-500 dark:text-gray-400">
-              {{ quickInjectText ? countCredentials(quickInjectText) : 0 }} credential(s) detected
+              {{ quickInjectText ? countCredentials(quickInjectText) : 0 }} {{ t('credential(s) detected') }}
             </span>
             <button
               @click="quickInject"
@@ -163,7 +163,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              {{ quickInjectLoading ? 'Injecting...' : 'Inject' }}
+              {{ quickInjectLoading ? t('Injecting...') : t('Inject') }}
             </button>
           </div>
 
@@ -195,11 +195,9 @@
       <!-- Upload Credential File (#11 — service-account JSON, certs/keys, SSH) -->
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
         <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Upload Credential File</h3>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Upload Credential File') }}</h3>
           <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            For cloud service-account JSON (.config/gcloud/…), TLS certs/keys
-            (*.pem/*.key/*.crt/*.p12/*.pfx), kubeconfig (.kube/config) and SSH keys
-            (.ssh/id_*). Binary files are handled automatically.
+            {{ t('For cloud service-account JSON (.config/gcloud/…), TLS certs/keys (*.pem/*.key/*.crt/*.p12/*.pfx), kubeconfig (.kube/config) and SSH keys (.ssh/id_*). Binary files are handled automatically.') }}
           </p>
         </div>
         <div class="p-4 space-y-3">
@@ -211,18 +209,18 @@
           />
           <input
             v-model="uploadPath"
-            placeholder="Destination path (e.g. .config/gcloud/sa.json, client.pem, .ssh/id_ed25519)"
+            :placeholder="t('Destination path (e.g. .config/gcloud/sa.json, client.pem, .ssh/id_ed25519)')"
             :disabled="agentStatus !== 'running' || uploadLoading"
             class="w-full font-mono text-sm border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
           />
           <div class="flex items-center justify-between">
-            <span class="text-xs text-gray-500 dark:text-gray-400">Written 0600; created on the agent's next sync if git-tracked.</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('Written 0600; created on the agent\'s next sync if git-tracked.') }}</span>
             <button
               @click="uploadCredFile"
               :disabled="agentStatus !== 'running' || uploadLoading || !uploadFile || !uploadPath.trim()"
               class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {{ uploadLoading ? 'Uploading...' : 'Upload' }}
+              {{ uploadLoading ? t('Uploading...') : t('Upload') }}
             </button>
           </div>
           <div v-if="uploadResult"
@@ -267,7 +265,7 @@
                 @click="closeEditor"
                 class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
               >
-                Cancel
+                {{ t('Cancel') }}
               </button>
               <button
                 @click="saveFile"
@@ -278,7 +276,7 @@
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {{ savingFile ? 'Saving...' : 'Save' }}
+                {{ savingFile ? t('Saving...') : t('Save') }}
               </button>
             </div>
           </div>
@@ -289,6 +287,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAgentsStore } from '../stores/agents'
 import { useNotification } from '../composables'
@@ -403,7 +404,7 @@ const loadRequirements = async () => {
     // Never let a failed refresh destroy a report the user is already reading.
     if (!requirements.value) {
       requirementsError.value =
-        err.response?.data?.detail || 'Failed to load credential requirements'
+        err.response?.data?.detail || uiText("Failed to load credential requirements")
     }
   } finally {
     requirementsLoading.value = false
@@ -515,14 +516,14 @@ const saveChecklistCredentials = async (credentials) => {
     })
     checklistResult.value = {
       success: true,
-      message: `Saved ${names.length} credential${names.length === 1 ? '' : 's'}.`,
+      get "message"() { return uiText("Saved {arg1} credential{arg2}.", { arg1: (names.length), arg2: (names.length === 1 ? '' : 's') }) },
     }
     await Promise.all([loadRequirements(), loadCredentialStatus()])
-    if (showNotification) showNotification('Credentials saved', 'success')
+    if (showNotification) showNotification(uiText("Credentials saved"), 'success')
   } catch (err) {
     checklistResult.value = {
       success: false,
-      message: err.response?.data?.detail || err.message || 'Failed to save credentials',
+      message: err.response?.data?.detail || err.message || uiText('Failed to save credentials'),
     }
   } finally {
     savingChecklist.value = false
@@ -542,7 +543,7 @@ const quickInject = async () => {
     if (credCount === 0) {
       quickInjectResult.value = {
         success: false,
-        message: 'No valid KEY=VALUE pairs found'
+        get "message"() { return uiText("No valid KEY=VALUE pairs found") }
       }
       return
     }
@@ -564,19 +565,19 @@ const quickInject = async () => {
 
     quickInjectResult.value = {
       success: true,
-      message: `Injected ${credCount} credential(s) into .env`
+      get "message"() { return uiText("Injected {arg1} credential(s) into .env", { arg1: (credCount) }) }
     }
     quickInjectText.value = ''
     await loadCredentialStatus()
 
     if (showNotification) {
-      showNotification('Credentials injected', 'success')
+      showNotification(uiText("Credentials injected"), 'success')
     }
   } catch (err) {
     console.error('Quick inject failed:', err)
     quickInjectResult.value = {
       success: false,
-      message: err.response?.data?.detail || err.message || 'Failed to inject credentials'
+      message: err.response?.data?.detail || err.message || uiText('Failed to inject credentials')
     }
   } finally {
     quickInjectLoading.value = false
@@ -611,15 +612,15 @@ const uploadCredFile = async () => {
       filesB64[path] = btoa(bin)
     }
     await agentsStore.injectCredentials(props.agentName, files, filesB64)
-    uploadResult.value = { success: true, message: `Uploaded ${path}` }
+    uploadResult.value = { success: true, get "message"() { return uiText("Uploaded {arg1}", { arg1: (path) }) } }
     uploadFile.value = null
     uploadPath.value = ''
     await loadCredentialStatus()
-    if (showNotification) showNotification('Credential file uploaded', 'success')
+    if (showNotification) showNotification(uiText("Credential file uploaded"), 'success')
   } catch (err) {
     uploadResult.value = {
       success: false,
-      message: err.response?.data?.detail || err.message || 'Upload failed',
+      message: err.response?.data?.detail || err.message || uiText('Upload failed'),
     }
   } finally {
     uploadLoading.value = false
@@ -632,12 +633,12 @@ const exportToGit = async () => {
     const result = await agentsStore.exportCredentials(props.agentName)
     await loadCredentialStatus()
     if (showNotification) {
-      showNotification(`Exported ${result.files_exported} file(s) to .credentials.enc`, 'success')
+      showNotification(uiText("Exported {arg1} file(s) to .credentials.enc", { arg1: (result.files_exported) }), 'success')
     }
   } catch (err) {
     console.error('Export failed:', err)
     if (showNotification) {
-      showNotification(err.response?.data?.detail || 'Export failed', 'error')
+      showNotification(err.response?.data?.detail || uiText("Export failed"), 'error')
     }
   } finally {
     exporting.value = false
@@ -650,12 +651,12 @@ const importFromGit = async () => {
     const result = await agentsStore.importCredentials(props.agentName)
     await loadCredentialStatus()
     if (showNotification) {
-      showNotification(`Imported ${result.files_imported.length} file(s) from .credentials.enc`, 'success')
+      showNotification(uiText("Imported {arg1} file(s) from .credentials.enc", { arg1: (result.files_imported.length) }), 'success')
     }
   } catch (err) {
     console.error('Import failed:', err)
     if (showNotification) {
-      showNotification(err.response?.data?.detail || 'Import failed', 'error')
+      showNotification(err.response?.data?.detail || uiText("Import failed"), 'error')
     }
   } finally {
     importing.value = false
@@ -670,7 +671,7 @@ const viewFile = async (filename) => {
   } catch (err) {
     console.error('Failed to read file:', err)
     if (showNotification) {
-      showNotification('Failed to read file', 'error')
+      showNotification(uiText("Failed to read file"), 'error')
     }
   }
 }
@@ -699,12 +700,12 @@ const saveFile = async () => {
     closeEditor()
 
     if (showNotification) {
-      showNotification(`Saved ${editingFile.value}`, 'success')
+      showNotification(uiText("Saved {arg1}", { arg1: (editingFile.value) }), 'success')
     }
   } catch (err) {
     console.error('Failed to save file:', err)
     if (showNotification) {
-      showNotification(err.response?.data?.detail || 'Failed to save file', 'error')
+      showNotification(err.response?.data?.detail || uiText("Failed to save file"), 'error')
     }
   } finally {
     savingFile.value = false

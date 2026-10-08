@@ -5,11 +5,11 @@
          silently than the JSON dump it replaces — the reader can no longer tell
          "this is how the agent filed it" from "this is not what it meant". -->
     <p v-if="fallback" class="mb-2 text-xs text-gray-500 dark:text-gray-400">
-      Unrecognised report format — showing a summary of what it contains.
+      {{ uiText("Unrecognised report format — showing a summary of what it contains.") }}
     </p>
 
     <p v-if="!entries.length" class="text-sm text-gray-500 dark:text-gray-400">
-      This report has no readable content.
+      {{ uiText("This report has no readable content.") }}
     </p>
 
     <dl v-else class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -35,7 +35,7 @@
     <!-- Bounded AND stated (principle 28): a silent cut would make a 200-key
          payload look like a 40-key one. -->
     <p v-if="truncated" class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-      +{{ truncated.toLocaleString() }} more {{ truncated === 1 ? 'field' : 'fields' }} not shown
+      +{{ truncated.toLocaleString() }} {{ uiText("more") }} {{ truncated === 1 ? uiText("field") : uiText("fields") }} {{ uiText("not shown") }}
     </p>
   </div>
 </template>
@@ -76,4 +76,6 @@ const props = defineProps({
 const summary = computed(() => summarizePayload(props.payload))
 const entries = computed(() => summary.value.entries)
 const truncated = computed(() => summary.value.truncated)
+
+import { t as uiText } from '@/i18n'
 </script>

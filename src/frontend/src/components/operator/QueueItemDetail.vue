@@ -6,7 +6,7 @@
         <svg class="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
         </svg>
-        <p class="text-sm">Select an item from the queue</p>
+        <p class="text-sm">{{ uiText("Select an item from the queue") }}</p>
       </div>
     </div>
 
@@ -61,7 +61,7 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            Expires {{ formatDate(item.expires_at) }}
+            {{ uiText("Expires") }} {{ formatDate(item.expires_at) }}
           </span>
           <span class="text-gray-400 dark:text-gray-400">{{ item.request_id || item.id }}</span>
         </div>
@@ -74,7 +74,7 @@
 
       <!-- Context -->
       <div v-if="item.context && Object.keys(item.context).length > 0" class="p-4 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Context</h3>
+        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{{ uiText("Context") }}</h3>
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
           <dl class="space-y-1.5">
             <div v-for="(value, key) in item.context" :key="key" class="flex items-start gap-3 text-sm">
@@ -96,19 +96,19 @@
 
       <!-- Already responded info -->
       <div v-if="item.status !== 'pending'" class="p-4 border-b border-gray-200 dark:border-gray-700">
-        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Response</h3>
+        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{{ uiText("Response") }}</h3>
         <div class="bg-status-success-50 dark:bg-status-success-900/20 rounded-lg p-3 space-y-1">
           <p class="text-sm font-medium text-status-success-800 dark:text-status-success-300">{{ item.response }}</p>
           <p v-if="item.response_text" class="text-sm text-status-success-700 dark:text-status-success-400">{{ item.response_text }}</p>
           <p class="text-xs text-status-success-600 dark:text-status-success-500">
-            by {{ item.responded_by_email }} &middot; {{ formatDate(item.responded_at) }}
+            {{ uiText("by") }} {{ item.responded_by_email }} &middot; {{ formatDate(item.responded_at) }}
           </p>
         </div>
       </div>
 
       <!-- Response Controls (only for pending items) -->
       <div v-if="item.status === 'pending'" class="p-4">
-        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Respond</h3>
+        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">{{ uiText("Respond") }}</h3>
 
         <!-- Approval type: option buttons -->
         <div v-if="responseKind === 'approval'" class="space-y-3">
@@ -128,12 +128,12 @@
 
           <!-- Optional notes -->
           <div>
-            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Notes (optional)</label>
+            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">{{ uiText("Notes (optional)") }}</label>
             <textarea
               v-model="responseText"
               rows="2"
               class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Add context for the agent..."
+              :placeholder="uiText(&quot;Add context for the agent...&quot;)"
             ></textarea>
           </div>
 
@@ -145,7 +145,7 @@
               ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
               : 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'"
           >
-            Submit Response
+            {{ uiText("Submit Response") }}
           </button>
         </div>
 
@@ -155,7 +155,7 @@
             v-model="responseText"
             rows="4"
             class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Type your answer..."
+            :placeholder="uiText(&quot;Type your answer...&quot;)"
           ></textarea>
           <button
             @click="submitQuestionResponse"
@@ -165,7 +165,7 @@
               ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
               : 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed'"
           >
-            Send Answer
+            {{ uiText("Send Answer") }}
           </button>
         </div>
 
@@ -175,13 +175,13 @@
             v-model="responseText"
             rows="2"
             class="w-full text-sm rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Optional notes..."
+            :placeholder="uiText(&quot;Optional notes...&quot;)"
           ></textarea>
           <button
             @click="submitAcknowledge"
             class="w-full py-2 px-4 rounded-lg text-sm font-medium text-white bg-state-autonomous-600 hover:bg-state-autonomous-700 dark:bg-state-autonomous-500 dark:hover:bg-state-autonomous-600 transition-colors"
           >
-            Acknowledge
+            {{ uiText("Acknowledge") }}
           </button>
         </div>
       </div>
@@ -281,9 +281,9 @@ function formatDate(isoString) {
   const diffMin = Math.floor(diffMs / 60000)
   const diffHr = Math.floor(diffMs / 3600000)
 
-  if (diffMin < 1) return 'just now'
-  if (diffMin < 60) return `${diffMin}m ago`
-  if (diffHr < 24) return `${diffHr}h ago`
+  if (diffMin < 1) return uiText("just now")
+  if (diffMin < 60) return uiText("{arg1}m ago", { arg1: (diffMin) })
+  if (diffHr < 24) return uiText("{arg1}h ago", { arg1: (diffHr) })
 
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
@@ -291,4 +291,6 @@ function formatDate(isoString) {
 function isUrl(str) {
   return str.startsWith('http://') || str.startsWith('https://')
 }
+
+import { t as uiText } from '@/i18n'
 </script>

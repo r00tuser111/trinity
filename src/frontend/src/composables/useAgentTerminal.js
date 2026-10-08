@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { ref, nextTick } from 'vue'
 
 /**
@@ -24,15 +26,15 @@ export function useAgentTerminal(showNotification) {
   }
 
   const onTerminalConnected = () => {
-    showNotification('Terminal connected', 'success')
+    showNotification(uiText("Terminal connected"), 'success')
   }
 
   const onTerminalDisconnected = () => {
-    showNotification('Terminal disconnected', 'info')
+    showNotification(uiText("Terminal disconnected"), 'info')
   }
 
   const onTerminalError = (errorMsg) => {
-    showNotification(`Terminal error: ${errorMsg}`, 'error')
+    showNotification(uiText("Terminal error: {arg1}", { arg1: (errorMsg) }), 'error')
   }
 
   return {

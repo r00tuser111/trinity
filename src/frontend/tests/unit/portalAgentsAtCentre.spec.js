@@ -353,9 +353,9 @@ describe('ent#523 — the agent page was dismantled, not dropped', () => {
   })
 
   it('chats, what it can do and reports are in Agent details', () => {
-    expect(DETAILS).toMatch(/>Your chats</)
-    expect(DETAILS).toMatch(/>What it can do</)
-    expect(DETAILS).toMatch(/>Reports</)
+    expect(DETAILS).toContain("{{ t('Your chats') }}")
+    expect(DETAILS).toContain("{{ t('What it can do') }}")
+    expect(DETAILS).toContain("{{ t('Reports') }}")
   })
 
   it('Canvas and Files are NOT duplicated into details — they are rail tabs', () => {

@@ -11,9 +11,9 @@
     <span
       v-if="!skill.user_invocable"
       class="text-[11px] px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400"
-      title="Runs automatically; a user cannot invoke it directly"
-    >not user-invocable</span>
-    <span v-if="skill.multi_file" class="text-[11px] text-gray-400 whitespace-nowrap">{{ skill.file_count }} files</span>
+      :title="uiText(&quot;Runs automatically; a user cannot invoke it directly&quot;)"
+    >{{ uiText("not user-invocable") }}</span>
+    <span v-if="skill.multi_file" class="text-[11px] text-gray-400 whitespace-nowrap">{{ skill.file_count }} {{ uiText("files") }}</span>
     <span v-if="skill.size_bytes" class="text-[11px] text-gray-400 whitespace-nowrap">{{ formatBytes(skill.size_bytes) }}</span>
     <span v-if="showVersion && skill.version" class="text-[11px] font-mono text-gray-400">{{ skill.version.slice(0, 7) }}</span>
   </span>
@@ -28,4 +28,6 @@ defineProps({
   // beside the skill name; the Library cards opt in.
   showVersion: { type: Boolean, default: false },
 })
+
+import { t as uiText } from '@/i18n'
 </script>

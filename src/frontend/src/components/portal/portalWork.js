@@ -1,3 +1,5 @@
+import { msg, t as uiText } from '../../i18n/index.js'
+
 /**
  * Workspace work — the live execution card and the rail's Work tab, every
  * decidable rule (trinity-enterprise#525, the visual half of ent#457). Pure.
@@ -41,16 +43,16 @@ export const WORK_POLL_MS = 12000
 
 /** The kind words, in the client's vocabulary. */
 const KIND_LABELS = Object.freeze({
-  turn: 'You asked',
-  delegated: 'Handed on',
-  loop: 'Loop run',
-  schedule: 'Scheduled',
-  room: 'Room turn',
-  other: 'Background',
+  turn: msg('You asked'),
+  delegated: msg('Handed on'),
+  loop: msg('Loop run'),
+  schedule: msg('Scheduled'),
+  room: msg('Room turn'),
+  other: msg('Background'),
 })
 
 export function kindLabel(kind) {
-  return KIND_LABELS[kind] || KIND_LABELS.other
+  return uiText(KIND_LABELS[kind] || KIND_LABELS.other)
 }
 
 /** "Still going" — the server's `stale` verdict wins over the status word. */
@@ -101,14 +103,14 @@ export function soleStoppableItem(items, stoppingIds = []) {
 export function workStatusLabel(item) {
   const outcome = item && item.outcome
   switch (outcome) {
-    case 'queued': return 'Waiting for a slot'
+    case 'queued': return uiText("Waiting for a slot")
     case 'running': return 'Working'
     case 'success': return 'Done'
     case 'failed': return 'Failed'
-    case 'timeout': return 'Timed out'
-    case 'cancelled': return 'Stopped by you'
+    case 'timeout': return uiText("Timed out")
+    case 'cancelled': return uiText("Stopped by you")
     case 'skipped': return 'Skipped'
-    case 'lost': return 'No longer tracked'
+    case 'lost': return uiText("No longer tracked")
     default: return outcome ? String(outcome) : 'Unknown'
   }
 }
@@ -168,21 +170,21 @@ export function liveElapsedSeconds(item, { fetchedAtMs = null, nowMs = Date.now(
  * two render the sentence in tertiary ink.
  */
 export function stepsLine(steps, agentName = null) {
-  const who = agentName || 'This agent'
+  const who = () => agentName || uiText('This agent')
   // `undefined` = not read yet (the chat's card before the feed has the row):
   // say nothing rather than "could not be read", which is a different claim.
   if (steps === undefined) return { kind: 'pending', text: '' }
   if (!steps || typeof steps !== 'object' || steps.state === 'unknown') {
-    return { kind: 'unknown', text: 'Steps could not be read right now.' }
+    return { kind: 'unknown', get "text"() { return uiText("Steps could not be read right now.") } }
   }
   if (steps.state === 'none') {
-    return { kind: 'none', text: `${who} doesn't report steps.` }
+    return { kind: 'none', get "text"() { return uiText("{arg1} doesn't report steps.", { arg1: (who()) }) } }
   }
   if (steps.state === 'reported') {
     if (Array.isArray(steps.stages) && steps.stages.length) return { kind: 'stages', text: '' }
-    return { kind: 'none', text: `${who} doesn't report steps.` }
+    return { kind: 'none', get "text"() { return uiText("{arg1} doesn't report steps.", { arg1: (who()) }) } }
   }
-  return { kind: 'unknown', text: 'Steps could not be read right now.' }
+  return { kind: 'unknown', get "text"() { return uiText("Steps could not be read right now.") } }
 }
 
 /** The stages, each with the name a person reads and who holds it (masked names read "another agent"). */
@@ -202,9 +204,9 @@ export function stageRows(steps) {
  * held by the agent you are talking to).
  */
 export function holderLine(holder, { agentName = null, masked = false } = {}) {
-  if (masked) return 'held by another agent'
+  if (masked) return uiText("held by another agent")
   if (!holder || holder === agentName) return null
-  return `held by ${holder}`
+  return uiText("held by {arg1}", { arg1: (holder) })
 }
 
 // ---------------------------------------------------------------- chat scoping
@@ -285,10 +287,10 @@ export function earlierSummary({ total = 0, shown = 0, limit = EARLIER_PREVIEW, 
   const n = Number.isFinite(total) ? Math.max(0, total) : 0
   const full = Number.isFinite(pageLimit) && pageLimit > 0 && n >= pageLimit
   const count = full && n === pageLimit ? `${pageLimit}+` : String(n)
-  const head = `${count} in the last ${windowDays} days`
+  const head = uiText('{count} in the last {days} days', { count, days: windowDays })
   if (n === 0) return head
   const visible = Math.min(shown, n)
-  return visible < n ? `${head} · latest ${visible} shown` : head
+  return visible < n ? uiText('{summary} · latest {count} shown', { summary: head, count: visible }) : head
 }
 
 /** The preview slice, or everything once expanded. */

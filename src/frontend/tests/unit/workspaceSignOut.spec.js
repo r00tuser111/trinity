@@ -96,8 +96,8 @@ describe('PortalSidebar.vue labels the button for the principal it acts on (AC #
 
   it('the accessible name comes from the shared, tested helper', () => {
     expect(source).toMatch(/signOutLabelFor\(props\.isPlatformSession\)/)
-    expect(source).toMatch(/:aria-label="signOutLabel"/)
-    expect(source).toMatch(/:title="signOutLabel"/)
+    expect(source).toMatch(/:aria-label="translate\(signOutLabel\)"/)
+    expect(source).toMatch(/:title="translate\(signOutLabel\)"/)
   })
 
   it('there is ONE button, not two v-if-alternated ones (the #2159 focus lesson)', () => {

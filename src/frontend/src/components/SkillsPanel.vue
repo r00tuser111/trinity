@@ -2,52 +2,50 @@
   <div class="space-y-5 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Skills</h2>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ uiText("Skills") }}</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 max-w-2xl">
-          Assign skills from the shared library to this agent. Assignment is durable;
-          the files are copied into the agent on start, or when you sync below.
+          {{ uiText("Assign skills from the shared library to this agent. Assignment is durable; the files are copied into the agent on start, or when you sync below.") }}
         </p>
       </div>
       <button
         v-if="canManage && !store.loading"
         @click="onSync"
         :disabled="store.injecting || !agentRunning"
-        :title="agentRunning ? 'Re-copy every assigned skill into the agent' : 'The agent is stopped — start it to sync skills'"
+        :title="agentRunning ? uiText(&quot;Re-copy every assigned skill into the agent&quot;) : uiText(&quot;The agent is stopped — start it to sync skills&quot;)"
         :class="[
           'shrink-0 px-3 py-1.5 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed',
           syncNeedsAttention
             ? 'bg-action-primary-600 hover:bg-action-primary-700 text-white font-medium ring-2 ring-action-primary-300 dark:ring-action-primary-700'
             : 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
         ]"
-      >{{ store.injecting ? 'Syncing…' : 'Sync now' }}</button>
+      >{{ store.injecting ? uiText("Syncing…") : uiText("Sync now") }}</button>
     </div>
 
     <p v-if="store.error" class="text-sm text-status-danger-600 dark:text-status-danger-400">{{ store.error }}</p>
-    <p v-if="store.loading" class="text-sm text-gray-500 dark:text-gray-400">Loading skills…</p>
+    <p v-if="store.loading" class="text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading skills…") }}</p>
 
     <!-- Empty states: each says what is wrong AND what to do next (AC: no dead
          empty states). Which one shows is decided by the store, so the panel
          can't invent a fourth. -->
     <template v-else-if="store.emptyReason === 'library_unconfigured'">
       <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-5 text-sm">
-        <p class="font-medium text-gray-900 dark:text-gray-100">No skills library is configured</p>
+        <p class="font-medium text-gray-900 dark:text-gray-100">{{ uiText("No skills library is configured") }}</p>
         <p class="mt-1 text-gray-500 dark:text-gray-400">
-          Skills come from a git repository shared across the fleet. Once it's configured,
-          every agent can be assigned skills from it.
+          {{ uiText("Skills come from a git repository shared across the fleet. Once it's configured, every agent can be assigned skills from it.") }}
         </p>
         <router-link v-if="isAdmin" to="/settings?tab=agents"
                      class="mt-3 inline-block px-3 py-1.5 rounded-lg bg-action-primary-600 hover:bg-action-primary-700 text-white text-sm">
-          Configure the library
+          {{ uiText("Configure the library") }}
         </router-link>
-        <p v-else class="mt-3 text-gray-500 dark:text-gray-400">Ask an admin to configure it in Settings.</p>
+        <p v-else class="mt-3 text-gray-500 dark:text-gray-400">{{ uiText("Ask an admin to configure it in Settings.") }}</p>
       </div>
     </template>
 
     <template v-else-if="store.emptyReason === 'library_empty'">
       <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-5 text-sm">
-        <p class="font-medium text-gray-900 dark:text-gray-100">The library is configured but has no skills yet</p>
+        <p class="font-medium text-gray-900 dark:text-gray-100">{{ uiText("The library is configured but has no skills yet") }}</p>
         <p class="mt-1 text-gray-500 dark:text-gray-400">
-          Add a skill directory to the repository, then re-sync the library.
+          {{ uiText("Add a skill directory to the repository, then re-sync the library.") }}
           <!-- ent#334: the repo URL used to render here. It is gone from the
                payload entirely now — `GET /skills/library/status` is open to
                any authenticated caller (agent-scoped keys included, which is
@@ -61,12 +59,12 @@
       <!-- Assigned, with the honest per-skill outcome of the last sync -->
       <section>
         <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-          Assigned to this agent
+          {{ uiText("Assigned to this agent") }}
           <span class="ml-1 text-xs font-normal text-gray-400">{{ store.assigned.length }}</span>
         </h3>
 
         <p v-if="store.emptyReason === 'none_assigned'" class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          No skills assigned yet — pick some from the library below and save.
+          {{ uiText("No skills assigned yet — pick some from the library below and save.") }}
         </p>
 
         <ul v-else class="mt-2 space-y-2">
@@ -107,20 +105,18 @@
         </ul>
 
         <p v-if="store.lastInjectionAt" class="mt-2 text-xs text-gray-400">
-          Last sync {{ new Date(store.lastInjectionAt).toLocaleString() }}
+          {{ uiText("Last sync") }} {{ new Date(store.lastInjectionAt).toLocaleString() }}
         </p>
         <p v-else-if="store.assigned.length" class="mt-2 text-xs text-gray-400">
-          Not synced from this screen yet — statuses appear after a sync. Skills are
-          also copied in automatically when the agent starts.
+          {{ uiText("Not synced from this screen yet — statuses appear after a sync. Skills are also copied in automatically when the agent starts.") }}
         </p>
       </section>
 
       <!-- Library browse + assignment -->
       <section v-if="canManage">
-        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Library</h3>
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ uiText("Library") }}</h3>
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          {{ store.library.length }} skill{{ store.library.length === 1 ? '' : 's' }} available.
-          Tick to assign, then save.
+          {{ store.library.length }} {{ uiText("skill") }}{{ store.library.length === 1 ? '' : 's' }} {{ uiText("available. Tick to assign, then save.") }}
         </p>
 
         <ul class="mt-2 divide-y divide-gray-200 dark:divide-gray-700 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -137,7 +133,7 @@
                 <!-- Declared dependencies, surfaced BEFORE assignment: this is
                      what turns into a missing_binary/missing_env warning later. -->
                 <p v-if="deps(s)" class="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
-                  Requires {{ deps(s) }}
+                  {{ uiText("Requires") }} {{ deps(s) }}
                 </p>
               </div>
             </label>
@@ -147,10 +143,10 @@
         <div class="mt-3 flex items-center gap-3">
           <button @click="onSave" :disabled="store.saving || !dirty"
                   class="px-3 py-1.5 rounded-lg bg-action-primary-600 hover:bg-action-primary-700 text-white text-sm disabled:opacity-50">
-            {{ store.saving ? 'Saving…' : 'Save assignments' }}
+            {{ store.saving ? uiText("Saving…") : uiText("Save assignments") }}
           </button>
           <button v-if="dirty" @click="resetDraft"
-                  class="text-sm text-gray-500 dark:text-gray-400 hover:underline">Reset</button>
+                  class="text-sm text-gray-500 dark:text-gray-400 hover:underline">{{ uiText("Reset") }}</button>
           <!-- #2703: the save's DELIVERY outcome, not a fixed sentence — "delivered"
                / "applies on next start" / "not delivered: why". Tone follows it. -->
           <span
@@ -221,9 +217,9 @@ function statusClass(status) {
 /** Named warnings are machine tokens; say what they mean for this agent. */
 function warningText(w) {
   const [kind, detail] = String(w).split(':')
-  if (kind === 'missing_binary') return `${detail} is not installed in this agent — the skill may not run`
-  if (kind === 'missing_env') return `${detail} is not set in this agent's environment`
-  if (kind === 'multi_file_dropped_old_image') return 'Only SKILL.md was copied — the agent image predates multi-file skills. Rebuild the base image for the full package.'
+  if (kind === 'missing_binary') return uiText("{arg1} is not installed in this agent — the skill may not run", { arg1: (detail) })
+  if (kind === 'missing_env') return uiText("{arg1} is not set in this agent's environment", { arg1: (detail) })
+  if (kind === 'multi_file_dropped_old_image') return uiText("Only SKILL.md was copied — the agent image predates multi-file skills. Rebuild the base image for the full package.")
   return w
 }
 
@@ -289,4 +285,6 @@ onMounted(async () => {
   resetDraft()
 })
 onUnmounted(() => store.clear())
+
+import { t as uiText } from '@/i18n'
 </script>

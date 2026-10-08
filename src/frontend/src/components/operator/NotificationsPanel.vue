@@ -5,13 +5,13 @@
       <div class="flex flex-wrap gap-4 items-end">
         <!-- Agent filter -->
         <div class="flex-1 min-w-[150px]">
-          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Agent</label>
+          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ uiText("Agent") }}</label>
           <select
             v-model="agentFilter"
             @change="applyFilters"
             class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
           >
-            <option value="">All Agents</option>
+            <option value="">{{ uiText("All Agents") }}</option>
             <option v-for="agent in availableAgents" :key="agent" :value="agent">
               {{ agentOptionLabel(agentsStore.agentRefForSlug(agent)) }}
             </option>
@@ -20,48 +20,48 @@
 
         <!-- Type filter -->
         <div class="flex-1 min-w-[150px]">
-          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Type</label>
+          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ uiText("Type") }}</label>
           <select
             v-model="typeFilter"
             @change="applyFilters"
             class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
           >
-            <option value="">All Types</option>
-            <option value="alert">Alert</option>
-            <option value="info">Info</option>
-            <option value="status">Status</option>
-            <option value="completion">Completion</option>
-            <option value="question">Question</option>
+            <option value="">{{ uiText("All Types") }}</option>
+            <option value="alert">{{ uiText("Alert") }}</option>
+            <option value="info">{{ uiText("Info") }}</option>
+            <option value="status">{{ uiText("Status") }}</option>
+            <option value="completion">{{ uiText("Completion") }}</option>
+            <option value="question">{{ uiText("Question") }}</option>
           </select>
         </div>
 
         <!-- Priority filter -->
         <div class="flex-1 min-w-[150px]">
-          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Priority</label>
+          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ uiText("Priority") }}</label>
           <select
             v-model="priorityFilter"
             @change="applyFilters"
             class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
           >
-            <option value="">All Priorities</option>
-            <option value="urgent">Urgent</option>
-            <option value="high">High</option>
-            <option value="normal">Normal</option>
-            <option value="low">Low</option>
+            <option value="">{{ uiText("All Priorities") }}</option>
+            <option value="urgent">{{ uiText("Urgent") }}</option>
+            <option value="high">{{ uiText("High") }}</option>
+            <option value="normal">{{ uiText("Normal") }}</option>
+            <option value="low">{{ uiText("Low") }}</option>
           </select>
         </div>
 
         <!-- Status filter -->
         <div class="flex-1 min-w-[150px]">
-          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Status</label>
+          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ uiText("Status") }}</label>
           <select
             v-model="statusFilter"
             @change="applyFilters"
             class="w-full text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
           >
-            <option value="pending">Pending</option>
-            <option value="acknowledged">Acknowledged</option>
-            <option value="">All</option>
+            <option value="pending">{{ uiText("Pending") }}</option>
+            <option value="acknowledged">{{ uiText("Acknowledged") }}</option>
+            <option value="">{{ uiText("All") }}</option>
           </select>
         </div>
 
@@ -75,7 +75,7 @@
             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
           />
           <label for="showDismissedNotifs" class="text-sm text-gray-500 dark:text-gray-400">
-            Show dismissed
+            {{ uiText("Show dismissed") }}
           </label>
         </div>
 
@@ -86,7 +86,7 @@
           class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 flex items-center gap-1"
         >
           <XMarkIcon class="w-4 h-4" />
-          Clear filters
+          {{ uiText("Clear filters") }}
         </button>
       </div>
     </div>
@@ -95,45 +95,45 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
         <div class="text-3xl font-bold text-status-danger-600 dark:text-status-danger-400">{{ notificationsStore.pendingCount }}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400">Pending</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Pending") }}</div>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
         <div class="text-3xl font-bold text-status-success-600 dark:text-status-success-400">{{ acknowledgedCount }}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400">Acknowledged</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Acknowledged") }}</div>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
         <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ notificationsStore.totalCount }}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400">Total</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Total") }}</div>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
         <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ Object.keys(notificationsStore.agentCounts).length }}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400">Agents</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Agents") }}</div>
       </div>
     </div>
 
     <!-- Bulk Actions -->
     <div v-if="notificationsStore.selectedIds.length > 0" class="bg-blue-50 dark:bg-blue-900/30 rounded-lg shadow p-4 mb-4 flex items-center justify-between">
       <span class="text-sm text-blue-700 dark:text-blue-300">
-        {{ notificationsStore.selectedIds.length }} selected
+        {{ notificationsStore.selectedIds.length }} {{ uiText("selected") }}
       </span>
       <div class="flex gap-2">
         <button
           @click="bulkAcknowledge"
           class="px-3 py-1.5 text-xs font-medium text-white bg-status-success-600 hover:bg-status-success-700 rounded-lg"
         >
-          Acknowledge Selected
+          {{ uiText("Acknowledge Selected") }}
         </button>
         <button
           @click="bulkDismiss"
           class="px-3 py-1.5 text-xs font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-lg"
         >
-          Dismiss Selected
+          {{ uiText("Dismiss Selected") }}
         </button>
         <button
           @click="notificationsStore.clearSelection"
           class="px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
         >
-          Cancel
+          {{ uiText("Cancel") }}
         </button>
       </div>
     </div>
@@ -141,7 +141,7 @@
     <!-- Notifications List -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
       <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white">Notifications</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Notifications") }}</h2>
         <div v-if="displayedNotifications.length > 0" class="flex items-center gap-2">
           <input
             type="checkbox"
@@ -149,7 +149,7 @@
             @change="toggleSelectAll"
             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
           />
-          <label class="text-xs text-gray-500 dark:text-gray-400">Select all</label>
+          <label class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Select all") }}</label>
         </div>
       </div>
 
@@ -186,13 +186,13 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
         </svg>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Loading notifications…</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading notifications…") }}</p>
       </div>
 
       <!-- Failed state (#1926) — previously there was none at all. -->
       <LoadFailed
         v-else-if="loadFailed"
-        title="Couldn't load notifications"
+        :title="uiText(&quot;Couldn't load notifications&quot;)"
         message="We can't show what your agents have sent. Check your connection and try again."
         :detail="notificationsStore.error"
         :retrying="loading"
@@ -254,7 +254,7 @@
                   @click="toggleExpanded(notification.id)"
                   class="text-blue-600 dark:text-blue-400 hover:underline text-xs ml-1"
                 >
-                  {{ expandedIds.includes(notification.id) ? 'Show less' : 'Show more' }}
+                  {{ expandedIds.includes(notification.id) ? uiText("Show less") : uiText("Show more") }}
                 </button>
               </p>
 
@@ -267,10 +267,10 @@
                 </span>
                 <span v-if="notification.status === 'acknowledged'" class="flex items-center gap-1 text-status-success-600 dark:text-status-success-400">
                   <CheckIcon class="w-3 h-3" />
-                  Acknowledged
+                  {{ uiText("Acknowledged") }}
                 </span>
                 <span v-if="notification.status === 'dismissed'" class="text-gray-400 dark:text-gray-400">
-                  Dismissed
+                  {{ uiText("Dismissed") }}
                 </span>
               </div>
 
@@ -293,7 +293,7 @@
                 v-if="notification.status === 'pending'"
                 @click="acknowledge(notification.id)"
                 class="px-3 py-1.5 text-xs font-medium text-status-success-700 dark:text-status-success-300 bg-status-success-100 dark:bg-status-success-900/30 border border-status-success-300 dark:border-status-success-700 rounded hover:bg-status-success-200 dark:hover:bg-status-success-900/50"
-                title="Acknowledge"
+                :title="uiText(&quot;Acknowledge&quot;)"
               >
                 <CheckIcon class="w-4 h-4" />
               </button>
@@ -302,7 +302,7 @@
                 v-if="notification.status !== 'dismissed'"
                 @click="dismiss(notification.id)"
                 class="px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-600"
-                title="Dismiss"
+                :title="uiText(&quot;Dismiss&quot;)"
               >
                 <XMarkIcon class="w-4 h-4" />
               </button>
@@ -314,17 +314,17 @@
         <div v-if="displayedNotifications.length === 0" class="px-6 py-12 text-center">
           <InboxIcon class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-500" />
           <p class="text-lg font-medium text-gray-900 dark:text-white">
-            {{ hasActiveFilters ? 'No matching events' : 'No events yet' }}
+            {{ hasActiveFilters ? uiText("No matching events") : uiText("No events yet") }}
           </p>
           <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {{ hasActiveFilters ? 'Try adjusting your filters' : 'Notifications from your agents will appear here when they send them.' }}
+            {{ hasActiveFilters ? uiText("Try adjusting your filters") : uiText("Notifications from your agents will appear here when they send them.") }}
           </p>
           <button
             v-if="hasActiveFilters"
             @click="clearFilters"
             class="mt-4 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
           >
-            Clear all filters
+            {{ uiText("Clear all filters") }}
           </button>
         </div>
       </div>
@@ -336,7 +336,7 @@
           :disabled="loading"
           class="w-full py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"
         >
-          {{ loading ? 'Loading...' : 'Load more' }}
+          {{ loading ? uiText("Loading...") : uiText("Load more") }}
         </button>
       </div>
     </div>
@@ -445,15 +445,24 @@ function reportSettled(results, attempted, verb, past) {
   if (!rejected.length) return
   const failed = rejected.length
   actionError.value = failed === attempted
-    ? `Couldn't ${verb} the ${attempted} selected notification(s) — none were changed. Try again.`
-    : `${failed} of ${attempted} notification(s) couldn't be ${past} and are unchanged. Try again.`
-  actionErrorDetail.value = apiErrorMessage(rejected[0].reason, 'Request failed')
+    ? uiText("Couldn't {arg1} the {arg2} selected notification(s) — none were changed. Try again.", { arg1: (verb), arg2: (attempted) })
+    : uiText("{arg1} of {arg2} notification(s) couldn't be {arg3} and are unchanged. Try again.", { arg1: (failed), arg2: (attempted), arg3: (past) })
+  actionErrorDetail.value = apiErrorMessage(rejected[0].reason, uiText("Request failed"))
+}
+
+const ACTION_FAILURE_TEXT = {
+  'acknowledge this notification': msg("Couldn't acknowledge this notification. Nothing was changed — try again."),
+  'dismiss this notification': msg("Couldn't dismiss this notification. Nothing was changed — try again."),
+  'acknowledge the selected notifications': msg("Couldn't acknowledge the selected notifications. Nothing was changed — try again."),
+  'dismiss the selected notifications': msg("Couldn't dismiss the selected notifications. Nothing was changed — try again."),
 }
 
 function reportActionFailure(err, what) {
   console.error(`Failed to ${what}:`, err)
-  actionError.value = `Couldn't ${what}. Nothing was changed — try again.`
-  actionErrorDetail.value = apiErrorMessage(err, 'Request failed')
+  actionError.value = ACTION_FAILURE_TEXT[what]
+    ? uiText(ACTION_FAILURE_TEXT[what])
+    : uiText("Couldn't {arg1}. Nothing was changed — try again.", { arg1: (what) })
+  actionErrorDetail.value = apiErrorMessage(err, uiText("Request failed"))
 }
 
 async function fetchNotifications() {
@@ -578,10 +587,10 @@ function formatRelativeTime(dateStr) {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
 
-  if (diffMins < 1) return 'just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  return `${diffDays}d ago`
+  if (diffMins < 1) return uiText("just now")
+  if (diffMins < 60) return uiText("{arg1}m ago", { arg1: (diffMins) })
+  if (diffHours < 24) return uiText("{arg1}h ago", { arg1: (diffHours) })
+  return uiText("{arg1}d ago", { arg1: (diffDays) })
 }
 
 function getTypeIcon(type) {
@@ -644,4 +653,6 @@ function getStatusBadge(status) {
   }
   return classes[status] || 'bg-gray-100 text-gray-700'
 }
+
+import { t as uiText, msg } from '@/i18n'
 </script>

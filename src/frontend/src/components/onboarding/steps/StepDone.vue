@@ -5,7 +5,7 @@
 -->
 <template>
   <div data-testid="first-run-step-done">
-    <FirstRunStepHeader kicker="Done" :title="title" :lead="lead" />
+    <FirstRunStepHeader :kicker="uiText(&quot;Done&quot;)" :title="title" :lead="lead" />
 
     <div class="mt-6 flex items-center gap-8 max-sm:flex-col max-sm:items-start max-sm:gap-4">
       <FirstRunConstellation :lit="lit" />
@@ -13,15 +13,15 @@
       <div class="min-w-0 flex-1 space-y-3">
         <ul v-if="left.length" class="space-y-2" data-testid="first-run-left-for-later">
           <li v-for="s in left" :key="s.key" class="text-sm text-gray-600 dark:text-gray-300">
-            <span class="text-gray-900 dark:text-gray-100">{{ s.name }}</span>
-            &mdash; later in {{ s.settingsPath }}
+            <span class="text-gray-900 dark:text-gray-100">{{ t(s.name) }}</span>
+            {{ t('— later in') }} {{ t(s.settingsPath) }}
           </li>
         </ul>
         <p v-if="nextLabel" class="text-sm text-gray-600 dark:text-gray-300" data-testid="first-run-next-step">
           {{ nextLabel }}
         </p>
         <p class="text-[12.5px] text-gray-500 dark:text-gray-400">
-          Settings → General → Re-run setup brings this sequence back any time.
+          {{ t('Settings → General → Re-run setup brings this sequence back any time.') }}
         </p>
       </div>
     </div>
@@ -29,6 +29,7 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { computed } from 'vue'
 import FirstRunStepHeader from '../FirstRunStepHeader.vue'
 import FirstRunConstellation from '../FirstRunConstellation.vue'
@@ -44,11 +45,13 @@ const props = defineProps({
 const left = computed(() => props.steps.filter((s) => props.states[s.key] !== 'done'))
 
 const title = computed(() =>
-  left.value.length ? `Set up — ${left.value.length} left for later` : 'Trinity is set up'
+  left.value.length ? t('Set up — {count} left for later', { count: left.value.length }) : t('Trinity is set up')
 )
 
 const lead = computed(() => {
   const done = props.steps.length - left.value.length
-  return `${done} of ${props.steps.length} configured. Governed, auditable, and running on your own infrastructure.`
+  return t('{done} of {total} configured. Governed, auditable, and running on your own infrastructure.', { done, total: props.steps.length })
 })
+
+import { t as uiText } from '@/i18n'
 </script>

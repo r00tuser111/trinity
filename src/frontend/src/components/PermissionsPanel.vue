@@ -1,15 +1,15 @@
 <template>
   <div class="p-6">
     <div class="mb-6">
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Agent Collaboration Permissions</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Agent Collaboration Permissions") }}</h3>
       <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-        Control which other agents this agent can communicate with via the Trinity MCP tools.
+        {{ uiText("Control which other agents this agent can communicate with via the Trinity MCP tools.") }}
       </p>
 
       <!-- Loading State -->
       <div v-if="permissionsLoading" class="text-center py-4">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-action-primary-500 mx-auto"></div>
-        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Loading permissions...</p>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading permissions...") }}</p>
       </div>
 
       <!-- Permissions List -->
@@ -21,7 +21,7 @@
             :disabled="permissionsSaving"
             class="text-sm text-action-primary-600 dark:text-action-primary-400 hover:text-action-primary-800 dark:hover:text-action-primary-300 font-medium disabled:opacity-50"
           >
-            Allow All
+            {{ uiText("Allow All") }}
           </button>
           <span class="text-gray-300 dark:text-gray-600">|</span>
           <button
@@ -29,10 +29,10 @@
             :disabled="permissionsSaving"
             class="text-sm text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-800 dark:hover:text-status-danger-300 font-medium disabled:opacity-50"
           >
-            Allow None
+            {{ uiText("Allow None") }}
           </button>
           <span v-if="permissionsDirty" class="text-state-autonomous-600 dark:text-state-autonomous-400 text-xs ml-4">
-            Unsaved changes
+            {{ uiText("Unsaved changes") }}
           </span>
         </div>
 
@@ -79,7 +79,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            {{ permissionsSaving ? 'Saving...' : 'Save Permissions' }}
+            {{ permissionsSaving ? uiText("Saving...") : uiText("Save Permissions") }}
           </button>
 
           <!-- Status Message -->
@@ -97,8 +97,8 @@
         <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
-        <p class="mt-2">No other agents available</p>
-        <p class="text-xs">Create more agents to enable collaboration permissions.</p>
+        <p class="mt-2">{{ uiText("No other agents available") }}</p>
+        <p class="text-xs">{{ uiText("Create more agents to enable collaboration permissions.") }}</p>
       </div>
     </div>
   </div>
@@ -151,4 +151,6 @@ onMounted(() => {
 watch(() => props.agentName, () => {
   loadPermissions()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

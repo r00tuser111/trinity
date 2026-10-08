@@ -7,7 +7,7 @@
     options, which is what "the current choice is announced" (AC #7) means
     for a screen reader.
   -->
-  <div role="radiogroup" :aria-label="ariaLabel" class="flex gap-1" @keydown="onKeydown">
+  <div role="radiogroup" :aria-label="t(ariaLabel)" class="flex gap-1" @keydown="onKeydown">
     <button
       v-for="(option, index) in THEME_OPTIONS"
       :key="option.id"
@@ -24,12 +24,13 @@
       @click="$emit('select', option.id)"
     >
       <ThemeIcon :name="option.icon" class="w-3.5 h-3.5 shrink-0" />
-      <span>{{ option.label }}</span>
+      <span>{{ t(option.label) }}</span>
     </button>
   </div>
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { ref } from 'vue'
 import { THEME_OPTIONS } from '@/utils/themeSwitch'
 import ThemeIcon from './ThemeIcon.vue'

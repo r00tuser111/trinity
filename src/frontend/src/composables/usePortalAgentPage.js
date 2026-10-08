@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * The agent's own page payload, shared by the two surfaces that split it
  * (ent#523).
@@ -123,8 +125,8 @@ export function usePortalAgentPage(agentName, timeWindow) {
     } catch (e) {
       if (agentName.value !== name) return
       error.value = e?.response?.status === 404
-        ? "You don't have access to this agent."
-        : "Couldn't load this agent right now."
+        ? uiText("You don't have access to this agent.")
+        : uiText("Couldn't load this agent right now.")
       // A failed refresh keeps the data it has (ent#253): `loaded` is not
       // reset, so the band stays rendered with the banner beside it rather
       // than collapsing back to a skeleton.

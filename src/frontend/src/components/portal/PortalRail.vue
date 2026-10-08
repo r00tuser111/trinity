@@ -39,7 +39,7 @@
       :class="ASIDE[mode]"
       :role="mode === 'sheet' ? 'dialog' : undefined"
       :aria-modal="mode === 'sheet' ? 'true' : undefined"
-      aria-label="Conversation rail"
+      :aria-label="uiText(&quot;Conversation rail&quot;)"
     >
       <!-- ============================ COLLAPSED ============================ -->
       <template v-if="mode === 'collapsed'">
@@ -47,8 +47,8 @@
           <button
             type="button"
             :class="[ICON_BTN, 'text-gray-400']"
-            title="Open"
-            aria-label="Open the conversation rail"
+            :title="uiText(&quot;Open&quot;)"
+            :aria-label="uiText(&quot;Open the conversation rail&quot;)"
             aria-expanded="false"
             data-testid="portal-rail-expand"
             @click="setOpen(true)"
@@ -67,7 +67,7 @@
             type="button"
             :class="[ICON_BTN, 'relative', s.shape ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400']"
             :title="s.title"
-            :aria-label="`Open ${s.title}`"
+            :aria-label="uiText(&quot;Open {arg1}&quot;, { arg1: (s.title) })"
             :data-testid="`portal-rail-tab-${s.id}`"
             @click="openOn(s.id)"
           >
@@ -97,8 +97,8 @@
             <button
               type="button"
               :class="[ICON_BTN, 'text-gray-400']"
-              :title="mode === 'sheet' ? 'Close' : 'Collapse'"
-              :aria-label="mode === 'sheet' ? 'Close the conversation rail' : 'Collapse the conversation rail'"
+              :title="mode === 'sheet' ? uiText(&quot;Close&quot;) : uiText(&quot;Collapse&quot;)"
+              :aria-label="mode === 'sheet' ? uiText(&quot;Close the conversation rail&quot;) : uiText(&quot;Collapse the conversation rail&quot;)"
               :aria-expanded="mode === 'sheet' ? undefined : 'true'"
               data-testid="portal-rail-collapse"
               @click="mode === 'sheet' ? $emit('close') : setOpen(false)"
@@ -228,8 +228,8 @@ const rows = computed(() =>
 )
 const liveLine = computed(() => {
   const who = activeSignal.value.agents
-  if (!who.length) return 'Work is in flight.'
-  return `${who.join(', ')} ${who.length > 1 ? 'are' : 'is'} working on your message.`
+  if (!who.length) return uiText("Work is in flight.")
+  return uiText("{arg1} {arg2} working on your message.", { arg1: (who.join(', ')), arg2: (who.length > 1 ? 'are' : 'is') })
 })
 
 function setOpen(open) { emit('update:open', open) }
@@ -311,6 +311,8 @@ function iconPath(tabId) {
   const tab = props.tabs.find((t) => t.id === tabId)
   return ICONS[tab && tab.icon] || ICONS.bolt
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios from 'axios'
@@ -32,7 +34,7 @@ export const useSystemViewsStore = defineStore('systemViews', () => {
       views.value = response.data.views || []
     } catch (err) {
       console.error('Failed to fetch system views:', err)
-      error.value = err.response?.data?.detail || 'Failed to load system views'
+      error.value = err.response?.data?.detail || uiText("Failed to load system views")
     } finally {
       isLoading.value = false
     }
@@ -47,7 +49,7 @@ export const useSystemViewsStore = defineStore('systemViews', () => {
       return response.data
     } catch (err) {
       console.error('Failed to create system view:', err)
-      error.value = err.response?.data?.detail || 'Failed to create system view'
+      error.value = err.response?.data?.detail || uiText("Failed to create system view")
       throw err
     } finally {
       isLoading.value = false
@@ -66,7 +68,7 @@ export const useSystemViewsStore = defineStore('systemViews', () => {
       return response.data
     } catch (err) {
       console.error('Failed to update system view:', err)
-      error.value = err.response?.data?.detail || 'Failed to update system view'
+      error.value = err.response?.data?.detail || uiText("Failed to update system view")
       throw err
     } finally {
       isLoading.value = false
@@ -84,7 +86,7 @@ export const useSystemViewsStore = defineStore('systemViews', () => {
       }
     } catch (err) {
       console.error('Failed to delete system view:', err)
-      error.value = err.response?.data?.detail || 'Failed to delete system view'
+      error.value = err.response?.data?.detail || uiText("Failed to delete system view")
       throw err
     } finally {
       isLoading.value = false

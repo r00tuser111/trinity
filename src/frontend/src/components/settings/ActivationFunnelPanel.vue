@@ -2,24 +2,22 @@
   <div class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between gap-3">
       <div>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white">Activation funnel</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Activation funnel") }}</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          First-run activation and first-value events, recorded
-          <span class="font-medium">locally on this instance</span>. The funnel never
-          leaves the box; the fleet-benchmarks card asks the hosted benchmark service
-          with your anonymous share id only while usage sharing is on.
+          {{ uiText("First-run activation and first-value events, recorded") }}
+          <span class="font-medium">{{ uiText("locally on this instance") }}</span>{{ uiText(". The funnel never leaves the box; the fleet-benchmarks card asks the hosted benchmark service with your anonymous share id only while usage sharing is on.") }}
         </p>
       </div>
       <select
         v-model.number="windowDays"
         @change="load"
         class="text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
-        aria-label="Time window"
+        :aria-label="uiText(&quot;Time window&quot;)"
       >
-        <option :value="7">Last 7 days</option>
-        <option :value="30">Last 30 days</option>
-        <option :value="90">Last 90 days</option>
-        <option :value="0">All time</option>
+        <option :value="7">{{ uiText("Last 7 days") }}</option>
+        <option :value="30">{{ uiText("Last 30 days") }}</option>
+        <option :value="90">{{ uiText("Last 90 days") }}</option>
+        <option :value="0">{{ uiText("All time") }}</option>
       </select>
     </div>
 
@@ -37,7 +35,7 @@
     />
 
     <div class="p-6">
-      <div v-if="loading" class="text-sm text-gray-500 dark:text-gray-400">Loading…</div>
+      <div v-if="loading" class="text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading…") }}</div>
 
       <div v-else-if="error" class="text-sm text-status-danger-600 dark:text-status-danger-400">
         {{ error }}
@@ -49,14 +47,12 @@
           v-if="isEmpty"
           class="rounded-md border border-dashed border-gray-300 dark:border-gray-600 p-6 text-center text-sm text-gray-500 dark:text-gray-400"
         >
-          No activation events recorded yet. Complete the first-run wizard or
-          create an agent, then check back — events are captured locally from the
-          start.
+          {{ uiText("No activation events recorded yet. Complete the first-run wizard or create an agent, then check back — events are captured locally from the start.") }}
         </div>
 
         <template v-else>
           <!-- Setup funnel -->
-          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Setup funnel</h3>
+          <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ uiText("Setup funnel") }}</h3>
           <ul class="space-y-2">
             <li v-for="(step, i) in funnel" :key="step.key" class="flex items-center gap-3">
               <div class="w-40 shrink-0 text-sm text-gray-700 dark:text-gray-300">{{ step.label }}</div>
@@ -77,7 +73,7 @@
 
           <!-- First-value events -->
           <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-6 mb-3">
-            First-value events
+            {{ uiText("First-value events") }}
           </h3>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div
@@ -98,8 +94,7 @@
              (the decision lives in funnelFormat.js) instead of a blank "Install ·". -->
         <p class="mt-6 text-xs text-gray-500 dark:text-gray-400">
           <span :class="{ italic: installFooter.state !== 'minted' }">{{ installFooter.text }}</span>
-          · the funnel is local-only; fleet benchmarks are read from the hosted
-          service only while usage sharing is on.
+          {{ uiText("· the funnel is local-only; fleet benchmarks are read from the hosted service only while usage sharing is on.") }}
         </p>
       </template>
     </div>
@@ -115,17 +110,17 @@ import { installIdFooter } from './funnelFormat'
 // Labels for the setup-funnel steps (order = funnel order). Mirrors the
 // backend allow-list; the enterprise endpoint returns counts keyed by these.
 const FUNNEL_STEPS = [
-  { key: 'setup_started', label: 'Opened wizard' },
-  { key: 'setup_step_create', label: 'Picked intent' },
-  { key: 'setup_step_credential', label: 'Created first agent' },
-  { key: 'setup_completed', label: 'Completed setup' },
+  { key: 'setup_started', get "label"() { return uiText("Opened wizard") } },
+  { key: 'setup_step_create', get "label"() { return uiText("Picked intent") } },
+  { key: 'setup_step_credential', get "label"() { return uiText("Created first agent") } },
+  { key: 'setup_completed', get "label"() { return uiText("Completed setup") } },
 ]
 
 const FIRST_VALUE = [
-  { key: 'first_agent_created', label: 'First agent' },
-  { key: 'first_chat', label: 'First chat' },
-  { key: 'first_schedule_created', label: 'First schedule' },
-  { key: 'first_channel_connected', label: 'First channel' },
+  { key: 'first_agent_created', get "label"() { return uiText("First agent") } },
+  { key: 'first_chat', get "label"() { return uiText("First chat") } },
+  { key: 'first_schedule_created', get "label"() { return uiText("First schedule") } },
+  { key: 'first_channel_connected', get "label"() { return uiText("First channel") } },
 ]
 
 const windowDays = ref(30)
@@ -185,7 +180,7 @@ async function load() {
   } catch (e) {
     error.value =
       e?.response?.data?.detail ||
-      'Failed to load activation data. This view requires the telemetry entitlement.'
+      uiText("Failed to load activation data. This view requires the telemetry entitlement.")
   } finally {
     loading.value = false
   }
@@ -205,7 +200,7 @@ async function loadBenchmark() {
   } catch (e) {
     const detail = e?.response?.data?.detail
     benchmarkError.value =
-      typeof detail === 'string' ? detail : e?.message || 'The benchmark request failed.'
+      typeof detail === 'string' ? detail : e?.message || uiText("The benchmark request failed.")
   } finally {
     benchmarkRetrying.value = false
   }
@@ -215,4 +210,6 @@ onMounted(() => {
   load()
   loadBenchmark()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

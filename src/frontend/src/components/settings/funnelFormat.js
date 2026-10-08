@@ -1,3 +1,5 @@
+import { msg, t as uiText } from '../../i18n/index.js'
+
 /**
  * Pure decisions for the activation-funnel panel (ent#184 → ent#545).
  *
@@ -18,15 +20,15 @@
  * the onboarding wizard's first product event, only fires on an empty fleet or
  * an explicit `?onboarding=1`, so it is not offered as the way.
  */
-export const INSTALL_ID_NOT_MINTED =
-  'No install id yet — one is minted when this instance opts in to security & product updates (Settings → General)'
+export const INSTALL_ID_NOT_MINTED = msg(
+  'No install id yet — one is minted when this instance opts in to security & product updates (Settings → General)')
 
 /**
  * The footer's leading phrase when the wire carried something that is neither
  * an id nor the explicit `null`: an absent key, a blank, a non-string. That is
  * not a claim about minting, so it must not read as one.
  */
-export const INSTALL_ID_UNAVAILABLE = 'Install id unavailable'
+export const INSTALL_ID_UNAVAILABLE = msg('Install id unavailable')
 
 /**
  * `{ state, text }` for the footer. Three honest states, never a blank
@@ -40,10 +42,10 @@ export const INSTALL_ID_UNAVAILABLE = 'Install id unavailable'
  */
 export function installIdFooter(installationId) {
   if (installationId === null) {
-    return { state: 'not_minted', text: INSTALL_ID_NOT_MINTED }
+    return { state: 'not_minted', get "text"() { return uiText(INSTALL_ID_NOT_MINTED) } }
   }
   if (typeof installationId === 'string' && installationId.trim() !== '') {
-    return { state: 'minted', text: `Install ${installationId.trim()}` }
+    return { state: 'minted', get "text"() { return uiText("Install {arg1}", { arg1: (installationId.trim()) }) } }
   }
-  return { state: 'unavailable', text: INSTALL_ID_UNAVAILABLE }
+  return { state: 'unavailable', get "text"() { return uiText(INSTALL_ID_UNAVAILABLE) } }
 }

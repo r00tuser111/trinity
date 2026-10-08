@@ -1,7 +1,7 @@
 <template>
   <InfoTile
     scope="Fleet"
-    title="Subscription pressure"
+    :title="uiText(&quot;Subscription pressure&quot;)"
     :stamp="stamp"
     :stamp-title="stampTitle"
     :state="state"
@@ -29,12 +29,12 @@
              never got far enough to say anything about the quota. Different
              chrome as well as a different word — a red LIMIT chip in front of a
              dead token is what #2353 was filed for. -->
-        <span v-else-if="row.severity === 'auth'" class="sp-chip sp-auth">auth</span>
-        <span v-else-if="row.severity === 'crit'" class="sp-chip sp-crit">limit</span>
+        <span v-else-if="row.severity === 'auth'" class="sp-chip sp-auth">{{ uiText("auth") }}</span>
+        <span v-else-if="row.severity === 'crit'" class="sp-chip sp-crit">{{ uiText("limit") }}</span>
         <!-- "429s" already happened; "auth" is a refused credential; "near" has
              not happened yet — three different actions. -->
         <span v-else-if="row.severity === 'warn'" class="sp-chip sp-warn">
-          {{ WARN_CHIP[row.warnReason] || 'near' }}
+          {{ WARN_CHIP[row.warnReason] || uiText("near") }}
         </span>
         <span v-else-if="row.severity === 'unknown'" class="sp-chip sp-unknown">?</span>
         <span v-else class="sp-dot" aria-hidden="true"></span>
@@ -54,7 +54,7 @@
             :key="w.label"
             class="sp-win"
             role="img"
-            :aria-label="`${w.label} limit ${w.pct}% used`"
+            :aria-label="uiText(&quot;{arg1} limit {arg2}% used&quot;, { arg1: (w.label), arg2: (w.pct) })"
           >
             <span class="sp-wlab">{{ w.label }}</span>
             <span class="sp-bar">
@@ -165,14 +165,13 @@ const stampTitle = computed(() => {
   const parts = []
   if (totalRows > visibleRows) {
     parts.push(
-      `${visibleRows} of ${totalRows} subscriptions shown — most pressured first. `
-      + 'Open Settings → Integrations for the full list.',
+      uiText('{visible} of {total} subscriptions shown — most pressured first. Open Settings → Integrations for the full list.', { visible: visibleRows, total: totalRows }),
     )
   } else {
-    parts.push('Every registered Claude subscription.')
+    parts.push(uiText('Every registered Claude subscription.'))
   }
   if (subsStore.listLoaded && subsStore.listError) {
-    parts.push('The last refresh failed — showing the previous reading.')
+    parts.push(uiText('The last refresh failed — showing the previous reading.'))
   }
   return parts.join(' ')
 })
@@ -180,6 +179,8 @@ const stampTitle = computed(() => {
 function retry() {
   subsStore.fetchPressureData()
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

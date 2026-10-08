@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import api from '../api'
 
@@ -43,7 +45,7 @@ export const useOperatorIntakeStore = defineStore('operatorIntake', {
         const r = await api.get('/api/settings/operator-intake')
         this.status = { ...this.status, ...(r.data || {}) }
       } catch (e) {
-        this.error = e?.response?.data?.detail || 'Failed to load intake status.'
+        this.error = e?.response?.data?.detail || uiText("Failed to load intake status.")
       } finally {
         this.loaded = true
       }
@@ -67,7 +69,7 @@ export const useOperatorIntakeStore = defineStore('operatorIntake', {
         this.lastSubmitOutcome = submit_outcome || null
         return true
       } catch (e) {
-        this.error = e?.response?.data?.detail || 'Failed to update intake.'
+        this.error = e?.response?.data?.detail || uiText("Failed to update intake.")
         return false
       } finally {
         this.saving = false

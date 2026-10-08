@@ -26,22 +26,22 @@
            A tile that passes `owns-loading` renders its own loading face in the
            default slot instead (ent#449) — the chassis cannot draw a scanline
            over a zone only the tile knows the shape of. -->
-      <div v-if="state === 'loading' && !ownsLoading" class="it-skel" role="status" aria-label="Loading">
+      <div v-if="state === 'loading' && !ownsLoading" class="it-skel" role="status" :aria-label="uiText(&quot;Loading&quot;)">
         <span class="l l1"></span><span class="l l2"></span><span class="l l3"></span>
       </div>
 
       <!-- Per-tile failure degrades THIS tile only — the grid and every
            sibling stay live (#47 hydration contract, ent#325 AC). -->
       <div v-else-if="state === 'error'" class="it-msg">
-        <b>Couldn't load</b>
-        <span>{{ errorText || 'This tile only — the rest of the board is unaffected.' }}</span>
-        <button v-if="onRetry" type="button" class="nodrag" @click.stop="onRetry">Retry</button>
+        <b>{{ uiText("Couldn't load") }}</b>
+        <span>{{ errorText || uiText("This tile only — the rest of the board is unaffected.") }}</span>
+        <button v-if="onRetry" type="button" class="nodrag" @click.stop="onRetry">{{ uiText("Retry") }}</button>
       </div>
 
       <!-- An empty state names the next action rather than showing a void
            (ent#325 AC: "non-dead empty state"). -->
       <div v-else-if="state === 'empty'" class="it-msg">
-        <b>{{ emptyTitle || 'Nothing yet' }}</b>
+        <b>{{ emptyTitle || uiText("Nothing yet") }}</b>
         <span>{{ emptyHint }}</span>
       </div>
 
@@ -115,6 +115,8 @@ defineProps({
    */
   ownsLoading: { type: Boolean, default: false },
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

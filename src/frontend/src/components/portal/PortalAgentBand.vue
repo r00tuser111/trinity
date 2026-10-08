@@ -53,21 +53,21 @@
             <div class="mt-1 h-2.5 w-16 rounded bg-gray-100 dark:bg-gray-800/60"></div>
           </div>
         </div>
-        <span class="sr-only">Loading this agent's activity…</span>
+        <span class="sr-only">{{ t('Loading this agent\'s activity…') }}</span>
       </template>
 
       <template v-else>
         <div>
           <div class="text-lg font-semibold tabular-nums leading-tight">{{ stats.total_executions }}</div>
-          <div class="text-[11px] text-gray-500 dark:text-gray-400">tasks · last {{ WINDOW_LABEL }}</div>
+          <div class="text-[11px] text-gray-500 dark:text-gray-400">{{ t('tasks · last') }} {{ WINDOW_LABEL }}</div>
         </div>
         <div>
           <div class="text-lg font-semibold tabular-nums leading-tight">{{ pct(stats.success_rate) }}</div>
-          <div class="text-[11px] text-gray-500 dark:text-gray-400">completed</div>
+          <div class="text-[11px] text-gray-500 dark:text-gray-400">{{ t('completed') }}</div>
         </div>
         <div>
           <div class="text-lg font-semibold tabular-nums leading-tight">{{ pct(stats.first_try?.rate) }}</div>
-          <div class="text-[11px] text-gray-500 dark:text-gray-400" title="Succeeded without needing a retry">first try</div>
+          <div class="text-[11px] text-gray-500 dark:text-gray-400" :title="t('Succeeded without needing a retry')">{{ t('first try') }}</div>
         </div>
         <!-- ent#366: a RAW TALLY, never a percentage — one thumbs-down out of
              one rating renders as "100% negative", a number that looks like
@@ -109,12 +109,12 @@
         <!-- Board A3 names the chart rather than leaving a bare plot beside a
              row of numbers — without it the bars read as another statistic. -->
         <div class="text-[10px] font-semibold uppercase tracking-wide text-gray-400 leading-none mb-1.5">
-          Activity · last {{ WINDOW_LABEL }}
+          {{ t('Activity · last') }} {{ WINDOW_LABEL }}
         </div>
         <ScanlineReveal :loading="!loaded">
           <div class="min-h-[23px] flex items-center">
-            <p v-if="stats.unavailable" class="text-xs text-gray-400">Stats are unavailable right now.</p>
-            <p v-else-if="!hasActivity" class="text-xs text-gray-400">No activity in the last {{ WINDOW_LABEL }}.</p>
+            <p v-if="stats.unavailable" class="text-xs text-gray-400">{{ t('Stats are unavailable right now.') }}</p>
+            <p v-else-if="!hasActivity" class="text-xs text-gray-400">{{ t('No activity in the last') }} {{ WINDOW_LABEL }}.</p>
             <!-- `axis="false"`: at 7 columns the day labels are four truncated
                  dates, and the tooltip gives each bar's full date. Dropping them
                  is what buys the title its 16px inside the 39px budget — the
@@ -151,6 +151,7 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 /**
  * The agent's numbers, above its conversation (ent#523).
  *
@@ -176,14 +177,14 @@ const props = defineProps({
 // `PortalAgentDetails` (which has always pinned '7d') now share one cache entry
 // instead of paying for two windows of the same agent.
 const timeWindow = ref('7d')
-const WINDOW_LABEL = '7 days'
+const WINDOW_LABEL = computed(() => t('7 days'))
 const { stats, ratings, loaded, error, reload } = usePortalAgentPage(
   toRef(props, 'agentName'), timeWindow,
 )
 const chartBuckets = computed(() => bucketsForChart(stats.value))
 const hasActivity = computed(() => hasChartActivity(stats.value))
 const ratingsCaption = computed(() => (
-  ratings.value.unavailable ? 'ratings unavailable' : 'helpful / not helpful'
+  ratings.value.unavailable ? t('ratings unavailable') : t('helpful / not helpful')
 ))
 
 // A rate that has never been measured is `—`, not `0%`: zero is a claim about

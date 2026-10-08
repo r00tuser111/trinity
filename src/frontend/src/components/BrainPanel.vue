@@ -16,55 +16,50 @@
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Brain Orb</h3>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ uiText("Brain Orb") }}</h3>
           <span class="px-1.5 py-0.5 text-[10px] font-bold rounded bg-state-autonomous-100 dark:bg-state-autonomous-900/40 text-state-autonomous-700 dark:text-state-autonomous-400 leading-none">BETA</span>
         </div>
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          The Self-Rendering Mind — a live 3D knowledge-graph view of {{ name }}'s memory,
-          with a client-held voice tile to explore it by talking.
+          {{ uiText("The Self-Rendering Mind — a live 3D knowledge-graph view of") }} {{ name }}{{ uiText("'s memory, with a client-held voice tile to explore it by talking.") }}
         </p>
       </div>
     </div>
 
     <!-- Post-voice processing (#73) -->
     <div class="mt-6 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 p-4">
-      <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Post-voice processing</div>
+      <div class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">{{ uiText("Post-voice processing") }}</div>
 
       <template v-if="!writeAvailable">
         <p class="text-sm text-gray-500 dark:text-gray-400">
-          Enable the Brain Orb write surface (Settings → General → Brain Orb → KB-write actions)
-          to configure post-voice processing.
+          {{ uiText("Enable the Brain Orb write surface (Settings → General → Brain Orb → KB-write actions) to configure post-voice processing.") }}
         </p>
       </template>
       <template v-else-if="!running">
-        <p class="text-sm text-gray-500 dark:text-gray-400">Start the agent to configure post-voice processing.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ uiText("Start the agent to configure post-voice processing.") }}</p>
       </template>
       <template v-else>
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-          When on, each finished voice conversation is run through this prompt as a regular agent
-          task and the result is saved back as a note — so a session becomes durable, processed
-          memory. Each run shows up under the agent's Executions (triggered by <code>voice</code>),
-          so you can see it succeed or fail.
+          {{ uiText("When on, each finished voice conversation is run through this prompt as a regular agent task and the result is saved back as a note — so a session becomes durable, processed memory. Each run shows up under the agent's Executions (triggered by") }} <code>voice</code>{{ uiText("), so you can see it succeed or fail.") }}
         </p>
 
         <label class="flex items-center gap-2 cursor-pointer select-none mb-3">
           <input type="checkbox" v-model="enabled" :disabled="loading || saving"
                  class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-          <span class="text-sm text-gray-800 dark:text-gray-200">Run a processing step after each voice session</span>
+          <span class="text-sm text-gray-800 dark:text-gray-200">{{ uiText("Run a processing step after each voice session") }}</span>
         </label>
 
         <textarea v-model="prompt" :disabled="loading || saving" rows="5"
-          placeholder="e.g. Summarize this voice conversation: 3 key insights, then any action items. Output only the note body."
+          :placeholder="uiText(&quot;e.g. Summarize this voice conversation: 3 key insights, then any action items. Output only the note body.&quot;)"
           class="w-full text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 p-2 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"></textarea>
 
         <div class="mt-3 flex items-center gap-3">
           <button @click="save" :disabled="loading || saving"
             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
-            {{ saving ? 'Saving…' : 'Save' }}
+            {{ saving ? uiText("Saving…") : uiText("Save") }}
           </button>
-          <span v-if="saved" class="text-xs text-green-600 dark:text-green-400">Saved</span>
+          <span v-if="saved" class="text-xs text-green-600 dark:text-green-400">{{ uiText("Saved") }}</span>
           <span v-if="error" class="text-xs text-red-500">{{ error }}</span>
-          <span v-if="enabled && !prompt.trim()" class="text-xs text-amber-500">Add a prompt for processing to run.</span>
+          <span v-if="enabled && !prompt.trim()" class="text-xs text-amber-500">{{ uiText("Add a prompt for processing to run.") }}</span>
         </div>
       </template>
     </div>
@@ -84,10 +79,10 @@
           <path stroke-width="1.4" stroke-linecap="round" d="M3 12h18" opacity="0.8" />
           <path stroke-width="1.4" stroke-linecap="round" d="M12 3c3.2 2.4 3.2 15.6 0 18M12 3c-3.2 2.4-3.2 15.6 0 18" opacity="0.8" />
         </svg>
-        Open Brain Orb
+        {{ uiText("Open Brain Orb") }}
       </button>
       <p v-if="!running" class="mt-2 text-xs text-gray-400 dark:text-gray-500">
-        Start the agent to open its Brain Orb.
+        {{ uiText("Start the agent to open its Brain Orb.") }}
       </p>
     </div>
   </div>
@@ -132,7 +127,7 @@ async function load() {
     prompt.value = r.data?.prompt || ''
   } catch (e) {
     // 404 (flag/agent) is fine — leave defaults; only surface real errors
-    if (e.response?.status && e.response.status !== 404) error.value = 'Could not load settings'
+    if (e.response?.status && e.response.status !== 404) error.value = uiText("Could not load settings")
   } finally {
     loading.value = false
   }
@@ -147,7 +142,7 @@ async function save() {
     saved.value = true
     setTimeout(() => { saved.value = false }, 2500)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Could not save'
+    error.value = e.response?.data?.detail || uiText("Could not save")
   } finally {
     saving.value = false
   }
@@ -155,4 +150,6 @@ async function save() {
 
 onMounted(() => { sessionsStore.loadFeatureFlags?.().then(() => { writeAvailable.value = !!sessionsStore.brainOrbWriteAvailable; load() }) })
 watch(() => props.running, () => load())
+
+import { t as uiText } from '@/i18n'
 </script>

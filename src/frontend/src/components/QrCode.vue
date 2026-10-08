@@ -3,7 +3,7 @@
     <img
       v-if="dataUrl"
       :src="dataUrl"
-      :alt="alt"
+      :alt="uiText(alt)"
       class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white p-2"
       width="200"
       height="200"
@@ -12,7 +12,7 @@
       v-else
       class="w-[200px] h-[200px] flex items-center justify-center rounded-lg border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-500 dark:text-gray-400 text-center px-3"
     >
-      {{ error ? 'QR unavailable — use the manual code below' : 'Generating QR…' }}
+      {{ error ? uiText("QR unavailable — use the manual code below") : uiText("Generating QR…") }}
     </div>
   </div>
 </template>
@@ -26,7 +26,7 @@ import { ref, watch, onMounted } from 'vue'
 
 const props = defineProps({
   value: { type: String, required: true },
-  alt: { type: String, default: 'Authenticator QR code' },
+  alt: { type: String, default: msg('Authenticator QR code') },
 })
 
 const dataUrl = ref('')
@@ -47,4 +47,6 @@ const render = async () => {
 
 onMounted(render)
 watch(() => props.value, render)
+
+import { msg, t as uiText } from '@/i18n'
 </script>

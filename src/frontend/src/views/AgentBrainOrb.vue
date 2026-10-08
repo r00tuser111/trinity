@@ -6,7 +6,7 @@
       <button
         @click="$router.push(`/agents/${agentName}`)"
         class="p-1.5 rounded hover:bg-gray-800 text-gray-400 hover:text-white transition-colors flex-shrink-0"
-        title="Back to agent"
+        :title="uiText(&quot;Back to agent&quot;)"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -19,7 +19,7 @@
         class="font-semibold text-sm text-white truncate"
         :title="agentNameTooltip(agent || agentName)"
       >{{ agentDisplayName(agent) || agentName }}</span>
-      <span class="text-xs text-gray-500 truncate hidden sm:inline">· The Self-Rendering Mind</span>
+      <span class="text-xs text-gray-500 truncate hidden sm:inline">{{ uiText("· The Self-Rendering Mind") }}</span>
 
       <span
         v-if="agent"
@@ -43,7 +43,7 @@
       <iframe
         ref="orbFrame"
         src="/brain-orb/index.html"
-        title="Brain Orb"
+        :title="uiText(&quot;Brain Orb&quot;)"
         class="absolute inset-0 w-full h-full border-0"
         allow="microphone"
         @load="sendInit"
@@ -55,10 +55,9 @@
         class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/85 text-center px-6 pointer-events-none"
       >
         <div class="text-3xl text-amber-400/80">◇</div>
-        <div class="text-sm text-gray-300">This agent hasn't rendered its mind yet.</div>
+        <div class="text-sm text-gray-300">{{ uiText("This agent hasn't rendered its mind yet.") }}</div>
         <div class="text-xs text-gray-500 max-w-md">
-          The Brain Orb reads a visualization the agent produces in its own container.
-          It will appear here once the agent has exported it.
+          {{ uiText("The Brain Orb reads a visualization the agent produces in its own container. It will appear here once the agent has exported it.") }}
         </div>
       </div>
     </div>
@@ -155,4 +154,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('message', onMessage)
 })
+
+import { t as uiText } from '@/i18n'
 </script>

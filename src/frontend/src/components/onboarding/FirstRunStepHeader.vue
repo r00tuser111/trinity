@@ -11,17 +11,17 @@
         <span
           v-if="kicker"
           class="font-mono text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-400"
-        >{{ kicker }}</span>
-        <BaseBadge v-if="badge" :variant="badgeVariant">{{ badge }}</BaseBadge>
+        >{{ t(kicker) }}</span>
+        <BaseBadge v-if="badge" :variant="badgeVariant">{{ t(badge) }}</BaseBadge>
       </div>
       <h2
         id="first-run-title"
         class="text-lg font-[650] leading-snug text-gray-900 dark:text-gray-100"
       >
-        {{ title }}
+        {{ t(title) }}
       </h2>
       <p v-if="lead" class="mt-1.5 text-sm leading-[1.55] text-gray-600 dark:text-gray-300">
-        {{ lead }}
+        {{ t(lead) }}
       </p>
     </div>
     <Schematic v-if="schematic" :name="schematic" />
@@ -29,6 +29,7 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { computed } from 'vue'
 import BaseBadge from '../base/BaseBadge.vue'
 import Schematic from './schematics/Schematic.vue'

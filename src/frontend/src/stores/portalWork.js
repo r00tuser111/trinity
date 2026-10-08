@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useClientPortalStore } from './clientPortal'
@@ -153,7 +155,7 @@ export const usePortalWorkStore = defineStore('portalWork', () => {
       // failed FIRST load is `failed`, never `empty`.
       error.value = e?.response?.data?.detail?.message
         || (typeof e?.response?.data?.detail === 'string' ? e.response.data.detail : null)
-        || "Couldn't load what's running."
+        || uiText("Couldn't load what's running.")
     } finally {
       if (token === _fetchToken) loading.value = false
       _ensurePolling()

@@ -53,7 +53,7 @@
     <div class="shrink-0 border-t border-gray-200 dark:border-gray-800 px-3 sm:px-6 py-3">
       <div :class="[BLOCK, 'max-w-[var(--ws-message-max,64rem)] mx-auto h-11 rounded-2xl']"></div>
     </div>
-    <span class="sr-only">Loading your workspace…</span>
+    <span class="sr-only">{{ uiText("Loading your workspace…") }}</span>
   </div>
 
   <!-- ================================ THREAD =============================== -->
@@ -72,7 +72,7 @@
       <div v-if="!row.user" :class="[BLOCK_STRONG, 'w-7 h-7 rounded-full shrink-0 mt-0.5']"></div>
       <div :class="[BLOCK, row.user ? 'rounded-2xl rounded-br-md' : 'rounded-2xl rounded-bl-md', row.size]"></div>
     </div>
-    <span v-if="announce" class="sr-only">Loading this conversation…</span>
+    <span v-if="announce" class="sr-only">{{ uiText("Loading this conversation…") }}</span>
   </div>
 
   <!-- ================================= RAIL ================================ -->
@@ -87,7 +87,7 @@
     <div :class="[BLOCK_STRONG, 'h-2.5 w-20 rounded mb-3']"></div>
     <div v-for="row in 3" :key="row" :class="[BLOCK, 'h-14 rounded-xl']"></div>
     <div :class="[BLOCK_STRONG, 'h-2.5 w-24 rounded mt-5']"></div>
-    <span class="sr-only">Loading…</span>
+    <span class="sr-only">{{ uiText("Loading…") }}</span>
   </div>
 
   <!-- =============================== BRIEFING ============================== -->
@@ -105,7 +105,7 @@
         <div v-for="card in 2" :key="card" :class="[BLOCK, 'h-16 rounded-xl']"></div>
       </div>
     </div>
-    <span class="sr-only">Loading suggestions…</span>
+    <span class="sr-only">{{ uiText("Loading suggestions…") }}</span>
   </div>
 </template>
 
@@ -132,4 +132,6 @@ const THREAD_ROWS = [
   { user: true, size: 'h-10 w-2/5' },
   { user: false, size: 'h-12 w-1/2' },
 ]
+
+import { t as uiText } from '@/i18n'
 </script>

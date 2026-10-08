@@ -1,3 +1,5 @@
+import { locale, t } from '../i18n'
+
 /**
  * Timezone-Aware Timestamp Utilities
  *
@@ -65,7 +67,7 @@ export function getTimestampMs(timestamp) {
 export function formatLocalTime(timestamp, options = {}) {
   if (!timestamp) return ''
   const date = parseUTC(timestamp)
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString(locale.value, {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
@@ -82,7 +84,7 @@ export function formatLocalTime(timestamp, options = {}) {
 export function formatLocalDateTime(timestamp) {
   if (!timestamp) return ''
   const date = parseUTC(timestamp)
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString(locale.value, {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -99,17 +101,17 @@ export function formatLocalDateTime(timestamp) {
  * @returns {string} Human-readable relative time
  */
 export function formatRelativeTime(timestamp) {
-  if (!timestamp) return 'Unknown'
+  if (!timestamp) return t('Unknown')
   const date = parseUTC(timestamp)
   const now = new Date()
   const diffSeconds = Math.floor((now - date) / 1000)
 
-  if (diffSeconds < 0) return 'in the future'
-  if (diffSeconds < 60) return 'just now'
-  if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)} minutes ago`
-  if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)} hours ago`
-  if (diffSeconds < 604800) return `${Math.floor(diffSeconds / 86400)} days ago`
-  return date.toLocaleDateString()
+  if (diffSeconds < 0) return t('in the future')
+  if (diffSeconds < 60) return t('just now')
+  if (diffSeconds < 3600) return t('{count} minutes ago', { count: Math.floor(diffSeconds / 60) })
+  if (diffSeconds < 86400) return t('{count} hours ago', { count: Math.floor(diffSeconds / 3600) })
+  if (diffSeconds < 604800) return t('{count} days ago', { count: Math.floor(diffSeconds / 86400) })
+  return date.toLocaleDateString(locale.value)
 }
 
 /**

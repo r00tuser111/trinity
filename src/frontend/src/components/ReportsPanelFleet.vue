@@ -3,15 +3,15 @@
     <!-- KPI tiles -->
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] uppercase tracking-wide text-gray-500">Total reports</p>
+        <p class="text-[10px] uppercase tracking-wide text-gray-500">{{ uiText("Total reports") }}</p>
         <p class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ store.stats?.total ?? '—' }}</p>
       </div>
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] uppercase tracking-wide text-gray-500">Report types</p>
+        <p class="text-[10px] uppercase tracking-wide text-gray-500">{{ uiText("Report types") }}</p>
         <p class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ typeCount }}</p>
       </div>
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] uppercase tracking-wide text-gray-500">Agents reporting</p>
+        <p class="text-[10px] uppercase tracking-wide text-gray-500">{{ uiText("Agents reporting") }}</p>
         <p class="text-base font-semibold text-gray-900 dark:text-gray-100">{{ store.stats?.agents ?? '—' }}</p>
       </div>
     </div>
@@ -23,7 +23,7 @@
         class="text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1"
         @change="store.setFilter('agent', $event.target.value)"
       >
-        <option value="">All agents</option>
+        <option value="">{{ uiText("All agents") }}</option>
         <option v-for="name in agentNames" :key="name" :value="name">{{ agentOptionLabel(agentsStore.agentRefForSlug(name)) }}</option>
       </select>
       <select
@@ -31,7 +31,7 @@
         class="text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1"
         @change="store.setFilter('report_type', $event.target.value)"
       >
-        <option value="">All types</option>
+        <option value="">{{ uiText("All types") }}</option>
         <option v-for="t in typeOptions" :key="t" :value="t">{{ t }}</option>
       </select>
       <select
@@ -42,12 +42,12 @@
         <option :value="24">24h</option>
         <option :value="168">7d</option>
         <option :value="720">30d</option>
-        <option :value="0">All time</option>
+        <option :value="0">{{ uiText("All time") }}</option>
       </select>
       <input
         :value="store.filters.search"
         type="search"
-        placeholder="Search title / type / agent"
+        :placeholder="uiText(&quot;Search title / type / agent&quot;)"
         class="text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1 flex-1 min-w-[12rem]"
         @input="onSearch($event.target.value)"
       />
@@ -55,8 +55,8 @@
 
     <p v-if="store.error" class="text-sm text-red-600 mb-3">{{ store.error }}</p>
 
-    <div v-if="store.loading && store.reports.length === 0" class="text-sm text-gray-400">Loading…</div>
-    <div v-else-if="store.reports.length === 0" class="text-sm text-gray-400">No reports match these filters.</div>
+    <div v-if="store.loading && store.reports.length === 0" class="text-sm text-gray-400">{{ uiText("Loading…") }}</div>
+    <div v-else-if="store.reports.length === 0" class="text-sm text-gray-400">{{ uiText("No reports match these filters.") }}</div>
 
     <ul v-else class="space-y-2">
       <li
@@ -83,7 +83,7 @@
           <span class="text-gray-400 text-xs shrink-0">{{ store.expandedId === report.id ? '▾' : '▸' }}</span>
         </button>
         <div v-if="store.expandedId === report.id" class="border-t border-gray-100 dark:border-gray-800 px-3 py-3">
-          <div v-if="!store.payloads[report.id]" class="text-xs text-gray-400">Loading report…</div>
+          <div v-if="!store.payloads[report.id]" class="text-xs text-gray-400">{{ uiText("Loading report…") }}</div>
           <ReportRenderer
             v-else
             :report-type="report.report_type"
@@ -103,19 +103,19 @@
                 class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-wait"
                 :disabled="exporting === report.id + ':xlsx'"
                 @click="onExport(report.id, 'xlsx')"
-              >{{ exporting === report.id + ':xlsx' ? 'Exporting…' : 'Export .xlsx' }}</button>
+              >{{ exporting === report.id + ':xlsx' ? uiText("Exporting…") : uiText("Export .xlsx") }}</button>
               <button
                 type="button"
                 class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-wait"
                 :disabled="exporting === report.id + ':pdf'"
                 @click="onExport(report.id, 'pdf')"
-              >{{ exporting === report.id + ':pdf' ? 'Exporting…' : 'Export PDF' }}</button>
+              >{{ exporting === report.id + ':pdf' ? uiText("Exporting…") : uiText("Export PDF") }}</button>
             </div>
             <button
               v-if="false"
               class="text-xs px-2 py-1 rounded border border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
               @click="store.deleteReport(report.id)"
-            >Delete</button>
+            >{{ uiText("Delete") }}</button>
           </div>
         </div>
       </li>
@@ -166,9 +166,11 @@ async function onExport(reportId, format) {
     // Surface it rather than failing silently — a 503 here is the #1814
     // "code upgraded without rebuilding the image" case and the detail says so.
     const detail = e?.response?.data?.detail
-    window.alert(detail || 'Export failed. Please try again.')
+    window.alert(detail || uiText('Export failed. Please try again.'))
   } finally {
     exporting.value = null
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

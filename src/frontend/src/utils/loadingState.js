@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Loading-state decisions for data surfaces (#1927 — design-system p13/p14/p15).
  *
@@ -52,8 +54,8 @@ export function viewState({ loading = false, hasLoaded = false, error = null, co
  */
 export function staleBannerMessage(subject, lastLoadedAt, { formatTime = defaultFormatTime } = {}) {
   const at = toDate(lastLoadedAt)
-  if (!at) return `Couldn't refresh ${subject} — showing the last data that loaded.`
-  return `Couldn't refresh ${subject} — showing data from ${formatTime(at)}.`
+  if (!at) return uiText("Couldn't refresh {arg1} — showing the last data that loaded.", { arg1: (subject) })
+  return uiText("Couldn't refresh {arg1} — showing data from {arg2}.", { arg1: (subject), arg2: (formatTime(at)) })
 }
 
 /**

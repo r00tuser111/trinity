@@ -5,7 +5,7 @@
       <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
-      <p class="mt-4 text-gray-500 dark:text-gray-400">Agent must be running to browse files</p>
+      <p class="mt-4 text-gray-500 dark:text-gray-400">{{ t('Agent must be running to browse files') }}</p>
     </div>
 
     <!-- Two Panel Layout -->
@@ -18,7 +18,7 @@
             @click="loadFiles"
             :disabled="loading"
             class="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-50"
-            title="Refresh"
+            :title="t('Refresh')"
           >
             <svg class="h-4 w-4" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -28,21 +28,21 @@
             @click="openNewFolderModal"
             :disabled="loading"
             class="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-50"
-            :title="newFolderParent === '/home/developer' ? 'New folder in workspace root' : `New folder in ${selectedFile?.name}`"
+            :title="newFolderParent === '/home/developer' ? t('New folder in workspace root') : uiText(&quot;New folder in {arg1}&quot;, { arg1: (selectedFile?.name) })"
           >
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11v4m-2-2h4" />
             </svg>
           </button>
-          <label class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 cursor-pointer whitespace-nowrap" title="Show hidden files">
+          <label class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 cursor-pointer whitespace-nowrap" :title="t('Show hidden files')">
             <input
               type="checkbox"
               v-model="showHidden"
               @change="loadFiles"
               class="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-action-primary-600 focus:ring-action-primary-500 h-3.5 w-3.5"
             />
-            <span>Hidden</span>
+            <span>{{ t('Hidden') }}</span>
           </label>
         </div>
 
@@ -52,7 +52,7 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Search files..."
+              :placeholder="t('Search files...')"
               class="w-full pl-7 pr-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white focus:ring-action-primary-500 focus:border-action-primary-500"
             />
             <svg class="absolute left-2 top-2 h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,7 +71,7 @@
           </div>
           <div v-else-if="error" class="text-status-danger-500 text-sm p-2">{{ error }}</div>
           <div v-else-if="filteredTree.length === 0" class="text-gray-500 dark:text-gray-400 text-sm p-2 text-center">
-            {{ searchQuery ? 'No matching files found' : 'This folder is empty' }}
+            {{ searchQuery ? t('No matching files found') : t('This folder is empty') }}
           </div>
           <FileTreeNode
             v-else
@@ -86,7 +86,7 @@
 
         <!-- Footer Stats -->
         <div class="px-2 py-1.5 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
-          <span>{{ totalFiles }} files<span v-if="totalSize > 0"> &bull; {{ formatFileSize(totalSize) }}</span></span>
+          <span>{{ totalFiles }} {{ t('files') }}<span v-if="totalSize > 0"> &bull; {{ formatFileSize(totalSize) }}</span></span>
         </div>
       </div>
 
@@ -103,8 +103,8 @@
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No File Selected</h3>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Select a file from the tree to preview</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('No File Selected') }}</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('Select a file from the tree to preview') }}</p>
           </div>
         </div>
 
@@ -152,14 +152,14 @@
                     <svg v-else class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    Save
+                    {{ t('Save') }}
                   </button>
                   <button
                     @click="cancelEdit"
                     :disabled="saving"
                     class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 disabled:opacity-50"
                   >
-                    Cancel
+                    {{ t('Cancel') }}
                   </button>
                 </template>
                 <!-- View Mode Actions -->
@@ -173,7 +173,7 @@
                     <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    Edit
+                    {{ t('Edit') }}
                   </button>
                   <button
                     @click="downloadFile"
@@ -183,27 +183,27 @@
                     <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
-                    Download
+                    {{ t('Download') }}
                   </button>
                   <button
                     @click="showDeleteConfirm = true"
                     :disabled="deleting || isDeleteProtected"
                     class="inline-flex items-center px-3 py-2 border border-status-danger-300 dark:border-status-danger-600 rounded-md shadow-sm text-sm font-medium text-status-danger-700 dark:text-status-danger-400 bg-white dark:bg-gray-700 hover:bg-status-danger-50 dark:hover:bg-status-danger-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-status-danger-500 disabled:opacity-50"
-                    :title="isDeleteProtected ? 'Protected file cannot be deleted' : ''"
+                    :title="isDeleteProtected ? t('Protected file cannot be deleted') : ''"
                   >
                     <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Delete
+                    {{ t('Delete') }}
                   </button>
                 </template>
               </div>
             </div>
             <p v-if="isDeleteProtected && !isEditing" class="mt-2 text-xs text-status-warning-600 dark:text-status-warning-400">
-              This is a protected system file and cannot be deleted.
+              {{ t('This is a protected system file and cannot be deleted.') }}
             </p>
             <p v-if="isEditing && hasUnsavedChanges" class="mt-2 text-xs text-status-urgent-600 dark:text-status-urgent-400">
-              You have unsaved changes.
+              {{ t('You have unsaved changes.') }}
             </p>
           </div>
         </template>
@@ -223,15 +223,15 @@
             </div>
             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
               <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
-                Delete {{ selectedFile?.type === 'directory' ? 'Folder' : 'File' }}
+                {{ t('Delete') }} {{ selectedFile?.type === 'directory' ? t('Folder') : t('File') }}
               </h3>
               <div class="mt-2">
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                  Are you sure you want to delete <strong class="text-gray-900 dark:text-white">{{ selectedFile?.name }}</strong>?
+                  {{ t('Are you sure you want to delete') }} <strong class="text-gray-900 dark:text-white">{{ selectedFile?.name }}</strong>?
                   <span v-if="selectedFile?.type === 'directory'">
-                    This will delete all {{ selectedFile?.file_count || 0 }} files inside.
+                    {{ t('This will delete all') }} {{ selectedFile?.file_count || 0 }} {{ t('files inside.') }}
                   </span>
-                  This action cannot be undone.
+                  {{ t('This action cannot be undone.') }}
                 </p>
               </div>
             </div>
@@ -246,13 +246,13 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Delete
+              {{ t('Delete') }}
             </button>
             <button
               @click="showDeleteConfirm = false"
               class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 sm:mt-0 sm:w-auto sm:text-sm"
             >
-              Cancel
+              {{ t('Cancel') }}
             </button>
           </div>
         </div>
@@ -264,19 +264,19 @@
       <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showNewFolderModal = false"></div>
         <div class="relative bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-6">
-          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">New Folder</h3>
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">{{ t('New Folder') }}</h3>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Create in <strong class="text-gray-900 dark:text-white break-all">{{ newFolderParent }}</strong>
+            {{ t('Create in') }} <strong class="text-gray-900 dark:text-white break-all">{{ newFolderParent }}</strong>
           </p>
           <input
             v-model="newFolderName"
             type="text"
-            placeholder="folder-name"
+            :placeholder="t('folder-name')"
             :disabled="creatingFolder"
             @keyup.enter="createFolder"
             class="mt-3 w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700 dark:text-white focus:ring-action-primary-500 focus:border-action-primary-500"
           />
-          <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">Use <code>/</code> to create nested folders.</p>
+          <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ t('Use') }} <code>/</code> {{ t('to create nested folders.') }}</p>
           <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
             <button
               @click="createFolder"
@@ -287,13 +287,13 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Create
+              {{ t('Create') }}
             </button>
             <button
               @click="showNewFolderModal = false"
               class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 sm:mt-0 sm:w-auto sm:text-sm"
             >
-              Cancel
+              {{ t('Cancel') }}
             </button>
           </div>
         </div>
@@ -314,7 +314,7 @@
         v-if="notification.type === 'error'"
         type="button"
         class="ml-3 font-medium opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-status-danger-500/40 rounded"
-        aria-label="Dismiss notification"
+        :aria-label="t('Dismiss notification')"
         @click="dismissNotification"
       >✕</button>
     </div>
@@ -322,6 +322,7 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useAgentsStore } from '../stores/agents'
 import { useNotification } from '../composables/useNotification'
@@ -470,7 +471,7 @@ const loadFiles = async () => {
     fileTree.value = data.tree || []
   } catch (e) {
     error.value = e.response?.data?.detail || e.message
-    showNotification(`Failed to load files: ${error.value}`, 'error')
+    showNotification(uiText("Failed to load files: {arg1}", { arg1: (error.value) }), 'error')
   } finally {
     loading.value = false
   }
@@ -479,7 +480,7 @@ const loadFiles = async () => {
 const onFileSelect = async (item) => {
   // If in edit mode with unsaved changes, confirm before switching
   if (isEditing.value && hasUnsavedChanges.value) {
-    if (!confirm('You have unsaved changes. Are you sure you want to switch files?')) {
+    if (!confirm(uiText("You have unsaved changes. Are you sure you want to switch files?"))) {
       return
     }
   }
@@ -535,9 +536,9 @@ const downloadFile = async () => {
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
 
-    showNotification(`Downloaded ${selectedFile.value.name}`)
+    showNotification(uiText("Downloaded {arg1}", { arg1: (selectedFile.value.name) }))
   } catch (e) {
-    showNotification(`Failed to download: ${e.message}`, 'error')
+    showNotification(uiText("Failed to download: {arg1}", { arg1: (e.message) }), 'error')
   } finally {
     downloading.value = false
   }
@@ -549,7 +550,7 @@ const deleteFile = async () => {
   deleting.value = true
   try {
     await agentsStore.deleteAgentFile(props.agentName, selectedFile.value.path)
-    showNotification(`Deleted ${selectedFile.value.name}`)
+    showNotification(uiText("Deleted {arg1}", { arg1: (selectedFile.value.name) }))
     showDeleteConfirm.value = false
 
     if (previewData.value?.url) {
@@ -561,7 +562,7 @@ const deleteFile = async () => {
     await loadFiles()
   } catch (e) {
     const errorMsg = e.response?.data?.detail || e.message
-    showNotification(`Failed to delete: ${errorMsg}`, 'error')
+    showNotification(uiText("Failed to delete: {arg1}", { arg1: (errorMsg) }), 'error')
   } finally {
     deleting.value = false
   }
@@ -576,7 +577,7 @@ const createFolder = async () => {
   const name = newFolderName.value.trim().replace(/^\/+|\/+$/g, '')
   if (!name || creatingFolder.value) return
   if (name.split('/').some(seg => seg === '..' || seg === '.')) {
-    showNotification('Invalid folder name', 'error')
+    showNotification(uiText("Invalid folder name"), 'error')
     return
   }
 
@@ -584,12 +585,12 @@ const createFolder = async () => {
   creatingFolder.value = true
   try {
     await agentsStore.createAgentFolder(props.agentName, folderPath)
-    showNotification(`Created ${name}`)
+    showNotification(uiText("Created {arg1}", { arg1: (name) }))
     showNewFolderModal.value = false
     await loadFiles()
   } catch (e) {
     const errorMsg = e.response?.data?.detail || e.message
-    showNotification(`Failed to create folder: ${errorMsg}`, 'error')
+    showNotification(uiText("Failed to create folder: {arg1}", { arg1: (errorMsg) }), 'error')
   } finally {
     creatingFolder.value = false
   }
@@ -606,13 +607,13 @@ const startEdit = async () => {
     isEditing.value = true
     hasUnsavedChanges.value = false
   } catch (e) {
-    showNotification('Failed to load file for editing', 'error')
+    showNotification(uiText("Failed to load file for editing"), 'error')
   }
 }
 
 const cancelEdit = () => {
   if (hasUnsavedChanges.value) {
-    if (!confirm('You have unsaved changes. Are you sure you want to cancel?')) {
+    if (!confirm(uiText("You have unsaved changes. Are you sure you want to cancel?"))) {
       return
     }
   }
@@ -636,14 +637,14 @@ const saveFile = async () => {
       selectedFile.value.path,
       editContent.value
     )
-    showNotification(`Saved ${selectedFile.value.name}`)
+    showNotification(uiText("Saved {arg1}", { arg1: (selectedFile.value.name) }))
     isEditing.value = false
     hasUnsavedChanges.value = false
 
     await loadPreview(selectedFile.value)
   } catch (e) {
     const errorMsg = e.response?.data?.detail || e.message
-    showNotification(`Failed to save: ${errorMsg}`, 'error')
+    showNotification(uiText("Failed to save: {arg1}", { arg1: (errorMsg) }), 'error')
   } finally {
     saving.value = false
   }
@@ -666,10 +667,10 @@ const formatDate = (isoString) => {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
 
-  if (diffMins < 1) return 'just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays < 7) return `${diffDays}d ago`
+  if (diffMins < 1) return uiText("just now")
+  if (diffMins < 60) return uiText("{arg1}m ago", { arg1: (diffMins) })
+  if (diffHours < 24) return uiText("{arg1}h ago", { arg1: (diffHours) })
+  if (diffDays < 7) return uiText("{arg1}d ago", { arg1: (diffDays) })
   return date.toLocaleDateString()
 }
 
@@ -706,4 +707,6 @@ watch(() => props.agentName, () => {
     loadFiles()
   }
 })
+
+import { t as uiText } from '@/i18n'
 </script>

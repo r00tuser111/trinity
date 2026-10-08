@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import {
@@ -329,7 +331,7 @@ export const useAuthStore = defineStore('auth', {
           return false
         }
         console.error('Admin login failed:', error)
-        const detail = error.response?.data?.detail || 'Invalid username or password'
+        const detail = error.response?.data?.detail || uiText('Invalid username or password')
         this.authError = detail
         return false
       }
@@ -342,8 +344,8 @@ export const useAuthStore = defineStore('auth', {
     // Request a verification code via email
     async requestEmailCode(email) {
       if (!this.emailAuthEnabled) {
-        this.authError = 'Email authentication is disabled'
-        return { success: false, error: 'Email authentication is disabled' }
+        this.authError = uiText("Email authentication is disabled")
+        return { success: false, error: uiText('Email authentication is disabled') }
       }
 
       try {
@@ -355,7 +357,7 @@ export const useAuthStore = defineStore('auth', {
         }
       } catch (error) {
         console.error('Request email code failed:', error)
-        const detail = error.response?.data?.detail || 'Failed to send verification code'
+        const detail = error.response?.data?.detail || uiText('Failed to send verification code')
         this.authError = detail
         return { success: false, error: detail }
       }
@@ -364,7 +366,7 @@ export const useAuthStore = defineStore('auth', {
     // Verify email code and login
     async verifyEmailCode(email, code) {
       if (!this.emailAuthEnabled) {
-        this.authError = 'Email authentication is disabled'
+        this.authError = uiText("Email authentication is disabled")
         return false
       }
 
@@ -382,7 +384,7 @@ export const useAuthStore = defineStore('auth', {
         return true
       } catch (error) {
         console.error('Verify email code failed:', error)
-        const detail = error.response?.data?.detail || 'Invalid or expired verification code'
+        const detail = error.response?.data?.detail || uiText('Invalid or expired verification code')
         this.authError = detail
         return false
       }
@@ -448,7 +450,7 @@ export const useAuthStore = defineStore('auth', {
         })
         return { ok: true, mfa: true }
       }
-      this.authError = params.get('reason') || 'SSO login failed'
+      this.authError = params.get('reason') || uiText("SSO login failed")
       return { ok: false }
     },
 
@@ -464,7 +466,7 @@ export const useAuthStore = defineStore('auth', {
         await this._finalizeLogin(r.data.access_token)
         return true
       } catch (error) {
-        const detail = error.response?.data?.detail || 'Invalid verification code'
+        const detail = error.response?.data?.detail || uiText('Invalid verification code')
         this.authError = detail
         return false
       }
@@ -480,7 +482,7 @@ export const useAuthStore = defineStore('auth', {
         })
         return r.data
       } catch (error) {
-        this.authError = error.response?.data?.detail || 'Failed to start enrollment'
+        this.authError = error.response?.data?.detail || uiText("Failed to start enrollment")
         return null
       }
     },
@@ -498,7 +500,7 @@ export const useAuthStore = defineStore('auth', {
         await this._finalizeLogin(r.data.access_token)
         return { ok: true, recoveryCodes }
       } catch (error) {
-        this.authError = error.response?.data?.detail || 'Invalid verification code'
+        this.authError = error.response?.data?.detail || uiText("Invalid verification code")
         return { ok: false }
       }
     },

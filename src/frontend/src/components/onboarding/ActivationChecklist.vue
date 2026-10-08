@@ -33,7 +33,7 @@
              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action-primary-500/40"
     >
       <span class="flex-1 min-w-0 truncate text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-        Getting started
+        {{ uiText("Getting started") }}
       </span>
       <span class="ml-2 text-xs tabular-nums text-gray-500 dark:text-gray-400">
         {{ store.completedCount }}/{{ store.totalCount }}
@@ -108,9 +108,9 @@
           data-testid="activation-checklist-dismiss"
           class="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200
                  rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action-primary-500/40"
-          title="Hides these steps for good — they do not come back"
+          :title="uiText(&quot;Hides these steps for good — they do not come back&quot;)"
         >
-          Don&rsquo;t show this again
+          {{ uiText("Don’t show this again") }}
         </button>
       </div>
     </template>
@@ -152,4 +152,6 @@ onMounted(() => {
   store.fetchChecklist(true)
 })
 watch(() => agentsStore.agents.length, () => store.fetchChecklist(true))
+
+import { t as uiText } from '@/i18n'
 </script>

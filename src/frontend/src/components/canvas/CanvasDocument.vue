@@ -19,12 +19,12 @@
     <header class="canvas-document__head">
       <h1 class="text-lg font-semibold">{{ canvas?.title || canvas?.canvas_id }}</h1>
       <p class="mt-0.5 text-xs text-gray-500">
-        {{ agentName }} · {{ fresh.label }}<span v-if="fresh.stale"> · may be out of date</span>
+        {{ agentName }} · {{ fresh.label }}<span v-if="fresh.stale"> {{ uiText("· may be out of date") }}</span>
       </p>
     </header>
 
     <CanvasKit>
-      <p v-if="!blocks.length" class="text-xs text-gray-500">This canvas is empty.</p>
+      <p v-if="!blocks.length" class="text-xs text-gray-500">{{ uiText("This canvas is empty.") }}</p>
       <div v-else class="space-y-4">
         <div v-for="(b, i) in blocks" :key="b.id || i" class="canvas-document__block">
           <CanvasBlock :block="b" />
@@ -34,7 +34,7 @@
 
     <!-- AC #5: title, agent and generation date travel with the document. -->
     <footer class="canvas-document__foot">
-      {{ canvas?.title || canvas?.canvas_id }} · {{ agentName }} · generated {{ generatedOn }}
+      {{ canvas?.title || canvas?.canvas_id }} · {{ agentName }} {{ uiText("· generated") }} {{ generatedOn }}
     </footer>
   </article>
 </template>
@@ -53,6 +53,8 @@ const props = defineProps({
 const blocks = computed(() => renderableBlocks(props.canvas?.blocks))
 const fresh = computed(() => freshness(props.canvas || {}))
 const generatedOn = computed(() => new Date().toISOString().slice(0, 10))
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style>

@@ -43,7 +43,7 @@
 
     <p class="mt-1.5 text-gray-800 dark:text-gray-100 line-clamp-2 break-words" data-testid="portal-work-title">{{ item.title }}</p>
     <p v-if="showAgent && item.agent_name" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400 truncate">{{ item.agent_name }}</p>
-    <p v-else-if="showAgent && !item.agent_name" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">another agent</p>
+    <p v-else-if="showAgent && !item.agent_name" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ uiText("another agent") }}</p>
 
     <!-- What it is doing right now (trinity-enterprise#620): ONE row of fixed
          height, reserved for the whole live life of the card, so a line
@@ -79,14 +79,14 @@
     <ul v-if="live && children.length" class="mt-2 space-y-1" data-testid="portal-work-children">
       <li v-for="c in children" :key="c.id" class="flex items-center gap-2 text-xs min-w-0">
         <span :class="LIVE_DOT_SM" aria-hidden="true"></span>
-        <span class="text-gray-500 dark:text-gray-400 shrink-0">{{ c.agent_name ? `held by ${c.agent_name}` : 'held by another agent' }}</span>
+        <span class="text-gray-500 dark:text-gray-400 shrink-0">{{ c.agent_name ? uiText("held by {arg1}", { arg1: (c.agent_name) }) : uiText("held by another agent") }}</span>
         <span class="truncate text-gray-700 dark:text-gray-200">{{ c.title }}</span>
       </li>
     </ul>
 
     <!-- A terminal that is not success: the honest line, then the lesser control. -->
     <p v-if="!live && item.error" class="mt-1.5 text-xs text-status-danger-700 dark:text-status-danger-300 break-words" data-testid="portal-work-error">{{ item.error }}</p>
-    <p v-if="!live && item.outcome === 'lost'" class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">Nothing is watching this any more — it may still finish, but it can't be followed from here.</p>
+    <p v-if="!live && item.outcome === 'lost'" class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">{{ uiText("Nothing is watching this any more — it may still finish, but it can't be followed from here.") }}</p>
 
     <div v-if="hasActions" class="mt-2.5 flex flex-wrap items-center gap-2">
       <BaseButton
@@ -96,21 +96,21 @@
         :disabled="stopping"
         :data-testid="`portal-work-stop-${item.id}`"
         @click="$emit('stop', item)"
-      >{{ stopping ? 'Stopping…' : 'Stop' }}</BaseButton>
+      >{{ stopping ? uiText("Stopping…") : uiText("Stop") }}</BaseButton>
       <BaseButton
         v-if="askable"
         size="sm"
         variant="secondary"
         :data-testid="`portal-work-ask-${item.id}`"
         @click="$emit('ask-about-it', item)"
-      >Ask about it</BaseButton>
+      >{{ uiText("Ask about it") }}</BaseButton>
       <BaseButton
         v-if="showOpenInWork"
         size="sm"
         variant="ghost"
         :data-testid="`portal-work-open-${item.id}`"
         @click="$emit('open-work', item)"
-      >Open in Work</BaseButton>
+      >{{ uiText("Open in Work") }}</BaseButton>
     </div>
   </div>
 </template>
@@ -211,6 +211,8 @@ function stageGlyph(state) {
   if (state === 'current') return 'text-action-primary-600 dark:text-action-primary-400 shrink-0'
   return 'text-gray-400 shrink-0'
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Operator Queue Store (OPS-001)
  *
@@ -106,7 +108,7 @@ export const useOperatorQueueStore = defineStore('operatorQueue', () => {
       items.value = response.data.items || []
       hasLoaded.value = true
     } catch (err) {
-      error.value = apiErrorMessage(err, 'Request failed')
+      error.value = apiErrorMessage(err, uiText("Request failed"))
       // Don't clear items on error — keep stale data visible
     } finally {
       loading.value = false
@@ -163,9 +165,9 @@ export const useOperatorQueueStore = defineStore('operatorQueue', () => {
         // operator needs to know their answer was not recorded more than they
         // need to know the list is stale.
         await fetchItems()
-        error.value = QUEUE_RESPONSE_NOT_RECORDED
+        error.value = uiText(QUEUE_RESPONSE_NOT_RECORDED)
       } else {
-        error.value = apiErrorMessage(err, 'Request failed')
+        error.value = apiErrorMessage(err, uiText("Request failed"))
       }
     }
   }
@@ -179,7 +181,7 @@ export const useOperatorQueueStore = defineStore('operatorQueue', () => {
       await fetchItems()
       return response.data
     } catch (err) {
-      error.value = apiErrorMessage(err, 'Request failed')
+      error.value = apiErrorMessage(err, uiText("Request failed"))
       throw err
     }
   }
@@ -193,7 +195,7 @@ export const useOperatorQueueStore = defineStore('operatorQueue', () => {
       await fetchItems()
       return response.data
     } catch (err) {
-      error.value = apiErrorMessage(err, 'Request failed')
+      error.value = apiErrorMessage(err, uiText("Request failed"))
       throw err
     }
   }

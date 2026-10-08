@@ -12,15 +12,15 @@
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <div class="px-4 py-6 sm:px-0">
         <div class="mb-8">
-          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ t('Settings') }}</h1>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            System-wide configuration for the Trinity platform
+            {{ t('System-wide configuration for the Trinity platform') }}
           </p>
         </div>
 
         <!-- Tab strip (#302) -->
-        <div class="mb-6 border-b border-gray-200 dark:border-gray-700" role="tablist" aria-label="Settings sections">
-          <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+        <div class="mb-6 border-b border-gray-200 dark:border-gray-700" role="tablist" :aria-label="t('Settings sections')">
+          <nav class="-mb-px flex space-x-6" :aria-label="t('Tabs')">
             <button
               v-for="tab in visibleTabs"
               :key="tab.id"
@@ -34,7 +34,7 @@
               ]"
               type="button"
               @click="selectTab(tab.id)"
-            >{{ tab.label }}</button>
+            >{{ t(tab.label) }}</button>
           </nav>
         </div>
 
@@ -46,7 +46,7 @@
           <div class="h-10 w-full rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
           <div class="h-10 w-full rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
           <div class="h-10 w-3/4 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
-          <span class="sr-only">Loading settings…</span>
+          <span class="sr-only">{{ t('Loading settings…') }}</span>
         </div>
 
         <!-- Settings Content -->
@@ -80,9 +80,9 @@
             <div class="px-6 py-5">
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Data Retention</h3>
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ t('Data Retention') }}</h3>
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    How long Trinity keeps logs, executions, health checks, and soft-deleted agents/schedules.
+                    {{ t('How long Trinity keeps logs, executions, health checks, and soft-deleted agents/schedules.') }}
                   </p>
                 </div>
                 <span
@@ -91,10 +91,10 @@
                   :class="retention.edition === 'enterprise'
                     ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
                     : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200'"
-                >{{ retention.edition === 'enterprise' ? 'Enterprise' : 'Community' }}</span>
+                >{{ retention.edition === 'enterprise' ? t('Enterprise') : t('Community') }}</span>
               </div>
 
-              <div v-if="retentionLoading" class="mt-4 text-sm text-gray-500 dark:text-gray-400">Loading…</div>
+              <div v-if="retentionLoading" class="mt-4 text-sm text-gray-500 dark:text-gray-400">{{ t('Loading…') }}</div>
               <div v-else-if="retentionError" class="mt-4 text-sm text-red-600 dark:text-red-400">{{ retentionError }}</div>
 
               <div v-else-if="retention" class="mt-5 space-y-4">
@@ -102,22 +102,21 @@
                      an admin's explicit approval. Irreversible (destroys volumes),
                      so we name exactly what will be deleted before offering approve. -->
                 <div v-if="(retention.pending_acknowledgements || []).length" class="rounded-md bg-amber-50 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 p-4">
-                  <h4 class="text-sm font-semibold text-amber-900 dark:text-amber-200">⚠ Deletion awaiting your approval</h4>
+                  <h4 class="text-sm font-semibold text-amber-900 dark:text-amber-200">{{ t('⚠ Deletion awaiting your approval') }}</h4>
                   <p class="mt-1 text-xs text-amber-800 dark:text-amber-300">
-                    A cleanup cycle wants to permanently delete more than the safety threshold at once. Nothing is deleted until you approve — and approving is <strong>irreversible</strong>. Each approval is single-use.
+                    {{ t('A cleanup cycle wants to permanently delete more than the safety threshold at once. Nothing is deleted until you approve — and approving is') }} <strong>{{ t('irreversible') }}</strong>{{ t('. Each approval is single-use.') }}
                   </p>
                   <ul class="mt-3 space-y-3">
                     <li v-for="p in retention.pending_acknowledgements" :key="p.key" class="rounded-md bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-800 p-3">
                       <p class="text-sm text-gray-900 dark:text-gray-100">{{ p.label }}</p>
                       <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                        <strong>{{ p.candidate_count }}</strong> item{{ p.candidate_count === 1 ? '' : 's' }} past the <strong>{{ p.window_days }}-day</strong> window
-                        (<code class="text-[11px]">{{ p.key }}</code>).
+                        <strong>{{ p.candidate_count }}</strong> {{ t('item') }}{{ p.candidate_count === 1 ? '' : 's' }} {{ t('past the') }} <strong>{{ p.window_days }}{{ t('-day') }}</strong> {{ t('window (') }}<code class="text-[11px]">{{ p.key }}</code>).
                       </p>
                       <div class="mt-2 flex items-center gap-3">
                         <button
                           @click="acknowledgePrune(p)" :disabled="acknowledgingKey === p.key"
                           class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
-                        >{{ acknowledgingKey === p.key ? 'Approving…' : 'Approve deletion' }}</button>
+                        >{{ acknowledgingKey === p.key ? t('Approving…') : t('Approve deletion') }}</button>
                         <span v-if="ackErrorKey === p.key && ackError" class="text-xs text-red-600 dark:text-red-400">{{ ackError }}</span>
                       </div>
                     </li>
@@ -126,23 +125,22 @@
                 <!-- Honest empty state (AC #1709) -->
                 <div v-else class="rounded-md bg-gray-50 dark:bg-gray-900/40 border border-gray-200 dark:border-gray-700 p-3">
                   <p class="text-xs text-gray-500 dark:text-gray-400">
-                    ✓ No deletions are awaiting approval. If a cleanup cycle ever needs to delete more than the safety threshold at once (e.g. several soft-deleted agents reaching their purge date — which destroys their data volumes), it pauses and asks here first.
+                    {{ t('✓ No deletions are awaiting approval. If a cleanup cycle ever needs to delete more than the safety threshold at once (e.g. several soft-deleted agents reaching their purge date — which destroys their data volumes), it pauses and asks here first.') }}
                   </p>
                 </div>
-                <p v-if="ackDone" class="text-xs text-green-600 dark:text-green-400">Approved — the next cleanup cycle will delete these, then the guard re-arms (single-use).</p>
+                <p v-if="ackDone" class="text-xs text-green-600 dark:text-green-400">{{ t('Approved — the next cleanup cycle will delete these, then the guard re-arms (single-use).') }}</p>
 
                 <!-- Community: read-only fixed floor + upgrade hint -->
                 <div v-if="!retentionEntitled" class="rounded-md bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 p-4">
                   <p class="text-sm text-indigo-800 dark:text-indigo-200">
-                    The community edition keeps a fixed
-                    <strong>{{ retention.community_floor_days }}-day</strong> retention floor.
-                    An enterprise license unlocks configurable, longer windows — set per class, applied live with no restart.
+                    {{ t('The community edition keeps a fixed') }}
+                    <strong>{{ retention.community_floor_days }}{{ t('-day') }}</strong> {{ t('retention floor. An enterprise license unlocks configurable, longer windows — set per class, applied live with no restart.') }}
                   </p>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div v-for="f in RETENTION_FIELDS" :key="f.key">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ f.label }}</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t(f.label) }}</label>
                     <div class="mt-1 flex items-center gap-2">
                       <input
                         type="number" min="0" max="3650"
@@ -150,16 +148,16 @@
                         :disabled="!retentionEntitled || retentionSaving"
                         :class="RETENTION_INPUT_CLASS"
                       />
-                      <span class="text-sm text-gray-500 dark:text-gray-400">days</span>
+                      <span class="text-sm text-gray-500 dark:text-gray-400">{{ t('days') }}</span>
                     </div>
                   </div>
                   <!-- Audit log — always shown, never editable (integrity floor) -->
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Audit log</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Audit log') }}</label>
                     <div class="mt-1 flex items-center gap-2">
                       <input type="number" :value="retention.windows.audit_log_retention_days" disabled
                         :class="RETENTION_INPUT_CLASS" />
-                      <span class="text-xs text-gray-400">days (365-day integrity floor)</span>
+                      <span class="text-xs text-gray-400">{{ t('days (365-day integrity floor)') }}</span>
                     </div>
                   </div>
                 </div>
@@ -168,9 +166,9 @@
                   <button
                     @click="saveRetention" :disabled="retentionSaving"
                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50"
-                  >{{ retentionSaving ? 'Saving…' : 'Save retention' }}</button>
-                  <span v-if="retentionSaved" class="text-sm text-green-600 dark:text-green-400">Saved — applied live.</span>
-                  <span class="text-xs text-gray-400">0 disables a sweep · values below the {{ retention.community_floor_days }}-day floor are raised to it.</span>
+                  >{{ retentionSaving ? t('Saving…') : t('Save retention') }}</button>
+                  <span v-if="retentionSaved" class="text-sm text-green-600 dark:text-green-400">{{ t('Saved — applied live.') }}</span>
+                  <span class="text-xs text-gray-400">{{ t('0 disables a sweep · values below the') }} {{ retention.community_floor_days }}{{ t('-day floor are raised to it.') }}</span>
                 </div>
 
               </div>
@@ -228,13 +226,13 @@
                what a fresh install captures at first-run setup. -->
           <div v-if="activeTab === 'general'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg mb-6">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">Admin sign-in email</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Admin sign-in email') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Sign in with this email and your password instead of the <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">admin</code> username. No verification email is sent.
+                {{ t('Sign in with this email and your password instead of the') }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">admin</code> {{ t('username. No verification email is sent.') }}
               </p>
             </div>
             <div class="px-6 py-4">
-              <label for="admin-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+              <label for="admin-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Email') }}</label>
               <div class="mt-1 flex gap-2">
                 <input
                   type="email"
@@ -253,7 +251,7 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Save
+                  {{ t('Save') }}
                 </button>
               </div>
               <div class="mt-2 flex items-center text-sm">
@@ -261,16 +259,16 @@
                   <svg class="h-4 w-4 text-status-success-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span class="text-status-success-600 dark:text-status-success-400">Saved — you can now sign in with this email</span>
+                  <span class="text-status-success-600 dark:text-status-success-400">{{ t('Saved — you can now sign in with this email') }}</span>
                 </template>
                 <template v-else-if="adminEmailError">
                   <span class="text-status-danger-600 dark:text-status-danger-400">{{ adminEmailError }}</span>
                 </template>
                 <template v-else-if="adminEmailCurrent">
-                  <span class="text-gray-500 dark:text-gray-400">Current: {{ adminEmailCurrent }}</span>
+                  <span class="text-gray-500 dark:text-gray-400">{{ t('Current:') }} {{ adminEmailCurrent }}</span>
                 </template>
                 <template v-else>
-                  <span class="text-state-autonomous-600 dark:text-state-autonomous-400">No email set — you currently sign in as <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">admin</code></span>
+                  <span class="text-state-autonomous-600 dark:text-state-autonomous-400">{{ t('No email set — you currently sign in as') }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">admin</code></span>
                 </template>
               </div>
             </div>
@@ -278,9 +276,9 @@
 
           <div v-if="activeTab === 'general'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">Platform</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Platform') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Core platform configuration.
+                {{ t('Core platform configuration.') }}
               </p>
             </div>
 
@@ -289,7 +287,7 @@
                 <!-- Public URL -->
                 <div>
                   <label for="public-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Public URL
+                    {{ t('Public URL') }}
                   </label>
                   <div class="mt-1 flex gap-2">
                     <input
@@ -309,7 +307,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Save
+                      {{ t('Save') }}
                     </button>
                   </div>
                   <!-- Status -->
@@ -318,7 +316,7 @@
                       <svg class="h-4 w-4 text-status-success-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                       </svg>
-                      <span class="text-status-success-600 dark:text-status-success-400">Saved</span>
+                      <span class="text-status-success-600 dark:text-status-success-400">{{ t('Saved') }}</span>
                     </template>
                     <!-- #2691: a saved URL is a string an admin typed. On a
                          provisioned install the tick waits until a request for
@@ -346,7 +344,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <span class="text-state-autonomous-600 dark:text-state-autonomous-400">
-                        {{ publicUrlCurrent }} — saved, waiting for the first visit to confirm it resolves here
+                        {{ publicUrlCurrent }} {{ t('— saved, waiting for the first visit to confirm it resolves here') }}
                       </span>
                     </template>
                     <template v-else>
@@ -354,7 +352,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                       </svg>
                       <span class="text-state-autonomous-600 dark:text-state-autonomous-400">
-                        Not configured — required for Telegram bots and public links
+                        {{ t('Not configured — required for Telegram bots and public links') }}
                       </span>
                     </template>
                   </div>
@@ -363,20 +361,17 @@
                        lines live in `onboarding/hardeningGuide.js`, so this
                        field and the first-run step cannot drift apart. -->
                   <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    The externally-accessible URL of this Trinity instance (e.g. <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">https://your-domain.com</code>).
-                    {{ DOMAIN_BENEFIT }}
-                    It is the address Telegram, WhatsApp and VoIP call back on, the one Slack's
-                    OAuth returns to, and the base for every shareable public link, workspace
-                    link and file download — voice calls fail outright without it, and the rest
-                    fall back to an address nobody outside can use.
-                    {{ DOMAIN_PREREQUISITE }} {{ DOMAIN_SIDE_EFFECT }}
+                    {{ t('The externally-accessible URL of this Trinity instance (e.g.') }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">https://your-domain.com</code>).
+                    {{ t(DOMAIN_BENEFIT) }}
+                    {{ t('It is the address Telegram, WhatsApp and VoIP call back on, the one Slack\'s OAuth returns to, and the base for every shareable public link, workspace link and file download — voice calls fail outright without it, and the rest fall back to an address nobody outside can use.') }}
+                    {{ t(DOMAIN_PREREQUISITE) }} {{ t(DOMAIN_SIDE_EFFECT) }}
                   </p>
                 </div>
 
                 <!-- Platform Default Model (#831) -->
                 <div v-if="isAdmin">
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Default Model
+                    {{ t('Default Model') }}
                   </label>
                   <div class="mt-1 flex gap-2 items-center">
                     <select
@@ -393,7 +388,7 @@
                         v-for="m in adminDefaultModels"
                         :key="m.id"
                         :value="m.id"
-                      >{{ m.label }} — {{ m.note }}{{ m.recommended ? ' (recommended)' : '' }}</option>
+                      >{{ m.label }} — {{ t(m.note) }}{{ m.recommended ? t(' (recommended)') : '' }}</option>
                     </select>
                     <button
                       @click="savePlatformDefaultModel"
@@ -404,18 +399,17 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Save
+                      {{ t('Save') }}
                     </button>
                   </div>
                   <div v-if="platformDefaultModelSaveSuccess" class="mt-1 flex items-center text-sm text-status-success-600 dark:text-status-success-400">
                     <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    Saved
+                    {{ t('Saved') }}
                   </div>
                   <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Model used for schedules and chats where no model is explicitly selected.
-                    Changes take effect on the next execution — no restart required.
+                    {{ t('Model used for schedules and chats where no model is explicitly selected. Changes take effect on the next execution — no restart required.') }}
                   </p>
                 </div>
 
@@ -423,7 +417,7 @@
                 <div v-if="isAdmin" class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                   <label class="flex items-center justify-between cursor-pointer">
                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Require verified email for new agents
+                      {{ t('Require verified email for new agents') }}
                     </span>
                     <input
                       type="checkbox"
@@ -437,20 +431,17 @@
                     <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    Saved
+                    {{ t('Saved') }}
                   </div>
                   <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Secure-by-default. When on, newly created agents require a verified email on
-                    incoming DMs / public chat / shared access. Applies to <strong>new agents
-                    only</strong> — existing agents keep their current setting, and owners can
-                    override per agent in the agent's Sharing tab.
+                    {{ t('Secure-by-default. When on, newly created agents require a verified email on incoming DMs / public chat / shared access. Applies to') }} <strong>{{ t('new agents only') }}</strong> {{ t('— existing agents keep their current setting, and owners can override per agent in the agent\'s Sharing tab.') }}
                   </p>
                 </div>
 
                 <!-- Fleet Capacity (#506) — admin-set ceiling on per-agent max_parallel_tasks -->
                 <div v-if="isAdmin" class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                   <label for="max-parallel-ceiling" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Fleet capacity ceiling
+                    {{ t('Fleet capacity ceiling') }}
                   </label>
                   <div class="mt-1 flex gap-2 items-center">
                     <input
@@ -467,31 +458,28 @@
                       :disabled="savingCeiling"
                       class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Save
+                      {{ t('Save') }}
                     </button>
                   </div>
                   <div v-if="ceilingSaveSuccess" class="mt-1 flex items-center text-sm text-status-success-600 dark:text-status-success-400">
                     <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    Saved
+                    {{ t('Saved') }}
                   </div>
                   <p v-if="ceilingError" class="mt-1 text-sm text-status-danger-600 dark:text-status-danger-400">
                     {{ ceilingError }}
                   </p>
                   <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Maximum parallel tasks any single agent is allowed to consume on this host
-                    ({{ ceilingMin }}–{{ ceilingMax }}). Owners pick a per-agent value within this
-                    ceiling; existing agents above it are clamped at runtime.
+                    {{ t('Maximum parallel tasks any single agent is allowed to consume on this host (') }}{{ ceilingMin }}–{{ ceilingMax }}{{ t('). Owners pick a per-agent value within this ceiling; existing agents above it are clamped at runtime.') }}
                   </p>
                 </div>
 
                 <!-- Proactive message limits (#1609) — admin-tunable per-hour caps on agent-INITIATED channel sends -->
                 <div v-if="isAdmin" class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">Proactive message limits</h3>
+                  <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Proactive message limits') }}</h3>
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Per-hour caps on messages an agent <span class="font-medium">initiates</span> to Slack, Telegram, and direct messages (anti-spam).
-                    Replies to inbound messages are never limited by these. Set <span class="font-medium">0</span> to disable a cap (unlimited).
+                    {{ t('Per-hour caps on messages an agent') }} <span class="font-medium">{{ t('initiates') }}</span> {{ t('to Slack, Telegram, and direct messages (anti-spam). Replies to inbound messages are never limited by these. Set') }} <span class="font-medium">0</span> {{ t('to disable a cap (unlimited).') }}
                   </p>
                   <div class="mt-3 space-y-2.5">
                     <div v-for="row in PROACTIVE_ROWS" :key="row.key" class="flex items-center gap-3">
@@ -504,8 +492,8 @@
                         class="block w-28 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white text-sm"
                       />
                       <div class="min-w-0">
-                        <div class="text-sm text-gray-700 dark:text-gray-300">{{ row.label }}</div>
-                        <div class="text-xs text-gray-400">{{ row.hint }}</div>
+                        <div class="text-sm text-gray-700 dark:text-gray-300">{{ t(row.label) }}</div>
+                        <div class="text-xs text-gray-400">{{ t(row.hint) }}</div>
                       </div>
                     </div>
                   </div>
@@ -514,10 +502,10 @@
                       @click="saveProactiveLimits"
                       :disabled="savingProactive"
                       class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >Save</button>
+                    >{{ t('Save') }}</button>
                     <span v-if="proactiveSaveSuccess" class="inline-flex items-center text-sm text-status-success-600 dark:text-status-success-400">
                       <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                      Saved
+                      {{ t('Saved') }}
                     </span>
                   </div>
                   <p v-for="w in proactiveWarnings" :key="w" class="mt-1 text-xs text-status-warning-600 dark:text-status-warning-400">⚠ {{ w }}</p>
@@ -526,28 +514,27 @@
 
                 <!-- Brain Orb platform flags (trinity-enterprise#85) -->
                 <div v-if="isAdmin" class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">Brain Orb</h3>
+                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ t('Brain Orb') }}</h3>
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Per-agent 3D knowledge-graph surface for agents with the
+                    {{ t('Per-agent 3D knowledge-graph surface for agents with the') }}
                     <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">brain-orb</code>
-                    capability. Changes apply immediately — no restart; users with open
-                    sessions pick them up on the next page load.
+                    {{ t('capability. Changes apply immediately — no restart; users with open sessions pick them up on the next page load.') }}
                   </p>
                   <div class="mt-3 space-y-3">
                     <div v-for="flag in brainOrbFlagRows" :key="flag.key">
                       <label class="flex items-center justify-between cursor-pointer">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {{ flag.label }}
+                          {{ t(flag.label) }}
                           <span
                             v-if="brainOrb[flag.key].source === 'override'"
                             class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-action-primary-100 text-action-primary-800 dark:bg-action-primary-900 dark:text-action-primary-200"
-                            title="A stored setting overrides the environment variable"
-                          >override</span>
+                            :title="t('A stored setting overrides the environment variable')"
+                          >{{ t('override') }}</span>
                           <span
                             v-else-if="brainOrb[flag.key].source === 'env'"
                             class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
-                            title="Enabled by the environment variable; no stored override"
-                          >env</span>
+                            :title="t('Enabled by the environment variable; no stored override')"
+                          >{{ t('env') }}</span>
                         </span>
                         <input
                           type="checkbox"
@@ -558,10 +545,10 @@
                         />
                       </label>
                       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        {{ flag.hint }}
+                        {{ t(flag.hint) }}
                         <template v-if="flag.key === 'voice_enabled' && !brainOrbGeminiKey">
                           <span class="text-state-autonomous-600 dark:text-state-autonomous-400">
-                            GEMINI_API_KEY is not configured (env-only) — voice stays unavailable even when on.
+                            {{ t('GEMINI_API_KEY is not configured (env-only) — voice stays unavailable even when on.') }}
                           </span>
                         </template>
                         <button
@@ -569,7 +556,7 @@
                           @click="clearBrainOrbFlag(flag.key)"
                           :disabled="savingBrainOrb"
                           class="ml-1 text-action-primary-600 dark:text-action-primary-400 hover:underline disabled:opacity-50"
-                        >Reset to env/default</button>
+                        >{{ t('Reset to env/default') }}</button>
                       </p>
                     </div>
                   </div>
@@ -577,7 +564,7 @@
                     <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    Saved
+                    {{ t('Saved') }}
                   </div>
                   <p v-if="brainOrbError" class="mt-2 text-sm text-status-danger-600 dark:text-status-danger-400">
                     {{ brainOrbError }}
@@ -586,24 +573,23 @@
 
                 <!-- ElevenLabs / Voice platform settings (trinity-enterprise#117) -->
                 <div v-if="isAdmin" class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">Voice (ElevenLabs)</h3>
+                  <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ t('Voice (ElevenLabs)') }}</h3>
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    API key + default voice for outbound voice replies. Agents with voice enabled can
-                    reply with a spoken voice note on messaging channels. Changes apply immediately — no restart.
+                    {{ t('API key + default voice for outbound voice replies. Agents with voice enabled can reply with a spoken voice note on messaging channels. Changes apply immediately — no restart.') }}
                   </p>
 
                   <!-- API key -->
                   <div class="mt-3">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      ElevenLabs API key
+                      {{ t('ElevenLabs API key') }}
                       <span
                         v-if="elevenLabs.keyConfigured"
                         class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-status-success-100 text-status-success-800 dark:bg-status-success-900 dark:text-status-success-200"
-                      >{{ elevenLabs.keySource === 'env' ? 'configured (env)' : 'configured' }}</span>
+                      >{{ elevenLabs.keySource === 'env' ? t('configured (env)') : t('configured') }}</span>
                       <span
                         v-else
                         class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
-                      >not set</span>
+                      >{{ t('not set') }}</span>
                       <!-- #2695: "configured" is presence; this is whether the key can
                            TRANSCRIBE. ElevenLabs permissions are per endpoint, so a key
                            that speaks may still refuse speech-to-text — and then the
@@ -625,7 +611,7 @@
                       <input
                         v-model="elevenLabs.apiKeyInput"
                         type="password"
-                        :placeholder="elevenLabs.keyConfigured ? 'Enter a new key to replace' : 'Paste your ElevenLabs API key'"
+                        :placeholder="elevenLabs.keyConfigured ? t('Enter a new key to replace') : t('Paste your ElevenLabs API key')"
                         :disabled="savingElevenLabs"
                         class="flex-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-action-primary-500 disabled:opacity-50"
                       />
@@ -634,14 +620,14 @@
                         @click="saveElevenLabsKey"
                         :disabled="savingElevenLabs || !elevenLabs.apiKeyInput.trim()"
                         class="px-3 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50"
-                      >Save</button>
+                      >{{ t('Save') }}</button>
                       <button
                         v-if="elevenLabs.keyConfigured && elevenLabs.keySource === 'override'"
                         type="button"
                         @click="clearElevenLabsKey"
                         :disabled="savingElevenLabs"
                         class="px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
-                      >Clear</button>
+                      >{{ t('Clear') }}</button>
                     </div>
                     <p
                       v-if="sttCapability.tone === 'bad' || sttCapability.tone === 'unverified'"
@@ -663,12 +649,12 @@
 
                   <!-- Default voice id -->
                   <div class="mt-3">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default voice ID</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Default voice ID') }}</label>
                     <div class="flex gap-2">
                       <input
                         v-model="elevenLabs.defaultVoiceId"
                         type="text"
-                        placeholder="e.g. 21m00Tcm4TlvDq8ikWAM"
+                        :placeholder="t('e.g. 21m00Tcm4TlvDq8ikWAM')"
                         :disabled="savingElevenLabs"
                         class="flex-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-action-primary-500 disabled:opacity-50"
                       />
@@ -677,10 +663,10 @@
                         @click="saveElevenLabsDefaultVoice"
                         :disabled="savingElevenLabs"
                         class="px-3 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50"
-                      >Save</button>
+                      >{{ t('Save') }}</button>
                     </div>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      Agents without their own voice ID fall back to this one.
+                      {{ t('Agents without their own voice ID fall back to this one.') }}
                     </p>
                   </div>
 
@@ -688,7 +674,7 @@
                     <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    Saved
+                    {{ t('Saved') }}
                   </div>
                   <p v-if="elevenLabsError" class="mt-2 text-sm text-status-danger-600 dark:text-status-danger-400">
                     {{ elevenLabsError }}
@@ -701,9 +687,9 @@
           <!-- API Keys Section -->
           <div v-if="activeTab === 'integrations'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">API Keys</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('API Keys') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Configure API keys required for agent operation.
+                {{ t('Configure API keys required for agent operation.') }}
               </p>
             </div>
 
@@ -712,7 +698,7 @@
                 <!-- Anthropic API Key -->
                 <div>
                   <label for="anthropic-key" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Anthropic API Key
+                    {{ t('Anthropic API Key') }}
                   </label>
                   <div class="mt-1 flex gap-2">
                     <div class="relative flex-1">
@@ -747,7 +733,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Test
+                      {{ t('Test') }}
                     </button>
                     <button
                       @click="saveApiKey"
@@ -758,7 +744,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Save
+                      {{ t('Save') }}
                     </button>
                     <button
                       v-if="anthropicKeyStatus.configured && anthropicKeyStatus.source === 'settings'"
@@ -770,7 +756,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Remove
+                      {{ t('Remove') }}
                     </button>
                   </div>
                   <!-- Status/Result -->
@@ -791,9 +777,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                       </svg>
                       <span class="text-status-success-600 dark:text-status-success-400">
-                        Configured
+                        {{ t('Configured') }}
                         <span class="text-gray-500 dark:text-gray-400">
-                          ({{ anthropicKeyStatus.source === 'settings' ? 'from settings' : 'from environment' }})
+                          ({{ anthropicKeyStatus.source === 'settings' ? t('from settings') : t('from environment') }})
                         </span>
                       </span>
                     </template>
@@ -802,12 +788,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                       </svg>
                       <span class="text-state-autonomous-600 dark:text-state-autonomous-400">
-                        Not configured - required for agents
+                        {{ t('Not configured - required for agents') }}
                       </span>
                     </template>
                   </div>
                   <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Required for agents to use Claude. Get your key at
+                    {{ t('Required for agents to use Claude. Get your key at') }}
                     <a href="https://console.anthropic.com" target="_blank" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">
                       console.anthropic.com
                     </a>
@@ -817,7 +803,7 @@
                 <!-- GitHub Personal Access Token -->
                 <div class="mt-6">
                   <label for="github-pat" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    GitHub Personal Access Token (PAT)
+                    {{ t('GitHub Personal Access Token (PAT)') }}
                   </label>
                   <div class="mt-1 flex gap-2">
                     <div class="relative flex-1">
@@ -852,7 +838,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Test
+                      {{ t('Test') }}
                     </button>
                     <button
                       @click="saveGithubPat"
@@ -863,7 +849,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Save
+                      {{ t('Save') }}
                     </button>
                     <button
                       v-if="githubPatStatus.configured && githubPatStatus.source === 'settings'"
@@ -875,7 +861,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Remove
+                      {{ t('Remove') }}
                     </button>
                   </div>
                   <!-- Status/Result -->
@@ -896,9 +882,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                       </svg>
                       <span class="text-status-success-600 dark:text-status-success-400">
-                        Configured
+                        {{ t('Configured') }}
                         <span class="text-gray-500 dark:text-gray-400">
-                          ({{ githubPatStatus.source === 'settings' ? 'from settings' : 'from environment' }})
+                          ({{ githubPatStatus.source === 'settings' ? t('from settings') : t('from environment') }})
                         </span>
                       </span>
                     </template>
@@ -907,7 +893,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                       <span class="text-gray-600 dark:text-gray-400">
-                        Optional - required for GitHub repository initialization
+                        {{ t('Optional - required for GitHub repository initialization') }}
                       </span>
                     </template>
                   </div>
@@ -915,12 +901,12 @@
                   <div v-if="githubPatPropagation" class="mt-2 text-sm">
                     <template v-if="githubPatPropagation.error">
                       <div class="text-status-danger-600 dark:text-status-danger-400">
-                        PAT saved, but propagation failed: {{ githubPatPropagation.error }}
+                        {{ t('PAT saved, but propagation failed:') }} {{ githubPatPropagation.error }}
                       </div>
                     </template>
                     <template v-else-if="githubPatPropagation.total_running === 0">
                       <div class="text-gray-600 dark:text-gray-400">
-                        PAT updated. No running agents to propagate to.
+                        {{ t('PAT updated. No running agents to propagate to.') }}
                       </div>
                     </template>
                     <template v-else>
@@ -930,10 +916,10 @@
                            Reaching nothing is the loudest state here, not the
                            quietest. -->
                       <div v-if="!githubPatPropagation.updated.length" class="text-status-danger-600 dark:text-status-danger-400">
-                        PAT saved, but applied to <strong>0 of {{ githubPatPropagation.total_running }}</strong> running agent{{ githubPatPropagation.total_running === 1 ? '' : 's' }} — they keep using the previous token until restarted.
+                        {{ t('PAT saved, but applied to') }} <strong>{{ t('0 of') }} {{ githubPatPropagation.total_running }}</strong> {{ t('running agent') }}{{ githubPatPropagation.total_running === 1 ? '' : 's' }} {{ t('— they keep using the previous token until restarted.') }}
                       </div>
                       <div v-else :class="githubPatPropagation.failed.length ? 'text-status-warning-700 dark:text-status-warning-400' : 'text-status-success-600 dark:text-status-success-400'">
-                        PAT updated and applied to {{ githubPatPropagation.updated.length }} of {{ githubPatPropagation.total_running }} running agent{{ githubPatPropagation.total_running === 1 ? '' : 's' }}.
+                        {{ t('PAT updated and applied to') }} {{ githubPatPropagation.updated.length }} {{ t('of') }} {{ githubPatPropagation.total_running }} {{ t('running agent') }}{{ githubPatPropagation.total_running === 1 ? '' : 's' }}.
                       </div>
                       <!-- The .env write only lands on the next restart; the
                            remote rewrite is what makes git work NOW. Surfaced
@@ -943,22 +929,22 @@
                         v-if="githubPatPropagation.updated.length && (githubPatPropagation.remotes_updated ?? 0) < githubPatPropagation.updated.length"
                         class="mt-1 text-status-warning-700 dark:text-status-warning-400"
                       >
-                        Git remotes re-templated on {{ githubPatPropagation.remotes_updated ?? 0 }} of {{ githubPatPropagation.updated.length }} — the rest pick the token up for git on their next restart.
+                        {{ t('Git remotes re-templated on') }} {{ githubPatPropagation.remotes_updated ?? 0 }} {{ t('of') }} {{ githubPatPropagation.updated.length }} {{ t('— the rest pick the token up for git on their next restart.') }}
                       </div>
                       <div v-if="githubPatPropagation.failed.length" class="mt-1 text-status-danger-600 dark:text-status-danger-400">
-                        Failed: {{ githubPatPropagation.failed.map(a => a.agent_name).join(', ') }}
+                        {{ t('Failed:') }} {{ githubPatPropagation.failed.map(a => a.agent_name).join(', ') }}
                       </div>
                       <div v-if="githubPatPropagation.skipped.length" class="mt-1 text-gray-500 dark:text-gray-400">
-                        Skipped: {{ githubPatPropagation.skipped.map(a => `${a.agent_name} (${a.status === 'skipped_per_agent_pat' ? 'per-agent PAT' : 'no GITHUB_PAT'})`).join(', ') }}
+                        {{ t('Skipped:') }} {{ githubPatPropagation.skipped.map(a => `${a.agent_name} (${a.status === 'skipped_per_agent_pat' ? 'per-agent PAT' : 'no GITHUB_PAT'})`).join(', ') }}
                       </div>
                     </template>
                   </div>
                   <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Required for creating and pushing agents to GitHub repositories. Get your token at
+                    {{ t('Required for creating and pushing agents to GitHub repositories. Get your token at') }}
                     <a href="https://github.com/settings/tokens/new" target="_blank" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">
-                      github.com/settings/tokens
+                      {{ uiText("github.com/settings/tokens") }}
                     </a>
-                    with <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">repo</code> scope.
+                    {{ t('with') }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">repo</code> {{ t('scope.') }}
                   </p>
                 </div>
 
@@ -975,9 +961,9 @@
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <h2 class="text-lg font-medium text-gray-900 dark:text-white">Slack Integration</h2>
+                  <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Slack Integration') }}</h2>
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Connect your Slack workspace to route messages to Trinity agents.
+                    {{ t('Connect your Slack workspace to route messages to Trinity agents.') }}
                   </p>
                 </div>
                 <span class="flex items-center gap-2">
@@ -986,7 +972,7 @@
                     :class="slackTransportStatus.connected ? 'bg-status-success-500' : 'bg-status-danger-500'"
                   ></span>
                   <span class="text-sm" :class="slackTransportStatus.connected ? 'text-status-success-700 dark:text-status-success-400' : 'text-gray-500 dark:text-gray-400'">
-                    {{ slackTransportStatus.connected ? (slackTransportStatus.transport_mode === 'socket' ? 'Socket Mode' : 'Webhook') : 'Disconnected' }}
+                    {{ slackTransportStatus.connected ? (slackTransportStatus.transport_mode === 'socket' ? t('Socket Mode') : uiText("Webhook")) : t('Disconnected') }}
                   </span>
                 </span>
               </div>
@@ -995,39 +981,39 @@
             <div class="px-6 py-4">
               <div class="space-y-4">
                 <!-- OAuth Credentials -->
-                <h3 class="text-sm font-medium text-gray-900 dark:text-white">OAuth Credentials</h3>
+                <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ t('OAuth Credentials') }}</h3>
 
                 <!-- Slack Client ID -->
                 <div>
                   <label for="slack-client-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Client ID
+                    {{ t('Client ID') }}
                   </label>
                   <div class="mt-1">
                     <input
                       type="text"
                       id="slack-client-id"
                       v-model="slackClientId"
-                      :placeholder="slackSettings.client_id?.configured ? slackSettings.client_id.masked : 'Enter Slack Client ID'"
+                      :placeholder="slackSettings.client_id?.configured ? slackSettings.client_id.masked : t('Enter Slack Client ID')"
                       :disabled="savingSlackSettings"
                       class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white font-mono text-sm"
                     />
                   </div>
                   <div v-if="slackSettings.client_id?.configured" class="mt-1 text-xs text-status-success-600 dark:text-status-success-400">
-                    ✓ Configured ({{ slackSettings.client_id.source === 'settings' ? 'from settings' : 'from environment' }})
+                    {{ t('✓ Configured (') }}{{ slackSettings.client_id.source === 'settings' ? t('from settings') : t('from environment') }})
                   </div>
                 </div>
 
                 <!-- Slack Client Secret -->
                 <div>
                   <label for="slack-client-secret" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Client Secret
+                    {{ t('Client Secret') }}
                   </label>
                   <div class="mt-1 relative">
                     <input
                       :type="showSlackClientSecret ? 'text' : 'password'"
                       id="slack-client-secret"
                       v-model="slackClientSecret"
-                      :placeholder="slackSettings.client_secret?.configured ? slackSettings.client_secret.masked : 'Enter Slack Client Secret'"
+                      :placeholder="slackSettings.client_secret?.configured ? slackSettings.client_secret.masked : t('Enter Slack Client Secret')"
                       :disabled="savingSlackSettings"
                       class="block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white font-mono text-sm"
                     />
@@ -1046,21 +1032,21 @@
                     </button>
                   </div>
                   <div v-if="slackSettings.client_secret?.configured" class="mt-1 text-xs text-status-success-600 dark:text-status-success-400">
-                    ✓ Configured ({{ slackSettings.client_secret.source === 'settings' ? 'from settings' : 'from environment' }})
+                    {{ t('✓ Configured (') }}{{ slackSettings.client_secret.source === 'settings' ? t('from settings') : t('from environment') }})
                   </div>
                 </div>
 
                 <!-- Slack Signing Secret -->
                 <div>
                   <label for="slack-signing-secret" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Signing Secret
+                    {{ t('Signing Secret') }}
                   </label>
                   <div class="mt-1 relative">
                     <input
                       :type="showSlackSigningSecret ? 'text' : 'password'"
                       id="slack-signing-secret"
                       v-model="slackSigningSecret"
-                      :placeholder="slackSettings.signing_secret?.configured ? slackSettings.signing_secret.masked : 'Enter Slack Signing Secret'"
+                      :placeholder="slackSettings.signing_secret?.configured ? slackSettings.signing_secret.masked : t('Enter Slack Signing Secret')"
                       :disabled="savingSlackSettings"
                       class="block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white font-mono text-sm"
                     />
@@ -1079,7 +1065,7 @@
                     </button>
                   </div>
                   <div v-if="slackSettings.signing_secret?.configured" class="mt-1 text-xs text-status-success-600 dark:text-status-success-400">
-                    ✓ Configured ({{ slackSettings.signing_secret.source === 'settings' ? 'from settings' : 'from environment' }})
+                    {{ t('✓ Configured (') }}{{ slackSettings.signing_secret.source === 'settings' ? t('from settings') : t('from environment') }})
                   </div>
                 </div>
 
@@ -1094,7 +1080,7 @@
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Save Credentials
+                    {{ t('Save Credentials') }}
                   </button>
                   <button
                     v-if="slackHasStoredCredentials"
@@ -1106,35 +1092,35 @@
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Remove Credentials
+                    {{ t('Remove Credentials') }}
                   </button>
                   <span v-if="slackSaveSuccess" class="text-sm text-status-success-600 dark:text-status-success-400">
-                    ✓ Saved
+                    {{ t('✓ Saved') }}
                   </span>
                 </div>
 
                 <!-- Divider -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                  <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Transport Connection</h3>
+                  <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">{{ t('Transport Connection') }}</h3>
                 </div>
 
                 <!-- Transport Mode (Socket Mode only for now) -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Transport Mode</label>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Socket Mode <span class="text-xs text-gray-400">(outbound WebSocket, no public URL needed)</span></p>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Transport Mode') }}</label>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">{{ t('Socket Mode') }} <span class="text-xs text-gray-400">{{ t('(outbound WebSocket, no public URL needed)') }}</span></p>
                 </div>
 
                 <!-- App Token (for Socket Mode) -->
                 <div v-if="slackTransportMode === 'socket'">
                   <label for="slack-app-token" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    App Token
+                    {{ t('App Token') }}
                   </label>
                   <div class="mt-1 relative">
                     <input
                       :type="showSlackAppToken ? 'text' : 'password'"
                       id="slack-app-token"
                       v-model="slackAppToken"
-                      :placeholder="slackTransportStatus.app_token_configured ? slackTransportStatus.app_token_masked : 'xapp-1-...'"
+                      :placeholder="slackTransportStatus.app_token_configured ? slackTransportStatus.app_token_masked : uiText(&quot;xapp-1-...&quot;)"
                       :disabled="connectingSlack"
                       class="block w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white font-mono text-sm"
                     />
@@ -1153,10 +1139,10 @@
                     </button>
                   </div>
                   <div v-if="slackTransportStatus.app_token_configured" class="mt-1 text-xs text-status-success-600 dark:text-status-success-400">
-                    ✓ App token configured
+                    {{ t('✓ App token configured') }}
                   </div>
                   <p class="mt-1 text-xs text-gray-400">
-                    From Slack App &gt; Basic Information &gt; App-Level Tokens (scope: <code class="px-0.5 bg-gray-200 dark:bg-gray-600 rounded">connections:write</code>)
+                    {{ t('From Slack App > Basic Information > App-Level Tokens (scope:') }} <code class="px-0.5 bg-gray-200 dark:bg-gray-600 rounded">connections:write</code>)
                   </p>
                 </div>
 
@@ -1173,10 +1159,10 @@
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {{ connectingSlack ? 'Connecting...' : 'Connect' }}
+                    {{ connectingSlack ? t('Connecting...') : t('Connect') }}
                   </button>
                   <span v-if="slackTransportStatus.connected" class="text-sm text-status-success-600 dark:text-status-success-400">
-                    ✓ Socket Mode active
+                    {{ t('✓ Socket Mode active') }}
                   </span>
 
                   <!-- Install to Workspace (OAuth) -->
@@ -1189,16 +1175,16 @@
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {{ slackTransportStatus.workspaces.length > 0 ? 'Reinstall to Workspace' : 'Install to Workspace' }}
+                    {{ slackTransportStatus.workspaces.length > 0 ? t('Reinstall to Workspace') : t('Install to Workspace') }}
                   </button>
                   <span v-if="slackInstallSuccess" class="text-sm text-status-success-600 dark:text-status-success-400">
-                    ✓ Workspace installed
+                    {{ t('✓ Workspace installed') }}
                   </span>
                 </div>
 
                 <!-- Connected Workspaces -->
                 <div v-if="slackTransportStatus.workspaces.length > 0">
-                  <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Connected Workspaces</p>
+                  <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ t('Connected Workspaces') }}</p>
                   <div class="space-y-2">
                     <div
                       v-for="ws in slackTransportStatus.workspaces"
@@ -1207,7 +1193,7 @@
                     >
                       <div>
                         <span class="text-sm font-medium text-gray-900 dark:text-white">{{ ws.team_name }}</span>
-                        <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ ws.agent_count }} agent{{ ws.agent_count !== 1 ? 's' : '' }}</span>
+                        <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ ws.agent_count }} {{ t('agent') }}{{ ws.agent_count !== 1 ? 's' : '' }}</span>
                       </div>
                       <div class="flex gap-1 flex-wrap">
                         <span
@@ -1225,17 +1211,17 @@
                 <!-- Setup Instructions -->
                 <details class="mt-2">
                   <summary class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer hover:text-action-primary-600 dark:hover:text-action-primary-400">
-                    Setup Instructions
+                    {{ t('Setup Instructions') }}
                   </summary>
                   <div class="mt-3 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-300 space-y-2">
-                    <p><strong>1.</strong> Create a Slack App at <a href="https://api.slack.com/apps" target="_blank" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">api.slack.com/apps</a></p>
-                    <p><strong>2.</strong> Copy <strong>Client ID</strong>, <strong>Client Secret</strong>, and <strong>Signing Secret</strong> from Basic Information and save above</p>
-                    <p><strong>3.</strong> Add Bot Token Scopes: <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">im:history</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">im:read</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">im:write</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">chat:write</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">chat:write.customize</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">users:read.email</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">app_mentions:read</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">channels:read</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">channels:manage</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">reactions:write</code></p>
-                    <p><strong>4.</strong> Enable <strong>Socket Mode</strong> and create an App-Level Token with <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">connections:write</code> scope. Paste it above as App Token.</p>
-                    <p><strong>5.</strong> Subscribe to events: <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">message.im</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">app_mention</code></p>
-                    <p><strong>6.</strong> Add OAuth Redirect URL: <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs break-all">https://YOUR_DOMAIN/api/public/slack/oauth/callback</code></p>
-                    <p><strong>7.</strong> Click <strong>Connect</strong> above to start receiving messages</p>
-                    <p><strong>8.</strong> Install the app to your workspace, then bind agents to channels from each agent's Sharing tab</p>
+                    <p><strong>1.</strong> {{ t('Create a Slack App at') }} <a href="https://api.slack.com/apps" target="_blank" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">{{ uiText("api.slack.com/apps") }}</a></p>
+                    <p><strong>2.</strong> {{ t('Copy') }} <strong>{{ t('Client ID') }}</strong>, <strong>{{ t('Client Secret') }}</strong>{{ t(', and') }} <strong>{{ t('Signing Secret') }}</strong> {{ t('from Basic Information and save above') }}</p>
+                    <p><strong>3.</strong> {{ t('Add Bot Token Scopes:') }} <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">im:history</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">im:read</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">im:write</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">chat:write</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">chat:write.customize</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">users:read.email</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">app_mentions:read</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">channels:read</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">channels:manage</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">reactions:write</code></p>
+                    <p><strong>4.</strong> {{ t('Enable') }} <strong>{{ t('Socket Mode') }}</strong> {{ t('and create an App-Level Token with') }} <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">connections:write</code> {{ t('scope. Paste it above as App Token.') }}</p>
+                    <p><strong>5.</strong> {{ t('Subscribe to events:') }} <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">message.im</code>, <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs">app_mention</code></p>
+                    <p><strong>6.</strong> {{ t('Add OAuth Redirect URL:') }} <code class="px-1 py-0.5 bg-gray-200 dark:bg-gray-600 rounded text-xs break-all">https://YOUR_DOMAIN/api/public/slack/oauth/callback</code></p>
+                    <p><strong>7.</strong> {{ t('Click') }} <strong>{{ t('Connect') }}</strong> {{ t('above to start receiving messages') }}</p>
+                    <p><strong>8.</strong> {{ t('Install the app to your workspace, then bind agents to channels from each agent\'s Sharing tab') }}</p>
                   </div>
                 </details>
               </div>
@@ -1250,10 +1236,9 @@
           <!-- Trinity Prompt Section -->
           <div v-if="activeTab === 'general'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">Trinity Prompt</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Trinity Prompt') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Custom instructions that are injected into all agents' CLAUDE.md at startup.
-                Changes apply to newly started or restarted agents.
+                {{ t('Custom instructions that are injected into all agents\' CLAUDE.md at startup. Changes apply to newly started or restarted agents.') }}
               </p>
             </div>
 
@@ -1261,7 +1246,7 @@
               <div class="space-y-4">
                 <div>
                   <label for="trinity-prompt" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Custom Instructions
+                    {{ t('Custom Instructions') }}
                   </label>
                   <div class="mt-1">
                     <textarea
@@ -1269,25 +1254,19 @@
                       v-model="trinityPrompt"
                       rows="15"
                       class="shadow-sm focus:ring-action-primary-500 focus:border-action-primary-500 block w-full sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md font-mono bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                      placeholder="Enter custom instructions for all agents...
-
-Example:
-- Always use TypeScript for new files
-- Follow the project's coding conventions
-- Check for security vulnerabilities before committing"
+                      :placeholder="t('Enter custom instructions for all agents... Example: - Always use TypeScript for new files - Follow the project\'s coding conventions - Check for security vulnerabilities before committing')"
                       :disabled="saving"
                     ></textarea>
                   </div>
                   <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    This content will appear under a "## Custom Instructions" section in each agent's CLAUDE.md.
-                    Supports Markdown formatting.
+                    {{ t('This content will appear under a "## Custom Instructions" section in each agent\'s CLAUDE.md. Supports Markdown formatting.') }}
                   </p>
                 </div>
 
                 <!-- Character Count -->
                 <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400">
-                  <span>{{ trinityPrompt.length }} characters</span>
-                  <span v-if="hasChanges" class="text-state-autonomous-600 dark:text-state-autonomous-400">Unsaved changes</span>
+                  <span>{{ trinityPrompt.length }} {{ t('characters') }}</span>
+                  <span v-if="hasChanges" class="text-state-autonomous-600 dark:text-state-autonomous-400">{{ t('Unsaved changes') }}</span>
                 </div>
 
                 <!-- Action Buttons -->
@@ -1297,7 +1276,7 @@ Example:
                     :disabled="saving || !trinityPrompt"
                     class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Clear
+                    {{ t('Clear') }}
                   </button>
                   <button
                     @click="savePrompt"
@@ -1308,7 +1287,7 @@ Example:
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {{ saving ? 'Saving...' : 'Save Changes' }}
+                    {{ saving ? t('Saving...') : t('Save Changes') }}
                   </button>
                 </div>
               </div>
@@ -1318,52 +1297,51 @@ Example:
           <!-- Build Info Section (#926) -->
           <div v-if="activeTab === 'general'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">Build Info</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Build Info') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Provenance of the currently-running backend image. Populated at <code>docker compose build</code> time
-                via <code>scripts/deploy/start.sh</code> (#926).
+                {{ t('Provenance of the currently-running backend image. Populated at') }} <code>docker compose build</code> {{ t('time via') }} <code>scripts/deploy/start.sh</code> (#926).
               </p>
             </div>
             <div class="px-6 py-4">
               <div v-if="buildInfo.loading.value" class="text-sm text-gray-500 dark:text-gray-400">
-                Loading…
+                {{ t('Loading…') }}
               </div>
               <div v-else-if="buildInfo.error.value" class="text-sm text-status-danger-600 dark:text-status-danger-400">
-                Failed to load build info.
+                {{ t('Failed to load build info.') }}
               </div>
               <div
                 v-else-if="buildInfo.isMissing.value"
                 class="text-sm text-gray-600 dark:text-gray-400"
               >
-                Build metadata not available — rebuild with
-                <code class="font-mono">scripts/deploy/start.sh</code> to populate.
+                {{ t('Build metadata not available — rebuild with') }}
+                <code class="font-mono">scripts/deploy/start.sh</code> {{ t('to populate.') }}
               </div>
               <dl v-else-if="buildInfo.info.value" class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                 <div>
-                  <dt class="text-gray-500 dark:text-gray-400">Version</dt>
+                  <dt class="text-gray-500 dark:text-gray-400">{{ t('Version') }}</dt>
                   <dd class="font-mono text-gray-900 dark:text-white">{{ buildInfo.displayVersion.value }}</dd>
                 </div>
                 <div>
-                  <dt class="text-gray-500 dark:text-gray-400">Branch</dt>
+                  <dt class="text-gray-500 dark:text-gray-400">{{ t('Branch') }}</dt>
                   <dd class="font-mono text-gray-900 dark:text-white">{{ buildInfo.info.value.git_branch }}</dd>
                 </div>
                 <div class="sm:col-span-2">
-                  <dt class="text-gray-500 dark:text-gray-400">Commit</dt>
+                  <dt class="text-gray-500 dark:text-gray-400">{{ t('Commit') }}</dt>
                   <dd class="font-mono text-gray-900 dark:text-white">
                     <span>{{ buildInfo.info.value.git_commit_short }}</span>
                     <span class="ml-2 text-xs opacity-60 break-all">{{ buildInfo.info.value.git_commit }}</span>
                   </dd>
                 </div>
                 <div class="sm:col-span-2">
-                  <dt class="text-gray-500 dark:text-gray-400">Commit subject</dt>
+                  <dt class="text-gray-500 dark:text-gray-400">{{ t('Commit subject') }}</dt>
                   <dd class="text-gray-900 dark:text-white break-words">{{ buildInfo.info.value.git_commit_subject }}</dd>
                 </div>
                 <div>
-                  <dt class="text-gray-500 dark:text-gray-400">Commit timestamp</dt>
+                  <dt class="text-gray-500 dark:text-gray-400">{{ t('Commit timestamp') }}</dt>
                   <dd class="font-mono text-gray-900 dark:text-white text-xs">{{ buildInfo.info.value.git_commit_timestamp }}</dd>
                 </div>
                 <div>
-                  <dt class="text-gray-500 dark:text-gray-400">Build date</dt>
+                  <dt class="text-gray-500 dark:text-gray-400">{{ t('Build date') }}</dt>
                   <dd class="font-mono text-gray-900 dark:text-white text-xs">{{ buildInfo.info.value.build_date }}</dd>
                 </div>
               </dl>
@@ -1384,7 +1362,7 @@ Example:
                 class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm mt-3 pt-3 border-t border-gray-200 dark:border-gray-700"
               >
                 <div>
-                  <dt class="text-gray-500 dark:text-gray-400">Install source</dt>
+                  <dt class="text-gray-500 dark:text-gray-400">{{ t('Install source') }}</dt>
                   <dd class="text-gray-900 dark:text-white">
                     <span>{{ installSourceLabel }}</span>
                     <span class="ml-2 text-xs font-mono opacity-60">{{ installSourceRaw }}</span>
@@ -1397,10 +1375,9 @@ Example:
           <!-- Email Whitelist Section (Phase 12.4) -->
           <div v-if="activeTab === 'access'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">Email Whitelist</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Email Whitelist') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Manage whitelisted emails for email-based authentication.
-                Only whitelisted users can login with email verification codes.
+                {{ t('Manage whitelisted emails for email-based authentication. Only whitelisted users can login with email verification codes.') }}
               </p>
             </div>
 
@@ -1425,7 +1402,7 @@ Example:
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Add Email
+                    {{ t('Add Email') }}
                   </button>
                 </div>
 
@@ -1435,16 +1412,16 @@ Example:
                     <thead class="bg-gray-50 dark:bg-gray-700">
                       <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Email
+                          {{ t('Email') }}
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Source
+                          {{ t('Source') }}
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Added
+                          {{ t('Added') }}
                         </th>
                         <th scope="col" class="relative px-6 py-3">
-                          <span class="sr-only">Actions</span>
+                          <span class="sr-only">{{ t('Actions') }}</span>
                         </th>
                       </tr>
                     </thead>
@@ -1456,7 +1433,7 @@ Example:
                       </tr>
                       <tr v-else-if="emailWhitelist.length === 0">
                         <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                          No whitelisted emails. Add one above to get started.
+                          {{ t('No whitelisted emails. Add one above to get started.') }}
                         </td>
                       </tr>
                       <tr v-else v-for="entry in emailWhitelist" :key="entry.id" class="hover:bg-gray-50 dark:hover:bg-gray-700">
@@ -1465,10 +1442,10 @@ Example:
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           <span v-if="entry.source === 'agent_sharing'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                            🤝 Auto (Agent Sharing)
+                            {{ t('🤝 Auto (Agent Sharing)') }}
                           </span>
                           <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                            ✋ Manual
+                            {{ t('✋ Manual') }}
                           </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -1480,7 +1457,7 @@ Example:
                             :disabled="removingEmail === entry.email"
                             class="text-status-danger-600 hover:text-status-danger-900 dark:text-status-danger-400 dark:hover:text-status-danger-300 disabled:opacity-50"
                           >
-                            {{ removingEmail === entry.email ? 'Removing...' : 'Remove' }}
+                            {{ removingEmail === entry.email ? t('Removing...') : t('Remove') }}
                           </button>
                         </td>
                       </tr>
@@ -1489,7 +1466,7 @@ Example:
                 </div>
 
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                  💡 Tip: When you share an agent with someone by email, they're automatically added to this whitelist.
+                  {{ t('💡 Tip: When you share an agent with someone by email, they\'re automatically added to this whitelist.') }}
                 </p>
               </div>
             </div>
@@ -1498,20 +1475,20 @@ Example:
           <!-- User Management Section (ROLE-001) -->
           <div v-if="activeTab === 'access'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">User Management</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('User Management') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Manage user roles. Roles control what actions each user can perform on the platform.
+                {{ t('Manage user roles. Roles control what actions each user can perform on the platform.') }}
               </p>
             </div>
 
             <div class="px-6 py-4">
               <!-- Role legend -->
               <div class="flex flex-wrap gap-2 mb-4 text-xs text-gray-500 dark:text-gray-400">
-                <span class="font-medium">Roles:</span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-accent-purple-100 text-accent-purple-800 dark:bg-accent-purple-900 dark:text-accent-purple-200">admin — full control</span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-action-primary-100 text-action-primary-800 dark:bg-action-primary-900 dark:text-action-primary-200">creator — create &amp; manage agents</span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">operator — run existing agents</span>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">user — public links only</span>
+                <span class="font-medium">{{ t('Roles:') }}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-accent-purple-100 text-accent-purple-800 dark:bg-accent-purple-900 dark:text-accent-purple-200">{{ t('admin — full control') }}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-action-primary-100 text-action-primary-800 dark:bg-action-primary-900 dark:text-action-primary-200">{{ t('creator — create & manage agents') }}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">{{ t('operator — run existing agents') }}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">{{ t('user — public links only') }}</span>
               </div>
 
               <!-- #995 — enterprise: invite users (gated by user_management) -->
@@ -1521,7 +1498,7 @@ Example:
                   @click="showInvite = true"
                   class="px-3 py-2 text-sm font-medium rounded-lg bg-action-primary-600 hover:bg-action-primary-700 text-white"
                 >
-                  + Invite user
+                  {{ t('+ Invite user') }}
                   <span class="ml-1 px-1.5 py-0.5 text-[9px] font-bold rounded bg-purple-200/70 text-purple-800 align-middle">PRO</span>
                 </button>
                 <form v-else @submit.prevent="createInvite" class="flex flex-wrap items-center gap-2 p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/40">
@@ -1529,15 +1506,15 @@ Example:
                     class="flex-1 min-w-[200px] px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                   <select v-model="inviteRole" :disabled="umBusy"
                     class="px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                    <option value="user">user</option>
-                    <option value="operator">operator</option>
-                    <option value="creator">creator</option>
-                    <option value="admin">admin</option>
+                    <option value="user">{{ t('user') }}</option>
+                    <option value="operator">{{ t('operator') }}</option>
+                    <option value="creator">{{ t('creator') }}</option>
+                    <option value="admin">{{ t('admin') }}</option>
                   </select>
                   <button type="submit" :disabled="umBusy || !inviteEmail"
-                    class="px-3 py-2 text-sm font-medium rounded-lg bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-50">Send invite</button>
+                    class="px-3 py-2 text-sm font-medium rounded-lg bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-50">{{ t('Send invite') }}</button>
                   <button type="button" @click="showInvite = false; inviteEmail = ''" :disabled="umBusy"
-                    class="px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:underline">Cancel</button>
+                    class="px-3 py-2 text-sm rounded-lg text-gray-600 dark:text-gray-300 hover:underline">{{ t('Cancel') }}</button>
                   <span v-if="inviteMsg" class="text-xs" :class="inviteErr ? 'text-status-danger-600 dark:text-status-danger-400' : 'text-status-success-600 dark:text-status-success-400'">{{ inviteMsg }}</span>
                 </form>
               </div>
@@ -1551,13 +1528,13 @@ Example:
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead class="bg-gray-50 dark:bg-gray-700">
                     <tr>
-                      <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
-                      <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                      <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
-                      <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last Login</th>
+                      <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ t('User') }}</th>
+                      <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ t('Email') }}</th>
+                      <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ t('Role') }}</th>
+                      <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{{ t('Last Login') }}</th>
                       <!-- #995 — enterprise user management actions; column only when entitled -->
                       <th v-if="umEntitled" scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Management
+                        {{ t('Management') }}
                         <span class="ml-1 px-1.5 py-0.5 text-[9px] font-bold rounded bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200 align-middle">PRO</span>
                       </th>
                     </tr>
@@ -1569,7 +1546,7 @@ Example:
                       </td>
                     </tr>
                     <tr v-else-if="usersList.length === 0">
-                      <td :colspan="umEntitled ? 5 : 4" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No users found.</td>
+                      <td :colspan="umEntitled ? 5 : 4" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{{ t('No users found.') }}</td>
                     </tr>
                     <tr v-else v-for="u in usersList" :key="u.username" class="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -1585,27 +1562,27 @@ Example:
                           @change="updateUserRole(u.username, $event.target.value)"
                           class="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500"
                         >
-                          <option value="admin">admin</option>
-                          <option value="creator">creator</option>
-                          <option value="operator">operator</option>
-                          <option value="user">user</option>
+                          <option value="admin">{{ t('admin') }}</option>
+                          <option value="creator">{{ t('creator') }}</option>
+                          <option value="operator">{{ t('operator') }}</option>
+                          <option value="user">{{ t('user') }}</option>
                         </select>
                         <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-purple-100 text-accent-purple-800 dark:bg-accent-purple-900 dark:text-accent-purple-200">
-                          {{ u.role }} (you)
+                          {{ u.role }} {{ t('(you)') }}
                         </span>
                       </td>
                       <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {{ u.last_login ? formatDate(u.last_login) : 'Never' }}
+                        {{ u.last_login ? formatDate(u.last_login) : t('Never') }}
                       </td>
                       <td v-if="umEntitled" class="px-4 py-4 text-sm">
                         <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                           <span v-if="u.suspended_at" class="px-2 py-0.5 font-medium rounded-full bg-status-danger-100 text-status-danger-700 dark:bg-status-danger-900/50 dark:text-status-danger-300">
-                            Deactivated
+                            {{ t('Deactivated') }}
                           </span>
-                          <button @click="openActivity(u)" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">Activity</button>
+                          <button @click="openActivity(u)" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">{{ t('Activity') }}</button>
                           <template v-if="u.username !== currentUsername && u.username !== 'admin'">
-                            <button v-if="u.suspended_at" @click="reactivateUser(u)" :disabled="umBusy" class="text-status-success-600 dark:text-status-success-400 hover:underline disabled:opacity-50">Reactivate</button>
-                            <button v-else @click="suspendUser(u)" :disabled="umBusy" class="text-status-danger-600 dark:text-status-danger-400 hover:underline disabled:opacity-50">Deactivate</button>
+                            <button v-if="u.suspended_at" @click="reactivateUser(u)" :disabled="umBusy" class="text-status-success-600 dark:text-status-success-400 hover:underline disabled:opacity-50">{{ t('Reactivate') }}</button>
+                            <button v-else @click="suspendUser(u)" :disabled="umBusy" class="text-status-danger-600 dark:text-status-danger-400 hover:underline disabled:opacity-50">{{ t('Deactivate') }}</button>
                           </template>
                         </div>
                       </td>
@@ -1622,7 +1599,7 @@ Example:
             <div class="relative w-full max-w-md h-full bg-white dark:bg-gray-800 shadow-xl overflow-y-auto">
               <div class="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800">
                 <div>
-                  <h3 class="text-base font-medium text-gray-900 dark:text-white">Activity</h3>
+                  <h3 class="text-base font-medium text-gray-900 dark:text-white">{{ t('Activity') }}</h3>
                   <p class="text-xs text-gray-500 dark:text-gray-400">{{ activityUser.name || activityUser.username }}</p>
                 </div>
                 <button @click="closeActivity" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl leading-none">&times;</button>
@@ -1635,15 +1612,15 @@ Example:
                 <div v-else-if="activityError" class="text-sm text-status-danger-600 dark:text-status-danger-400">{{ activityError }}</div>
                 <template v-else-if="activityData">
                   <div class="mb-4 rounded-lg bg-gray-50 dark:bg-gray-700/40 p-3 text-sm">
-                    <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">Total events</span><span class="font-medium text-gray-900 dark:text-gray-100">{{ activityData.summary.total }}</span></div>
-                    <div v-if="activityData.summary.last_seen" class="flex justify-between mt-1"><span class="text-gray-500 dark:text-gray-400">Last seen</span><span class="text-gray-900 dark:text-gray-100">{{ formatDate(activityData.summary.last_seen) }}</span></div>
-                    <div v-if="activityData.summary.first_seen" class="flex justify-between mt-1"><span class="text-gray-500 dark:text-gray-400">First seen</span><span class="text-gray-900 dark:text-gray-100">{{ formatDate(activityData.summary.first_seen) }}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-500 dark:text-gray-400">{{ t('Total events') }}</span><span class="font-medium text-gray-900 dark:text-gray-100">{{ activityData.summary.total }}</span></div>
+                    <div v-if="activityData.summary.last_seen" class="flex justify-between mt-1"><span class="text-gray-500 dark:text-gray-400">{{ t('Last seen') }}</span><span class="text-gray-900 dark:text-gray-100">{{ formatDate(activityData.summary.last_seen) }}</span></div>
+                    <div v-if="activityData.summary.first_seen" class="flex justify-between mt-1"><span class="text-gray-500 dark:text-gray-400">{{ t('First seen') }}</span><span class="text-gray-900 dark:text-gray-100">{{ formatDate(activityData.summary.first_seen) }}</span></div>
                     <div v-for="(n, et) in activityData.summary.by_event_type" :key="et" class="flex justify-between mt-1">
                       <span class="text-gray-500 dark:text-gray-400">{{ et }}</span><span class="text-gray-900 dark:text-gray-100">{{ n }}</span>
                     </div>
                   </div>
 
-                  <p v-if="!activityData.entries.length" class="text-sm text-gray-500 dark:text-gray-400">No recorded activity.</p>
+                  <p v-if="!activityData.entries.length" class="text-sm text-gray-500 dark:text-gray-400">{{ t('No recorded activity.') }}</p>
                   <ul v-else class="space-y-2">
                     <li v-for="e in activityData.entries" :key="e.event_id" class="text-sm border-l-2 border-gray-200 dark:border-gray-600 pl-3 py-1">
                       <div class="flex items-center gap-2">
@@ -1663,9 +1640,9 @@ Example:
           <!-- MCP Server URL Section (#76) -->
           <div v-if="activeTab === 'mcp-keys' && isAdmin" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">MCP Server URL</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('MCP Server URL') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Configure the external MCP server URL shown on the API Keys page. Leave empty to auto-detect from hostname.
+                {{ t('Configure the external MCP server URL shown on the API Keys page. Leave empty to auto-detect from hostname.') }}
               </p>
             </div>
             <div class="px-6 py-4">
@@ -1678,13 +1655,13 @@ Example:
                       : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                   ]"
                 >
-                  {{ mcpUrlConfig.url ? 'Custom' : 'Auto-detect' }}
+                  {{ mcpUrlConfig.url ? t('Custom') : t('Auto-detect') }}
                 </span>
                 <span v-if="mcpUrlConfig.url" class="text-sm text-gray-500 dark:text-gray-400 truncate">
                   {{ mcpUrlConfig.url }}
                 </span>
                 <span v-else class="text-sm text-gray-500 dark:text-gray-400 truncate">
-                  {{ mcpUrlConfig.default_url || 'Loading...' }}
+                  {{ mcpUrlConfig.default_url || t('Loading...') }}
                 </span>
               </div>
 
@@ -1700,7 +1677,7 @@ Example:
                   :disabled="!mcpUrlInput || savingMcpUrl"
                   class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ savingMcpUrl ? 'Saving...' : 'Save' }}
+                  {{ savingMcpUrl ? t('Saving...') : t('Save') }}
                 </button>
                 <button
                   v-if="mcpUrlConfig.url"
@@ -1708,7 +1685,7 @@ Example:
                   :disabled="savingMcpUrl"
                   class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50"
                 >
-                  Reset to Default
+                  {{ t('Reset to Default') }}
                 </button>
               </div>
 
@@ -1724,16 +1701,16 @@ Example:
           <!-- GitHub Templates Section (TMPL-001) -->
           <div v-if="activeTab === 'agents'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">GitHub Templates</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('GitHub Templates') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Configure which GitHub repositories appear as agent templates.
+                {{ t('Configure which GitHub repositories appear as agent templates.') }}
                 <!-- #1931: "Using defaults" is a lie about an empty set — the
                      shipped default list is now []. Say what is actually true. -->
                 <span v-if="githubTemplatesSource === 'defaults'" class="inline-flex items-center ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-                  No defaults configured
+                  {{ t('No defaults configured') }}
                 </span>
                 <span v-else class="inline-flex items-center ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-action-primary-100 text-action-primary-700 dark:bg-action-primary-900 dark:text-action-primary-300">
-                  Custom config
+                  {{ t('Custom config') }}
                 </span>
               </p>
             </div>
@@ -1753,7 +1730,7 @@ Example:
                   <input
                     v-model="newTemplateName"
                     type="text"
-                    placeholder="Display name (optional)"
+                    :placeholder="t('Display name (optional)')"
                     class="w-48 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white text-sm"
                     :disabled="savingGithubTemplates"
                     @keyup.enter="addGithubTemplate"
@@ -1763,7 +1740,7 @@ Example:
                     :disabled="!newTemplateRepo || savingGithubTemplates"
                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Add
+                    {{ t('Add') }}
                   </button>
                 </div>
                 <p v-if="templateValidationError" class="text-sm text-status-danger-600 dark:text-status-danger-400">
@@ -1776,13 +1753,13 @@ Example:
                     <thead class="bg-gray-50 dark:bg-gray-700">
                       <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Repository
+                          {{ t('Repository') }}
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                          Display Name
+                          {{ t('Display Name') }}
                         </th>
                         <th scope="col" class="relative px-6 py-3">
-                          <span class="sr-only">Actions</span>
+                          <span class="sr-only">{{ t('Actions') }}</span>
                         </th>
                       </tr>
                     </thead>
@@ -1801,7 +1778,7 @@ Example:
                            here. -->
                       <tr v-else-if="githubTemplates.length === 0">
                         <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                          No GitHub templates configured. Trinity ships no defaults — add an <span class="font-mono">owner/repo</span> above to publish it to the Library.
+                          {{ t('No GitHub templates configured. Trinity ships no defaults — add an') }} <span class="font-mono">owner/repo</span> {{ t('above to publish it to the Library.') }}
                         </td>
                       </tr>
                       <tr v-else v-for="(tmpl, index) in githubTemplates" :key="tmpl.github_repo" class="hover:bg-gray-50 dark:hover:bg-gray-700">
@@ -1810,7 +1787,7 @@ Example:
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                           {{ tmpl.resolved_name || tmpl.display_name || '-' }}
-                          <span v-if="tmpl.display_name" class="ml-1 text-xs text-action-primary-500">(custom)</span>
+                          <span v-if="tmpl.display_name" class="ml-1 text-xs text-action-primary-500">{{ t('(custom)') }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
@@ -1818,7 +1795,7 @@ Example:
                             :disabled="savingGithubTemplates"
                             class="text-status-danger-600 hover:text-status-danger-900 dark:text-status-danger-400 dark:hover:text-status-danger-300 disabled:opacity-50"
                           >
-                            Remove
+                            {{ t('Remove') }}
                           </button>
                         </td>
                       </tr>
@@ -1833,7 +1810,7 @@ Example:
                     :disabled="savingGithubTemplates || githubTemplatesSource === 'defaults'"
                     class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Reset to Defaults
+                    {{ t('Reset to Defaults') }}
                   </button>
                   <button
                     @click="saveGithubTemplates"
@@ -1844,7 +1821,7 @@ Example:
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Save Templates
+                    {{ t('Save Templates') }}
                   </button>
                 </div>
               </div>
@@ -1858,9 +1835,9 @@ Example:
           <!-- SSH Access Section -->
           <div v-if="activeTab === 'access'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">SSH Access</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('SSH Access') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Allow generating ephemeral SSH credentials for direct terminal access to agent containers.
+                {{ t('Allow generating ephemeral SSH credentials for direct terminal access to agent containers.') }}
               </p>
             </div>
 
@@ -1868,10 +1845,10 @@ Example:
               <div class="flex items-center justify-between">
                 <div>
                   <label for="ssh-access-toggle" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Enable SSH Access
+                    {{ t('Enable SSH Access') }}
                   </label>
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    When enabled, the MCP tool <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">get_agent_ssh_access</code> can generate temporary SSH credentials.
+                    {{ t('When enabled, the MCP tool') }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">get_agent_ssh_access</code> {{ t('can generate temporary SSH credentials.') }}
                   </p>
                 </div>
                 <button
@@ -1898,9 +1875,9 @@ Example:
           <!-- Agent Quotas Section (QUOTA-001) -->
           <div v-if="activeTab === 'agents'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">Agent Quotas</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Agent Quotas') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Set the maximum number of agents each role can create. Set to 0 for unlimited.
+                {{ t('Set the maximum number of agents each role can create. Set to 0 for unlimited.') }}
               </p>
             </div>
 
@@ -1908,17 +1885,17 @@ Example:
               <!-- Admin role - always unlimited -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Admin</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">Admins can always create unlimited agents</p>
+                  <label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Admin') }}</label>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('Admins can always create unlimited agents') }}</p>
                 </div>
-                <span class="text-sm font-medium text-status-success-600 dark:text-status-success-400">Unlimited</span>
+                <span class="text-sm font-medium text-status-success-600 dark:text-status-success-400">{{ t('Unlimited') }}</span>
               </div>
 
               <!-- Creator role -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label for="quota-creator" class="text-sm font-medium text-gray-700 dark:text-gray-300">Creator</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ agentQuotas.max_agents_creator?.description || 'Maximum agents a creator can own' }}</p>
+                  <label for="quota-creator" class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Creator') }}</label>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ agentQuotas.max_agents_creator?.description || t('Maximum agents a creator can own') }}</p>
                 </div>
                 <input
                   type="number"
@@ -1932,8 +1909,8 @@ Example:
               <!-- Operator role -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label for="quota-operator" class="text-sm font-medium text-gray-700 dark:text-gray-300">Operator</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ agentQuotas.max_agents_operator?.description || 'Maximum agents an operator can own' }}</p>
+                  <label for="quota-operator" class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Operator') }}</label>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ agentQuotas.max_agents_operator?.description || t('Maximum agents an operator can own') }}</p>
                 </div>
                 <input
                   type="number"
@@ -1947,8 +1924,8 @@ Example:
               <!-- User role -->
               <div class="flex items-center justify-between">
                 <div>
-                  <label for="quota-user" class="text-sm font-medium text-gray-700 dark:text-gray-300">User</label>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ agentQuotas.max_agents_user?.description || 'Maximum agents a regular user can own' }}</p>
+                  <label for="quota-user" class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('User') }}</label>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ agentQuotas.max_agents_user?.description || t('Maximum agents a regular user can own') }}</p>
                 </div>
                 <input
                   type="number"
@@ -1962,7 +1939,7 @@ Example:
               <!-- Legacy setting warning -->
               <div v-if="agentQuotaLegacy" class="rounded-md bg-status-warning-50 dark:bg-status-warning-900/20 p-3">
                 <p class="text-sm text-status-warning-700 dark:text-status-warning-400">
-                  Legacy setting <code class="px-1 py-0.5 bg-status-warning-100 dark:bg-status-warning-900/40 rounded text-xs">max_agents_per_user={{ agentQuotaLegacy }}</code> is active and used as fallback. Save per-role quotas to override it.
+                  {{ t('Legacy setting') }} <code class="px-1 py-0.5 bg-status-warning-100 dark:bg-status-warning-900/40 rounded text-xs">max_agents_per_user={{ agentQuotaLegacy }}</code> {{ t('is active and used as fallback. Save per-role quotas to override it.') }}
                 </p>
               </div>
 
@@ -1978,7 +1955,7 @@ Example:
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Save Quotas
+                  {{ t('Save Quotas') }}
                 </button>
               </div>
             </div>
@@ -1995,7 +1972,7 @@ Example:
             <div class="px-6 py-4 space-y-4">
           <!-- Lifecycle automation (ent#236) -->
           <div class="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-3">
-            <h3 class="text-sm font-medium text-gray-900 dark:text-white">Automation</h3>
+            <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ t('Automation') }}</h3>
 
             <label class="flex items-start gap-3">
               <input
@@ -2004,16 +1981,16 @@ Example:
                 class="mt-0.5 h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-action-primary-600 focus:ring-action-primary-500"
               />
               <span class="text-sm">
-                <span class="font-medium text-gray-700 dark:text-gray-300">Scheduled auto-sync</span>
+                <span class="font-medium text-gray-700 dark:text-gray-300">{{ t('Scheduled auto-sync') }}</span>
                 <span class="block text-xs text-gray-500 dark:text-gray-400">
-                  Pull the library on a schedule instead of clicking Sync Library.
+                  {{ t('Pull the library on a schedule instead of clicking Sync Library.') }}
                 </span>
               </span>
             </label>
 
             <div v-if="skillsAutomation.auto_sync_enabled" class="pl-7">
               <label for="skills-sync-interval" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Interval (seconds)
+                {{ t('Interval (seconds)') }}
               </label>
               <input
                 type="number"
@@ -2024,7 +2001,7 @@ Example:
                 class="mt-1 block w-40 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white text-sm"
               />
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Between {{ skillsAutomation.interval_min }} and {{ skillsAutomation.interval_max }} seconds.
+                {{ t('Between') }} {{ skillsAutomation.interval_min }} {{ t('and') }} {{ skillsAutomation.interval_max }} {{ t('seconds.') }}
               </p>
             </div>
 
@@ -2035,10 +2012,9 @@ Example:
                 class="mt-0.5 h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-action-primary-600 focus:ring-action-primary-500"
               />
               <span class="text-sm">
-                <span class="font-medium text-gray-700 dark:text-gray-300">Re-inject across the fleet after a sync</span>
+                <span class="font-medium text-gray-700 dark:text-gray-300">{{ t('Re-inject across the fleet after a sync') }}</span>
                 <span class="block text-xs text-gray-500 dark:text-gray-400">
-                  When the library commit changes, push updated skills to running agents.
-                  Stopped agents update on their next start.
+                  {{ t('When the library commit changes, push updated skills to running agents. Stopped agents update on their next start.') }}
                 </span>
               </span>
             </label>
@@ -2048,21 +2024,21 @@ Example:
               v-if="skillsAutomation.last_fleet_reinject"
               class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 text-xs text-gray-600 dark:text-gray-300"
             >
-              <div class="font-medium text-gray-700 dark:text-gray-200">Last fleet re-inject</div>
+              <div class="font-medium text-gray-700 dark:text-gray-200">{{ t('Last fleet re-inject') }}</div>
               <div class="mt-1">
                 {{ formatDate(skillsAutomation.last_fleet_reinject.finished_at) }} —
-                {{ skillsAutomation.last_fleet_reinject.agents_injected }} updated,
-                {{ skillsAutomation.last_fleet_reinject.agents_skipped }} skipped,
+                {{ skillsAutomation.last_fleet_reinject.agents_injected }} {{ t('updated,') }}
+                {{ skillsAutomation.last_fleet_reinject.agents_skipped }} {{ t('skipped,') }}
                 <span :class="skillsAutomation.last_fleet_reinject.agents_failed > 0 ? 'text-status-danger-600 dark:text-status-danger-400 font-medium' : ''">
-                  {{ skillsAutomation.last_fleet_reinject.agents_failed }} failed
+                  {{ skillsAutomation.last_fleet_reinject.agents_failed }} {{ t('failed') }}
                 </span>
-                of {{ skillsAutomation.last_fleet_reinject.agents_total }}
+                {{ t('of') }} {{ skillsAutomation.last_fleet_reinject.agents_total }}
               </div>
               <div
                 v-if="skillsAutomation.last_fleet_reinject.agents_failed > 0"
                 class="mt-1 text-status-danger-600 dark:text-status-danger-400 break-all"
               >
-                Affected: {{ Object.keys(skillsAutomation.last_fleet_reinject.failures || {}).join(', ') }}
+                {{ t('Affected:') }} {{ Object.keys(skillsAutomation.last_fleet_reinject.failures || {}).join(', ') }}
               </div>
             </div>
           </div>
@@ -2078,7 +2054,7 @@ Example:
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {{ savingSkillsAutomation ? 'Saving...' : 'Save Automation' }}
+                  {{ savingSkillsAutomation ? t('Saving...') : t('Save Automation') }}
                 </button>
               </div>
             </div>
@@ -2087,10 +2063,9 @@ Example:
           <!-- Default Avatars (AVATAR-003) -->
           <div v-if="activeTab === 'general'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 class="text-lg font-medium text-gray-900 dark:text-white">Default Avatars</h2>
+              <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Default Avatars') }}</h2>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Generate AI avatars for all agents that don't have a custom one yet.
-                Uses the same Gemini image generation pipeline as custom avatars.
+                {{ t('Generate AI avatars for all agents that don\'t have a custom one yet. Uses the same Gemini image generation pipeline as custom avatars.') }}
               </p>
             </div>
             <div class="px-6 py-4 space-y-4">
@@ -2102,10 +2077,10 @@ Example:
               }">
                 <p class="text-sm font-medium">{{ defaultAvatarResult.message }}</p>
                 <ul v-if="defaultAvatarResult.agents.length" class="mt-1 text-xs space-y-0.5">
-                  <li v-for="name in defaultAvatarResult.agents" :key="name">Generated: {{ name }}</li>
+                  <li v-for="name in defaultAvatarResult.agents" :key="name">{{ t('Generated:') }} {{ name }}</li>
                 </ul>
                 <ul v-if="defaultAvatarResult.errors.length" class="mt-1 text-xs space-y-0.5">
-                  <li v-for="err in defaultAvatarResult.errors" :key="err.agent" class="text-status-danger-600 dark:text-status-danger-400">Failed: {{ err.agent }} - {{ err.error }}</li>
+                  <li v-for="err in defaultAvatarResult.errors" :key="err.agent" class="text-status-danger-600 dark:text-status-danger-400">{{ t('Failed:') }} {{ err.agent }} - {{ err.error }}</li>
                 </ul>
               </div>
 
@@ -2119,7 +2094,7 @@ Example:
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {{ generatingDefaultAvatars ? 'Generating...' : 'Generate Default Avatars' }}
+                {{ generatingDefaultAvatars ? t('Generating...') : t('Generate Default Avatars') }}
               </button>
             </div>
           </div>
@@ -2133,13 +2108,13 @@ Example:
                 </svg>
               </div>
               <div class="ml-3">
-                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">How it works</h3>
+                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">{{ t('How it works') }}</h3>
                 <div class="mt-2 text-sm text-blue-700 dark:text-blue-400">
                   <ul class="list-disc list-inside space-y-1">
-                    <li>The Trinity Prompt is injected into each agent's CLAUDE.md when the agent starts</li>
-                    <li>Existing agents need to be restarted to receive the updated prompt</li>
-                    <li>The prompt appears as a "## Custom Instructions" section after the Trinity Planning System section</li>
-                    <li>Use Markdown formatting for structured instructions</li>
+                    <li>{{ t('The Trinity Prompt is injected into each agent\'s CLAUDE.md when the agent starts') }}</li>
+                    <li>{{ t('Existing agents need to be restarted to receive the updated prompt') }}</li>
+                    <li>{{ t('The prompt appears as a "## Custom Instructions" section after the Trinity Planning System section') }}</li>
+                    <li>{{ t('Use Markdown formatting for structured instructions') }}</li>
                   </ul>
                 </div>
               </div>
@@ -2156,7 +2131,7 @@ Example:
               </svg>
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-status-danger-800 dark:text-status-danger-300">Error</h3>
+              <h3 class="text-sm font-medium text-status-danger-800 dark:text-status-danger-300">{{ t('Error') }}</h3>
               <p class="mt-1 text-sm text-status-danger-700 dark:text-status-danger-400">{{ error }}</p>
             </div>
           </div>
@@ -2171,7 +2146,7 @@ Example:
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm font-medium text-status-success-800 dark:text-status-success-300">Settings saved successfully!</p>
+              <p class="text-sm font-medium text-status-success-800 dark:text-status-success-300">{{ t('Settings saved successfully!') }}</p>
             </div>
           </div>
         </div>
@@ -2190,6 +2165,7 @@ Example:
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useRole } from '../composables/useRole'
@@ -2250,11 +2226,11 @@ const buildInfo = useBuildInfo()
 // The raw value is the machine truth and is always shown; the label exists
 // because "do-marketplace" means nothing to an operator reading a panel.
 const INSTALL_SOURCE_LABELS = {
-  'do-marketplace': 'DigitalOcean Marketplace',
-  'do-script': 'DigitalOcean (install script)',
-  'vultr-marketplace': 'Vultr Marketplace',
-  script: 'Install script',
-  unknown: 'Not recorded',
+  get 'do-marketplace'() { return t('DigitalOcean Marketplace') },
+  get 'do-script'() { return t('DigitalOcean (install script)') },
+  get 'vultr-marketplace'() { return t('Vultr Marketplace') },
+  get script() { return t('Install script') },
+  get unknown() { return t('Not recorded') },
 }
 const installSourceRaw = computed(() => buildInfo.info.value?.install_source || 'unknown')
 // An unrecognised value falls through to itself rather than to "Not recorded":
@@ -2276,20 +2252,20 @@ const showSuccess = ref(false)
 // hiding tabs is convenience.
 // activeTab syncs with the ?tab= URL query param so deep links work.
 const ALL_TABS = [
-  { id: 'general',      label: 'General',      adminOnly: true  },
-  { id: 'access',       label: 'Access',       adminOnly: true  },
-  { id: 'integrations', label: 'Integrations', adminOnly: true  },
-  { id: 'mcp-keys',     label: 'MCP Keys',     adminOnly: false },
-  { id: 'agent-permissions', label: 'Agent Permissions', adminOnly: false, requires: 'permissions_matrix' },
-  { id: 'security',     label: 'Security',     adminOnly: false, requires: '2fa' },
+  { id: 'general',      get "label"() { return uiText("General") },      adminOnly: true  },
+  { id: 'access',       get "label"() { return uiText("Access") },       adminOnly: true  },
+  { id: 'integrations', get "label"() { return uiText("Integrations") }, adminOnly: true  },
+  { id: 'mcp-keys',     get "label"() { return uiText("MCP Keys") },     adminOnly: false },
+  { id: 'agent-permissions', get "label"() { return uiText("Agent Permissions") }, adminOnly: false, requires: 'permissions_matrix' },
+  { id: 'security',     get "label"() { return uiText("Security") },     adminOnly: false, requires: '2fa' },
   { id: 'sso',          label: 'SSO',          adminOnly: true,  requires: 'sso' },
-  { id: 'credential-vault', label: 'Vault',    adminOnly: true,  requires: 'credential_vault' },
-  { id: 'agents',       label: 'Agents',       adminOnly: true  },
-  { id: 'retention',    label: 'Retention',    adminOnly: true  },
+  { id: 'credential-vault', get "label"() { return uiText("Vault") },    adminOnly: true,  requires: 'credential_vault' },
+  { id: 'agents',       get "label"() { return uiText("Agents") },       adminOnly: true  },
+  { id: 'retention',    get "label"() { return uiText("Retention") },    adminOnly: true  },
   // ent#184 — local product-event activation funnel. Capture is OSS-core;
   // this operator view is entitlement-gated (`telemetry`), so the tab is hidden
   // in OSS-only builds. Local-only data, admin-only.
-  { id: 'activation',   label: 'Activation',   adminOnly: true, requires: 'telemetry' },
+  { id: 'activation',   get "label"() { return uiText("Activation") },   adminOnly: true, requires: 'telemetry' },
 ]
 const { isAdmin } = useRole()
 const visibleTabs = computed(() =>
@@ -2345,12 +2321,12 @@ const umEntitled = computed(() => enterpriseStore.isEntitled('user_management'))
 // an upgrade hint.
 const retentionEntitled = computed(() => enterpriseStore.isEntitled('retention'))
 const RETENTION_FIELDS = [
-  { key: 'log_retention_days', label: 'Log archival' },
-  { key: 'execution_log_retention_days', label: 'Execution logs' },
-  { key: 'execution_row_retention_days', label: 'Execution rows' },
-  { key: 'health_check_retention_days', label: 'Health checks' },
-  { key: 'agent_soft_delete_retention_days', label: 'Soft-deleted agents' },
-  { key: 'schedule_soft_delete_retention_days', label: 'Soft-deleted schedules' },
+  { key: 'log_retention_days', get "label"() { return uiText("Log archival") } },
+  { key: 'execution_log_retention_days', get "label"() { return uiText("Execution logs") } },
+  { key: 'execution_row_retention_days', get "label"() { return uiText("Execution rows") } },
+  { key: 'health_check_retention_days', get "label"() { return uiText("Health checks") } },
+  { key: 'agent_soft_delete_retention_days', get "label"() { return uiText("Soft-deleted agents") } },
+  { key: 'schedule_soft_delete_retention_days', get "label"() { return uiText("Soft-deleted schedules") } },
 ]
 const retention = ref(null)        // { edition, community_floor_days, windows{} }
 const retentionForm = reactive({}) // editable copy of the OPS/log windows
@@ -2403,7 +2379,7 @@ async function acknowledgePrune(item) {
     ackErrorKey.value = item.key
     // 409 = window mismatch (the window in force moved); surface the server's
     // readable message rather than a generic failure.
-    ackError.value = apiErrorMessage(e, 'Failed to approve the deletion.')
+    ackError.value = apiErrorMessage(e, uiText("Failed to approve the deletion."))
   } finally {
     acknowledgingKey.value = ''
   }
@@ -2419,7 +2395,7 @@ async function loadRetention() {
       retentionForm[f.key] = r.data?.windows?.[f.key]
     }
   } catch (e) {
-    retentionError.value = apiErrorMessage(e, 'Failed to load retention settings.')
+    retentionError.value = apiErrorMessage(e, uiText("Failed to load retention settings."))
   } finally {
     retentionLoading.value = false
   }
@@ -2441,7 +2417,7 @@ async function saveRetention() {
     retentionSaved.value = true
     await loadRetention()
   } catch (e) {
-    retentionError.value = apiErrorMessage(e, 'Failed to save retention settings.')
+    retentionError.value = apiErrorMessage(e, uiText("Failed to save retention settings."))
   } finally {
     retentionSaving.value = false
   }
@@ -2485,7 +2461,7 @@ const inviteErr = ref(false)
 
 async function suspendUser(u) {
   if (umBusy.value) return
-  if (!confirm(`Deactivate ${u.email || u.username}? They will be signed out and unable to log in until reactivated.`)) return
+  if (!confirm(uiText("Deactivate {arg1}? They will be signed out and unable to log in until reactivated.", { arg1: (u.email || u.username) }))) return
   umBusy.value = true
   try {
     await axios.post(`${UM_BASE}/users/${u.id}/suspend`, {}, { headers: authStore.authHeader })
@@ -2517,7 +2493,7 @@ async function createInvite() {
   inviteErr.value = false
   try {
     await axios.post(`${UM_BASE}/invites`, { email: inviteEmail.value, role: inviteRole.value }, { headers: authStore.authHeader })
-    inviteMsg.value = `Invited ${inviteEmail.value} (${inviteRole.value}) — they can now sign in by email.`
+    inviteMsg.value = t('Invited {email} ({role}) — they can now sign in by email.', { email: inviteEmail.value, role: inviteRole.value })
     inviteEmail.value = ''
     inviteRole.value = 'user'
   } catch (e) {
@@ -2597,11 +2573,11 @@ const savingCeiling = ref(false)
 
 // #1609: admin-tunable proactive channel-message caps (per hour; 0 = unlimited).
 const PROACTIVE_ROWS = [
-  { key: 'slack_proactive_per_channel', label: 'Slack — per channel', hint: 'Proactive messages/hour to one Slack channel' },
-  { key: 'slack_proactive_per_agent', label: 'Slack — per agent', hint: 'Across all Slack channels for one agent' },
-  { key: 'telegram_proactive_per_group', label: 'Telegram — per group', hint: 'Proactive messages/hour to one Telegram group' },
-  { key: 'telegram_proactive_per_agent', label: 'Telegram — per agent', hint: 'Across all Telegram groups for one agent' },
-  { key: 'proactive_dm_per_recipient', label: 'Direct messages — per recipient', hint: 'Proactive DMs/hour to one recipient' },
+  { key: 'slack_proactive_per_channel', get "label"() { return uiText("Slack — per channel") }, get "hint"() { return uiText("Proactive messages/hour to one Slack channel") } },
+  { key: 'slack_proactive_per_agent', get "label"() { return uiText("Slack — per agent") }, get "hint"() { return uiText("Across all Slack channels for one agent") } },
+  { key: 'telegram_proactive_per_group', get "label"() { return uiText("Telegram — per group") }, get "hint"() { return uiText("Proactive messages/hour to one Telegram group") } },
+  { key: 'telegram_proactive_per_agent', get "label"() { return uiText("Telegram — per agent") }, get "hint"() { return uiText("Across all Telegram groups for one agent") } },
+  { key: 'proactive_dm_per_recipient', get "label"() { return uiText("Direct messages — per recipient") }, get "hint"() { return uiText("Proactive DMs/hour to one recipient") } },
 ]
 const proactiveLimits = ref({})
 const proactiveMax = ref(1000000)
@@ -2620,9 +2596,9 @@ const brainOrb = reactive({
   write_enabled: { value: false, source: 'default' },
 })
 const brainOrbFlagRows = [
-  { key: 'enabled', label: 'Enable Brain Orb', hint: 'Gates the Brain tab, the /brain page, and every brain-orb API route.' },
-  { key: 'voice_enabled', label: 'Voice tile', hint: 'Client-held Gemini Live voice inside the orb. Effective only while Brain Orb is enabled.' },
-  { key: 'write_enabled', label: 'KB-write actions', hint: 'Owner-gated capture/link — enables an exec-adjacent surface on the agent (its action hook). Effective only while Brain Orb is enabled.' },
+  { key: 'enabled', get "label"() { return uiText("Enable Brain Orb") }, get "hint"() { return uiText("Gates the Brain tab, the /brain page, and every brain-orb API route.") } },
+  { key: 'voice_enabled', get "label"() { return uiText("Voice tile") }, get "hint"() { return uiText("Client-held Gemini Live voice inside the orb. Effective only while Brain Orb is enabled.") } },
+  { key: 'write_enabled', get "label"() { return uiText("KB-write actions") }, get "hint"() { return uiText("Owner-gated capture/link — enables an exec-adjacent surface on the agent (its action hook). Effective only while Brain Orb is enabled.") } },
 ]
 const brainOrbGeminiKey = ref(false)
 const savingBrainOrb = ref(false)
@@ -2795,10 +2771,10 @@ async function loadSettings() {
     ])
   } catch (e) {
     if (e.response?.status === 403) {
-      error.value = 'Access denied. Admin privileges required.'
+      error.value = uiText("Access denied. Admin privileges required.")
       router.push('/')
     } else {
-      error.value = e.response?.data?.detail || 'Failed to load settings'
+      error.value = e.response?.data?.detail || uiText("Failed to load settings")
     }
   } finally {
     loading.value = false
@@ -2828,10 +2804,10 @@ async function testApiKey() {
     })
 
     apiKeyTestResult.value = response.data.valid
-    apiKeyTestMessage.value = response.data.valid ? 'API key is valid!' : (response.data.error || 'Invalid API key')
+    apiKeyTestMessage.value = response.data.valid ? t('API key is valid!') : (response.data.error || t('Invalid API key'))
   } catch (e) {
     apiKeyTestResult.value = false
-    apiKeyTestMessage.value = e.response?.data?.detail || 'Failed to test API key'
+    apiKeyTestMessage.value = e.response?.data?.detail || t('Failed to test API key')
   } finally {
     testingApiKey.value = false
   }
@@ -2863,7 +2839,7 @@ async function saveApiKey() {
       showSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save API key'
+    error.value = e.response?.data?.detail || uiText("Failed to save API key")
   } finally {
     savingApiKey.value = false
   }
@@ -2886,25 +2862,25 @@ async function testGithubPat() {
       const tokenType = response.data.token_type || 'unknown'
       const hasRepoAccess = response.data.has_repo_access || false
 
-      let message = `Valid! GitHub user: ${response.data.username}`
+      let message = uiText("Valid! GitHub user: {arg1}", { arg1: (response.data.username) })
 
       if (tokenType === 'fine-grained') {
         message += hasRepoAccess
-          ? '. ✓ Fine-grained PAT with repository permissions'
-          : '. ⚠️ Missing repository permissions (need Administration + Contents)'
+          ? uiText(". ✓ Fine-grained PAT with repository permissions")
+          : uiText(". ⚠️ Missing repository permissions (need Administration + Contents)")
       } else {
         message += hasRepoAccess
-          ? '. ✓ Has repo scope'
-          : '. ⚠️ Missing repo scope'
+          ? uiText(". ✓ Has repo scope")
+          : uiText(". ⚠️ Missing repo scope")
       }
 
       githubPatTestMessage.value = message
     } else {
-      githubPatTestMessage.value = response.data.error || 'Invalid PAT'
+      githubPatTestMessage.value = response.data.error || uiText("Invalid PAT")
     }
   } catch (e) {
     githubPatTestResult.value = false
-    githubPatTestMessage.value = e.response?.data?.detail || 'Failed to test PAT'
+    githubPatTestMessage.value = e.response?.data?.detail || uiText("Failed to test PAT")
   } finally {
     testingGithubPat.value = false
   }
@@ -2939,15 +2915,15 @@ async function saveGithubPat() {
       showSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save GitHub PAT'
+    error.value = e.response?.data?.detail || uiText("Failed to save GitHub PAT")
   } finally {
     savingGithubPat.value = false
   }
 }
 
 function removeAnthropicKey() {
-  confirmDialog.title = 'Remove Anthropic API Key'
-  confirmDialog.message = 'Remove the stored Anthropic API key? Agents will fall back to the ANTHROPIC_API_KEY environment variable if set, otherwise they will stop working until a key is re-added.'
+  confirmDialog.title = uiText("Remove Anthropic API Key")
+  confirmDialog.message = uiText("Remove the stored Anthropic API key? Agents will fall back to the ANTHROPIC_API_KEY environment variable if set, otherwise they will stop working until a key is re-added.")
   confirmDialog.confirmText = 'Remove'
   confirmDialog.variant = 'danger'
   confirmDialog.onConfirm = async () => {
@@ -2959,7 +2935,7 @@ function removeAnthropicKey() {
       anthropicKey.value = ''
       apiKeyTestResult.value = null
     } catch (e) {
-      error.value = e.response?.data?.detail || 'Failed to remove API key'
+      error.value = e.response?.data?.detail || uiText("Failed to remove API key")
     } finally {
       removingApiKey.value = false
     }
@@ -2968,8 +2944,8 @@ function removeAnthropicKey() {
 }
 
 function removeGithubPat() {
-  confirmDialog.title = 'Remove GitHub PAT'
-  confirmDialog.message = 'Remove the stored GitHub Personal Access Token? Agents will fall back to the GITHUB_PAT environment variable if set. Repository creation and push will fail until a PAT is re-added.'
+  confirmDialog.title = uiText("Remove GitHub PAT")
+  confirmDialog.message = uiText("Remove the stored GitHub Personal Access Token? Agents will fall back to the GITHUB_PAT environment variable if set. Repository creation and push will fail until a PAT is re-added.")
   confirmDialog.confirmText = 'Remove'
   confirmDialog.variant = 'danger'
   confirmDialog.onConfirm = async () => {
@@ -2982,7 +2958,7 @@ function removeGithubPat() {
       githubPatTestResult.value = null
       githubPatPropagation.value = null
     } catch (e) {
-      error.value = e.response?.data?.detail || 'Failed to remove GitHub PAT'
+      error.value = e.response?.data?.detail || uiText("Failed to remove GitHub PAT")
     } finally {
       removingGithubPat.value = false
     }
@@ -3008,7 +2984,7 @@ async function savePlatformDefaultModel() {
     platformDefaultModelSaveSuccess.value = true
     setTimeout(() => { platformDefaultModelSaveSuccess.value = false }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save default model'
+    error.value = e.response?.data?.detail || uiText("Failed to save default model")
   } finally {
     savingPlatformDefaultModel.value = false
   }
@@ -3033,7 +3009,7 @@ async function saveDefaultAccessPolicy() {
     defaultAccessPolicySaveSuccess.value = true
     setTimeout(() => { defaultAccessPolicySaveSuccess.value = false }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save default access policy'
+    error.value = e.response?.data?.detail || uiText("Failed to save default access policy")
     // revert the toggle to the persisted value on failure
     await loadDefaultAccessPolicy()
   } finally {
@@ -3063,7 +3039,7 @@ async function saveMaxParallelTasksCeiling() {
     ceilingSaveSuccess.value = true
     setTimeout(() => { ceilingSaveSuccess.value = false }, 3000)
   } catch (e) {
-    ceilingError.value = e.response?.data?.detail || 'Failed to save fleet capacity ceiling'
+    ceilingError.value = e.response?.data?.detail || uiText("Failed to save fleet capacity ceiling")
     await loadMaxParallelTasksCeiling()
   } finally {
     savingCeiling.value = false
@@ -3095,7 +3071,7 @@ async function saveProactiveLimits() {
     setTimeout(() => { proactiveSaveSuccess.value = false }, 3000)
     await loadProactiveLimits()
   } catch (e) {
-    proactiveError.value = e.response?.data?.detail || 'Failed to save proactive message limits'
+    proactiveError.value = e.response?.data?.detail || uiText("Failed to save proactive message limits")
   } finally {
     savingProactive.value = false
   }
@@ -3137,7 +3113,7 @@ async function putBrainOrbSettings(payload) {
     // tab / route guard); other open sessions update on next page load.
     sessionsStore.loadFeatureFlags(true).catch(() => {})
   } catch (e) {
-    brainOrbError.value = e.response?.data?.detail || 'Failed to save Brain Orb settings'
+    brainOrbError.value = e.response?.data?.detail || uiText("Failed to save Brain Orb settings")
     await loadBrainOrbSettings()
   } finally {
     savingBrainOrb.value = false
@@ -3178,7 +3154,7 @@ async function putElevenLabsSettings(payload) {
     // Refresh the tts_available feature flag the rest of this session gates on.
     sessionsStore.loadFeatureFlags(true).catch(() => {})
   } catch (e) {
-    elevenLabsError.value = e.response?.data?.detail || 'Failed to save voice settings'
+    elevenLabsError.value = e.response?.data?.detail || uiText("Failed to save voice settings")
     await loadElevenLabsSettings()
   } finally {
     savingElevenLabs.value = false
@@ -3222,7 +3198,7 @@ async function saveAdminEmail() {
     adminEmailSaveSuccess.value = true
     setTimeout(() => { adminEmailSaveSuccess.value = false }, 4000)
   } catch (e) {
-    adminEmailError.value = e?.response?.data?.detail || 'Failed to save email'
+    adminEmailError.value = e?.response?.data?.detail || uiText("Failed to save email")
   } finally {
     savingAdminEmail.value = false
   }
@@ -3249,7 +3225,7 @@ async function savePublicUrl() {
     // the #2380 hardening card in-session instead of on the next hard reload.
     sessionsStore.loadFeatureFlags(true).catch(() => {})
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save public URL'
+    error.value = e.response?.data?.detail || uiText("Failed to save public URL")
   } finally {
     savingPublicUrl.value = false
   }
@@ -3292,15 +3268,15 @@ async function saveSlackSettings() {
       slackSaveSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save Slack settings'
+    error.value = e.response?.data?.detail || uiText("Failed to save Slack settings")
   } finally {
     savingSlackSettings.value = false
   }
 }
 
 function removeSlackSettings() {
-  confirmDialog.title = 'Remove Slack Credentials'
-  confirmDialog.message = 'Remove the stored Slack OAuth credentials (client ID, client secret, signing secret)? Slack integration will fall back to environment variables if configured; otherwise Slack channels will stop working until credentials are re-added.'
+  confirmDialog.title = uiText("Remove Slack Credentials")
+  confirmDialog.message = uiText("Remove the stored Slack OAuth credentials (client ID, client secret, signing secret)? Slack integration will fall back to environment variables if configured; otherwise Slack channels will stop working until credentials are re-added.")
   confirmDialog.confirmText = 'Remove'
   confirmDialog.variant = 'danger'
   confirmDialog.onConfirm = async () => {
@@ -3313,7 +3289,7 @@ function removeSlackSettings() {
       slackClientSecret.value = ''
       slackSigningSecret.value = ''
     } catch (e) {
-      error.value = e.response?.data?.detail || 'Failed to remove Slack credentials'
+      error.value = e.response?.data?.detail || uiText("Failed to remove Slack credentials")
     } finally {
       removingSlackSettings.value = false
     }
@@ -3345,7 +3321,7 @@ async function connectSlackTransport() {
     slackAppToken.value = ''
     await loadSlackTransportStatus()
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to connect Slack transport'
+    error.value = e.response?.data?.detail || uiText("Failed to connect Slack transport")
   } finally {
     connectingSlack.value = false
   }
@@ -3360,7 +3336,7 @@ async function installSlackWorkspace() {
       window.location.href = response.data.oauth_url
     }
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to start Slack installation'
+    error.value = e.response?.data?.detail || uiText("Failed to start Slack installation")
     installingSlackWorkspace.value = false
   }
 }
@@ -3383,7 +3359,7 @@ async function savePrompt() {
       showSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save settings'
+    error.value = e.response?.data?.detail || uiText("Failed to save settings")
   } finally {
     saving.value = false
   }
@@ -3431,14 +3407,14 @@ async function addEmailToWhitelist() {
       showSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to add email to whitelist'
+    error.value = e.response?.data?.detail || uiText("Failed to add email to whitelist")
   } finally {
     addingEmail.value = false
   }
 }
 
 async function removeEmailFromWhitelist(email) {
-  if (!confirm(`Remove ${email} from whitelist?`)) return
+  if (!confirm(uiText("Remove {arg1} from whitelist?", { arg1: (email) }))) return
 
   removingEmail.value = email
   error.value = null
@@ -3454,7 +3430,7 @@ async function removeEmailFromWhitelist(email) {
       showSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to remove email from whitelist'
+    error.value = e.response?.data?.detail || uiText("Failed to remove email from whitelist")
   } finally {
     removingEmail.value = null
   }
@@ -3469,8 +3445,8 @@ function formatDate(dateString) {
 
   if (diffInDays === 0) return 'Today'
   if (diffInDays === 1) return 'Yesterday'
-  if (diffInDays < 7) return `${diffInDays} days ago`
-  if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`
+  if (diffInDays < 7) return uiText("{arg1} days ago", { arg1: (diffInDays) })
+  if (diffInDays < 30) return uiText("{arg1} weeks ago", { arg1: (Math.floor(diffInDays / 7)) })
 
   return date.toLocaleDateString()
 }
@@ -3497,7 +3473,7 @@ async function updateUserRole(username, role) {
     })
     await loadUsers()
   } catch (e) {
-    alert(e.response?.data?.detail || 'Failed to update role')
+    alert(e.response?.data?.detail || uiText("Failed to update role"))
     await loadUsers() // refresh to reset select
   }
 }
@@ -3524,7 +3500,7 @@ async function _submitMcpUrl(action, successMsg) {
     mcpUrlSuccess.value = successMsg
     setTimeout(() => { mcpUrlSuccess.value = '' }, 3000)
   } catch (e) {
-    mcpUrlError.value = e.response?.data?.detail || 'Failed to update MCP URL'
+    mcpUrlError.value = e.response?.data?.detail || t('Failed to update MCP URL')
   } finally {
     savingMcpUrl.value = false
   }
@@ -3534,14 +3510,14 @@ async function saveMcpUrl() {
   if (!mcpUrlInput.value) return
   await _submitMcpUrl(
     () => axios.put('/api/settings/mcp-url', { url: mcpUrlInput.value }),
-    'MCP server URL updated successfully.'
+    t('MCP server URL updated successfully.')
   )
 }
 
 async function resetMcpUrl() {
   await _submitMcpUrl(
     () => axios.delete('/api/settings/mcp-url'),
-    'MCP server URL reset to auto-detect.'
+    t('MCP server URL reset to auto-detect.')
   )
 }
 
@@ -3570,13 +3546,13 @@ function addGithubTemplate() {
   if (!repo) return
 
   if (!REPO_PATTERN.test(repo)) {
-    templateValidationError.value = "Invalid format. Use 'owner/repo' (e.g., 'octocat/hello-world')."
+    templateValidationError.value = t("Invalid format. Use 'owner/repo' (e.g., 'octocat/hello-world').")
     return
   }
 
   // Check for duplicates
   if (githubTemplates.value.some(t => t.github_repo === repo)) {
-    templateValidationError.value = `'${repo}' is already in the list.`
+    templateValidationError.value = t("'{repo}' is already in the list.", { repo })
     return
   }
 
@@ -3616,14 +3592,14 @@ async function saveGithubTemplates() {
       showSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save GitHub templates'
+    error.value = e.response?.data?.detail || uiText("Failed to save GitHub templates")
   } finally {
     savingGithubTemplates.value = false
   }
 }
 
 async function resetGithubTemplates() {
-  if (!confirm('Reset GitHub templates to hardcoded defaults? This will remove your custom configuration.')) return
+  if (!confirm(uiText("Reset GitHub templates to hardcoded defaults? This will remove your custom configuration."))) return
 
   savingGithubTemplates.value = true
   error.value = null
@@ -3639,7 +3615,7 @@ async function resetGithubTemplates() {
       showSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to reset GitHub templates'
+    error.value = e.response?.data?.detail || uiText("Failed to reset GitHub templates")
   } finally {
     savingGithubTemplates.value = false
   }
@@ -3683,7 +3659,7 @@ async function saveAgentQuotas() {
 
     await loadAgentQuotas()
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save agent quotas'
+    error.value = e.response?.data?.detail || uiText("Failed to save agent quotas")
   } finally {
     savingQuotas.value = false
   }
@@ -3728,7 +3704,7 @@ async function toggleSshAccess() {
       showSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to update SSH access setting'
+    error.value = e.response?.data?.detail || uiText("Failed to update SSH access setting")
   } finally {
     savingSshAccess.value = false
   }
@@ -3768,7 +3744,7 @@ async function saveSkillsAutomation() {
       showSuccess.value = false
     }, 3000)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to save skills automation settings'
+    error.value = e.response?.data?.detail || uiText("Failed to save skills automation settings")
   } finally {
     savingSkillsAutomation.value = false
   }
@@ -3786,7 +3762,7 @@ async function generateDefaultAvatars() {
     })
     defaultAvatarResult.value = response.data
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to generate default avatars'
+    error.value = e.response?.data?.detail || uiText("Failed to generate default avatars")
   } finally {
     generatingDefaultAvatars.value = false
   }
@@ -3844,8 +3820,10 @@ onMounted(() => {
     setTimeout(() => { slackInstallSuccess.value = false }, 3000)
     router.replace({ query: {} })
   } else if (route.query.slack === 'error') {
-    error.value = `Slack installation failed: ${route.query.reason || 'unknown error'}`
+    error.value = uiText("Slack installation failed: {arg1}", { arg1: (route.query.reason || 'unknown error') })
     router.replace({ query: {} })
   }
 })
+
+import { t as uiText } from '@/i18n'
 </script>

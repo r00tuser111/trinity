@@ -30,6 +30,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { t as uiText } from '@/i18n'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -44,6 +45,6 @@ defineEmits(['jump'])
 // cannot tell a reader whether they missed one reply or twelve, which is the
 // thing that decides whether they want to go.
 const label = computed(() =>
-  props.count === 1 ? '1 new message' : `${props.count} new messages`
+  props.count === 1 ? uiText('1 new message') : uiText('{count} new messages', { count: props.count })
 )
 </script>

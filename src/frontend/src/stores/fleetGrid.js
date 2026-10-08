@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import axios from 'axios'
@@ -341,10 +343,10 @@ export const useFleetGridStore = defineStore('fleetGrid', () => {
   /** Honest status for the canvas: null, or a sentence naming the failure. */
   const persistNotice = computed(() => {
     if (prefs.saveError) {
-      return `Couldn’t save your layout to the server (${prefs.saveError}). Changes are kept in this browser and will retry on your next change.`
+      return uiText("Couldn’t save your layout to the server ({arg1}). Changes are kept in this browser and will retry on your next change.", { arg1: (prefs.saveError) })
     }
     if (prefs.loadError) {
-      return `Couldn’t load your saved layout from the server (${prefs.loadError}). Showing this browser’s copy; changes stay here until the server is reachable.`
+      return uiText("Couldn’t load your saved layout from the server ({arg1}). Showing this browser’s copy; changes stay here until the server is reachable.", { arg1: (prefs.loadError) })
     }
     return null
   })

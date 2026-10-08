@@ -107,6 +107,8 @@ function showLabel(i) {
   const step = Math.max(1, Math.ceil(props.data.length / 6))
   return i % step === 0
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <template>
@@ -168,7 +170,7 @@ function showLabel(i) {
             <span class="font-mono">{{ d.by_type[b] }}</span>
           </div>
           <div class="flex items-center justify-between gap-3 mt-1 pt-1 border-t border-gray-700 dark:border-gray-600">
-            <span>Total</span><span class="font-mono">{{ d.total }}</span>
+            <span>{{ uiText("Total") }}</span><span class="font-mono">{{ d.total }}</span>
           </div>
         </div>
       </div>

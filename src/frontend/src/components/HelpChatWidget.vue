@@ -4,7 +4,7 @@
     v-if="!isOpen"
     @click="openChat"
     class="fixed bottom-6 right-6 w-14 h-14 bg-action-primary-600 hover:bg-action-primary-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-action-primary-500 focus:ring-offset-2 z-50"
-    aria-label="Open help chat"
+    :aria-label="t('Open help chat')"
   >
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -25,7 +25,7 @@
       ref="panelRef"
       class="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] h-[32rem] max-h-[calc(100vh-6rem)] bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col z-50 border border-gray-200 dark:border-gray-700"
       role="dialog"
-      aria-label="Help chat"
+      :aria-label="t('Help chat')"
       @keydown.escape="closeChat"
     >
       <!-- Header -->
@@ -34,7 +34,7 @@
           <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span class="font-semibold text-white">Trinity Help</span>
+          <span class="font-semibold text-white">{{ t('Trinity Help') }}</span>
         </div>
         <div class="flex items-center space-x-1">
           <!-- New conversation button (Ask mode only) -->
@@ -42,8 +42,8 @@
             v-if="mode === 'ask' && messages.length > 0"
             @click="startNewConversation"
             class="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            title="Start new conversation"
-            aria-label="Start new conversation"
+            :title="t('Start new conversation')"
+            :aria-label="t('Start new conversation')"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -53,7 +53,7 @@
           <button
             @click="closeChat"
             class="p-1.5 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-            aria-label="Close help chat"
+            :aria-label="t('Close help chat')"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -95,9 +95,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-1">How can I help?</h3>
+            <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-1">{{ t('How can I help?') }}</h3>
             <p class="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto">
-              Ask me anything about Trinity - agents, credentials, scheduling, and more.
+              {{ t('Ask me anything about Trinity - agents, credentials, scheduling, and more.') }}
             </p>
           </div>
 
@@ -116,7 +116,7 @@
               <div class="w-2 h-2 bg-action-primary-500 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
               <div class="w-2 h-2 bg-action-primary-500 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
             </div>
-            <span class="text-sm">Thinking...</span>
+            <span class="text-sm">{{ t('Thinking...') }}</span>
           </div>
         </div>
 
@@ -128,7 +128,7 @@
               @click="retryLastMessage"
               class="ml-2 text-xs text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-700 dark:hover:text-status-danger-300 underline"
             >
-              Retry
+              {{ t('Retry') }}
             </button>
           </div>
         </div>
@@ -141,7 +141,7 @@
               v-model="inputMessage"
               rows="1"
               :maxlength="2000"
-              placeholder="Ask a question..."
+              :placeholder="t('Ask a question...')"
               class="flex-1 resize-none border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-action-primary-500 focus:border-transparent text-sm"
               :disabled="loading"
               @keydown.enter.exact.prevent="sendMessage"
@@ -151,7 +151,7 @@
               type="submit"
               :disabled="loading || !inputMessage.trim()"
               class="p-2 bg-action-primary-600 hover:bg-action-primary-700 disabled:bg-action-primary-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors shrink-0"
-              aria-label="Send message"
+              :aria-label="t('Send message')"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -168,7 +168,7 @@
           <template v-if="bugStage === 'form'">
             <p class="text-xs text-gray-500 dark:text-gray-400">{{ reportCopy.intro }}</p>
             <div>
-              <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+              <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Title') }}</label>
               <input
                 v-model="bugTitle"
                 type="text"
@@ -191,7 +191,7 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Your email <span class="font-normal text-gray-400">(optional)</span>
+                {{ t('Your email') }} <span class="font-normal text-gray-400">{{ t('(optional)') }}</span>
               </label>
               <input
                 v-model="bugEmail"
@@ -200,7 +200,7 @@
                 placeholder="you@example.com"
                 class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-action-primary-500 focus:border-transparent text-sm"
               />
-              <p class="text-[11px] text-gray-400 mt-0.5">So we can follow up. Shared privately with the team — never posted in the public issue.</p>
+              <p class="text-[11px] text-gray-400 mt-0.5">{{ t('So we can follow up. Shared privately with the team — never posted in the public issue.') }}</p>
             </div>
             <p v-if="bugFormError" class="text-xs text-status-danger-600 dark:text-status-danger-400">{{ bugFormError }}</p>
             <button
@@ -208,46 +208,46 @@
               :disabled="!canReview"
               class="w-full py-2 bg-action-primary-600 hover:bg-action-primary-700 disabled:bg-action-primary-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm font-medium"
             >
-              Review &amp; continue
+              {{ t('Review & continue') }}
             </button>
           </template>
 
           <!-- Stage: review (see-before-send) -->
           <template v-else-if="bugStage === 'review'">
             <div v-if="mode === 'feedback'" class="p-3 rounded-lg bg-action-primary-50 dark:bg-action-primary-900/20 border border-action-primary-200 dark:border-action-primary-800 text-xs text-action-primary-700 dark:text-action-primary-300">
-              🔒 This feedback is sent <strong>privately</strong> to the Trinity team — it is not posted publicly. Review before sending.
+              {{ t('🔒 This feedback is sent') }} <strong>{{ t('privately') }}</strong> {{ t('to the Trinity team — it is not posted publicly. Review before sending.') }}
             </div>
             <div v-else class="p-3 rounded-lg bg-status-warning-50 dark:bg-status-warning-900/20 border border-status-warning-200 dark:border-status-warning-800 text-xs text-status-warning-700 dark:text-status-warning-300">
-              ⚠️ This creates a <strong>public</strong> GitHub issue in <code>abilityai/trinity</code> — anyone on the internet can read it. Review everything below before sending.
+              {{ t('⚠️ This creates a') }} <strong>{{ t('public') }}</strong> {{ t('GitHub issue in') }} <code>abilityai/trinity</code> {{ t('— anyone on the internet can read it. Review everything below before sending.') }}
             </div>
 
             <div>
-              <div class="text-xs font-medium text-gray-700 dark:text-gray-300">Type</div>
-              <div class="text-gray-900 dark:text-gray-100">{{ mode === 'feedback' ? '💬 Feedback' : (mode === 'feature' ? '✨ Feature request' : '🐛 Bug report') }}</div>
+              <div class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ t('Type') }}</div>
+              <div class="text-gray-900 dark:text-gray-100">{{ mode === 'feedback' ? t('💬 Feedback') : (mode === 'feature' ? t('✨ Feature request') : t('🐛 Bug report')) }}</div>
             </div>
             <div>
-              <div class="text-xs font-medium text-gray-700 dark:text-gray-300">Title</div>
+              <div class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ t('Title') }}</div>
               <div class="text-gray-900 dark:text-gray-100 break-words">{{ pendingPayload.title }}</div>
             </div>
             <div>
-              <div class="text-xs font-medium text-gray-700 dark:text-gray-300">Description</div>
+              <div class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ t('Description') }}</div>
               <div class="text-gray-900 dark:text-gray-100 whitespace-pre-wrap break-words">{{ pendingPayload.description }}</div>
             </div>
             <div v-if="pendingPayload.email">
-              <div class="text-xs font-medium text-gray-700 dark:text-gray-300">Contact email</div>
+              <div class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ t('Contact email') }}</div>
               <div class="text-gray-900 dark:text-gray-100 break-all">{{ pendingPayload.email }}</div>
-              <p class="text-[11px] text-gray-400 mt-0.5">Sent privately to the team for follow-up — not added to the public issue.</p>
+              <p class="text-[11px] text-gray-400 mt-0.5">{{ t('Sent privately to the team for follow-up — not added to the public issue.') }}</p>
             </div>
 
             <details class="rounded-lg border border-gray-200 dark:border-gray-700">
               <summary class="cursor-pointer px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-300 select-none">
-                Diagnostics that will be sent ({{ pendingPayload.diagnostics.console.length }} console line{{ pendingPayload.diagnostics.console.length === 1 ? '' : 's' }})
+                {{ t('Diagnostics that will be sent (') }}{{ pendingPayload.diagnostics.console.length }} {{ t('console line') }}{{ pendingPayload.diagnostics.console.length === 1 ? '' : 's' }})
               </summary>
               <pre class="px-3 pb-3 pt-1 text-[11px] leading-relaxed text-gray-600 dark:text-gray-400 whitespace-pre-wrap break-words overflow-x-auto">{{ diagnosticsPreview }}</pre>
             </details>
 
             <p class="text-[11px] text-gray-500 dark:text-gray-400">
-              Secrets, tokens, and emails are automatically removed and shown above as <code>[REDACTED]</code> / <code>[email]</code> (re-checked on the server too).
+              {{ t('Secrets, tokens, and emails are automatically removed and shown above as') }} <code>[REDACTED]</code> / <code>[email]</code> {{ t('(re-checked on the server too).') }}
             </p>
 
             <div v-if="bugError" class="p-2 rounded bg-status-danger-50 dark:bg-status-danger-900/20 border border-status-danger-200 dark:border-status-danger-800 text-xs text-status-danger-600 dark:text-status-danger-400">
@@ -260,14 +260,14 @@
                 :disabled="bugSubmitting"
                 class="flex-1 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm"
               >
-                Back
+                {{ t('Back') }}
               </button>
               <button
                 @click="submitReport"
                 :disabled="bugSubmitting"
                 class="flex-1 py-2 bg-action-primary-600 hover:bg-action-primary-700 disabled:bg-action-primary-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm font-medium"
               >
-                {{ bugSubmitting ? 'Sending…' : (bugError ? 'Retry' : 'Submit report') }}
+                {{ bugSubmitting ? t('Sending…') : (bugError ? t('Retry') : t('Submit report')) }}
               </button>
             </div>
           </template>
@@ -282,8 +282,8 @@
               </div>
               <h3 class="text-sm font-medium text-gray-900 dark:text-white">
                 {{ bugDeduped
-                  ? (mode === 'feedback' ? 'Already received — thanks!' : 'Matches an existing report')
-                  : (mode === 'feedback' ? 'Thanks — feedback sent!' : (mode === 'feature' ? 'Thanks — feature request filed!' : 'Thanks — report filed!')) }}
+                  ? (mode === 'feedback' ? t('Already received — thanks!') : t('Matches an existing report'))
+                  : (mode === 'feedback' ? t('Thanks — feedback sent!') : (mode === 'feature' ? t('Thanks — feature request filed!') : t('Thanks — report filed!'))) }}
               </h3>
               <a
                 v-if="bugResult"
@@ -292,12 +292,12 @@
                 rel="noopener noreferrer"
                 class="inline-block text-sm text-action-primary-600 dark:text-action-primary-400 hover:underline break-all"
               >
-                View the GitHub issue ↗
+                {{ t('View the GitHub issue ↗') }}
               </a>
-              <p v-else class="text-xs text-gray-500 dark:text-gray-400">{{ mode === 'feedback' ? 'Your feedback was sent to the team.' : 'Your report was filed successfully.' }}</p>
+              <p v-else class="text-xs text-gray-500 dark:text-gray-400">{{ mode === 'feedback' ? t('Your feedback was sent to the team.') : t('Your report was filed successfully.') }}</p>
               <div>
                 <button @click="resetBug" class="text-xs text-gray-500 dark:text-gray-400 hover:underline">
-                  Report another
+                  {{ t('Report another') }}
                 </button>
               </div>
             </div>
@@ -309,6 +309,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import { ref, computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import ChatBubble from './chat/ChatBubble.vue'
 import { scrub, scrubLines } from '@/utils/scrub'
@@ -328,10 +331,10 @@ const MAX_TITLE = 120
 const MAX_DESC = 4000
 
 const tabs = [
-  { id: 'ask', label: 'Ask' },
-  { id: 'bug', label: 'Bug' },
-  { id: 'feature', label: 'Feature' },
-  { id: 'feedback', label: 'Feedback' },
+  { id: 'ask', get "label"() { return uiText("Ask") } },
+  { id: 'bug', get "label"() { return uiText("Bug") } },
+  { id: 'feature', get "label"() { return uiText("Feature") } },
+  { id: 'feedback', get "label"() { return uiText("Feedback") } },
 ]
 
 const isOpen = ref(false)
@@ -368,22 +371,22 @@ const canReview = computed(() => bugTitle.value.trim() && bugDescription.value.t
 // Type-aware copy for the shared report form (bug | feature | feedback).
 const reportCopy = computed(() => {
   if (mode.value === 'feature') return {
-    intro: "Have an idea? Describe the feature you'd like. We'll attach diagnostics you can review before anything is sent.",
-    titlePh: 'Short summary of your idea',
-    descLabel: 'What would you like?',
-    descPh: 'What should it do, and why would it help?',
+    intro: t("Have an idea? Describe the feature you'd like. We'll attach diagnostics you can review before anything is sent."),
+    titlePh: t('Short summary of your idea'),
+    descLabel: t('What would you like?'),
+    descPh: t('What should it do, and why would it help?'),
   }
   if (mode.value === 'feedback') return {
-    intro: "Share anything — what's working, what's not, ideas. This goes privately to our team.",
-    titlePh: 'Summary of your feedback',
-    descLabel: 'Your feedback',
-    descPh: 'Tell us what you think…',
+    intro: t("Share anything — what's working, what's not, ideas. This goes privately to our team."),
+    titlePh: t('Summary of your feedback'),
+    descLabel: t('Your feedback'),
+    descPh: t('Tell us what you think…'),
   }
   return {
-    intro: "Found something broken? Describe it below. We'll attach diagnostics you can review before anything is sent.",
-    titlePh: 'Short summary of the problem',
-    descLabel: 'What happened?',
-    descPh: 'Steps to reproduce, what you expected, what happened instead…',
+    intro: t("Found something broken? Describe it below. We'll attach diagnostics you can review before anything is sent."),
+    titlePh: t('Short summary of the problem'),
+    descLabel: t('What happened?'),
+    descPh: t('Steps to reproduce, what you expected, what happened instead…'),
   }
 })
 
@@ -485,7 +488,7 @@ const sendMessage = async () => {
 
   } catch (err) {
     console.error('Help chat error:', err)
-    error.value = 'Failed to get response. Please try again.'
+    error.value = uiText("Failed to get response. Please try again.")
     // Remove the user message on error so retry works cleanly
     messages.value.pop()
   } finally {
@@ -517,12 +520,12 @@ function getInstallId() {
 async function reviewReport() {
   bugFormError.value = ''
   if (!canReview.value) {
-    bugFormError.value = 'Both a title and a description are required.'
+    bugFormError.value = uiText("Both a title and a description are required.")
     return
   }
   const contactEmail = bugEmail.value.trim()
   if (contactEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contactEmail)) {
-    bugFormError.value = "That email doesn't look valid — fix it or leave it blank."
+    bugFormError.value = uiText("That email doesn't look valid — fix it or leave it blank.")
     return
   }
   try { await loadBuildInfo() } catch { /* build info is best-effort */ }
@@ -564,11 +567,11 @@ async function submitReport() {
     try { data = await response.json() } catch { /* non-JSON error body */ }
 
     if (response.status === 429) {
-      bugError.value = 'You\'ve hit the report limit for this instance. Please try again later.'
+      bugError.value = uiText("You've hit the report limit for this instance. Please try again later.")
       return
     }
     if (!response.ok || !data.ok) {
-      bugError.value = (data && data.error) ? `Couldn't file the report: ${data.error}` : 'Couldn\'t file the report. Please try again.'
+      bugError.value = (data && data.error) ? uiText("Couldn't file the report: {arg1}", { arg1: (data.error) }) : uiText("Couldn't file the report. Please try again.")
       return
     }
     // Only trust an https github.com URL as a clickable link (guards against a
@@ -579,7 +582,7 @@ async function submitReport() {
     bugStage.value = 'success'
   } catch (err) {
     console.error('Bug report error:', err)
-    bugError.value = 'Network error — please try again.'
+    bugError.value = uiText("Network error — please try again.")
   } finally {
     bugSubmitting.value = false
   }

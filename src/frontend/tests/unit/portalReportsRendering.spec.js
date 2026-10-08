@@ -45,7 +45,7 @@ function reportsBlock() {
   // own heading and the end of the scroll region rather than by the neighbouring
   // tab that used to follow it.
   const page = src(PAGE)
-  const start = page.indexOf('>Reports</h2>')
+  const start = page.indexOf("{{ t('Reports') }}</h2>")
   expect(start).toBeGreaterThan(-1)
   const end = page.indexOf('</section>', start)
   expect(end).toBeGreaterThan(start)

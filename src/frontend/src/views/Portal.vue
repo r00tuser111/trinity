@@ -7,11 +7,12 @@
          the /login push: the exact confusion ent#357 removed. Same footprint
          as the sign-in card (contract #4). -->
     <div v-if="signingOut" class="flex-1 flex items-center justify-center px-4" aria-live="polite">
-      <p class="text-sm text-gray-500 dark:text-gray-400">Signing out…</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('Signing out…') }}</p>
     </div>
 
     <!-- ============================ SIGN-IN ============================ -->
     <div v-else-if="!store.isClientSignedIn" class="flex-1 flex items-center justify-center px-4">
+      <div class="absolute top-4 right-4 z-50"><LanguageSelect /></div>
       <div class="w-full max-w-sm">
         <!-- ent#556: the same mark and wording as the signed-in shell, from the
              same component. Deliberately INERT here: the reader is signed out
@@ -31,7 +32,7 @@
           class="mb-5 rounded-md border border-status-warning-200 dark:border-status-warning-500/30 bg-status-warning-50 dark:bg-status-warning-500/10 px-3 py-2"
         >
           <p class="text-sm text-status-warning-800 dark:text-status-warning-300">
-            Your session timed out. Sign in again to pick up where you left off.
+            {{ t('Your session timed out. Sign in again to pick up where you left off.') }}
           </p>
         </div>
 
@@ -45,19 +46,19 @@
           class="mb-5 rounded-md border border-gray-200 dark:border-gray-700 px-3 py-3"
         >
           <p class="text-sm text-gray-600 dark:text-gray-300">
-            You're signed in to Trinity as <span class="font-medium">{{ operatorEmail }}</span> in this browser.
+            {{ t('You\'re signed in to Trinity as') }} <span class="font-medium">{{ operatorEmail }}</span> {{ t('in this browser.') }}
           </p>
           <button
             type="button"
             class="mt-2 text-sm font-medium text-action-primary-600 hover:text-action-primary-700 underline"
             @click="continueAsOperator"
-          >Continue as {{ operatorEmail }}</button>
+          >{{ t('Continue as') }} {{ operatorEmail }}</button>
         </div>
 
         <template v-if="step === 'email'">
-          <h1 class="text-xl font-semibold mb-1">Sign in to your agents</h1>
+          <h1 class="text-xl font-semibold mb-1">{{ t('Sign in to your agents') }}</h1>
           <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            Enter the email an operator shared agents with — we'll send a 6-digit code.
+            {{ t('Enter the email an operator shared agents with — we\'ll send a 6-digit code.') }}
           </p>
           <form @submit.prevent="onRequest" class="space-y-3">
             <input
@@ -71,31 +72,31 @@
               type="submit"
               :disabled="busy || !email"
               class="w-full rounded-xl bg-action-primary-600 hover:bg-action-primary-700 text-white text-sm font-medium px-4 py-2.5 disabled:opacity-50"
-            >{{ busy ? 'Sending…' : 'Send code' }}</button>
+            >{{ busy ? t('Sending…') : t('Send code') }}</button>
           </form>
         </template>
 
         <template v-else>
-          <h1 class="text-xl font-semibold mb-1">Enter your code</h1>
+          <h1 class="text-xl font-semibold mb-1">{{ t('Enter your code') }}</h1>
           <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            If <span class="font-medium text-gray-700 dark:text-gray-300">{{ email }}</span> has access, a 6-digit code is on its way.
+            {{ t('If') }} <span class="font-medium text-gray-700 dark:text-gray-300">{{ email }}</span> {{ t('has access, a 6-digit code is on its way.') }}
           </p>
           <PortalCodeInput ref="codeInput" v-model="code" @complete="onVerify" />
           <div class="mt-3 flex items-center justify-between text-xs">
-            <button class="text-gray-400 hover:text-gray-600" @click="backToEmail">← different email</button>
+            <button class="text-gray-400 hover:text-gray-600" @click="backToEmail">{{ t('← different email') }}</button>
             <button
               :disabled="resendIn > 0 || busy"
               class="text-action-primary-600 dark:text-action-primary-400 hover:underline disabled:opacity-50 disabled:no-underline"
               @click="onResend"
-            >{{ resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code' }}</button>
+            >{{ resendIn > 0 ? uiText("Resend in {arg1}s", { arg1: (resendIn) }) : t('Resend code') }}</button>
           </div>
-          <p class="mt-2 text-xs text-gray-400">Codes expire after a few minutes.</p>
+          <p class="mt-2 text-xs text-gray-400">{{ t('Codes expire after a few minutes.') }}</p>
           <button
             type="button"
             :disabled="busy || code.length < 6"
             class="mt-4 w-full rounded-xl bg-action-primary-600 hover:bg-action-primary-700 text-white text-sm font-medium px-4 py-2.5 disabled:opacity-50"
             @click="onVerify"
-          >{{ busy ? 'Verifying…' : 'Verify & continue' }}</button>
+          >{{ busy ? t('Verifying…') : t('Verify & continue') }}</button>
         </template>
 
         <p v-if="error" class="mt-3 text-sm text-status-danger-600 dark:text-status-danger-400">{{ error }}</p>
@@ -155,7 +156,7 @@
         :value="columns.effectiveSidebar.value"
         :min="columns.limits.sidebar.min"
         :max="columns.sidebarMax.value"
-        label="Resize the sidebar"
+        :label="t('Resize the sidebar')"
         side="left"
         testid="ws-handle-sidebar"
         @resize="columns.resizeSidebar"
@@ -273,6 +274,7 @@
             <PortalRailStrip v-if="railVisible" :tabs="railTabs" :signals="railSignals" @open="railSheetOpen = true" />
           </template>
           <template #header-end>
+            <LanguageSelect />
             <PortalThemeSwitch />
           </template>
         </PortalRoom>
@@ -304,20 +306,20 @@
           <template v-if="store.unavailable">
             <p :class="STAGE_TITLE">{{ WORKSPACE_UNAVAILABLE_TITLE }}</p>
             <p :class="STAGE_BODY">
-              It isn't enabled here. Ask an administrator if you expected access.
+              {{ t('It isn\'t enabled here. Ask an administrator if you expected access.') }}
             </p>
           </template>
           <template v-else-if="store.error">
             <p :class="STAGE_TITLE">{{ ROSTER_LOAD_FAILED_TITLE }}</p>
             <p :class="STAGE_BODY">{{ store.error }}</p>
-            <button :class="STAGE_ACTION" @click="store.fetchRoster()">Try again</button>
+            <button :class="STAGE_ACTION" @click="store.fetchRoster()">{{ t('Try again') }}</button>
           </template>
           <template v-else>
-            <p :class="STAGE_TITLE">This conversation isn't available on this instance</p>
+            <p :class="STAGE_TITLE">{{ t('This conversation isn\'t available on this instance') }}</p>
             <p :class="STAGE_BODY">
-              Chats with more than one agent aren't enabled here. Start a chat with a single agent instead.
+              {{ t('Chats with more than one agent aren\'t enabled here. Start a chat with a single agent instead.') }}
             </p>
-            <button :class="STAGE_ACTION" @click="leaveRoomRoute">Start a new chat</button>
+            <button :class="STAGE_ACTION" @click="leaveRoomRoute">{{ t('Start a new chat') }}</button>
           </template>
         </div>
 
@@ -397,7 +399,7 @@
                 class="ml-auto shrink-0 underline hover:no-underline text-status-warning-700 dark:text-status-warning-300"
                 data-testid="portal-title-notice-dismiss"
                 @click="titleNoticeDismissed = true"
-              >Dismiss</button>
+              >{{ t('Dismiss') }}</button>
             </div>
           </template>
           <template #empty>
@@ -411,6 +413,7 @@
                landing are all this branch since ent#523; the room above has
                its own fill. The skeleton heads the chain and gets none. -->
           <template #header-end>
+            <LanguageSelect />
             <PortalThemeSwitch />
           </template>
         </PortalConversation>
@@ -423,10 +426,10 @@
         <div v-else-if="unreachableAgent" :class="STAGE_WRAP">
           <svg :class="STAGE_ICON" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
           <p :class="STAGE_TITLE">
-            You don't have access to <span class="font-mono">{{ unreachableAgent }}</span>
+            {{ t('You don\'t have access to') }} <span class="font-mono">{{ unreachableAgent }}</span>
           </p>
           <p :class="STAGE_BODY">
-            That link points at an agent that isn't shared with you. Pick one from the sidebar, or ask whoever sent the link.
+            {{ t('That link points at an agent that isn\'t shared with you. Pick one from the sidebar, or ask whoever sent the link.') }}
           </p>
         </div>
 
@@ -435,33 +438,33 @@
           <template v-if="store.unavailable">
             <p :class="STAGE_TITLE">{{ WORKSPACE_UNAVAILABLE_TITLE }}</p>
             <p :class="STAGE_BODY">
-              It isn't enabled here. Ask an administrator if you expected access.
+              {{ t('It isn\'t enabled here. Ask an administrator if you expected access.') }}
             </p>
           </template>
           <template v-else-if="store.error">
             <p :class="STAGE_TITLE">{{ ROSTER_LOAD_FAILED_TITLE }}</p>
             <p :class="STAGE_BODY">{{ store.error }}</p>
-            <button :class="STAGE_ACTION" @click="store.fetchRoster()">Try again</button>
+            <button :class="STAGE_ACTION" @click="store.fetchRoster()">{{ t('Try again') }}</button>
           </template>
           <!-- ent#357: an empty roster needs a next step, not just a statement.
                The two audiences need different ones: a signed-in user can go
                make an agent, an external client can only ask the person who
                invited them. -->
           <template v-else-if="store.isPlatformSession">
-            <p :class="STAGE_TITLE">No agents here yet</p>
+            <p :class="STAGE_TITLE">{{ t('No agents here yet') }}</p>
             <p :class="STAGE_BODY">
-              Agents you own, and agents shared with you, appear here.
+              {{ t('Agents you own, and agents shared with you, appear here.') }}
             </p>
-            <a href="/" :class="STAGE_ACTION">Go to your agents</a>
+            <a href="/" :class="STAGE_ACTION">{{ t('Go to your agents') }}</a>
           </template>
           <template v-else>
-            <p :class="STAGE_TITLE">No agents shared with you yet</p>
+            <p :class="STAGE_TITLE">{{ t('No agents shared with you yet') }}</p>
             <p :class="STAGE_BODY">
-              Ask whoever invited you to share an agent with
-              <span class="font-medium">{{ store.clientEmail || 'your email' }}</span>.
+              {{ t('Ask whoever invited you to share an agent with') }}
+              <span class="font-medium">{{ store.clientEmail || t('your email') }}</span>.
             </p>
           </template>
-          <button class="sm:hidden mt-4 text-sm text-action-primary-600" @click="mobileNav = true">Open menu</button>
+          <button class="sm:hidden mt-4 text-sm text-action-primary-600" @click="mobileNav = true">{{ t('Open menu') }}</button>
         </div>
         </template>
       </main>
@@ -483,7 +486,7 @@
         :value="columns.effectiveRail.value"
         :min="columns.limits.rail.min"
         :max="columns.railMax.value"
-        label="Resize the side panel"
+        :label="t('Resize the side panel')"
         side="right"
         testid="ws-handle-rail"
         @resize="columns.resizeRail"
@@ -690,6 +693,8 @@
 </template>
 
 <script setup>
+import LanguageSelect from '@/components/LanguageSelect.vue'
+import { t } from '@/i18n'
 import { ref, computed, watch, onMounted, onBeforeUnmount, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useClientPortalStore, MULTI_AGENT_UNAVAILABLE, PLATFORM_LOGIN_ROUTE } from '@/stores/clientPortal'
@@ -763,7 +768,7 @@ const authStore = useAuthStore()
 const canContinueAsOperator = computed(
   () => store.platformFallbackSuppressed && authStore.isAuthenticated
 )
-const operatorEmail = computed(() => authStore.userEmail || 'your Trinity account')
+const operatorEmail = computed(() => authStore.userEmail || t('your Trinity account'))
 
 function continueAsOperator() {
   store.continueAsPlatform()
@@ -797,7 +802,7 @@ async function onRequest() {
     step.value = 'code'; code.value = ''
     startResendCooldown()
     await nextTick(); codeInput.value?.focusFirst()
-  } catch (err) { error.value = err.response?.data?.detail || 'Could not send a code. Try again.' }
+  } catch (err) { error.value = err.response?.data?.detail || uiText("Could not send a code. Try again.") }
   finally { busy.value = false }
 }
 async function onResend() {
@@ -822,7 +827,7 @@ async function onVerify() {
       router.push(resumeTo)
     }
   } catch (err) {
-    error.value = err.response?.status === 401 ? 'Invalid or expired code.' : (err.response?.data?.detail || 'Verification failed.')
+    error.value = err.response?.status === 401 ? uiText("Invalid or expired code.") : (err.response?.data?.detail || uiText("Verification failed."))
     code.value = ''
     await nextTick(); codeInput.value?.focusFirst()
   } finally { busy.value = false }
@@ -1009,7 +1014,7 @@ const railParticipants = computed(() => railParticipantsFor({
 const railTabs = computed(() => visibleTabs(RAIL_TABS, {
   isPlatform: store.isPlatformSession,
   participants: railParticipants.value,
-}))
+}).map(tab => ({ ...tab, label: t(tab.label) })))
 // Keyed on the route and the stage VERDICT — synchronous facts — never on data
 // still arriving (a room's participants land with its own fetch), so a live
 // update cannot flicker the rail in and out.
@@ -1224,7 +1229,7 @@ async function onPickerConfirm(agentNames) {
       ? (err.message || MULTI_AGENT_UNAVAILABLE)
       : (err?.response?.data?.detail?.message
         || err?.response?.data?.detail
-        || 'Could not start that chat.')
+        || uiText("Could not start that chat."))
   } finally {
     pickerBusy.value = false
   }
@@ -1330,7 +1335,7 @@ async function onEscalateToRoom({ agents, message, attachments = [] } = {}) {
     prefill.value = message || ''
     pickerError.value = err?.response?.data?.detail?.message
       || err?.response?.data?.detail
-      || 'Could not start a group chat with those agents.'
+      || uiText("Could not start a group chat with those agents.")
   } finally {
     escalating.value = false
   }
@@ -1340,8 +1345,8 @@ async function onEscalateToRoom({ agents, message, attachments = [] } = {}) {
 // below it, which are the same four states rendered in the same file. Local
 // consts, not a module: both consumers live here, and a component extraction
 // for two <p> pairs is more abstraction than the duplication costs.
-const WORKSPACE_UNAVAILABLE_TITLE = "Workspace isn't available on this instance"
-const ROSTER_LOAD_FAILED_TITLE = "Couldn't load your agents"
+const WORKSPACE_UNAVAILABLE_TITLE = computed(() => t("Workspace isn't available on this instance"))
+const ROSTER_LOAD_FAILED_TITLE = computed(() => t("Couldn't load your agents"))
 
 // #2128 — the ink for the three empty/refusal stages, written ONCE.
 //
@@ -2127,4 +2132,6 @@ async function onSignOut() {
     signingOut.value = false
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

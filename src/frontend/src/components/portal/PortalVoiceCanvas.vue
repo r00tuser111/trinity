@@ -18,10 +18,10 @@
   <aside
     class="flex flex-col min-h-0 h-full border-l border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950"
     data-testid="portal-voice-canvas"
-    aria-label="Canvas"
+    :aria-label="uiText(&quot;Canvas&quot;)"
   >
     <header class="shrink-0 flex items-center gap-2 px-4 h-14 border-b border-gray-200 dark:border-gray-800">
-      <span class="text-sm font-semibold">Canvas</span>
+      <span class="text-sm font-semibold">{{ uiText("Canvas") }}</span>
       <span class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ agentName }}</span>
       <span
         v-if="fetchError"
@@ -38,9 +38,9 @@
         class="rounded-xl border border-dashed border-gray-300 dark:border-gray-700 p-6 text-center"
         data-testid="portal-voice-canvas-empty"
       >
-        <p class="text-sm font-medium text-gray-700 dark:text-gray-200">Nothing drawn yet</p>
+        <p class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ uiText("Nothing drawn yet") }}</p>
         <p class="mx-auto mt-1 max-w-md text-xs text-gray-500 dark:text-gray-400">
-          While you talk, the agent can show notes, diagrams, images and tables here. Ask it to.
+          {{ uiText("While you talk, the agent can show notes, diagrams, images and tables here. Ask it to.") }}
         </p>
       </div>
       <CanvasPanel
@@ -90,7 +90,7 @@ async function refresh() {
     fetchError.value = ''
   } catch (e) {
     // Keep the last board; say the refresh missed. The call goes on.
-    fetchError.value = 'Canvas may be out of date'
+    fetchError.value = uiText("Canvas may be out of date")
   } finally {
     inFlight = false
   }
@@ -103,4 +103,6 @@ onMounted(() => {
   timer = setInterval(() => { void refresh() }, CANVAS_SAFETY_POLL_MS)
 })
 onBeforeUnmount(() => { if (timer) clearInterval(timer); timer = null })
+
+import { t as uiText } from '@/i18n'
 </script>

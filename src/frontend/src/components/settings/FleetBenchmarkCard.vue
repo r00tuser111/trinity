@@ -18,7 +18,7 @@
     data-testid="fleet-benchmark-card"
     aria-live="polite"
   >
-    <p class="font-medium text-gray-900 dark:text-gray-100">Fleet benchmarks</p>
+    <p class="font-medium text-gray-900 dark:text-gray-100">{{ uiText("Fleet benchmarks") }}</p>
 
     <SkeletonLoader
       v-if="view.state === 'loading'"
@@ -31,7 +31,7 @@
     <LoadFailed
       v-else-if="view.state === 'failed'"
       dense
-      title="Couldn't load fleet benchmarks"
+      :title="uiText(&quot;Couldn't load fleet benchmarks&quot;)"
       message="The benchmark request to this instance failed. The activation funnel is unaffected."
       :detail="error"
       :retrying="retrying"
@@ -40,7 +40,7 @@
 
     <template v-else>
       <p v-if="branch === 'none'" class="mt-0.5 text-xs text-gray-600 dark:text-gray-400">
-        No benchmark information was returned. Reload the page to ask again.
+        {{ uiText("No benchmark information was returned. Reload the page to ask again.") }}
       </p>
 
       <template v-else>
@@ -52,10 +52,10 @@
             <table class="w-full text-xs">
               <thead>
                 <tr class="text-left text-[11px] font-mono uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  <th class="py-1 pr-3 font-medium">Metric</th>
-                  <th class="py-1 pl-3 text-right font-medium">You</th>
-                  <th class="py-1 pl-3 text-right font-medium">Fleet median</th>
-                  <th class="py-1 pl-3 text-right font-medium">Your percentile</th>
+                  <th class="py-1 pr-3 font-medium">{{ uiText("Metric") }}</th>
+                  <th class="py-1 pl-3 text-right font-medium">{{ uiText("You") }}</th>
+                  <th class="py-1 pl-3 text-right font-medium">{{ uiText("Fleet median") }}</th>
+                  <th class="py-1 pl-3 text-right font-medium">{{ uiText("Your percentile") }}</th>
                   <th class="py-1 pl-3 text-right font-medium">n</th>
                 </tr>
               </thead>
@@ -120,4 +120,6 @@ const participants = computed(() => participantsLine(props.benchmark))
 const basedOn = computed(() => basedOnLine(props.benchmark?.based_on, formatRelativeTime))
 const basedOnTitle = computed(() => props.benchmark?.based_on?.shared_at || '')
 const detail = computed(() => reasonDetail(props.benchmark))
+
+import { t as uiText } from '@/i18n'
 </script>

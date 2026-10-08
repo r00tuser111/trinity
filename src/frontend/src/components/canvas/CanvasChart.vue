@@ -46,7 +46,7 @@
 
     <!-- A pie whose values are all zero is not a chart; say so rather than
          drawing an empty ring. -->
-    <p v-else class="text-xs text-gray-500 dark:text-gray-400">No positive values to chart.</p>
+    <p v-else class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("No positive values to chart.") }}</p>
 
     <!-- Freshness travels with the series (#479's shape): the point time is
          always shown when known, and a stale mark is an ADDITION to it. -->
@@ -54,11 +54,11 @@
       v-if="model.asOf || model.stale"
       class="mt-1.5 flex flex-wrap items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400"
     >
-      <span v-if="model.asOf" :title="model.asOf">as of {{ relativeTime(model.asOf) }}</span>
+      <span v-if="model.asOf" :title="model.asOf">{{ uiText("as of") }} {{ relativeTime(model.asOf) }}</span>
       <span
         v-if="model.stale"
         class="rounded-full bg-status-warning-100 px-2 py-0.5 font-medium text-status-warning-700 dark:bg-status-warning-500/16 dark:text-status-warning-300"
-      >metric may be stale</span>
+      >{{ uiText("metric may be stale") }}</span>
     </p>
   </div>
 </template>
@@ -85,4 +85,6 @@ const unit = computed(() => {
   return units.size === 1 ? [...units][0] : ''
 })
 const valueFormat = (v) => (v == null ? '—' : `${Number(v).toLocaleString()}${unit.value ? ` ${unit.value}` : ''}`)
+
+import { t as uiText } from '@/i18n'
 </script>

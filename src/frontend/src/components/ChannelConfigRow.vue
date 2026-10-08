@@ -9,19 +9,19 @@
       <div class="mt-0.5 flex items-center gap-1.5 text-xs">
         <template v-if="loading">
           <span class="inline-block shrink-0 w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600 animate-pulse"></span>
-          <span class="text-gray-400 dark:text-gray-500">Checking…</span>
+          <span class="text-gray-400 dark:text-gray-500">{{ uiText("Checking…") }}</span>
         </template>
         <template v-else-if="status.connected">
           <span
             class="inline-block shrink-0 w-2 h-2 rounded-full"
             :class="status.warn ? 'bg-status-warning-500' : 'bg-status-success-500'"
           ></span>
-          <span class="min-w-0 truncate text-gray-600 dark:text-gray-300">{{ status.label || 'Connected' }}</span>
-          <span v-if="status.warn" class="shrink-0 text-status-warning-600 dark:text-status-warning-400">· setup needed</span>
+          <span class="min-w-0 truncate text-gray-600 dark:text-gray-300">{{ status.label || uiText("Connected") }}</span>
+          <span v-if="status.warn" class="shrink-0 text-status-warning-600 dark:text-status-warning-400">{{ uiText("· setup needed") }}</span>
         </template>
         <template v-else>
           <span class="inline-block shrink-0 w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600"></span>
-          <span class="text-gray-400 dark:text-gray-500">Not connected</span>
+          <span class="text-gray-400 dark:text-gray-500">{{ uiText("Not connected") }}</span>
         </template>
       </div>
     </div>
@@ -32,7 +32,7 @@
       class="shrink-0 inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-action-primary-500"
       @click="dialogOpen = true"
     >
-      {{ status.connected ? 'Manage' : 'Configure' }}
+      {{ status.connected ? uiText("Manage") : uiText("Configure") }}
     </button>
 
     <!-- Config dialog: mounted only while open (single gate) so the closed
@@ -87,4 +87,6 @@ function onDialogClose() {
 }
 
 watch(() => [props.agentName, props.statusUrl], fetchStatus, { immediate: true })
+
+import { t as uiText } from '@/i18n'
 </script>

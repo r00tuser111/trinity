@@ -68,7 +68,7 @@
         class="mt-1.5 text-xs text-action-primary-600 hover:underline"
         :data-testid="`portal-ask-open-thread-${ask.id}`"
         @click="emit('open-thread', { id: askThreadLink(ask, currentSessionId), agent_name: ask.agent_name })"
-      >Open the conversation</button>
+      >{{ uiText("Open the conversation") }}</button>
 
       <template v-else>
         <!-- #2375: controls come from the shared kind rule (queueResponseKind),
@@ -97,7 +97,7 @@
               type="text"
               maxlength="4000"
               :disabled="busyId === ask.id"
-              placeholder="Add a note (optional)…"
+              :placeholder="uiText(&quot;Add a note (optional)…&quot;)"
               class="flex-1 min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-2.5 py-1.5 text-sm"
               :data-testid="`portal-ask-note-${ask.id}`"
             />
@@ -106,7 +106,7 @@
               :disabled="busyId === ask.id || !picks[ask.id]"
               class="rounded-lg bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 text-white text-xs font-medium px-2.5 py-1.5"
               :data-testid="`portal-ask-send-${ask.id}`"
-            >{{ busyId === ask.id ? 'Sending…' : 'Send' }}</button>
+            >{{ busyId === ask.id ? uiText("Sending…") : uiText("Send") }}</button>
           </form>
         </template>
 
@@ -118,7 +118,7 @@
           class="mt-2 rounded-lg bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 text-white text-xs font-medium px-2.5 py-1.5"
           :data-testid="`portal-ask-ack-${ask.id}`"
           @click="submit(ask)"
-        >{{ busyId === ask.id ? 'Sending…' : 'Got it' }}</button>
+        >{{ busyId === ask.id ? uiText("Sending…") : uiText("Got it") }}</button>
 
         <!-- A question (or an approval that offered no options) takes a typed
              answer — sent as the DECISION (`response`), never as a note (#2375). -->
@@ -128,7 +128,7 @@
             type="text"
             maxlength="500"
             :disabled="busyId === ask.id"
-            placeholder="Your answer…"
+            :placeholder="uiText(&quot;Your answer…&quot;)"
             class="flex-1 min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-2.5 py-1.5 text-sm"
             :data-testid="`portal-ask-input-${ask.id}`"
           />
@@ -136,7 +136,7 @@
             type="submit"
             :disabled="busyId === ask.id || !String(drafts[ask.id] || '').trim()"
             class="rounded-lg bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 text-white text-xs font-medium px-2.5 py-1.5"
-          >{{ busyId === ask.id ? 'Sending…' : 'Send' }}</button>
+          >{{ busyId === ask.id ? uiText("Sending…") : uiText("Send") }}</button>
         </form>
 
         <p v-if="errors[ask.id]" class="mt-1.5 text-xs text-red-600 dark:text-red-400">{{ errors[ask.id] }}</p>
@@ -253,9 +253,11 @@ async function submit(ask) {
     // a generic failure.
     errors[ask.id] = err.response?.data?.detail?.message
       || err.response?.data?.detail
-      || 'Could not send your answer.'
+      || uiText('Could not send your answer.')
   } finally {
     busyId.value = null
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

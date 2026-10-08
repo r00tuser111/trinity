@@ -1,3 +1,5 @@
+import { msg, t as uiText } from '../../i18n/index.js'
+
 // Workspace voice mode (trinity-enterprise#534) — the orb takes the conversation.
 //
 // Every rule the conversation and the shell decide about a voice CALL lives
@@ -17,13 +19,13 @@
 // explaining a limitation that is not theirs would be a dead affordance with a
 // footnote. A platform user sees it always: enabled when the instance can, or
 // disabled WITH the reason when it cannot (the "never a dead button" AC).
-export const VOICE_UNAVAILABLE_FALLBACK = 'Voice is not available on this instance.'
+export const VOICE_UNAVAILABLE_FALLBACK = msg('Voice is not available on this instance.')
 
 export function voiceEntryState({ isPlatform = false, realtimeVoice = null } = {}) {
   if (!isPlatform) return { render: false, enabled: false, reason: '' }
   const available = realtimeVoice?.available === true
   if (available) return { render: true, enabled: true, reason: '' }
-  return { render: true, enabled: false, reason: realtimeVoice?.reason || VOICE_UNAVAILABLE_FALLBACK }
+  return { render: true, enabled: false, reason: realtimeVoice?.reason || uiText(VOICE_UNAVAILABLE_FALLBACK) }
 }
 
 // ---- The Talk door: `?voice=1` (trinity#2559) --------------------------------
@@ -74,25 +76,25 @@ export function voiceAutoStart({ query = null, landed = false, isPlatform = fals
 // ---- Pre-flight, before any request leaves the browser ----------------------
 
 export const VOICE_INSECURE_REASON =
-  'Voice needs a secure (https) page — this browser can’t reach a microphone here. You can still type.'
+  msg('Voice needs a secure (https) page — this browser can’t reach a microphone here. You can still type.')
 export const VOICE_NO_MIC_REASON =
-  'This browser has no microphone access. You can still type.'
+  msg('This browser has no microphone access. You can still type.')
 
 // `null` means "go ahead"; a string is the sentence to show instead of starting.
 export function voicePreflight({ canCapture = false, secureContext = true } = {}) {
-  if (!secureContext) return VOICE_INSECURE_REASON
-  if (!canCapture) return VOICE_NO_MIC_REASON
+  if (!secureContext) return uiText(VOICE_INSECURE_REASON)
+  if (!canCapture) return uiText(VOICE_NO_MIC_REASON)
   return null
 }
 
 // ---- The header line while a call is on ------------------------------------
 
 export const VOICE_STATE_LABELS = Object.freeze({
-  connecting: 'Connecting…',
-  listening: 'Listening',
-  speaking: 'Speaking',
-  tool_calling: 'Working',
-  ended: 'Call ended',
+  connecting: msg('Connecting…'),
+  listening: msg('Listening'),
+  speaking: msg('Speaking'),
+  tool_calling: msg('Working'),
+  ended: msg('Call ended'),
   idle: '',
 })
 
@@ -105,11 +107,11 @@ export function voiceHeaderLine({ status = 'idle', toolName = null, muted = fals
   if (error) return error
   let line
   if (status === 'tool_calling') {
-    line = toolName ? `Working: ${String(toolName).replace(/_/g, ' ')}` : 'Working…'
+    line = toolName ? uiText('Working: {tool}', { tool: String(toolName).replace(/_/g, ' ') }) : uiText('Working…')
   } else if (status === 'listening' && muted) {
-    line = 'Muted'
+    line = uiText('Muted')
   } else {
-    line = VOICE_STATE_LABELS[status] ?? ''
+    line = VOICE_STATE_LABELS[status] ? uiText(VOICE_STATE_LABELS[status]) : ''
   }
   const tasks = backgroundTasksLabel(backgroundTasks)
   if (!tasks) return line
@@ -141,8 +143,8 @@ export function applyTaskFrame(tasks = [], frame = {}) {
 // One line per task for the orb's list: the label, and "queued" while another
 // task holds the thread. Separate items, never bunched — the operator's note.
 export function taskItemLabel(task = {}) {
-  const label = clip(task.label, TASK_LABEL_MAX) || 'task'
-  return task.status === 'queued' ? `${label} · queued` : label
+  const label = clip(task.label, TASK_LABEL_MAX) || uiText("task")
+  return task.status === 'queued' ? uiText('{task} · queued', { task: label }) : label
 }
 
 // The badge / header words for work in flight: WHAT is running, in one line,
@@ -160,10 +162,10 @@ function clip(text, max) {
 export function backgroundTasksLabel(tasks = []) {
   if (!Array.isArray(tasks)) {
     const n = Math.max(0, Number(tasks) || 0)
-    return n === 0 ? '' : n === 1 ? '1 task running' : `${n} tasks running`
+    return n === 0 ? '' : n === 1 ? uiText("1 task running") : uiText("{arg1} tasks running", { arg1: (n) })
   }
   if (tasks.length === 0) return ''
-  if (tasks.length === 1) return clip(tasks[0].label, TASK_LABEL_MAX) || '1 task running'
+  if (tasks.length === 1) return clip(tasks[0].label, TASK_LABEL_MAX) || uiText("1 task running")
   const labels = tasks.map((t) => clip(t.label, TASK_LABEL_MAX)).filter(Boolean).join(' · ')
   return clip(`${tasks.length} tasks · ${labels}`, TASKS_LINE_MAX)
 }
@@ -171,34 +173,34 @@ export function backgroundTasksLabel(tasks = []) {
 // A typed row written by a task the agent ran during a voice call carries the
 // call's id but NOT `source: 'voice'` (it was not spoken) — so it renders as an
 // ordinary turn, outside the collapsed block, with this caption on the ask.
-export const VOICE_TASK_CAPTION = 'asked during a voice call'
+export const VOICE_TASK_CAPTION = msg('asked during a voice call')
 
 export function voiceTaskCaption(message = {}) {
   if (!message?.voiceCallId || message.source === VOICE_SOURCE) return ''
-  return message.role === 'user' ? VOICE_TASK_CAPTION : ''
+  return message.role === 'user' ? uiText(VOICE_TASK_CAPTION) : ''
 }
 
 // The sentence for a call that ended other than by the person pressing End.
 // The server's own words win when it sent any; the reason is the fallback key.
 export const END_REASON_TEXT = Object.freeze({
-  cap: 'The call reached its time limit.',
-  error: 'The voice provider returned an error, so the call ended.',
-  provider_closed: 'The voice connection closed, so the call ended.',
+  cap: msg('The call reached its time limit.'),
+  error: msg('The voice provider returned an error, so the call ended.'),
+  provider_closed: msg('The voice connection closed, so the call ended.'),
 })
 
 export function endedNotice({ reason = null, message = '' } = {}) {
   if (!reason) return ''
-  return message || END_REASON_TEXT[reason] || 'The call ended.'
+  return message || (END_REASON_TEXT[reason] ? uiText(END_REASON_TEXT[reason]) : uiText("The call ended."))
 }
 
 // A failed start, in words. `detail` is the server's `detail` string when the
 // request answered; `status` its HTTP status.
 export function startFailureReason({ status = null, detail = '' } = {}) {
   if (detail) return detail
-  if (status === 404) return 'This conversation could not be found for a voice call.'
-  if (status === 429) return 'Too many voice calls started just now — wait a moment.'
-  if (status === 503) return VOICE_UNAVAILABLE_FALLBACK
-  return 'The voice call could not start.'
+  if (status === 404) return uiText("This conversation could not be found for a voice call.")
+  if (status === 429) return uiText("Too many voice calls started just now — wait a moment.")
+  if (status === 503) return uiText(VOICE_UNAVAILABLE_FALLBACK)
+  return uiText("The voice call could not start.")
 }
 
 // ---- The transcript block ---------------------------------------------------
@@ -238,8 +240,8 @@ export function groupVoiceBlocks(messages = []) {
 
 export function voiceCallLabel(seconds, { capped = false, capMinutes = null } = {}) {
   const minutes = Math.max(1, Math.round((Number(seconds) || 0) / 60))
-  let label = `Voice call · ${minutes} min`
-  if (capped) label += ` · ended at the ${capMinutes || minutes}-minute limit`
+  let label = uiText("Voice call · {arg1} min", { arg1: (minutes) })
+  if (capped) label += uiText(" · ended at the {arg1}-minute limit", { arg1: (capMinutes || minutes) })
   return label
 }
 
@@ -247,8 +249,8 @@ export function voiceCallLabel(seconds, { capped = false, capMinutes = null } = 
 // left of it — never an invented duration.
 export function voiceCallLabelFromTurns(turns = []) {
   const n = turns.length
-  if (!n) return 'Voice call'
-  return `Voice call · ${n} spoken ${n === 1 ? 'turn' : 'turns'}`
+  if (!n) return uiText("Voice call")
+  return uiText("Voice call · {arg1} spoken {arg2}", { arg1: (n), arg2: (n === 1 ? 'turn' : 'turns') })
 }
 
 // ---- Escape right after a call --------------------------------------------------
@@ -278,12 +280,13 @@ export function isMuteHotkey(event, { callActive = false } = {}) {
 // hit twice (a rail click on the very agent they were talking to). The copy
 // says what will happen and what is kept.
 export function leaveCallCopy(agentName = '') {
-  const who = agentName ? `with ${agentName}` : ''
   return Object.freeze({
-    title: 'End the call?',
-    message: `You're on a voice call ${who}`.trim() + '. Leaving here ends it. What was said stays in the chat.',
-    confirmText: 'End call and leave',
-    cancelText: 'Stay on the call',
+    title: uiText('End the call?'),
+    message: agentName
+      ? uiText("You're on a voice call with {name}. Leaving here ends it. What was said stays in the chat.", { name: agentName })
+      : uiText("You're on a voice call. Leaving here ends it. What was said stays in the chat."),
+    confirmText: uiText('End call and leave'),
+    cancelText: uiText('Stay on the call'),
     variant: 'warning',
   })
 }

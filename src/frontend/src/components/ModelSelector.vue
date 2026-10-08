@@ -51,13 +51,15 @@
             </svg>
           </span>
         </div>
-        <p v-if="model.note" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ model.note }}</p>
+        <p v-if="model.note" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{ uiText(model.note) }}</p>
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { MODEL_CATALOG } from '../constants/modelCatalog'
 
@@ -102,8 +104,8 @@ const isTyping = ref(false)
 
 const resolvedPlaceholder = computed(() => {
   if (props.placeholder !== null) return props.placeholder
-  if (props.platformDefault) return `platform default (${props.platformDefault})`
-  return 'Select or type a model...'
+  if (props.platformDefault) return uiText("platform default ({arg1})", { arg1: (props.platformDefault) })
+  return uiText("Select or type a model...")
 })
 
 const inputClass = computed(() => {

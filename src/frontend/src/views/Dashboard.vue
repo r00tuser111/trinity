@@ -25,18 +25,18 @@
                 <span class="flex items-center space-x-1">
                   <span class="w-1.5 h-1.5 rounded-full bg-status-success-500"></span>
                   <span class="font-medium text-status-success-600 dark:text-status-success-400">{{ runningCount }}/{{ agents.length }}</span>
-                  <span>agents</span>
+                  <span>{{ t('agents') }}</span>
                 </span>
                 <!-- Working-now count (trinity-enterprise#47) -->
                 <span class="text-gray-300 dark:text-gray-500" data-sep="working">·</span>
                 <span class="flex items-center space-x-1" data-stat="working">
                   <span class="font-medium text-status-info-600 dark:text-status-info-400">{{ workingNowCount }}</span>
-                  <span>working now</span>
+                  <span>{{ t('working now') }}</span>
                 </span>
                 <span class="text-gray-300 dark:text-gray-500" data-sep="messages">·</span>
                 <span class="flex items-center space-x-1" data-stat="messages">
                   <span class="font-medium text-status-info-600 dark:text-status-info-400">{{ totalCollaborationCount }}</span>
-                  <span>messages ({{ timeRangeHours }}h)</span>
+                  <span>{{ t('messages ({hours}h)', { hours: timeRangeHours }) }}</span>
                 </span>
                 <!-- Host Telemetry (inline) — owns its own leading separator and
                      its own container-query hide ladder (HostTelemetry.vue). -->
@@ -56,13 +56,13 @@
               <button
                 @click="showCreateModal = true"
                 class="flex items-center space-x-1 px-2 py-1 rounded text-xs font-medium bg-action-primary-600 hover:bg-action-primary-700 text-white whitespace-nowrap transition-colors"
-                title="Create Agent"
-                aria-label="Create Agent"
+                :title="t('Create Agent')"
+                :aria-label="t('Create Agent')"
               >
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                <span class="hidden md:inline">Create Agent</span>
+                <span class="hidden md:inline">{{ t('Create Agent') }}</span>
               </button>
 
               <!-- Quick Tag Filter Dropdown -->
@@ -79,7 +79,7 @@
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z"/>
                   </svg>
-                  <span class="whitespace-nowrap">{{ selectedQuickTags.length > 0 ? selectedQuickTags.length + ' tag' + (selectedQuickTags.length > 1 ? 's' : '') : 'Tags' }}</span>
+                  <span class="whitespace-nowrap">{{ selectedQuickTags.length > 0 ? t(selectedQuickTags.length === 1 ? '{count} tag' : '{count} tags', { count: selectedQuickTags.length }) : t('Tags') }}</span>
                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                   </svg>
@@ -93,7 +93,7 @@
                     @click="clearQuickTags(); showTagDropdown = false"
                     class="w-full px-3 py-1.5 text-left text-xs text-status-danger-600 dark:text-status-danger-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border-b border-gray-200 dark:border-gray-700"
                   >
-                    Clear all
+                    {{ t('Clear all') }}
                   </button>
                   <button
                     v-for="tagInfo in availableTags"
@@ -117,9 +117,9 @@
                 @change="onOwnerFilterChange"
                 class="text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
-                <option value="">All Owners</option>
+                <option value="">{{ t('All Owners') }}</option>
                 <option v-for="owner in availableOwners" :key="owner.name || '__unassigned__'" :value="owner.name || '__unassigned__'">
-                  {{ owner.name || 'Unassigned' }} ({{ owner.count }})
+                  {{ owner.name || t('Unassigned') }} ({{ owner.count }})
                 </option>
               </select>
 
@@ -136,8 +136,8 @@
                     ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 ]"
-                title="Filter agents (press /)"
-                aria-label="Filter agents"
+                :title="t('Filter agents (press /)')"
+                :aria-label="t('Filter agents')"
                 data-testid="filter-kbd-hint"
               >/</button>
 
@@ -160,7 +160,7 @@
                   'w-2 h-2 rounded-full',
                   isConnected ? 'bg-status-success-500' : 'bg-status-danger-500'
                 ]"
-                :title="isConnected ? 'Connected' : 'Disconnected'"
+                :title="isConnected ? t('Connected') : t('Disconnected')"
               ></div>
 
               <!-- #1921: KEPT, after an incorrect deletion.
@@ -182,7 +182,7 @@
                 @click="refreshAll"
                 :disabled="isLoadingHistory"
                 class="p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors disabled:opacity-50"
-                title="Refresh"
+                :title="t('Refresh')"
                 data-testid="refresh-all"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,16 +197,16 @@
                 <button
                   @click="fleetGridRef?.tidyUp()"
                   class="text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-                  title="Compact tiles row-by-row, preserving reading order"
+                  :title="t('Compact tiles row-by-row, preserving reading order')"
                 >
-                  Tidy up
+                  {{ t('Tidy up') }}
                 </button>
                 <button
                   @click="fleetGridRef?.resetToDefault()"
                   class="text-xs border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-                  title="Restore the default tile layout"
+                  :title="t('Restore the default tile layout')"
                 >
-                  Reset
+                  {{ t('Reset') }}
                 </button>
               </template>
 
@@ -229,7 +229,7 @@
               <div
                 class="flex rounded-md border border-gray-300 dark:border-gray-600 p-0.5 bg-gray-50 dark:bg-gray-700"
                 data-testid="view-mode-switcher"
-                title="Switch view (press v to cycle)"
+                :title="t('Switch view (press v to cycle)')"
               >
                 <button
                   v-for="mode in VIEW_MODES"
@@ -240,7 +240,7 @@
                     viewMode === mode ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                   ]"
                 >
-                  {{ mode }}
+                  {{ t(mode) }}
                 </button>
               </div>
             </div>
@@ -261,11 +261,11 @@
         v-else-if="fleetLoadError && agents.length === 0"
         class="flex-1 min-h-0 flex flex-col items-center justify-center text-center px-4"
       >
-        <p class="text-sm text-gray-600 dark:text-gray-300">Couldn't load timeline data.</p>
+        <p class="text-sm text-gray-600 dark:text-gray-300">{{ t('Couldn\'t load timeline data.') }}</p>
         <button
           @click="refreshAll"
           class="mt-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-        >Retry</button>
+        >{{ t('Retry') }}</button>
       </div>
       <!-- :agents is the visibleAgents seam (ent#261): rows, communication
            arrows, and schedule markers all derive from this prop, so the
@@ -314,12 +314,12 @@
         class="absolute inset-0 flex items-center justify-center"
       >
         <div class="text-center">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">Couldn't load agents</h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Something went wrong fetching the fleet.</p>
+          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ t('Couldn\'t load agents') }}</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('Something went wrong fetching the fleet.') }}</p>
           <button
             @click="refreshAll"
             class="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >Retry</button>
+          >{{ t('Retry') }}</button>
         </div>
       </div>
       <!-- True-empty state. `!filterActive` (ent#261): under an active query a
@@ -330,13 +330,13 @@
         class="absolute inset-0 flex items-center justify-center"
       >
         <div class="text-center">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">No agents yet</h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Launch your first agent in a couple of clicks.</p>
+          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ t('No agents yet') }}</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('Launch your first agent in a couple of clicks.') }}</p>
           <button
             @click="showCreateModal = true"
             class="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
-            Get started
+            {{ t('Get started') }}
           </button>
         </div>
       </div>
@@ -362,12 +362,12 @@
         class="h-full flex items-center justify-center"
       >
         <div class="text-center">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">Couldn't load agents</h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Something went wrong fetching the fleet.</p>
+          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ t('Couldn\'t load agents') }}</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('Something went wrong fetching the fleet.') }}</p>
           <button
             @click="refreshAll"
             class="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >Retry</button>
+          >{{ t('Retry') }}</button>
         </div>
       </div>
       <!-- True-empty state (grid-identical teach — chassis-owned, D7).
@@ -378,13 +378,13 @@
         class="h-full flex items-center justify-center"
       >
         <div class="text-center">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">No agents yet</h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Launch your first agent in a couple of clicks.</p>
+          <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ t('No agents yet') }}</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('Launch your first agent in a couple of clicks.') }}</p>
           <button
             @click="showCreateModal = true"
             class="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
           >
-            Get started
+            {{ t('Get started') }}
           </button>
         </div>
       </div>
@@ -410,13 +410,13 @@
     >
       <div class="pointer-events-auto text-center px-6 py-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
         <p class="text-sm text-gray-700 dark:text-gray-200">
-          No agents match "{{ filterQueryTrimmed }}" — Esc to clear
+          {{ t('No agents match "') }}{{ filterQueryTrimmed }}{{ t('" — Esc to clear') }}
         </p>
         <button
           @click="clearFilter"
           class="mt-3 inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
         >
-          Clear filter
+          {{ t('Clear filter') }}
         </button>
       </div>
     </div>
@@ -440,8 +440,8 @@
         ref="filterInputRef"
         v-model="filterQueryModel"
         type="text"
-        placeholder="Filter agents…"
-        aria-label="Filter agents"
+        :placeholder="t('Filter agents…')"
+        :aria-label="t('Filter agents')"
         autofocus
         class="w-44 bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none"
         @keydown.esc.stop.prevent="clearFilter"
@@ -452,12 +452,12 @@
         class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap"
         aria-live="polite"
         data-testid="filter-match-count"
-      >{{ visibleAgents.length }} of {{ ownerFilteredAgents.length }} match</span>
-      <kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono text-gray-500 dark:text-gray-400">Esc</kbd>
+      >{{ visibleAgents.length }} {{ t('of') }} {{ ownerFilteredAgents.length }} {{ t('match') }}</span>
+      <kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono text-gray-500 dark:text-gray-400">{{ uiText("Esc") }}</kbd>
       <button
         @click="clearFilter"
         class="p-0.5 rounded text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-        aria-label="Clear filter"
+        :aria-label="t('Clear filter')"
         data-testid="filter-clear"
       >
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -491,6 +491,7 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import NavBar from '@/components/NavBar.vue'
 import HostTelemetry from '@/components/HostTelemetry.vue'
 import ReplayTimeline from '@/components/ReplayTimeline.vue'
@@ -1042,6 +1043,8 @@ function handleClickOutside(event) {
     showTagDropdown.value = false
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

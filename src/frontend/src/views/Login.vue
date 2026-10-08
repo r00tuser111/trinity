@@ -1,12 +1,13 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div class="absolute top-4 right-4 z-50"><LanguageSelect /></div>
     <div class="max-w-md w-full space-y-8">
       <div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
           Trinity
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Sign in to manage your agents
+          {{ t('Sign in to manage your agents') }}
         </p>
       </div>
 
@@ -26,31 +27,31 @@
       <div v-else-if="authStore.mfaChallenge" class="mt-8 space-y-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900 p-8">
         <!-- Recovery codes shown once after forced enrollment -->
         <div v-if="mfaRecoveryCodes.length" class="space-y-4">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Save your recovery codes</h3>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Save your recovery codes') }}</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">
-            Store these somewhere safe — each works once if you lose your authenticator. They won't be shown again.
+            {{ t('Store these somewhere safe — each works once if you lose your authenticator. They won\'t be shown again.') }}
           </p>
           <div class="grid grid-cols-2 gap-1 font-mono text-sm text-gray-800 dark:text-gray-200 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
             <code v-for="c in mfaRecoveryCodes" :key="c" class="select-all">{{ c }}</code>
           </div>
           <button @click="finishMfa"
-            class="w-full py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700">Continue</button>
+            class="w-full py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700">{{ t('Continue') }}</button>
         </div>
 
         <!-- Forced enrollment: scan QR + confirm -->
         <div v-else-if="mfaMode === 'enroll'" class="space-y-4">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Set up two-factor authentication</h3>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Set up two-factor authentication') }}</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">
-            Your account requires 2FA. Scan this QR with an authenticator app, then enter the 6-digit code.
+            {{ t('Your account requires 2FA. Scan this QR with an authenticator app, then enter the 6-digit code.') }}
           </p>
           <template v-if="mfaEnroll">
             <QrCode :value="mfaEnroll.otpauth_uri" />
             <div class="text-xs text-gray-500 dark:text-gray-400">
-              Can't scan? Enter this key manually:
+              {{ t('Can\'t scan? Enter this key manually:') }}
               <code class="block mt-1 select-all font-mono text-sm text-gray-800 dark:text-gray-200 break-all">{{ mfaEnroll.secret }}</code>
             </div>
           </template>
-          <p v-else class="text-sm text-gray-500 dark:text-gray-400">Preparing enrollment…</p>
+          <p v-else class="text-sm text-gray-500 dark:text-gray-400">{{ t('Preparing enrollment…') }}</p>
 
           <form @submit.prevent="handleMfaEnrollConfirm" class="space-y-3">
             <input v-model="mfaCode" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
@@ -58,16 +59,16 @@
               class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-center text-2xl tracking-widest" />
             <button type="submit" :disabled="loginLoading || mfaCode.length < 6 || !mfaEnroll"
               class="w-full py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50">
-              {{ loginLoading ? 'Verifying…' : 'Confirm & Sign In' }}
+              {{ loginLoading ? t('Verifying…') : t('Confirm & Sign In') }}
             </button>
           </form>
         </div>
 
         <!-- Verify (already enrolled) -->
         <div v-else class="space-y-4">
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Two-factor authentication</h3>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Two-factor authentication') }}</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">
-            Enter the 6-digit code from your authenticator app, or a recovery code.
+            {{ t('Enter the 6-digit code from your authenticator app, or a recovery code.') }}
           </p>
           <form @submit.prevent="handleMfaVerify" class="space-y-3">
             <input v-model="mfaCode" type="text" inputmode="text" autocomplete="one-time-code"
@@ -75,7 +76,7 @@
               class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-center text-2xl tracking-widest" />
             <button type="submit" :disabled="loginLoading || !mfaCode"
               class="w-full py-3 px-4 rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50">
-              {{ loginLoading ? 'Verifying…' : 'Verify & Sign In' }}
+              {{ loginLoading ? t('Verifying…') : t('Verify & Sign In') }}
             </button>
           </form>
         </div>
@@ -83,7 +84,7 @@
         <p v-if="authError" class="text-sm text-red-600 dark:text-red-400 text-center">{{ authError }}</p>
         <button v-if="!mfaRecoveryCodes.length" @click="handleMfaCancel"
           class="w-full text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200">
-          ← Cancel
+          {{ t('← Cancel') }}
         </button>
       </div>
 
@@ -91,13 +92,13 @@
       <div v-else-if="authError" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900 p-8">
         <div class="text-center">
           <div class="text-status-danger-500 text-5xl mb-4">⚠️</div>
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Access Denied</h3>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">{{ t('Access Denied') }}</h3>
           <p class="text-gray-600 dark:text-gray-400 mb-6">{{ authError }}</p>
           <button
             @click="handleRetry"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Try Again
+            {{ t('Try Again') }}
           </button>
         </div>
       </div>
@@ -112,7 +113,7 @@
             <form @submit.prevent="handleRequestCode" class="space-y-4">
               <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Email Address
+                  {{ t('Email Address') }}
                 </label>
                 <input
                   id="email"
@@ -130,7 +131,7 @@
                 :disabled="loginLoading || !emailInput"
                 class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 transition-colors"
               >
-                {{ loginLoading ? 'Sending code...' : 'Send Verification Code' }}
+                {{ loginLoading ? t('Sending code...') : t('Send Verification Code') }}
               </button>
             </form>
           </div>
@@ -139,17 +140,17 @@
           <div v-else>
             <div class="mb-4">
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                📧 We sent a 6-digit code to <strong class="text-gray-900 dark:text-white">{{ emailInput }}</strong>
+                {{ t('📧 We sent a 6-digit code to') }} <strong class="text-gray-900 dark:text-white">{{ emailInput }}</strong>
               </p>
               <p v-if="countdown > 0" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Code expires in {{ formatTime(countdown) }}
+                {{ t('Code expires in') }} {{ formatTime(countdown) }}
               </p>
             </div>
 
             <form @submit.prevent="handleVerifyCode" class="space-y-4">
               <div>
                 <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Verification Code
+                  {{ t('Verification Code') }}
                 </label>
                 <input
                   id="code"
@@ -169,7 +170,7 @@
                 :disabled="loginLoading || codeInput.length !== 6"
                 class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 transition-colors"
               >
-                {{ loginLoading ? 'Verifying...' : 'Verify & Sign In' }}
+                {{ loginLoading ? t('Verifying...') : t('Verify & Sign In') }}
               </button>
 
               <button
@@ -177,7 +178,7 @@
                 @click="handleBackToEmail"
                 class="w-full text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
               >
-                ← Back to email
+                {{ t('← Back to email') }}
               </button>
             </form>
           </div>
@@ -188,7 +189,7 @@
               @click="showAdminLogin = true"
               class="w-full text-sm py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
-              🔐 Admin Login
+              {{ t('🔐 Admin Login') }}
             </button>
           </div>
 
@@ -196,7 +197,7 @@
                feature is entitled and at least one provider is enabled.
                Full-page nav to the backend login endpoint → IdP → callback. -->
           <div v-if="!codeSent && ssoProviders.length" class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-2">
-            <p class="text-xs text-center text-gray-500 dark:text-gray-400">Or sign in with</p>
+            <p class="text-xs text-center text-gray-500 dark:text-gray-400">{{ t('Or sign in with') }}</p>
             <a
               v-for="p in ssoProviders"
               :key="p.id"
@@ -213,13 +214,13 @@
           <div class="mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg">
             <p class="text-sm text-gray-600 dark:text-gray-400 flex items-center">
               <span class="mr-2">🔐</span>
-              Admin Login
+              {{ t('Admin Login') }}
             </p>
           </div>
 
           <form @submit.prevent="handleAdminLogin" class="space-y-4">
             <div>
-              <label for="adminIdentifier" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username or email</label>
+              <label for="adminIdentifier" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Username or email') }}</label>
               <input
                 id="adminIdentifier"
                 v-model="adminIdentifier"
@@ -227,12 +228,12 @@
                 required
                 autocomplete="username"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                placeholder="admin or you@company.com"
+                :placeholder="t('admin or you@company.com')"
               />
             </div>
 
             <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+              <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Password') }}</label>
               <input
                 id="password"
                 v-model="password"
@@ -240,7 +241,7 @@
                 required
                 autocomplete="current-password"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                placeholder="Enter admin password"
+                :placeholder="t('Enter admin password')"
               />
             </div>
 
@@ -249,7 +250,7 @@
               :disabled="loginLoading || !password"
               class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 transition-colors"
             >
-              {{ loginLoading ? 'Signing in...' : 'Sign In as Admin' }}
+              {{ loginLoading ? t('Signing in...') : t('Sign In as Admin') }}
             </button>
           </form>
 
@@ -258,7 +259,7 @@
             @click="showAdminLogin = false"
             class="w-full mt-4 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
           >
-            ← Back to email login
+            {{ t('← Back to email login') }}
           </button>
         </div>
       </div>
@@ -267,6 +268,8 @@
 </template>
 
 <script setup>
+import LanguageSelect from '@/components/LanguageSelect.vue'
+import { t } from '@/i18n'
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
@@ -280,7 +283,7 @@ const authStore = useAuthStore()
 const adminIdentifier = ref('admin')
 const password = ref('')
 const loginLoading = ref(false)
-const loadingMessage = ref('Checking authentication...')
+const loadingMessage = computed(() => t('Checking authentication...'))
 
 // Email authentication state
 const emailInput = ref('')

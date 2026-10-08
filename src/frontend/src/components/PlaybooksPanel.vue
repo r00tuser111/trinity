@@ -2,9 +2,9 @@
   <div class="space-y-6">
     <!-- Header -->
     <div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Playbooks</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Playbooks") }}</h3>
       <p class="text-sm text-gray-500 dark:text-gray-400">
-        Invoke agent skills directly. Skills are loaded from <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">.claude/skills/</code>
+        {{ uiText("Invoke agent skills directly. Skills are loaded from") }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">.claude/skills/</code>
       </p>
     </div>
 
@@ -13,8 +13,8 @@
       <svg class="mx-auto h-10 w-10 text-state-autonomous-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
       </svg>
-      <p class="text-state-autonomous-800 dark:text-state-autonomous-300 font-medium">Agent Not Running</p>
-      <p class="text-sm text-state-autonomous-700 dark:text-state-autonomous-400 mt-1">Start the agent to view and run playbooks.</p>
+      <p class="text-state-autonomous-800 dark:text-state-autonomous-300 font-medium">{{ uiText("Agent Not Running") }}</p>
+      <p class="text-sm text-state-autonomous-700 dark:text-state-autonomous-400 mt-1">{{ uiText("Start the agent to view and run playbooks.") }}</p>
     </div>
 
     <!-- Loading State -->
@@ -29,13 +29,13 @@
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
         </svg>
         <div class="ml-3">
-          <h3 class="text-sm font-medium text-status-danger-800 dark:text-status-danger-300">Failed to load playbooks</h3>
+          <h3 class="text-sm font-medium text-status-danger-800 dark:text-status-danger-300">{{ uiText("Failed to load playbooks") }}</h3>
           <p class="mt-1 text-sm text-status-danger-700 dark:text-status-danger-400">{{ error }}</p>
           <button
             @click="loadPlaybooks"
             class="mt-2 text-sm text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-500 underline"
           >
-            Try again
+            {{ uiText("Try again") }}
           </button>
         </div>
       </div>
@@ -48,7 +48,7 @@
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Search playbooks..."
+          :placeholder="uiText(&quot;Search playbooks...&quot;)"
           class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white text-sm"
         />
         <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,7 +85,7 @@
             {{ skill.description }}
           </p>
           <p v-else class="text-sm text-gray-400 dark:text-gray-500 italic mb-3 min-h-[40px]">
-            No description available
+            {{ uiText("No description available") }}
           </p>
 
           <!-- Argument Hint -->
@@ -108,7 +108,7 @@
               <svg v-else class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
               </svg>
-              Run
+              {{ uiText("Run") }}
             </button>
 
             <!-- Edit & Run Button: prefill the command in the Tasks tab so the
@@ -118,18 +118,18 @@
             <button
               @click="runWithInstructions(skill)"
               class="inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-xs font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 transition-colors"
-              title="Add instructions, then run"
+              :title="uiText(&quot;Add instructions, then run&quot;)"
             >
               <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
-              Edit &amp; Run
+              {{ uiText("Edit & Run") }}
             </button>
           </div>
 
           <!-- Not User Invocable Notice -->
           <p v-if="!skill.user_invocable" class="text-xs text-gray-400 dark:text-gray-500 mt-2 italic">
-            This skill is not user-invocable
+            {{ uiText("This skill is not user-invocable") }}
           </p>
         </div>
       </div>
@@ -139,21 +139,21 @@
         <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
         </svg>
-        <p class="mt-4 text-gray-500 dark:text-gray-400 font-medium">No playbooks found</p>
+        <p class="mt-4 text-gray-500 dark:text-gray-400 font-medium">{{ uiText("No playbooks found") }}</p>
         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">
-          Skills are loaded from <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">.claude/skills/</code>
+          {{ uiText("Skills are loaded from") }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">.claude/skills/</code>
         </p>
       </div>
 
       <!-- No Search Results -->
       <div v-else-if="searchQuery && filteredSkills.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
-        No playbooks found matching "{{ searchQuery }}"
+        {{ uiText("No playbooks found matching \"") }}{{ searchQuery }}"
       </div>
 
       <!-- Footer with skill paths -->
       <div v-if="skillPaths.length > 0" class="pt-4 border-t border-gray-200 dark:border-gray-700">
         <p class="text-xs text-gray-400 dark:text-gray-500">
-          Scanned: {{ skillPaths.join(', ') }} ({{ skills.length }} playbook{{ skills.length === 1 ? '' : 's' }})
+          {{ uiText("Scanned:") }} {{ skillPaths.join(', ') }} ({{ skills.length }} {{ uiText("playbook") }}{{ skills.length === 1 ? '' : 's' }})
         </p>
       </div>
     </template>
@@ -237,7 +237,7 @@ async function loadPlaybooks() {
     skillPaths.value = response.data.skill_paths || []
   } catch (e) {
     console.error('Failed to load playbooks:', e)
-    error.value = e.response?.data?.detail || 'Failed to load playbooks'
+    error.value = e.response?.data?.detail || uiText("Failed to load playbooks")
   } finally {
     loading.value = false
   }
@@ -262,7 +262,7 @@ async function runSkill(skill) {
 
     const executionId = response.data.execution_id
 
-    successMessage.value = `Playbook /${skill.name} started`
+    successMessage.value = uiText("Playbook /{arg1} started", { arg1: (skill.name) })
     setTimeout(() => { successMessage.value = '' }, 3000)
 
     // Navigate to Tasks tab with highlighted execution
@@ -270,7 +270,7 @@ async function runSkill(skill) {
     emit('run-with-instructions', `__NAVIGATE_TASKS__:${executionId}`)
   } catch (e) {
     console.error('Failed to run skill:', e)
-    errorMessage.value = e.response?.data?.detail || `Failed to run /${skill.name}`
+    errorMessage.value = e.response?.data?.detail || uiText("Failed to run /{arg1}", { arg1: (skill.name) })
     setTimeout(() => { errorMessage.value = '' }, 3000)
   } finally {
     running.value = null
@@ -318,6 +318,8 @@ watch(() => props.agentName, () => {
 watch(() => skillsStore.changedAt[props.agentName], (tick, prev) => {
   if (tick && tick !== prev && props.agentStatus === 'running') loadPlaybooks()
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

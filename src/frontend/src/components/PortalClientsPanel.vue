@@ -4,10 +4,9 @@
   <div v-if="entitled" class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0">
-        <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">Portal clients</h4>
+        <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Portal clients") }}</h4>
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-          People you've shared this agent with, who sign in to the client portal by email.
-          Sharing an agent to an email <em>is</em> their portal account.
+          {{ uiText("People you've shared this agent with, who sign in to the client portal by email. Sharing an agent to an email") }} <em>{{ uiText("is") }}</em> {{ uiText("their portal account.") }}
         </p>
       </div>
       <button
@@ -15,7 +14,7 @@
         :disabled="loading"
         class="shrink-0 text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
       >
-        {{ loading ? 'Loading…' : 'Refresh' }}
+        {{ loading ? uiText("Loading…") : uiText("Refresh") }}
       </button>
     </div>
 
@@ -27,8 +26,8 @@
       v-if="!loading && clients.length === 0"
       class="mt-4 text-center py-6 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700"
     >
-      <p class="text-sm">No portal clients yet</p>
-      <p class="text-xs mt-1">Share this agent with someone's email and they'll appear here.</p>
+      <p class="text-sm">{{ uiText("No portal clients yet") }}</p>
+      <p class="text-xs mt-1">{{ uiText("Share this agent with someone's email and they'll appear here.") }}</p>
     </div>
 
     <ul
@@ -43,22 +42,22 @@
               <span
                 v-if="c.blocked"
                 class="shrink-0 inline-flex items-center text-xs font-medium rounded px-2 py-0.5 text-status-danger-700 dark:text-status-danger-300 bg-status-danger-50 dark:bg-status-danger-900/30"
-              >Blocked</span>
+              >{{ uiText("Blocked") }}</span>
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
               <template v-if="c.blocked">
-                Blocked {{ formatWhen(c.blocked_at) }}<template v-if="c.blocked_by_email"> by {{ c.blocked_by_email }}</template>
+                {{ uiText("Blocked") }} {{ formatWhen(c.blocked_at) }}<template v-if="c.blocked_by_email"> {{ uiText("by") }} {{ c.blocked_by_email }}</template>
                 <template v-if="c.block_reason"> — “{{ c.block_reason }}”</template>
               </template>
               <template v-else>
-                Last active {{ formatWhen(c.last_active) }} · {{ c.message_count }} message{{ c.message_count === 1 ? '' : 's' }}
+                {{ uiText("Last active") }} {{ formatWhen(c.last_active) }} · {{ c.message_count }} {{ uiText("message") }}{{ c.message_count === 1 ? '' : 's' }}
               </template>
             </p>
             <!-- Honest status: there is no live-session count to show. Portal
                  sessions are stateless JWTs with no server-side store, so the
                  only truthful signal is when sessions were last cut off. -->
             <p v-if="c.sessions_revoked_at" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-              Sessions ended {{ formatWhen(c.sessions_revoked_at) }}
+              {{ uiText("Sessions ended") }} {{ formatWhen(c.sessions_revoked_at) }}
             </p>
           </div>
 
@@ -68,8 +67,8 @@
               @click="logout(c)"
               :disabled="busy === c.email"
               class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
-              title="End this client's active portal sessions. They can sign in again."
-            >Log out</button>
+              :title="uiText(&quot;End this client's active portal sessions. They can sign in again.&quot;)"
+            >{{ uiText("Log out") }}</button>
 
             <!-- Block is platform-wide, so it is admin-only server-side. Hiding
                  it for non-admins avoids offering a button that always 403s. -->
@@ -78,15 +77,15 @@
               @click="block(c)"
               :disabled="busy === c.email"
               class="text-xs px-2 py-1 rounded border border-status-danger-300 dark:border-status-danger-800 text-status-danger-700 dark:text-status-danger-300 hover:bg-status-danger-50 dark:hover:bg-status-danger-900/20 disabled:opacity-50"
-              title="Stop this person signing in again, on any agent"
-            >Block</button>
+              :title="uiText(&quot;Stop this person signing in again, on any agent&quot;)"
+            >{{ uiText("Block") }}</button>
 
             <button
               v-if="isAdmin && c.blocked"
               @click="unblock(c)"
               :disabled="busy === c.email"
               class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
-            >Unblock</button>
+            >{{ uiText("Unblock") }}</button>
           </div>
         </div>
 
@@ -99,10 +98,8 @@
     </ul>
 
     <p class="mt-3 text-xs text-gray-500 dark:text-gray-400">
-      <strong>Log out</strong> ends this person's live sessions everywhere — a portal sign-in covers
-      every agent shared with them, so there's no per-agent session to end. They can sign back in.
-      <strong>Block</strong> keeps them out of the whole platform until an admin unblocks them; their
-      chat history and memory are kept. To remove someone from <em>this agent only</em>, unshare them above.
+      <strong>{{ uiText("Log out") }}</strong> {{ uiText("ends this person's live sessions everywhere — a portal sign-in covers every agent shared with them, so there's no per-agent session to end. They can sign back in.") }}
+      <strong>{{ uiText("Block") }}</strong> {{ uiText("keeps them out of the whole platform until an admin unblocks them; their chat history and memory are kept. To remove someone from") }} <em>{{ uiText("this agent only") }}</em>{{ uiText(", unshare them above.") }}
     </p>
   </div>
 </template>
@@ -154,7 +151,7 @@ async function load() {
     // 404 = module not mounted; anything else is worth surfacing.
     clients.value = []
     if (e?.response?.status !== 404) {
-      error.value = e?.response?.data?.detail || 'Could not load portal clients.'
+      error.value = e?.response?.data?.detail || uiText("Could not load portal clients.")
     }
   } finally {
     loading.value = false
@@ -170,13 +167,13 @@ async function logout(c) {
     // The backend reports honestly when the revoke did not land (Redis down);
     // saying "signed out" regardless is exactly the lie this feature must avoid.
     if (data.revoked) {
-      setNote(c.email, 'Signed out of the portal everywhere.', true)
+      setNote(c.email, uiText('Signed out of the portal everywhere.'), true)
     } else {
-      setNote(c.email, 'Could not end the session — their sign-in is still active. Block them to be certain.', false)
+      setNote(c.email, uiText('Could not end the session — their sign-in is still active. Block them to be certain.'), false)
     }
     await load()
   } catch (e) {
-    setNote(c.email, e?.response?.data?.detail || 'Log out failed.', false)
+    setNote(c.email, e?.response?.data?.detail || uiText('Log out failed.'), false)
   } finally {
     busy.value = null
   }
@@ -184,9 +181,10 @@ async function logout(c) {
 
 async function block(c) {
   const reason = window.prompt(
-    `Block ${c.email} from signing in to this Trinity — on every agent, not just this one.\n\n` +
-    'Their chat history and memory are kept, and an admin can unblock them at any time.\n\n' +
-    'Reason (optional):'
+    uiText(
+      'Block {email} from signing in to this Trinity — on every agent, not just this one.\n\nTheir chat history and memory are kept, and an admin can unblock them at any time.\n\nReason (optional):',
+      { email: c.email }
+    )
   )
   if (reason === null) return   // cancelled
   busy.value = c.email
@@ -198,13 +196,13 @@ async function block(c) {
     setNote(
       c.email,
       data.sessions_revoked
-        ? 'Blocked, and their active sessions were ended.'
-        : 'Blocked. Their current session could not be ended, so it stays live until it expires — they cannot sign in again.',
+        ? uiText('Blocked, and their active sessions were ended.')
+        : uiText('Blocked. Their current session could not be ended, so it stays live until it expires — they cannot sign in again.'),
       data.sessions_revoked,
     )
     await load()
   } catch (e) {
-    setNote(c.email, e?.response?.data?.detail || 'Block failed.', false)
+    setNote(c.email, e?.response?.data?.detail || uiText('Block failed.'), false)
   } finally {
     busy.value = null
   }
@@ -216,10 +214,10 @@ async function unblock(c) {
     const { data } = await api.delete(
       `/api/enterprise/client-portal/agents/${props.agentName}/clients/${encodeURIComponent(c.email)}/block`
     )
-    setNote(c.email, data.was_blocked ? 'Unblocked — they can sign in again.' : 'They were not blocked.', true)
+    setNote(c.email, data.was_blocked ? uiText('Unblocked — they can sign in again.') : uiText('They were not blocked.'), true)
     await load()
   } catch (e) {
-    setNote(c.email, e?.response?.data?.detail || 'Unblock failed.', false)
+    setNote(c.email, e?.response?.data?.detail || uiText('Unblock failed.'), false)
   } finally {
     busy.value = null
   }
@@ -228,4 +226,6 @@ async function unblock(c) {
 onMounted(load)
 watch(() => props.agentName, load)
 watch(entitled, (v) => { if (v) load() })
+
+import { t as uiText } from '@/i18n'
 </script>

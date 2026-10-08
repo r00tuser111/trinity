@@ -1,3 +1,5 @@
+import { t as uiText, msg } from '../i18n/index.js'
+
 // #2695 — what the Voice settings panel says about speech-to-text.
 //
 // `key_configured` is presence; `stt_capability` is what the provider answered
@@ -20,35 +22,32 @@ export function describeSttCapability(state) {
     case 'capable':
       return {
         tone: STT_TONE.ok,
-        label: 'can transcribe',
-        hint: 'Workspace voice input (dictation) is available.',
+        get "label"() { return uiText("can transcribe") },
+        get "hint"() { return uiText("Workspace voice input (dictation) is available.") },
       }
     case 'refused':
       return {
         tone: STT_TONE.bad,
-        label: state.stt_detail ? `cannot transcribe — ${state.stt_detail}` : 'cannot transcribe',
-        hint: 'This key is not permitted to call speech-to-text, so Workspace server-side dictation '
-          + 'is disabled (the browser\'s own dictation engine, where it has one, still works). '
-          + 'Grant the Speech to Text permission on the key at ElevenLabs, then save it again.',
+        label: state.stt_detail ? uiText("cannot transcribe — {arg1}", { arg1: (state.stt_detail) }) : uiText("cannot transcribe"),
+        hint: uiText("This key is not permitted to call speech-to-text, so Workspace server-side dictation is disabled (the browser's own dictation engine, where it has one, still works). Grant the Speech to Text permission on the key at ElevenLabs, then save it again."),
       }
     default:
       return {
         tone: STT_TONE.unverified,
-        label: 'transcription not verified',
-        hint: 'ElevenLabs could not be reached to check the key; the Workspace mic stays available '
-          + 'until the check completes.',
+        get "label"() { return uiText("transcription not verified") },
+        hint: uiText("ElevenLabs could not be reached to check the key; the Workspace mic stays available until the check completes."),
       }
   }
 }
 
 const FAILURE_CATEGORY_TEXT = Object.freeze({
-  permission: 'the key is missing the speech-to-text permission',
-  auth: 'the key was rejected',
-  quota: 'out of credits, or the plan does not allow speech-to-text',
-  rate_limit: 'the provider rate-limited the request',
-  audio: 'the recording was rejected by the provider',
-  provider: 'the provider failed',
-  unknown: 'the provider answered with an unrecognised error',
+  permission: msg('the key is missing the speech-to-text permission'),
+  auth: msg('the key was rejected'),
+  quota: msg('out of credits, or the plan does not allow speech-to-text'),
+  rate_limit: msg('the provider rate-limited the request'),
+  audio: msg('the recording was rejected by the provider'),
+  provider: msg('the provider failed'),
+  unknown: msg('the provider answered with an unrecognised error'),
 })
 
 /**
@@ -65,7 +64,7 @@ export function describeSttLastFailure(failure) {
   const word = failure.detail ? `${failure.detail}` : ''
   const provider = [status, word].filter(Boolean).join(' ')
   return {
-    text: `Last voice-input failure: ${why}${provider ? ` (${provider})` : ''}.`,
+    get "text"() { return uiText("Last voice-input failure: {arg1}{arg2}.", { arg1: uiText(why), arg2: (provider ? ` (${provider})` : '') }) },
     at: typeof failure.at === 'number' ? failure.at : null,
   }
 }

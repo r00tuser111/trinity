@@ -13,15 +13,15 @@
           @click="refreshLogs"
           class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Refresh Logs
+          {{ t('Refresh Logs') }}
         </button>
         <label class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
           <input type="checkbox" v-model="autoRefreshLogs" class="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700" />
-          <span>Auto-refresh (10s)</span>
+          <span>{{ t('Auto-refresh (10s)') }}</span>
         </label>
       </div>
       <div class="flex items-center space-x-2">
-        <label class="text-sm text-gray-600 dark:text-gray-400">Lines:</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">{{ t('Lines:') }}</label>
         <select v-model="logLines" @change="refreshLogs" class="border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm bg-white dark:bg-gray-800 dark:text-gray-200">
           <option value="50">50</option>
           <option value="100">100</option>
@@ -34,6 +34,7 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { computed, onMounted, watch } from 'vue'
 import { useAgentsStore } from '../stores/agents'
 import { useAgentLogs } from '../composables/useAgentLogs'

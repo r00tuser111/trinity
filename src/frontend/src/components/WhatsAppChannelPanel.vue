@@ -1,9 +1,8 @@
 <template>
   <div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">WhatsApp (Twilio)</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("WhatsApp (Twilio)") }}</h3>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      Connect a Twilio WhatsApp sender so users can message this agent on WhatsApp.
-      Each agent brings its own Twilio account; direct messages only (Twilio does not support WhatsApp groups).
+      {{ uiText("Connect a Twilio WhatsApp sender so users can message this agent on WhatsApp. Each agent brings its own Twilio account; direct messages only (Twilio does not support WhatsApp groups).") }}
     </p>
 
     <!-- Loading -->
@@ -12,12 +11,12 @@
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      Loading...
+      {{ uiText("Loading...") }}
     </div>
 
     <!-- Access Denied -->
     <div v-else-if="accessDenied" class="text-sm text-gray-500 dark:text-gray-400">
-      Only the agent owner can manage WhatsApp settings.
+      {{ uiText("Only the agent owner can manage WhatsApp settings.") }}
     </div>
 
     <!-- Connected State -->
@@ -32,10 +31,10 @@
                 <span
                   v-if="binding.is_sandbox"
                   class="ml-2 px-1.5 py-0.5 text-xs rounded bg-status-warning-100 dark:bg-status-warning-900/50 text-status-warning-800 dark:text-status-warning-200"
-                >Sandbox</span>
+                >{{ uiText("Sandbox") }}</span>
               </p>
               <p class="text-xs text-gray-500 dark:text-gray-400">
-                AccountSid: {{ truncatedSid }}
+                {{ uiText("AccountSid:") }} {{ truncatedSid }}
                 <span v-if="binding.display_name"> · {{ binding.display_name }}</span>
               </p>
             </div>
@@ -46,14 +45,14 @@
               :disabled="verifying"
               class="text-sm text-action-primary-600 dark:text-action-primary-400 hover:text-action-primary-800 dark:hover:text-action-primary-300 disabled:opacity-50"
             >
-              {{ verifying ? 'Verifying...' : 'Verify' }}
+              {{ verifying ? uiText("Verifying...") : uiText("Verify") }}
             </button>
             <button
               @click="disconnectBinding"
               :disabled="disconnecting"
               class="text-sm text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-800 dark:hover:text-status-danger-300 disabled:opacity-50"
             >
-              {{ disconnecting ? 'Removing...' : 'Disconnect' }}
+              {{ disconnecting ? uiText("Removing...") : uiText("Disconnect") }}
             </button>
           </div>
         </div>
@@ -62,7 +61,7 @@
       <!-- Webhook URL Display -->
       <div v-if="binding.webhook_url" class="p-3 rounded-lg bg-action-primary-50 dark:bg-action-primary-900/20 border border-action-primary-100 dark:border-action-primary-800/40">
         <p class="text-xs font-medium text-action-primary-900 dark:text-action-primary-200 mb-1">
-          Webhook URL — paste into Twilio Console
+          {{ uiText("Webhook URL — paste into Twilio Console") }}
         </p>
         <div class="flex items-center gap-2">
           <code class="flex-1 text-xs text-action-primary-900 dark:text-action-primary-100 font-mono break-all select-all">
@@ -72,20 +71,19 @@
             @click="copyWebhook"
             class="text-xs text-action-primary-700 dark:text-action-primary-300 hover:text-action-primary-900 dark:hover:text-action-primary-100"
           >
-            {{ copied ? 'Copied!' : 'Copy' }}
+            {{ copied ? uiText("Copied!") : uiText("Copy") }}
           </button>
         </div>
         <p class="mt-2 text-xs text-action-primary-700 dark:text-action-primary-300">
-          In Twilio Console → Messaging → {{ binding.is_sandbox ? 'Sandbox settings' : 'your sender' }} →
-          <strong>When a message comes in</strong>, set method to <strong>HTTP POST</strong> and paste this URL.
+          {{ uiText("In Twilio Console → Messaging →") }} {{ binding.is_sandbox ? uiText("Sandbox settings") : uiText("your sender") }} →
+          <strong>{{ uiText("When a message comes in") }}</strong>{{ uiText(", set method to") }} <strong>HTTP POST</strong> {{ uiText("and paste this URL.") }}
         </p>
       </div>
 
       <!-- Ops prerequisite notice -->
       <div class="p-3 rounded-lg text-xs bg-state-autonomous-50 dark:bg-state-autonomous-900/30 text-state-autonomous-800 dark:text-state-autonomous-200">
-        <strong>Deployment prerequisite:</strong> Cloudflare Tunnel ingress must route
-        <code class="font-mono">/api/whatsapp/webhook/*</code> to the <strong>backend</strong> service (<code class="font-mono">http://backend:8000</code>).
-        See <em>docs/requirements/PUBLIC_EXTERNAL_ACCESS_SETUP.md</em>.
+        <strong>{{ uiText("Deployment prerequisite:") }}</strong> {{ uiText("Cloudflare Tunnel ingress must route") }}
+        <code class="font-mono">/api/whatsapp/webhook/*</code> {{ uiText("to the") }} <strong>{{ uiText("backend") }}</strong> {{ uiText("service (") }}<code class="font-mono">http://backend:8000</code>{{ uiText("). See") }} <em>docs/requirements/PUBLIC_EXTERNAL_ACCESS_SETUP.md</em>.
       </div>
 
       <!-- Webhook URL warning (no public_chat_url) -->
@@ -98,10 +96,9 @@
 
       <!-- Sandbox instructions -->
       <div v-if="binding.is_sandbox" class="p-3 rounded-lg text-xs bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700">
-        <p class="font-medium text-gray-700 dark:text-gray-300 mb-1">Sandbox testing</p>
+        <p class="font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("Sandbox testing") }}</p>
         <p class="text-gray-600 dark:text-gray-400">
-          Users must opt in by sending <code class="font-mono">join &lt;your-sandbox-keyword&gt;</code> from their phone
-          to <code class="font-mono">{{ binding.from_number }}</code>. Check your Twilio Console → Messaging → Try WhatsApp for the keyword.
+          {{ uiText("Users must opt in by sending") }} <code class="font-mono">join &lt;your-sandbox-keyword&gt;</code> {{ uiText("from their phone to") }} <code class="font-mono">{{ binding.from_number }}</code>{{ uiText(". Check your Twilio Console → Messaging → Try WhatsApp for the keyword.") }}
         </p>
       </div>
 
@@ -114,48 +111,48 @@
       <form @submit.prevent="connectBinding" class="space-y-3 max-w-lg">
         <div>
           <label for="wa-account-sid" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Twilio Account SID
+            {{ uiText("Twilio Account SID") }}
           </label>
           <input
             id="wa-account-sid"
             v-model="form.accountSid"
             type="text"
-            placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            :placeholder="uiText(&quot;ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;)"
             :disabled="connecting"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-900 font-mono text-xs"
           />
         </div>
         <div>
           <label for="wa-auth-token" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Auth Token
+            {{ uiText("Auth Token") }}
           </label>
           <input
             id="wa-auth-token"
             v-model="form.authToken"
             type="password"
-            placeholder="Paste your Twilio Auth Token"
+            :placeholder="uiText(&quot;Paste your Twilio Auth Token&quot;)"
             :disabled="connecting"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-900"
           />
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            From Twilio Console — stored encrypted.
+            {{ uiText("From Twilio Console — stored encrypted.") }}
           </p>
         </div>
         <div>
           <label for="wa-from" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            WhatsApp From Number
+            {{ uiText("WhatsApp From Number") }}
           </label>
           <input
             id="wa-from"
             v-model="form.fromNumber"
             type="text"
-            placeholder="whatsapp:+14155238886"
+            :placeholder="uiText(&quot;whatsapp:+14155238886&quot;)"
             :disabled="connecting"
             class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-900 font-mono text-xs"
           />
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Must start with <code class="font-mono">whatsapp:+</code>. Use
-            <code class="font-mono">whatsapp:+14155238886</code> for Twilio Sandbox.
+            {{ uiText("Must start with") }} <code class="font-mono">whatsapp:+</code>{{ uiText(". Use") }}
+            <code class="font-mono">whatsapp:+14155238886</code> {{ uiText("for Twilio Sandbox.") }}
           </p>
         </div>
         <button
@@ -167,7 +164,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          {{ connecting ? 'Validating...' : 'Connect' }}
+          {{ connecting ? uiText("Validating...") : uiText("Connect") }}
         </button>
       </form>
     </div>
@@ -249,10 +246,10 @@ async function connectBinding() {
     })
     form.value = { accountSid: '', authToken: '', fromNumber: '' }
     binding.value = response.data
-    message.value = { type: 'success', text: 'WhatsApp binding configured' }
+    message.value = { type: 'success', get "text"() { return uiText("WhatsApp binding configured") } }
     setTimeout(() => { message.value = null }, 3000)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to configure binding'
+    const detail = e.response?.data?.detail || uiText('Failed to configure binding')
     message.value = { type: 'error', text: detail }
   } finally {
     connecting.value = false
@@ -265,10 +262,10 @@ async function disconnectBinding() {
   try {
     await api.delete(`/api/agents/${props.agentName}/whatsapp`)
     binding.value = { configured: false }
-    message.value = { type: 'success', text: 'WhatsApp binding removed' }
+    message.value = { type: 'success', get "text"() { return uiText("WhatsApp binding removed") } }
     setTimeout(() => { message.value = null }, 3000)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to remove binding'
+    const detail = e.response?.data?.detail || uiText('Failed to remove binding')
     message.value = { type: 'error', text: detail }
   } finally {
     disconnecting.value = false
@@ -283,11 +280,11 @@ async function verifyCredentials() {
     if (response.data.ok) {
       message.value = { type: 'success', text: response.data.message }
     } else {
-      message.value = { type: 'error', text: response.data.message || 'Verification failed' }
+      message.value = { type: 'error', text: response.data.message || uiText("Verification failed") }
     }
     setTimeout(() => { message.value = null }, 3000)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to verify credentials'
+    const detail = e.response?.data?.detail || uiText('Failed to verify credentials')
     message.value = { type: 'error', text: detail }
   } finally {
     verifying.value = false
@@ -300,10 +297,12 @@ async function copyWebhook() {
     copied.value = true
     setTimeout(() => { copied.value = false }, 1500)
   } catch (e) {
-    message.value = { type: 'error', text: 'Clipboard copy failed — select and copy manually' }
+    message.value = { type: 'error', get "text"() { return uiText("Clipboard copy failed — select and copy manually") } }
   }
 }
 
 watch(() => props.agentName, () => loadBinding())
 onMounted(() => loadBinding())
+
+import { t as uiText } from '@/i18n'
 </script>

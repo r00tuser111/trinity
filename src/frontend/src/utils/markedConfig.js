@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * The ONE marked configuration.
  *
@@ -27,7 +29,7 @@ marked.setOptions({
 marked.use({
   renderer: {
     link({ href, title, text }) {
-      const titleAttr = title ? ` title="${title}"` : ''
+      const titleAttr = title ? uiText(" title=\"{arg1}\"", { arg1: (title) }) : ''
       return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`
     }
   }

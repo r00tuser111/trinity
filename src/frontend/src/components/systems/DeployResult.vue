@@ -12,8 +12,8 @@
           <h3 class="font-semibold" :class="tone.title">{{ tone.heading }}</h3>
           <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ tone.detail }}</p>
           <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-            System <span class="font-mono">{{ result.system_name }}</span> ·
-            {{ created.length }} of {{ created.length + failed.length }} agent(s) created
+            {{ uiText("System") }} <span class="font-mono">{{ result.system_name }}</span> ·
+            {{ created.length }} {{ uiText("of") }} {{ created.length + failed.length }} {{ uiText("agent(s) created") }}
           </p>
         </div>
       </div>
@@ -25,11 +25,10 @@
       class="rounded-lg border border-status-warning-300 dark:border-status-warning-700 bg-status-warning-50 dark:bg-status-warning-900/20 p-4"
     >
       <h4 class="font-semibold text-status-warning-900 dark:text-status-warning-100">
-        {{ warnings.length }} thing{{ warnings.length === 1 ? '' : 's' }} needing attention
+        {{ warnings.length }} {{ uiText("thing") }}{{ warnings.length === 1 ? '' : 's' }} {{ uiText("needing attention") }}
       </h4>
       <p class="mt-1 text-xs text-status-warning-800 dark:text-status-warning-200">
-        Configuration applied after the agents were created is best-effort — these did not
-        stop the deployment, but they did not take effect either.
+        {{ uiText("Configuration applied after the agents were created is best-effort — these did not stop the deployment, but they did not take effect either.") }}
       </p>
       <ul class="mt-2 space-y-1">
         <li
@@ -45,7 +44,7 @@
     <!-- Created ----------------------------------------------------------- -->
     <section v-if="created.length">
       <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
-        Created ({{ created.length }})
+        {{ uiText("Created (") }}{{ created.length }})
       </h4>
       <ul class="flex flex-wrap gap-2">
         <li
@@ -61,7 +60,7 @@
     <!-- Failed ------------------------------------------------------------ -->
     <section v-if="failed.length">
       <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
-        Failed ({{ failed.length }})
+        {{ uiText("Failed (") }}{{ failed.length }})
       </h4>
       <ul class="space-y-2">
         <li
@@ -87,19 +86,19 @@
     <!-- Applied configuration -------------------------------------------- -->
     <section v-if="created.length" class="flex flex-wrap gap-2 text-xs">
       <span class="rounded bg-gray-100 dark:bg-gray-800 px-2 py-1 text-gray-700 dark:text-gray-300">
-        {{ result.permissions_configured || 0 }} permission grant(s)
+        {{ result.permissions_configured || 0 }} {{ uiText("permission grant(s)") }}
       </span>
       <span class="rounded bg-gray-100 dark:bg-gray-800 px-2 py-1 text-gray-700 dark:text-gray-300">
-        {{ result.schedules_created || 0 }} schedule(s)
+        {{ result.schedules_created || 0 }} {{ uiText("schedule(s)") }}
       </span>
       <span class="rounded bg-gray-100 dark:bg-gray-800 px-2 py-1 text-gray-700 dark:text-gray-300">
-        {{ result.tags_configured || 0 }} tag(s)
+        {{ result.tags_configured || 0 }} {{ uiText("tag(s)") }}
       </span>
       <span
         v-if="result.prompt_updated"
         class="rounded bg-status-warning-100 dark:bg-status-warning-900/40 px-2 py-1 text-status-warning-800 dark:text-status-warning-200"
       >
-        platform-wide prompt replaced
+        {{ uiText("platform-wide prompt replaced") }}
       </span>
     </section>
 
@@ -108,16 +107,15 @@
       v-if="created.length"
       class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4"
     >
-      <h4 class="font-semibold text-gray-900 dark:text-white">What next</h4>
+      <h4 class="font-semibold text-gray-900 dark:text-white">{{ uiText("What next") }}</h4>
       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
         <template v-if="viewCreated">
-          A system view was created for this fleet.
+          {{ uiText("A system view was created for this fleet.") }}
         </template>
         <template v-else>
-          Every agent was tagged <span class="font-mono">{{ result.system_name }}</span>, so the
-          dashboard can filter to just this fleet.
+          {{ uiText("Every agent was tagged") }} <span class="font-mono">{{ result.system_name }}</span>{{ uiText(", so the dashboard can filter to just this fleet.") }}
         </template>
-        The agents still need their credentials configured before they can do real work.
+        {{ uiText("The agents still need their credentials configured before they can do real work.") }}
       </p>
       <div class="mt-3 flex flex-wrap gap-2">
         <button
@@ -125,13 +123,13 @@
           data-testid="goto-fleet"
           @click="$emit('view-fleet')"
         >
-          {{ viewCreated ? 'Open the system view' : 'View this fleet' }}
+          {{ viewCreated ? uiText("Open the system view") : uiText("View this fleet") }}
         </button>
         <button
           class="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
           @click="$emit('install-another')"
         >
-          Install another system
+          {{ uiText("Install another system") }}
         </button>
       </div>
     </section>
@@ -168,25 +166,22 @@ const viewCreated = computed(() => Boolean(props.result.system_view_created))
 const TONES = {
   deployed: {
     icon: '✅',
-    heading: 'All agents created',
-    detail: 'Every agent in the manifest was created and started.',
+    get heading() { return uiText('All agents created') },
+    get detail() { return uiText('Every agent in the manifest was created and started.') },
     box: 'border-status-success-300 dark:border-status-success-700 bg-status-success-50 dark:bg-status-success-900/20',
     title: 'text-status-success-800 dark:text-status-success-200'
   },
   partial: {
     icon: '⚠️',
-    heading: 'Some agents were created',
-    detail: 'The rest failed and are listed below. Re-running this manifest would create '
-      + 'duplicates of the agents that succeeded — fix the cause and create the missing '
-      + 'agents individually.',
+    get heading() { return uiText('Some agents were created') },
+    get detail() { return uiText('The rest failed and are listed below. Re-running this manifest would create duplicates of the agents that succeeded — fix the cause and create the missing agents individually.') },
     box: 'border-status-warning-300 dark:border-status-warning-700 bg-status-warning-50 dark:bg-status-warning-900/20',
     title: 'text-status-warning-900 dark:text-status-warning-100'
   },
   failed: {
     icon: '⛔',
-    heading: 'No agents were created',
-    detail: 'Nothing was deployed, so there is nothing to clean up. Fix the causes below '
-      + 'and try again.',
+    get heading() { return uiText('No agents were created') },
+    get detail() { return uiText('Nothing was deployed, so there is nothing to clean up. Fix the causes below and try again.') },
     box: 'border-status-danger-300 dark:border-status-danger-700 bg-status-danger-50 dark:bg-status-danger-900/20',
     title: 'text-status-danger-800 dark:text-status-danger-200'
   },
@@ -194,15 +189,15 @@ const TONES = {
   // component, but rendering something honest beats rendering nothing.
   valid: {
     icon: 'ℹ️',
-    heading: 'Preview only — nothing was deployed',
-    detail: 'This is a dry-run result.',
+    get heading() { return uiText('Preview only — nothing was deployed') },
+    get detail() { return uiText('This is a dry-run result.') },
     box: 'border-status-info-300 dark:border-status-info-700 bg-status-info-50 dark:bg-status-info-900/20',
     title: 'text-status-info-800 dark:text-status-info-200'
   },
   invalid: {
     icon: 'ℹ️',
-    heading: 'Preview found blockers — nothing was deployed',
-    detail: 'This is a dry-run result.',
+    get heading() { return uiText('Preview found blockers — nothing was deployed') },
+    get detail() { return uiText('This is a dry-run result.') },
     box: 'border-status-info-300 dark:border-status-info-700 bg-status-info-50 dark:bg-status-info-900/20',
     title: 'text-status-info-800 dark:text-status-info-200'
   }
@@ -210,12 +205,13 @@ const TONES = {
 
 const UNKNOWN_TONE = {
   icon: '❓',
-  heading: 'Unrecognized outcome',
-  detail: 'The server reported a status this version of the UI does not know. '
-    + 'Check the agent list to see what actually exists.',
+  get heading() { return uiText('Unrecognized outcome') },
+  get detail() { return uiText('The server reported a status this version of the UI does not know. Check the agent list to see what actually exists.') },
   box: 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800',
   title: 'text-gray-900 dark:text-white'
 }
 
 const tone = computed(() => TONES[props.result.status] || UNKNOWN_TONE)
+
+import { t as uiText } from '@/i18n'
 </script>

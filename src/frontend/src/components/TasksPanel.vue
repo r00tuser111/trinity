@@ -8,8 +8,8 @@
     <!-- Header with Queue Status -->
     <div class="flex justify-between items-center">
       <div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Tasks</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">All executions — chats, tasks, schedules, and agent-to-agent</p>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Tasks') }}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('All executions — chats, tasks, schedules, and agent-to-agent') }}</p>
       </div>
       <div class="flex items-center space-x-3">
         <!-- Trigger Type Filter -->
@@ -17,15 +17,15 @@
           v-model="triggerFilter"
           class="text-xs px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-action-primary-500"
         >
-          <option value="all">All triggers</option>
-          <option value="chat">Chat</option>
-          <option value="session">Session</option>
-          <option value="manual">Manual</option>
-          <option value="schedule">Schedule</option>
+          <option value="all">{{ t('All triggers') }}</option>
+          <option value="chat">{{ t('Chat') }}</option>
+          <option value="session">{{ t('Session') }}</option>
+          <option value="manual">{{ t('Manual') }}</option>
+          <option value="schedule">{{ t('Schedule') }}</option>
           <option value="mcp">MCP</option>
-          <option value="agent">Agent</option>
-          <option value="paid">Paid</option>
-          <option value="public">Public</option>
+          <option value="agent">{{ t('Agent') }}</option>
+          <option value="paid">{{ t('Paid') }}</option>
+          <option value="public">{{ t('Public') }}</option>
         </select>
         <!-- Queue Status Indicator -->
         <div v-if="queueStatus" class="flex items-center space-x-2">
@@ -43,10 +43,10 @@
                 queueStatus.is_busy ? 'bg-status-warning-500 animate-pulse' : 'bg-status-success-500'
               ]"
             ></span>
-            {{ queueStatus.is_busy ? 'Busy' : 'Idle' }}
+            {{ queueStatus.is_busy ? t('Busy') : t('Idle') }}
           </span>
           <span v-if="queueStatus.queue_length > 0" class="text-xs text-gray-500 dark:text-gray-400">
-            {{ queueStatus.queue_length }} queued
+            {{ queueStatus.queue_length }} {{ t('queued') }}
           </span>
         </div>
         <button
@@ -61,7 +61,7 @@
           <svg v-else class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Refresh
+          {{ t('Refresh') }}
         </button>
       </div>
     </div>
@@ -69,21 +69,21 @@
     <!-- Summary Stats (only if we have history) -->
     <div v-if="executions.length > 0" class="grid grid-cols-4 gap-3">
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total</p>
+        <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ t('Total') }}</p>
         <p class="text-base font-semibold text-gray-900 dark:text-white">{{ executions.length }}</p>
       </div>
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Success Rate</p>
+        <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ t('Success Rate') }}</p>
         <p class="text-base font-semibold" :class="successRate >= 90 ? 'text-status-success-600' : successRate >= 70 ? 'text-status-warning-600' : 'text-status-danger-600'">
           {{ successRate }}%
         </p>
       </div>
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Cost</p>
+        <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ t('Total Cost') }}</p>
         <p class="text-base font-semibold text-gray-900 dark:text-white font-mono">{{ formatCostCompact(totalCost) }}</p>
       </div>
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2">
-        <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Avg Duration</p>
+        <p class="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ t('Avg Duration') }}</p>
         <p class="text-base font-semibold text-gray-900 dark:text-white">{{ formatDuration(avgDuration) || '-' }}</p>
       </div>
     </div>
@@ -93,19 +93,19 @@
       <!-- Model & Timeout Selectors -->
       <div class="flex items-center space-x-3 mb-3">
         <div class="flex-1">
-          <ModelSelector v-model="selectedModel" label="Model" compact />
+          <ModelSelector v-model="selectedModel" :label="t('Model')" compact />
         </div>
         <div>
-          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Timeout</label>
+          <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ t('Timeout') }}</label>
           <select
             v-model="taskTimeout"
             class="px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-action-primary-500"
           >
-            <option :value="300">5 min</option>
-            <option :value="900">15 min</option>
-            <option :value="1800">30 min</option>
-            <option :value="3600">1 hour</option>
-            <option :value="7200">2 hours</option>
+            <option :value="300">{{ t('5 min') }}</option>
+            <option :value="900">{{ t('15 min') }}</option>
+            <option :value="1800">{{ t('30 min') }}</option>
+            <option :value="3600">{{ t('1 hour') }}</option>
+            <option :value="7200">{{ t('2 hours') }}</option>
           </select>
         </div>
       </div>
@@ -115,7 +115,7 @@
             v-model="newTaskMessage"
             :disabled="taskLoading || agentStatus !== 'running'"
             rows="2"
-            placeholder="Enter task message... (Enter to run, Shift+Enter for newline)"
+            :placeholder="t('Enter task message... (Enter to run, Shift+Enter for newline)')"
             @keydown.enter.exact.prevent="runNewTask"
             @keydown.meta.enter="runNewTask"
             @keydown.ctrl.enter="runNewTask"
@@ -131,11 +131,11 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Run
+          {{ t('Run') }}
         </button>
       </div>
       <p v-if="agentStatus !== 'running'" class="text-xs text-status-warning-600 dark:text-status-warning-400 mt-2">
-        Agent must be running to execute tasks
+        {{ t('Agent must be running to execute tasks') }}
       </p>
     </div>
 
@@ -147,14 +147,14 @@
       <!-- #1921: row-shaped placeholders in the list's footprint. -->
       <div v-if="loading && allTasks.length === 0" class="p-4 flex-1" aria-busy="true">
         <SkeletonLoader variant="rows" :count="5" height="3rem" gap="0.5rem" />
-        <span class="sr-only">Loading tasks…</span>
+        <span class="sr-only">{{ t('Loading tasks…') }}</span>
       </div>
 
       <!-- Failed State (#1926) — "No tasks yet" on a failed fetch is a lie that
            tells the user to run a task when the real fix is to retry. -->
       <div v-else-if="loadError && allTasks.length === 0" class="flex-1 flex flex-col justify-center">
         <LoadFailed
-          title="Couldn't load task history"
+          :title="t('Couldn\'t load task history')"
           message="The execution list didn't load. Check your connection and try again."
           :detail="loadError"
           :retrying="loading"
@@ -167,8 +167,8 @@
         <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
         </svg>
-        <p class="mt-2 text-gray-500 dark:text-gray-400">No tasks yet</p>
-        <p class="text-sm text-gray-400 dark:text-gray-400">Run a task above or configure schedules</p>
+        <p class="mt-2 text-gray-500 dark:text-gray-400">{{ t('No tasks yet') }}</p>
+        <p class="text-sm text-gray-400 dark:text-gray-400">{{ t('Run a task above or configure schedules') }}</p>
       </div>
 
       <!-- Task List with vertical scroll (#1500: fills the card, no fixed cap) -->
@@ -237,7 +237,7 @@
                   class="px-1.5 py-0.5 rounded text-xs bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300"
                   :title="taskCompactTooltip(task)"
                 >
-                  compacted{{ taskCompactCount(task) > 1 ? ` ×${taskCompactCount(task)}` : '' }}
+                  {{ t('compacted') }}{{ taskCompactCount(task) > 1 ? uiText(" ×{arg1}", { arg1: (taskCompactCount(task)) }) : '' }}
                 </span>
                 <!-- Time -->
                 <span class="text-xs text-gray-500 dark:text-gray-400">
@@ -278,7 +278,7 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                   </svg>
-                  <span>Loading details...</span>
+                  <span>{{ t('Loading details...') }}</span>
                 </div>
                 <!-- Error/Response display (from cache or local task) -->
                 <template v-else-if="getTaskDetails(task.id)?.error || getTaskDetails(task.id)?.response || task.error || task.response">
@@ -287,7 +287,7 @@
                 </template>
                 <!-- No details available -->
                 <div v-else-if="taskDetailsCache[task.id] !== undefined" class="text-sm text-gray-500 dark:text-gray-400 italic">
-                  No response or error recorded for this execution.
+                  {{ t('No response or error recorded for this execution.') }}
                 </div>
               </div>
             </div>
@@ -306,12 +306,12 @@
                     ? 'text-status-success-600 dark:text-status-success-400 hover:text-status-success-700 dark:hover:text-status-success-300 bg-status-success-50 dark:bg-status-success-900/20'
                     : 'text-gray-400 hover:text-action-primary-600 dark:hover:text-action-primary-400'
                 ]"
-                :title="task.status === 'running' ? 'View live execution' : 'Open execution details'"
+                :title="task.status === 'running' ? t('View live execution') : t('Open execution details')"
               >
                 <!-- Live indicator for running tasks -->
                 <span v-if="task.status === 'running'" class="flex items-center">
                   <span class="w-1.5 h-1.5 bg-status-success-500 rounded-full animate-pulse mr-1"></span>
-                  <span class="text-xs font-medium">Live</span>
+                  <span class="text-xs font-medium">{{ t('Live') }}</span>
                 </span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -322,7 +322,7 @@
                 v-if="task.status !== 'running' && !task.id.startsWith('local-')"
                 @click="viewExecutionLog(task)"
                 class="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 rounded transition-colors"
-                title="View execution log (modal)"
+                :title="t('View execution log (modal)')"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -332,7 +332,7 @@
               <button
                 @click="copyTaskMessage(task)"
                 class="p-1.5 text-gray-400 hover:text-action-primary-600 dark:hover:text-action-primary-400 rounded transition-colors"
-                title="Copy task input"
+                :title="t('Copy task input')"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -344,7 +344,7 @@
                 @click="terminateTask(task)"
                 :disabled="terminatingTaskId === task.id"
                 class="p-1.5 text-gray-400 hover:text-status-danger-600 dark:hover:text-status-danger-400 rounded transition-colors disabled:opacity-50"
-                title="Stop execution"
+                :title="t('Stop execution')"
               >
                 <svg v-if="terminatingTaskId === task.id" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -361,7 +361,7 @@
                 @click="rerunTask(task)"
                 :disabled="taskLoading || agentStatus !== 'running'"
                 class="p-1.5 text-gray-400 hover:text-status-success-600 dark:hover:text-status-success-400 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Re-run this task"
+                :title="t('Re-run this task')"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -372,7 +372,7 @@
                 v-if="task.status !== 'running'"
                 @click="makeRepeatable(task)"
                 class="p-1.5 text-gray-400 hover:text-accent-purple-600 dark:hover:text-accent-purple-400 rounded transition-colors"
-                title="Create schedule from this task"
+                :title="t('Create schedule from this task')"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -382,7 +382,7 @@
               <button
                 @click="toggleTaskExpand(task.id)"
                 class="p-1.5 text-gray-400 hover:text-action-primary-600 dark:hover:text-action-primary-400 rounded transition-colors"
-                :title="expandedTaskId === task.id ? 'Collapse' : 'Expand'"
+                :title="expandedTaskId === task.id ? t('Collapse') : t('Expand')"
               >
                 <svg
                   class="w-4 h-4 transition-transform"
@@ -413,7 +413,7 @@
             <!-- Modal Header -->
             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
               <div>
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Execution Log</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Execution Log') }}</h3>
                 <p v-if="logData" class="text-xs text-gray-500 dark:text-gray-400">
                   {{ logData.status }} • {{ logData.started_at ? parseUTC(logData.started_at).toLocaleString() : '' }}
                 </p>
@@ -437,13 +437,13 @@
                 <div class="h-3 w-4/5 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
                 <div class="h-3 w-full rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
                 <div class="h-3 w-3/4 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
-                <span class="sr-only">Loading…</span>
+                <span class="sr-only">{{ t('Loading…') }}</span>
               </div>
               <div v-else-if="logError" class="text-center py-8">
                 <p class="text-status-danger-500 dark:text-status-danger-400">{{ logError }}</p>
               </div>
               <div v-else-if="logData && !logData.has_log" class="text-center py-8">
-                <p class="text-gray-500 dark:text-gray-400">No execution log available for this task.</p>
+                <p class="text-gray-500 dark:text-gray-400">{{ t('No execution log available for this task.') }}</p>
               </div>
               <!-- Formatted execution log transcript -->
               <div v-else-if="logData && logData.log" class="space-y-3">
@@ -451,11 +451,11 @@
                   <!-- Session Init -->
                   <div v-if="entry.type === 'init'" class="bg-gray-100 dark:bg-gray-900 rounded-lg p-3 text-xs">
                     <div class="flex items-center space-x-2 text-gray-500 dark:text-gray-400 mb-1">
-                      <span class="font-semibold">Session Started</span>
+                      <span class="font-semibold">{{ t('Session Started') }}</span>
                       <span>•</span>
                       <span>{{ entry.model }}</span>
                       <span>•</span>
-                      <span>{{ entry.toolCount }} tools</span>
+                      <span>{{ entry.toolCount }} {{ t('tools') }}</span>
                     </div>
                     <div v-if="entry.mcpServers.length" class="text-gray-400 dark:text-gray-400">
                       MCP: {{ entry.mcpServers.join(', ') }}
@@ -499,7 +499,7 @@
                       </svg>
                     </div>
                     <div class="flex-1 min-w-0 bg-status-success-50 dark:bg-status-success-900/20 rounded-lg p-3">
-                      <div class="text-xs font-medium text-status-success-700 dark:text-status-success-300 mb-1">Result</div>
+                      <div class="text-xs font-medium text-status-success-700 dark:text-status-success-300 mb-1">{{ t('Result') }}</div>
                       <pre class="text-xs text-gray-600 dark:text-gray-400 bg-white/50 dark:bg-black/20 rounded p-2 whitespace-pre-wrap break-words max-h-48 overflow-y-auto">{{ entry.content }}</pre>
                     </div>
                   </div>
@@ -508,8 +508,8 @@
                   <div v-else-if="entry.type === 'result'" class="bg-gray-100 dark:bg-gray-900 rounded-lg p-3 text-xs border-t-2 border-gray-300 dark:border-gray-600">
                     <div class="flex items-center justify-between text-gray-500 dark:text-gray-400">
                       <div class="flex items-center space-x-3">
-                        <span class="font-semibold text-status-success-600 dark:text-status-success-400">Completed</span>
-                        <span>{{ entry.numTurns }} turns</span>
+                        <span class="font-semibold text-status-success-600 dark:text-status-success-400">{{ t('Completed') }}</span>
+                        <span>{{ entry.numTurns }} {{ t('turns') }}</span>
                       </div>
                       <div class="flex items-center space-x-3 font-mono">
                         <span>{{ entry.duration }}</span>
@@ -533,7 +533,7 @@
         :disabled="releaseLoading"
         class="text-xs text-gray-500 dark:text-gray-400 hover:text-status-danger-600 dark:hover:text-status-danger-400 mr-4"
       >
-        {{ releaseLoading ? 'Releasing...' : 'Force Release Queue' }}
+        {{ releaseLoading ? t('Releasing...') : t('Force Release Queue') }}
       </button>
       <button
         v-if="queueStatus?.queue_length > 0"
@@ -541,13 +541,14 @@
         :disabled="clearLoading"
         class="text-xs text-gray-500 dark:text-gray-400 hover:text-status-danger-600 dark:hover:text-status-danger-400"
       >
-        {{ clearLoading ? 'Clearing...' : 'Clear Queued' }}
+        {{ clearLoading ? t('Clearing...') : t('Clear Queued') }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import SkeletonLoader from './SkeletonLoader.vue'
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import axios from 'axios'
@@ -713,7 +714,7 @@ async function loadExecutions() {
     }
   } catch (error) {
     console.error('Failed to load executions:', error)
-    loadError.value = apiErrorMessage(error, 'Request failed')
+    loadError.value = apiErrorMessage(error, uiText("Request failed"))
   }
 }
 
@@ -849,7 +850,7 @@ async function runNewTask() {
         ...pendingTasks.value[idx],
         status: 'failed',
         duration_ms: durationMs,
-        error: error.response?.data?.detail || error.message || 'Task failed'
+        error: error.response?.data?.detail || error.message || uiText('Task failed')
       }
     }
   } finally {
@@ -954,7 +955,7 @@ async function terminateTask(task) {
     const idx = pendingTasks.value.findIndex(t => t.id === task.id)
     if (idx !== -1) {
       pendingTasks.value[idx].status = 'cancelled'
-      pendingTasks.value[idx].error = 'Execution terminated by user'
+      pendingTasks.value[idx].error = uiText('Execution terminated by user')
     }
 
     // Refresh data to get updated status
@@ -964,7 +965,7 @@ async function terminateTask(task) {
     // Show error in task if possible
     const idx = pendingTasks.value.findIndex(t => t.id === task.id)
     if (idx !== -1) {
-      pendingTasks.value[idx].error = error.response?.data?.detail || 'Failed to terminate'
+      pendingTasks.value[idx].error = error.response?.data?.detail || uiText('Failed to terminate')
     }
   } finally {
     terminatingTaskId.value = null
@@ -984,7 +985,7 @@ async function viewExecutionLog(task) {
     })
     logData.value = response.data
   } catch (error) {
-    logError.value = error.response?.data?.detail || error.message || 'Failed to load execution log'
+    logError.value = error.response?.data?.detail || error.message || uiText("Failed to load execution log")
   } finally {
     logLoading.value = false
   }
@@ -1137,11 +1138,11 @@ function formatRelativeTime(dateStr) {
   const now = new Date()
   const diff = (now - date) / 1000
 
-  if (diff < 5) return 'just now'
-  if (diff < 60) return `${Math.round(diff)}s ago`
-  if (diff < 3600) return `${Math.round(diff / 60)}m ago`
-  if (diff < 86400) return `${Math.round(diff / 3600)}h ago`
-  return `${Math.round(diff / 86400)}d ago`
+  if (diff < 5) return uiText("just now")
+  if (diff < 60) return uiText("{arg1}s ago", { arg1: (Math.round(diff)) })
+  if (diff < 3600) return uiText("{arg1}m ago", { arg1: (Math.round(diff / 60)) })
+  if (diff < 86400) return uiText("{arg1}h ago", { arg1: (Math.round(diff / 3600)) })
+  return uiText("{arg1}d ago", { arg1: (Math.round(diff / 86400)) })
 }
 
 function formatDuration(ms) {
@@ -1187,7 +1188,7 @@ function taskCompactTooltip(task) {
     const dur = e.duration_ms ? `${(e.duration_ms / 1000).toFixed(1)}s` : '?'
     return `#${i + 1}: ${pre} → ${post} tokens (${dur})`
   })
-  return `Conversation auto-compacted mid-turn:\n${lines.join('\n')}`
+  return uiText("Conversation auto-compacted mid-turn:\n{arg1}", { arg1: (lines.join('\n')) })
 }
 
 // Start polling
@@ -1244,4 +1245,6 @@ onMounted(() => {
 onUnmounted(() => {
   stopPolling()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

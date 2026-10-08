@@ -51,7 +51,7 @@
           v-if="isExpanded"
           @click.stop="store.toggleExpand(item.id)"
           class="flex-shrink-0 p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 rounded"
-          aria-label="Collapse"
+          :aria-label="uiText(&quot;Collapse&quot;)"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -76,7 +76,7 @@
           <svg class="w-3.5 h-3.5 transition-transform" :class="showContext ? 'rotate-90' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
-          {{ showContext ? 'Hide' : 'Show' }} details
+          {{ showContext ? uiText("Hide") : uiText("Show") }} {{ uiText("details") }}
         </button>
         <div v-if="showContext" class="mt-2 bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">
           <div v-for="(value, key) in item.context" :key="key" class="flex gap-3 text-xs py-0.5">
@@ -116,7 +116,7 @@
               v-model="responseText"
               type="text"
               class="flex-1 text-sm rounded-lg border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Add a note (optional)..."
+              :placeholder="uiText(&quot;Add a note (optional)...&quot;)"
               @click.stop
               @keydown.enter.stop="selectedOption && submitApproval()"
             />
@@ -128,7 +128,7 @@
                 ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'"
             >
-              Send
+              {{ uiText("Send") }}
             </button>
           </div>
         </div>
@@ -139,7 +139,7 @@
             v-model="responseText"
             rows="3"
             class="w-full text-sm rounded-lg border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Type your answer..."
+            :placeholder="uiText(&quot;Type your answer...&quot;)"
             @click.stop
           ></textarea>
           <div class="flex justify-end">
@@ -151,7 +151,7 @@
                 ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'"
             >
-              Send Answer
+              {{ uiText("Send Answer") }}
             </button>
           </div>
         </div>
@@ -162,7 +162,7 @@
             @click.stop="store.acknowledgeItem(item.id)"
             class="px-5 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
-            Got it
+            {{ uiText("Got it") }}
           </button>
         </div>
       </div>
@@ -254,13 +254,15 @@ function timeAgo(isoString) {
   const diffHr = Math.floor(diffMs / 3600000)
   const diffDay = Math.floor(diffMs / 86400000)
 
-  if (diffMin < 1) return 'just now'
-  if (diffMin < 60) return `${diffMin}m ago`
-  if (diffHr < 24) return `${diffHr}h ago`
-  return `${diffDay}d ago`
+  if (diffMin < 1) return uiText("just now")
+  if (diffMin < 60) return uiText("{arg1}m ago", { arg1: (diffMin) })
+  if (diffHr < 24) return uiText("{arg1}h ago", { arg1: (diffHr) })
+  return uiText("{arg1}d ago", { arg1: (diffDay) })
 }
 
 function isUrl(str) {
   return str.startsWith('http://') || str.startsWith('https://')
 }
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { ref } from 'vue'
 
 /**
@@ -20,7 +22,7 @@ export function useAgentSharing(agentRef, agentsStore, loadAgent, showNotificati
       const result = await agentsStore.shareAgent(agentRef.value.name, shareEmail.value.trim())
       shareMessage.value = {
         type: 'success',
-        text: `Agent shared with ${shareEmail.value.trim()}`
+        get "text"() { return uiText("Agent shared with {arg1}", { arg1: (shareEmail.value.trim()) }) }
       }
       shareEmail.value = ''
       // Refresh agent data to update shares list
@@ -29,7 +31,7 @@ export function useAgentSharing(agentRef, agentsStore, loadAgent, showNotificati
       console.error('Failed to share agent:', err)
       shareMessage.value = {
         type: 'error',
-        text: err.response?.data?.detail || err.message || 'Failed to share agent'
+        text: err.response?.data?.detail || err.message || uiText("Failed to share agent")
       }
     } finally {
       shareLoading.value = false
@@ -47,12 +49,12 @@ export function useAgentSharing(agentRef, agentsStore, loadAgent, showNotificati
 
     try {
       await agentsStore.unshareAgent(agentRef.value.name, email)
-      showNotification(`Sharing removed for ${email}`, 'success')
+      showNotification(uiText("Sharing removed for {arg1}", { arg1: (email) }), 'success')
       // Refresh agent data to update shares list
       await loadAgent()
     } catch (err) {
       console.error('Failed to remove share:', err)
-      showNotification(err.response?.data?.detail || 'Failed to remove sharing', 'error')
+      showNotification(err.response?.data?.detail || uiText("Failed to remove sharing"), 'error')
     } finally {
       unshareLoading.value = null
     }

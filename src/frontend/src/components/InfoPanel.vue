@@ -11,7 +11,7 @@
       :message="staleMessage"
       :detail="loadError"
       retryable
-      :retry-label="loading ? 'Retrying…' : 'Try again'"
+      :retry-label="loading ? uiText(&quot;Retrying…&quot;) : uiText(&quot;Try again&quot;)"
       @retry="loadTemplateInfo"
       @dismiss="loadError = ''"
     />
@@ -27,7 +27,7 @@
       <div class="h-3 w-full rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
       <div class="h-3 w-5/6 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
       <div class="h-3 w-2/3 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
-      <span class="sr-only">Loading…</span>
+      <span class="sr-only">{{ uiText("Loading…") }}</span>
     </div>
 
     <!-- Failed State (#1926) — a failed /info fetch used to be dressed up as
@@ -36,10 +36,10 @@
          on "no data" too: with content on screen the failure is the banner above. -->
     <LoadFailed
       v-else-if="loadFailed"
-      title="Couldn't load template info"
+      :title="uiText(&quot;Couldn't load template info&quot;)"
       :message="agentStatus === 'running'
-        ? 'The agent did not return its template information. Try again.'
-        : 'The agent is not running, so its template information is unavailable. Start the agent and try again.'"
+        ? uiText('The agent did not return its template information. Try again.')
+        : uiText('The agent is not running, so its template information is unavailable. Start the agent and try again.')"
       :detail="loadError"
       :retrying="loading"
       @retry="loadTemplateInfo"
@@ -52,12 +52,12 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">No Template Information</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("No Template Information") }}</h3>
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-        {{ templateInfo?.message || 'This agent was created without a template.' }}
+        {{ templateInfo?.message || uiText("This agent was created without a template.") }}
       </p>
       <div v-if="templateInfo?.template_name" class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-        Template: <span class="font-mono text-gray-700 dark:text-gray-300">{{ templateInfo.template_name }}</span>
+        {{ uiText("Template:") }} <span class="font-mono text-gray-700 dark:text-gray-300">{{ templateInfo.template_name }}</span>
       </div>
     </div>
 
@@ -109,7 +109,7 @@
           <svg class="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
-          What You Can Ask
+          {{ uiText("What You Can Ask") }}
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
           <div
@@ -117,7 +117,7 @@
             :key="index"
             class="flex items-start space-x-2 px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-action-primary-50 dark:hover:bg-action-primary-900/30 hover:border-action-primary-200 dark:hover:border-action-primary-700 border border-transparent transition-colors cursor-pointer"
             @click="handleUseCaseClick(useCase)"
-            title="Click to run this task"
+            :title="uiText(&quot;Click to run this task&quot;)"
           >
             <svg class="w-4 h-4 text-action-primary-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -136,7 +136,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            Technical details
+            {{ uiText("Technical details") }}
           </span>
           <svg class="w-4 h-4 text-gray-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -150,15 +150,15 @@
           <svg class="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
           </svg>
-          Resources
+          {{ uiText("Resources") }}
         </h3>
         <div class="flex space-x-6">
           <div v-if="templateInfo.resources.cpu" class="flex items-center space-x-2">
             <span class="text-sm text-gray-500 dark:text-gray-400">CPU:</span>
-            <span class="text-sm font-mono font-medium text-gray-900 dark:text-gray-100">{{ templateInfo.resources.cpu }} cores</span>
+            <span class="text-sm font-mono font-medium text-gray-900 dark:text-gray-100">{{ templateInfo.resources.cpu }} {{ uiText("cores") }}</span>
           </div>
           <div v-if="templateInfo.resources.memory" class="flex items-center space-x-2">
-            <span class="text-sm text-gray-500 dark:text-gray-400">Memory:</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ uiText("Memory:") }}</span>
             <span class="text-sm font-mono font-medium text-gray-900 dark:text-gray-100">{{ templateInfo.resources.memory }}</span>
           </div>
         </div>
@@ -170,7 +170,7 @@
           <svg class="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
-          Sub-Agents ({{ templateInfo.sub_agents.length }})
+          {{ uiText("Sub-Agents (") }}{{ templateInfo.sub_agents.length }})
         </h3>
         <div class="space-y-2">
           <div
@@ -178,7 +178,7 @@
             :key="getItemName(subAgent)"
             class="flex items-start space-x-3 px-3 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 cursor-pointer transition-colors"
             @click="handleSubAgentClick(subAgent)"
-            title="Click to delegate task to this sub-agent"
+            :title="uiText(&quot;Click to delegate task to this sub-agent&quot;)"
           >
             <div class="w-2 h-2 bg-blue-400 rounded-full mt-1.5 flex-shrink-0"></div>
             <div class="flex-1 min-w-0">
@@ -200,7 +200,7 @@
           <svg class="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          Slash Commands ({{ templateInfo.commands.length }})
+          {{ uiText("Slash Commands (") }}{{ templateInfo.commands.length }})
         </h3>
         <div class="space-y-2">
           <div
@@ -208,7 +208,7 @@
             :key="getItemName(command)"
             class="flex items-start space-x-3 px-3 py-2 bg-accent-purple-50 dark:bg-accent-purple-900/30 rounded-lg hover:bg-accent-purple-100 dark:hover:bg-accent-purple-900/50 cursor-pointer transition-colors"
             @click="handleCommandClick(command)"
-            title="Click to run this command"
+            :title="uiText(&quot;Click to run this command&quot;)"
           >
             <span class="text-sm font-mono font-medium text-accent-purple-800 dark:text-accent-purple-300 flex-shrink-0">/{{ getItemName(command) }}</span>
             <p v-if="getItemDescription(command)" class="text-xs text-accent-purple-600 dark:text-accent-purple-400 mt-0.5 flex-1">
@@ -227,7 +227,7 @@
           <svg class="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
           </svg>
-          MCP Servers ({{ templateInfo.mcp_servers.length }})
+          {{ uiText("MCP Servers (") }}{{ templateInfo.mcp_servers.length }})
         </h3>
         <div class="space-y-2">
           <div
@@ -249,7 +249,7 @@
           <svg class="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
           </svg>
-          Skills ({{ templateInfo.skills.length }})
+          {{ uiText("Skills (") }}{{ templateInfo.skills.length }})
         </h3>
         <div class="space-y-2">
           <div
@@ -271,7 +271,7 @@
           <svg class="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
-          Capabilities
+          {{ uiText("Capabilities") }}
         </h3>
         <div class="flex flex-wrap gap-2">
           <span
@@ -290,7 +290,7 @@
           <svg class="w-4 h-4 mr-2 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
           </svg>
-          Supported Platforms
+          {{ uiText("Supported Platforms") }}
         </h3>
         <div class="flex flex-wrap gap-2">
           <span
@@ -310,7 +310,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          Enabled Tools
+          {{ uiText("Enabled Tools") }}
         </h3>
         <div class="flex flex-wrap gap-2">
           <span
@@ -369,7 +369,7 @@ const view = computed(() => viewState({
 // as one boolean so the #1921 ScanlineReveal swap is mechanical (`:loading="firstLoad"`).
 const firstLoad = computed(() => view.value.state === 'loading')
 const loadFailed = computed(() => view.value.state === 'failed')
-const staleMessage = computed(() => staleBannerMessage('template info', lastLoadedAt.value))
+const staleMessage = computed(() => staleBannerMessage(uiText('template info'), lastLoadedAt.value))
 
 // #1107: whether any technical-metadata section has content (gates the
 // collapsible "Technical details" disclosure).
@@ -401,7 +401,7 @@ const loadTemplateInfo = async () => {
     // Do NOT synthesize a has_template:false payload here — that renders the
     // failure as the empty state (#1926). Keep the last good value (if any)
     // and let the failed state own the surface.
-    loadError.value = apiErrorMessage(error, 'Request failed')
+    loadError.value = apiErrorMessage(error, uiText("Request failed"))
   } finally {
     loading.value = false
   }
@@ -472,4 +472,6 @@ watch(() => props.agentStatus, (newStatus) => {
 onMounted(() => {
   loadTemplateInfo()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

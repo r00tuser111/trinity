@@ -25,10 +25,10 @@
           >
             <div class="py-2 max-h-64 overflow-y-auto">
               <div v-if="sessionsLoading" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                Loading sessions...
+                {{ t('Loading sessions...') }}
               </div>
               <div v-else-if="sessions.length === 0" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                No previous sessions
+                {{ t('No previous sessions') }}
               </div>
               <button
                 v-else
@@ -43,7 +43,7 @@
                     {{ formatSessionDate(session.started_at) }}
                   </span>
                   <span class="text-xs text-gray-400">
-                    {{ session.message_count }} msg{{ session.message_count !== 1 ? 's' : '' }}
+                    {{ session.message_count }} {{ t('msg') }}{{ session.message_count !== 1 ? 's' : '' }}
                   </span>
                 </div>
                 <p v-if="session.last_message" class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
@@ -58,7 +58,7 @@
       <div class="flex items-center space-x-2">
         <!-- Model selector -->
         <div class="w-44">
-          <ModelSelector v-model="selectedModel" compact placeholder="Default model" />
+          <ModelSelector v-model="selectedModel" compact :placeholder="t('Default model')" />
         </div>
 
         <!-- New Chat button -->
@@ -70,7 +70,7 @@
           <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          New Chat
+          {{ t('New Chat') }}
         </button>
       </div>
     </div>
@@ -83,9 +83,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Agent Not Running</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ t('Agent Not Running') }}</h3>
         <p class="text-gray-500 dark:text-gray-400 text-sm">
-          Start the agent to begin chatting.
+          {{ t('Start the agent to begin chatting.') }}
         </p>
       </div>
     </div>
@@ -102,17 +102,17 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span class="text-sm text-action-primary-700 dark:text-action-primary-300">
-            Continuing from execution
+            {{ t('Continuing from execution') }}
             <span class="font-mono text-xs bg-action-primary-100 dark:bg-action-primary-800 px-1.5 py-0.5 rounded">
               {{ resumeExecutionIdLocal?.substring(0, 8) }}...
             </span>
-            - The agent has full context from that execution.
+            {{ t('- The agent has full context from that execution.') }}
           </span>
         </div>
         <button
           @click="dismissResumeMode"
           class="text-action-primary-500 hover:text-action-primary-700 dark:hover:text-action-primary-300"
-          title="Dismiss"
+          :title="t('Dismiss')"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -139,7 +139,7 @@
 
       <!-- Error message -->
       <div v-if="error" class="mx-6 mb-2 p-3 rounded-lg" :class="isRateLimitError ? 'bg-state-autonomous-100 dark:bg-state-autonomous-900/30 border border-state-autonomous-200 dark:border-state-autonomous-800' : 'bg-status-danger-100 dark:bg-status-danger-900/30 border border-status-danger-200 dark:border-status-danger-800'">
-        <p v-if="isRateLimitError" class="text-sm font-medium text-state-autonomous-700 dark:text-state-autonomous-400 mb-1">Subscription Usage Limit</p>
+        <p v-if="isRateLimitError" class="text-sm font-medium text-state-autonomous-700 dark:text-state-autonomous-400 mb-1">{{ t('Subscription Usage Limit') }}</p>
         <p class="text-sm" :class="isRateLimitError ? 'text-state-autonomous-600 dark:text-state-autonomous-400' : 'text-status-danger-600 dark:text-status-danger-400'">{{ error }}</p>
       </div>
 
@@ -163,6 +163,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import { ref, computed, nextTick, onMounted, onUnmounted, onActivated, onDeactivated, watch } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
@@ -281,12 +284,12 @@ const isResumeMode = computed(() => !!resumeSessionIdLocal.value && !resumeBanne
 
 // Computed
 const currentSessionLabel = computed(() => {
-  if (!currentSessionId.value) return 'New Conversation'
+  if (!currentSessionId.value) return uiText("New Conversation")
   const session = sessions.value.find(s => s.id === currentSessionId.value)
   if (session) {
     return formatSessionDate(session.started_at)
   }
-  return 'Current Session'
+  return uiText("Current Session")
 })
 
 // Format session date
@@ -299,10 +302,10 @@ const formatSessionDate = (dateStr) => {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
 
-  if (diffMins < 1) return 'Just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays < 7) return `${diffDays}d ago`
+  if (diffMins < 1) return uiText("Just now")
+  if (diffMins < 60) return uiText("{arg1}m ago", { arg1: (diffMins) })
+  if (diffHours < 24) return uiText("{arg1}h ago", { arg1: (diffHours) })
+  if (diffDays < 7) return uiText("{arg1}d ago", { arg1: (diffDays) })
 
   return date.toLocaleDateString('en-US', {
     month: 'short',
@@ -376,7 +379,7 @@ const selectSession = async (session, closeDropdown = true) => {
     }))
   } catch (err) {
     console.error('Failed to load session:', err)
-    error.value = 'Failed to load conversation history'
+    error.value = uiText("Failed to load conversation history")
   } finally {
     loading.value = false
     focusChatInput()
@@ -649,9 +652,9 @@ const sendMessage = async (userMessage, files = []) => {
           timestamp: new Date().toISOString()
         })
       } else if (execution.status === 'failed') {
-        error.value = execution.error || 'Task execution failed'
+        error.value = execution.error || uiText("Task execution failed")
       } else if (execution.status === 'cancelled') {
-        error.value = 'Task was cancelled'
+        error.value = uiText("Task was cancelled")
       }
 
       // Update session ID from the execution
@@ -667,12 +670,12 @@ const sendMessage = async (userMessage, files = []) => {
         }
       }
     } else {
-      error.value = 'Request timed out. Please try again.'
+      error.value = uiText("Request timed out. Please try again.")
     }
   } catch (err) {
     console.error('Chat error:', err)
     closeSSE()
-    error.value = err.response?.data?.detail || 'Failed to send message. Please try again.'
+    error.value = err.response?.data?.detail || uiText("Failed to send message. Please try again.")
     // Remove the user message if send failed
     messages.value.pop()
   } finally {

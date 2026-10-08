@@ -9,7 +9,7 @@
           <button
             @click="zoomOut"
             class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
-            title="Zoom out"
+            :title="uiText(&quot;Zoom out&quot;)"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
@@ -23,12 +23,12 @@
             max="20"
             step="0.5"
             class="w-20 h-1 accent-blue-500"
-            title="Zoom level"
+            :title="uiText(&quot;Zoom level&quot;)"
           />
           <button
             @click="zoomIn"
             class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
-            title="Zoom in"
+            :title="uiText(&quot;Zoom in&quot;)"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -45,7 +45,7 @@
               v-model="hideInactiveAgents"
               class="w-3 h-3 rounded border-gray-300 dark:border-gray-600 text-blue-500 focus:ring-blue-500"
             />
-            <span>Active only</span>
+            <span>{{ uiText("Active only") }}</span>
           </label>
         </div>
 
@@ -58,7 +58,7 @@
           <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
           </svg>
-          <span>Jump to Now</span>
+          <span>{{ uiText("Jump to Now") }}</span>
         </button>
       </div>
 
@@ -66,40 +66,40 @@
       <div class="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
         <!-- Activity type legend -->
         <div class="hidden sm:flex items-center space-x-3 border-r border-gray-300 dark:border-gray-600 pr-3">
-          <span class="flex items-center space-x-1" title="Manual task executions">
+          <span class="flex items-center space-x-1" :title="uiText(&quot;Manual task executions&quot;)">
             <span class="w-2 h-2 rounded" style="background-color: #22c55e"></span>
-            <span>Manual</span>
+            <span>{{ uiText("Manual") }}</span>
           </span>
-          <span class="flex items-center space-x-1" title="MCP executions (via Claude Code)">
+          <span class="flex items-center space-x-1" :title="uiText(&quot;MCP executions (via Claude Code)&quot;)">
             <span class="w-2 h-2 rounded" style="background-color: #ec4899"></span>
             <span>MCP</span>
           </span>
-          <span class="flex items-center space-x-1" title="Scheduled task executions">
+          <span class="flex items-center space-x-1" :title="uiText(&quot;Scheduled task executions&quot;)">
             <span class="w-2 h-2 rounded" style="background-color: #8b5cf6"></span>
-            <span>Scheduled</span>
+            <span>{{ uiText("Scheduled") }}</span>
           </span>
-          <span class="flex items-center space-x-1" title="Agent-triggered executions (called by another agent)">
+          <span class="flex items-center space-x-1" :title="uiText(&quot;Agent-triggered executions (called by another agent)&quot;)">
             <span class="w-2 h-2 rounded" style="background-color: #06b6d4"></span>
-            <span>Agent-Triggered</span>
+            <span>{{ uiText("Agent-Triggered") }}</span>
           </span>
-          <span class="flex items-center space-x-1" title="Paid executions (via Nevermined payment)">
+          <span class="flex items-center space-x-1" :title="uiText(&quot;Paid executions (via Nevermined payment)&quot;)">
             <span class="w-2 h-2 rounded" style="background-color: #eab308"></span>
-            <span>Paid</span>
+            <span>{{ uiText("Paid") }}</span>
           </span>
-          <span class="flex items-center space-x-1" title="Public link executions">
+          <span class="flex items-center space-x-1" :title="uiText(&quot;Public link executions&quot;)">
             <span class="w-2 h-2 rounded" style="background-color: #0d9488"></span>
-            <span>Public</span>
+            <span>{{ uiText("Public") }}</span>
           </span>
-          <span class="flex items-center space-x-1" title="Schedule marker (shows next scheduled run time)">
+          <span class="flex items-center space-x-1" :title="uiText(&quot;Schedule marker (shows next scheduled run time)&quot;)">
             <span class="text-accent-purple-500 text-xs font-bold">▼</span>
-            <span>Next Run</span>
+            <span>{{ uiText("Next Run") }}</span>
           </span>
         </div>
         <span v-if="isLiveMode" class="flex items-center space-x-1">
           <span class="w-1.5 h-1.5 rounded-full bg-status-success-500 animate-pulse"></span>
-          <span>Live</span>
+          <span>{{ uiText("Live") }}</span>
         </span>
-        <span>{{ totalEvents }} events</span>
+        <span>{{ totalEvents }} {{ uiText("events") }}</span>
       </div>
     </div>
 
@@ -214,7 +214,7 @@
               <div class="flex items-center text-[10px] text-gray-500 dark:text-gray-400 gap-1">
                 <template v-if="row.executionStats && row.executionStats.taskCount > 0">
                   <span class="font-medium text-gray-700 dark:text-gray-300">{{ row.executionStats.taskCount }}</span>
-                  <span>tasks</span>
+                  <span>{{ uiText("tasks") }}</span>
                   <span class="text-gray-300 dark:text-gray-500">·</span>
                   <span :class="getSuccessRateClass(row.executionStats.successRate)" class="font-medium">{{ Math.round(row.executionStats.successRate || 0) }}%</span>
                   <template v-if="row.executionStats.totalCost > 0">
@@ -223,7 +223,7 @@
                   </template>
                 </template>
                 <template v-else>
-                  <span class="text-gray-400 dark:text-gray-400">No tasks</span>
+                  <span class="text-gray-400 dark:text-gray-400">{{ uiText("No tasks") }}</span>
                 </template>
                 <span class="flex-1"></span>
                 <span class="text-gray-400">{{ row.memoryLimit || '4g' }}</span>
@@ -340,7 +340,7 @@
                 @click="navigateToExecution(activity)"
               >
                 <title>{{ getBarTooltip(activity) }}
-(Click to open in new tab)</title>
+{{ uiText("(Click to open in new tab)") }}</title>
               </rect>
             </g>
 
@@ -1017,10 +1017,10 @@ function formatLastExecution(timestamp) {
   const now = new Date()
   const diff = now - date
 
-  if (diff < 60000) return `${Math.floor(diff / 1000)}s ago`
-  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`
-  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`
-  return `${Math.floor(diff / 86400000)}d ago`
+  if (diff < 60000) return uiText("{arg1}s ago", { arg1: (Math.floor(diff / 1000)) })
+  if (diff < 3600000) return uiText("{arg1}m ago", { arg1: (Math.floor(diff / 60000)) })
+  if (diff < 86400000) return uiText("{arg1}h ago", { arg1: (Math.floor(diff / 3600000)) })
+  return uiText("{arg1}d ago", { arg1: (Math.floor(diff / 86400000)) })
 }
 
 function formatGithubRepo(repo) {
@@ -1050,7 +1050,7 @@ function getArrowHead(arrow) {
 }
 
 function formatDuration(ms) {
-  if (!ms || ms <= 0) return 'Unknown duration'
+  if (!ms || ms <= 0) return uiText("Unknown duration")
   if (ms < 1000) return `${ms}ms`
   if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`
   if (ms < 3600000) return `${Math.floor(ms / 60000)}m ${Math.floor((ms % 60000) / 1000)}s`
@@ -1113,27 +1113,27 @@ function getBarTooltip(activity) {
   const triggeredBy = activity.triggeredBy
 
   if (activityType?.startsWith('schedule_') || triggeredBy === 'schedule') {
-    prefix = activity.scheduleName ? `Scheduled: ${activity.scheduleName}` : 'Scheduled Task'
+    prefix = activity.scheduleName ? uiText('Scheduled: {name}', { name: activity.scheduleName }) : uiText('Scheduled Task')
   } else if (triggeredBy === 'agent') {
-    prefix = 'Agent-Triggered Task'
+    prefix = uiText('Agent-Triggered Task')
   } else if (triggeredBy === 'mcp') {
-    prefix = 'MCP Task'
+    prefix = uiText('MCP Task')
   } else if (triggeredBy === 'manual') {
-    prefix = 'Manual Task'
+    prefix = uiText('Manual Task')
   } else if (triggeredBy === 'paid') {
-    prefix = 'Paid Task'
+    prefix = uiText('Paid Task')
   } else if (triggeredBy === 'public') {
-    prefix = 'Public Task'
+    prefix = uiText('Public Task')
   } else if (triggeredBy === 'user') {
-    prefix = 'Task'
+    prefix = uiText('Task')
   } else {
-    prefix = 'Execution'
+    prefix = uiText('Execution')
   }
 
   // Determine status
-  if (activity.isCancelled) status = '(Cancelled)'  // #1332
-  else if (activity.hasError) status = '(Error)'
-  else if (activity.isInProgress) status = '(In Progress)'
+  if (activity.isCancelled) status = uiText('(Cancelled)')  // #1332
+  else if (activity.hasError) status = uiText('(Error)')
+  else if (activity.isInProgress) status = uiText('(In Progress)')
   else status = ''
 
   const duration = activity.isEstimated
@@ -1146,12 +1146,12 @@ function getBarTooltip(activity) {
   // #514: optional command + response/error preview lines.
   const lines = [header]
   const cmd = previewLine(activity.commandPreview)
-  if (cmd) lines.push(`Cmd: ${cmd}`)
+  if (cmd) lines.push(uiText('Cmd: {text}', { text: cmd }))
   if (activity.hasError && activity.errorText) {
-    lines.push(`Error: ${previewLine(activity.errorText)}`)
+    lines.push(uiText('Error: {text}', { text: previewLine(activity.errorText) }))
   } else {
     const resp = previewLine(activity.responsePreview)
-    if (resp) lines.push(`Out: ${resp}`)
+    if (resp) lines.push(uiText('Out: {text}', { text: resp }))
   }
   return lines.join('\n')
 }
@@ -1177,8 +1177,8 @@ function getScheduleTooltip(marker) {
   const nextRun = formatLocalTime(marker.nextRun)
   const messagePreview = marker.message && marker.message.length > 50
     ? marker.message.substring(0, 50) + '...'
-    : (marker.message || 'No message')
-  return `Schedule: ${marker.name}\nNext Run: ${nextRun}\nCron: ${marker.cronExpression}\nMessage: ${messagePreview}`
+    : (marker.message || uiText("No message"))
+  return uiText("Schedule: {arg1}\nNext Run: {arg2}\nCron: {arg3}\nMessage: {arg4}", { arg1: (marker.name), arg2: (nextRun), arg3: (marker.cronExpression), arg4: (messagePreview) })
 }
 
 function navigateToSchedule(marker) {
@@ -1187,6 +1187,8 @@ function navigateToSchedule(marker) {
     query: { tab: 'schedules' }
   })
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

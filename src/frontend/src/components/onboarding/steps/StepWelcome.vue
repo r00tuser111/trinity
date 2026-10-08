@@ -6,7 +6,7 @@
 -->
 <template>
   <div data-testid="first-run-step-welcome">
-    <FirstRunStepHeader kicker="Welcome" :title="title" :lead="lead" />
+    <FirstRunStepHeader :kicker="uiText(&quot;Welcome&quot;)" :title="title" :lead="lead" />
 
     <div class="mt-6 flex items-center gap-8 max-sm:flex-col max-sm:items-start max-sm:gap-4">
       <FirstRunConstellation :lit="lit" />
@@ -25,9 +25,9 @@
             </svg>
           </span>
           <span class="min-w-0">
-            <span class="block text-sm text-gray-900 dark:text-gray-100">{{ s.name }}</span>
+            <span class="block text-sm text-gray-900 dark:text-gray-100">{{ t(s.name) }}</span>
             <span class="block text-[12.5px] text-gray-500 dark:text-gray-400">
-              {{ states[s.key] === 'done' ? 'Done' : `${s.tag} · about ${s.minutes} min` }}
+              {{ states[s.key] === 'done' ? t('Done') : t('{tag} · about {minutes} min', { tag: t(s.tag), minutes: s.minutes }) }}
             </span>
           </span>
         </li>
@@ -35,12 +35,13 @@
     </div>
 
     <p class="mt-6 text-[12.5px] text-gray-500 dark:text-gray-400">
-      Governed · Auditable · Your infrastructure
+      {{ t('Governed · Auditable · Your infrastructure') }}
     </p>
   </div>
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { computed } from 'vue'
 import FirstRunStepHeader from '../FirstRunStepHeader.vue'
 import FirstRunConstellation from '../FirstRunConstellation.vue'
@@ -55,16 +56,18 @@ const props = defineProps({
 const todo = computed(() => props.steps.filter((s) => props.states[s.key] !== 'done'))
 
 const title = computed(() =>
-  todo.value.length ? 'Set up this instance' : 'This instance is set up'
+  todo.value.length ? t('Set up this instance') : t('This instance is set up')
 )
 
 const lead = computed(() => {
   const n = todo.value.length
-  if (!n) return 'Everything below is already configured. Walk through it again to change anything.'
-  const things = n === 1 ? 'One thing' : `${n} things`
+  if (!n) return uiText("Everything below is already configured. Walk through it again to change anything.")
+  const things = n === 1 ? t('One thing') : t('{count} things', { count: n })
   const required = todo.value.some((s) => s.required)
-    ? ' Connecting Claude is required — agents cannot think without it.'
+    ? t(' Connecting Claude is required — agents cannot think without it.')
     : ''
-  return `${things} to set up, about ${estimateMinutes(todo.value)} minutes.${required} Everything else can be skipped, and each step says where to find it later.`
+  return t('{things} to set up, about {minutes} minutes.{required} Everything else can be skipped, and each step says where to find it later.', { things, minutes: estimateMinutes(todo.value), required })
 })
+
+import { t as uiText } from '@/i18n'
 </script>

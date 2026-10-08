@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * ent#155 — stopping an in-flight chat turn, and getting the words back.
  *
@@ -136,6 +138,6 @@ export function restoreDraft(cancelledText, currentDraft) {
  */
 export function cancelOutcome({ ok, alreadyTerminal }) {
   if (alreadyTerminal) return { kind: 'noop', message: '' }
-  if (ok) return { kind: 'cancelled', message: 'Stopped.' }
-  return { kind: 'failed', message: "Couldn't stop the turn — it's still running." }
+  if (ok) return { kind: 'cancelled', get "message"() { return uiText("Stopped.") } }
+  return { kind: 'failed', get "message"() { return uiText("Couldn't stop the turn — it's still running.") } }
 }

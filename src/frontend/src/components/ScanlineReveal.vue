@@ -46,7 +46,7 @@
       <span class="scan-beam"></span>
     </div>
 
-    <span v-if="announce && phase === PHASE_LOADING" class="sr-only">Loading…</span>
+    <span v-if="announce && phase === PHASE_LOADING" class="sr-only">{{ uiText("Loading…") }}</span>
   </div>
 </template>
 
@@ -159,6 +159,8 @@ onActivated(() => {
 })
 
 onUnmounted(clearRevealTimer)
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

@@ -8,14 +8,14 @@
         modelValue ? 'text-status-success-600 dark:text-status-success-400' : 'text-gray-500 dark:text-gray-400'
       ]"
     >
-      {{ modelValue ? 'Running' : 'Stopped' }}
+      {{ modelValue ? uiText("Running") : uiText("Stopped") }}
     </span>
     <button
       @click="toggle"
       :disabled="disabled || loading"
       role="switch"
       :aria-checked="modelValue"
-      :aria-label="`Agent is ${modelValue ? 'running' : 'stopped'}. Click to ${modelValue ? 'stop' : 'start'}.`"
+      :aria-label="uiText(&quot;Agent is {arg1}. Click to {arg2}.&quot;, { arg1: (modelValue ? 'running' : 'stopped'), arg2: (modelValue ? 'stop' : 'start') })"
       class="relative inline-flex items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
       :class="[
         sizeClasses,
@@ -145,4 +145,6 @@ function toggle() {
     emit('toggle', newValue)
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -12,9 +12,9 @@
     <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6">
       <!-- Page Header -->
       <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Operations</h1>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ t('Operations') }}</h1>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {{ subtitle }}
+          {{ t(subtitle) }}
         </p>
       </div>
 
@@ -27,7 +27,7 @@
             ? 'border-blue-500 text-blue-600 dark:text-blue-400'
             : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          Needs Response
+          {{ t('Needs Response') }}
           <span
             v-if="operatorQueueStore.pendingCount > 0"
             class="ml-1.5 px-1.5 py-0.5 text-xs font-medium rounded-full"
@@ -45,7 +45,7 @@
             ? 'border-blue-500 text-blue-600 dark:text-blue-400'
             : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          Notifications
+          {{ t('Notifications') }}
           <span
             v-if="notificationsStore.pendingCount > 0"
             class="ml-1.5 px-1.5 py-0.5 text-xs font-medium rounded-full"
@@ -67,7 +67,7 @@
             ? 'border-blue-500 text-blue-600 dark:text-blue-400'
             : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          Health
+          {{ t('Health') }}
         </button>
         <button
           @click="switchTab('executions')"
@@ -76,7 +76,7 @@
             ? 'border-blue-500 text-blue-600 dark:text-blue-400'
             : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          Executions
+          {{ t('Executions') }}
         </button>
         <button
           @click="switchTab('reports')"
@@ -85,7 +85,7 @@
             ? 'border-blue-500 text-blue-600 dark:text-blue-400'
             : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          Reports
+          {{ t('Reports') }}
         </button>
         <button
           @click="switchTab('resolved')"
@@ -94,7 +94,7 @@
             ? 'border-blue-500 text-blue-600 dark:text-blue-400'
             : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
         >
-          Resolved
+          {{ t('Resolved') }}
         </button>
 
         <!-- Spacer + Clear All / Refresh buttons (operator tabs only —
@@ -111,14 +111,14 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
-            Clear All
+            {{ t('Clear All') }}
           </button>
           <button
             v-if="isOperatorTab"
             @click="refresh"
             :disabled="operatorQueueStore.loading"
             class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
-            title="Refresh"
+            :title="t('Refresh')"
           >
             <svg
               class="w-3.5 h-3.5"
@@ -127,7 +127,7 @@
             >
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Refresh
+            {{ t('Refresh') }}
           </button>
         </div>
       </div>
@@ -167,13 +167,13 @@
               <div class="h-3 w-2/3 rounded bg-gray-100 dark:bg-gray-800/60"></div>
             </div>
           </div>
-          <span class="sr-only">Checking the queue…</span>
+          <span class="sr-only">{{ t('Checking the queue…') }}</span>
         </div>
 
         <!-- Failed state (#1926) -->
         <LoadFailed
           v-else-if="queueLoadFailed"
-          title="Couldn't load the queue"
+          :title="t('Couldn\'t load the queue')"
           message="We can't tell whether your agents need you. Check your connection and try again."
           :detail="operatorQueueStore.error"
           :retrying="operatorQueueStore.loading"
@@ -187,8 +187,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 class="text-lg font-medium text-gray-900 dark:text-white">All caught up</h3>
-          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Your agents are working independently. Nice.</p>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('All caught up') }}</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('Your agents are working independently. Nice.') }}</p>
         </div>
 
         <!-- Card feed -->
@@ -224,12 +224,12 @@
       <!-- Resolved Items Tab (narrow card feed) -->
       <div v-if="activeTab === 'resolved'" class="max-w-3xl mx-auto">
         <div v-if="queueFirstLoad" class="text-center py-16" aria-busy="true">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Loading resolved items…</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('Loading resolved items…') }}</p>
         </div>
 
         <LoadFailed
           v-else-if="queueLoadFailed"
-          title="Couldn't load resolved items"
+          :title="t('Couldn\'t load resolved items')"
           message="The queue didn't load. Check your connection and try again."
           :detail="operatorQueueStore.error"
           :retrying="operatorQueueStore.loading"
@@ -237,7 +237,7 @@
         />
 
         <div v-else-if="operatorQueueStore.resolvedItems.length === 0" class="text-center py-16">
-          <p class="text-sm text-gray-500 dark:text-gray-400">No resolved items yet</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('No resolved items yet') }}</p>
         </div>
 
         <div v-else class="space-y-2">
@@ -255,7 +255,7 @@
       :visible="showClearConfirm"
       :title="clearConfirmTitle"
       :message="clearConfirmMessage"
-      confirm-text="Clear All"
+      :confirm-text="t('Clear All')"
       variant="danger"
       @confirm="confirmClearAll"
       @cancel="showClearConfirm = false"
@@ -265,6 +265,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import NavBar from '../components/NavBar.vue'
@@ -325,10 +328,10 @@ const isOperatorTab = computed(() => OPERATOR_TABS.includes(activeTab.value))
 
 const subtitle = computed(() => {
   if (activeTab.value === 'health') {
-    return 'Fleet-wide health status and alerts'
+    return uiText("Fleet-wide health status and alerts")
   }
   if (activeTab.value === 'executions') {
-    return 'All task runs across your fleet'
+    return uiText("All task runs across your fleet")
   }
 
   const queueCount = operatorQueueStore.pendingCount
@@ -336,7 +339,7 @@ const subtitle = computed(() => {
   const total = queueCount + notifCount
 
   if (total === 0) {
-    return 'All clear — your agents are working independently'
+    return uiText("All clear — your agents are working independently")
   }
 
   const parts = []
@@ -375,20 +378,20 @@ const clearableCount = computed(() => {
 })
 
 const clearConfirmTitle = computed(() => {
-  if (activeTab.value === 'needs-response') return 'Cancel all pending items?'
-  if (activeTab.value === 'notifications') return 'Dismiss all notifications?'
-  return 'Clear resolved items?'
+  if (activeTab.value === 'needs-response') return uiText("Cancel all pending items?")
+  if (activeTab.value === 'notifications') return uiText("Dismiss all notifications?")
+  return uiText("Clear resolved items?")
 })
 
 const clearConfirmMessage = computed(() => {
   const n = clearableCount.value
   if (activeTab.value === 'needs-response') {
-    return `This cancels ${n} pending ${n === 1 ? 'item' : 'items'} shown here. The agents waiting on them will be told their requests were cancelled and will not receive an answer. This affects all operators of these agents.`
+    return uiText("This cancels {arg1} pending {arg2} shown here. The agents waiting on them will be told their requests were cancelled and will not receive an answer. This affects all operators of these agents.", { arg1: (n), arg2: (n === 1 ? 'item' : 'items') })
   }
   if (activeTab.value === 'notifications') {
-    return 'This dismisses every non-dismissed notification from your accessible agents — including any not shown by the current filters — for all operators of these agents.'
+    return uiText("This dismisses every non-dismissed notification from your accessible agents — including any not shown by the current filters — for all operators of these agents.")
   }
-  return `This permanently deletes ${n === 1 ? 'this resolved item' : 'the resolved items'} for all operators of these agents. Items still awaiting agent confirmation are kept.`
+  return uiText("This permanently deletes {arg1} for all operators of these agents. Items still awaiting agent confirmation are kept.", { arg1: (n === 1 ? 'this resolved item' : 'the resolved items') })
 })
 
 async function confirmClearAll() {

@@ -7,7 +7,7 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Loading preview...</p>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading preview...") }}</p>
       </div>
     </div>
 
@@ -29,7 +29,7 @@
         </svg>
         <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">{{ file.name }}</h3>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {{ file.file_count || 0 }} items
+          {{ file.file_count || 0 }} {{ uiText("items") }}
         </p>
       </div>
     </div>
@@ -54,7 +54,7 @@
           class="max-w-full max-h-full rounded shadow-lg"
           preload="metadata"
         >
-          Your browser does not support video playback.
+          {{ uiText("Your browser does not support video playback.") }}
         </video>
       </div>
 
@@ -75,7 +75,7 @@
             class="w-full"
             preload="metadata"
           >
-            Your browser does not support audio playback.
+            {{ uiText("Your browser does not support audio playback.") }}
           </audio>
         </div>
       </div>
@@ -119,10 +119,10 @@
           </svg>
           <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">{{ file.name }}</h3>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Preview not available for this file type
+            {{ uiText("Preview not available for this file type") }}
           </p>
           <p class="mt-2 text-xs text-gray-400 dark:text-gray-500">
-            {{ previewData.type || 'Unknown type' }}
+            {{ previewData.type || uiText("Unknown type") }}
           </p>
         </div>
       </div>
@@ -134,7 +134,7 @@
         <svg class="h-12 w-12 text-gray-400 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
-        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Loading preview...</p>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading preview...") }}</p>
       </div>
     </div>
 
@@ -227,7 +227,7 @@ watch(() => props.previewData, async (data) => {
       const response = await fetch(data.url)
       textContent.value = await response.text()
     } catch (e) {
-      textContent.value = 'Failed to load text content'
+      textContent.value = uiText('Failed to load text content')
     }
   } else {
     textContent.value = ''
@@ -246,4 +246,6 @@ const onImageLoad = (event) => {
 onUnmounted(() => {
   // Parent handles blob URL cleanup
 })
+
+import { t as uiText } from '@/i18n'
 </script>

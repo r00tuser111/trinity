@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '../api'
@@ -48,9 +50,8 @@ export function normalizeError (err) {
     return {
       kind: 'unknown-outcome',
       message: timedOut
-        ? 'The request timed out. Deployment may still be running on the server — '
-          + 'refresh before trying again, because re-deploying creates duplicate agents.'
-        : (err?.message || 'Network error — the outcome is unknown.')
+        ? uiText("The request timed out. Deployment may still be running on the server — refresh before trying again, because re-deploying creates duplicate agents.")
+        : (err?.message || uiText("Network error — the outcome is unknown."))
     }
   }
 
@@ -78,11 +79,10 @@ export function normalizeError (err) {
   if (res.status >= 500) {
     return {
       kind: 'unknown-outcome',
-      message: `The server returned HTTP ${res.status}. Some agents may already `
-        + 'have been created — refresh before trying again.'
+      message: uiText("The server returned HTTP {arg1}. Some agents may already have been created — refresh before trying again.", { arg1: res.status })
     }
   }
-  return { kind: 'invalid', message: `HTTP ${res.status}` }
+  return { kind: 'invalid', get "message"() { return uiText("HTTP {arg1}", { arg1: (res.status) }) } }
 }
 
 export const useSystemsStore = defineStore('systems', () => {
@@ -212,7 +212,7 @@ export const useSystemsStore = defineStore('systems', () => {
   async function dryRun () {
     const text = manifestText.value
     if (!text.trim()) {
-      error.value = 'Paste, upload, or pick a manifest first.'
+      error.value = uiText("Paste, upload, or pick a manifest first.")
       return null
     }
     isLoading.value = true
@@ -254,7 +254,7 @@ export const useSystemsStore = defineStore('systems', () => {
   async function deploy () {
     const text = manifestText.value
     if (!text.trim()) {
-      error.value = 'Paste, upload, or pick a manifest first.'
+      error.value = uiText("Paste, upload, or pick a manifest first.")
       return null
     }
     isDeploying.value = true

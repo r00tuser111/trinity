@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from './auth'
@@ -228,9 +230,9 @@ export const useAgentsStore = defineStore('agents', {
         })
         const agent = this.agents.find(a => a.name === name)
         if (agent) agent.status = 'running'
-        return { success: true, message: response.data?.message || `Agent ${name} started` }
+        return { success: true, message: response.data?.message || uiText('Agent {name} started', { name }) }
       } catch (error) {
-        const message = error.response?.data?.detail || error.message || 'Failed to start agent'
+        const message = error.response?.data?.detail || error.message || uiText("Failed to start agent")
         console.error('Start agent error:', message)
         throw new Error(message)
       }
@@ -244,9 +246,9 @@ export const useAgentsStore = defineStore('agents', {
         })
         const agent = this.agents.find(a => a.name === name)
         if (agent) agent.status = 'stopped'
-        return { success: true, message: response.data?.message || `Agent ${name} stopped` }
+        return { success: true, message: response.data?.message || uiText('Agent {name} stopped', { name }) }
       } catch (error) {
-        const message = error.response?.data?.detail || error.message || 'Failed to stop agent'
+        const message = error.response?.data?.detail || error.message || uiText("Failed to stop agent")
         console.error('Stop agent error:', message)
         throw new Error(message)
       }
@@ -259,7 +261,7 @@ export const useAgentsStore = defineStore('agents', {
      */
     async toggleAgentRunning(name) {
       const agent = this.agents.find(a => a.name === name)
-      if (!agent) return { success: false, error: 'Agent not found' }
+      if (!agent) return { success: false, error: uiText('Agent not found') }
 
       this.runningToggleLoading[name] = true
 
@@ -278,7 +280,7 @@ export const useAgentsStore = defineStore('agents', {
         }
         return { success: true, status: agent.status }
       } catch (error) {
-        const message = error.response?.data?.detail || error.message || 'Failed to toggle agent'
+        const message = error.response?.data?.detail || error.message || uiText("Failed to toggle agent")
         console.error('Toggle agent running error:', message)
         return { success: false, error: message }
       } finally {
@@ -812,7 +814,7 @@ export const useAgentsStore = defineStore('agents', {
       try {
         const authStore = useAuthStore()
         const agent = this.agents.find(a => a.name === agentName)
-        if (!agent) return { success: false, error: 'Agent not found' }
+        if (!agent) return { success: false, error: uiText('Agent not found') }
 
         const newState = !agent.autonomy_enabled
 

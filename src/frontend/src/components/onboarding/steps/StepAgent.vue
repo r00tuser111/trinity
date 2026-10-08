@@ -18,20 +18,20 @@
 <template>
   <div data-testid="first-run-step-agent">
     <FirstRunStepHeader
-      kicker="Agents"
-      title="Your first agent"
+      :kicker="uiText(&quot;Agents&quot;)"
+      :title="uiText(&quot;Your first agent&quot;)"
       :lead="ctx.firstRun
-        ? 'Trinity runs agents. Here are three ways in — none of them commit you to anything.'
-        : 'You already have an agent of your own. Make another any time — or skip this.'"
+        ? uiText(&quot;Trinity runs agents. Here are three ways in — none of them commit you to anything.&quot;)
+        : uiText(&quot;You already have an agent of your own. Make another any time — or skip this.&quot;)"
       :badge="ctx.firstRun ? 'Optional' : 'Done'"
       schematic="agent"
     />
 
     <div class="mt-5 space-y-5">
       <section v-if="ctx.demoAgent">
-        <h3 class="text-sm font-[550] text-gray-900 dark:text-gray-100">Show me</h3>
+        <h3 class="text-sm font-[550] text-gray-900 dark:text-gray-100">{{ uiText("Show me") }}</h3>
         <p class="mt-0.5 text-[12.5px] text-gray-500 dark:text-gray-400">
-          Watch an agent this install already runs, before you build anything.
+          {{ uiText("Watch an agent this install already runs, before you build anything.") }}
         </p>
         <BaseButton
           class="mt-2"
@@ -40,14 +40,14 @@
           data-testid="first-run-show-me"
           @click="showMe"
         >
-          Watch {{ ctx.demoAgent }} work
+          {{ uiText("Watch") }} {{ ctx.demoAgent }} {{ uiText("work") }}
         </BaseButton>
       </section>
 
       <section>
-        <h3 class="text-sm font-[550] text-gray-900 dark:text-gray-100">Make me one</h3>
+        <h3 class="text-sm font-[550] text-gray-900 dark:text-gray-100">{{ uiText("Make me one") }}</h3>
         <p class="mt-0.5 text-[12.5px] text-gray-500 dark:text-gray-400">
-          Pick what it should do — the create form opens with the right template ready.
+          {{ uiText("Pick what it should do — the create form opens with the right template ready.") }}
         </p>
         <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <BaseButton
@@ -81,7 +81,7 @@
                hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100
                focus:outline-none focus-visible:ring-2 focus-visible:ring-action-primary-500/40"
       >
-        Already run a fleet? Bring it over →
+        {{ uiText("Already run a fleet? Bring it over →") }}
       </a>
     </div>
 
@@ -116,10 +116,10 @@ const telemetry = useProductTelemetryStore()
 // config/agent-templates; CreateAgentModal falls back to a blank agent when a
 // mapped template is missing in this deploy, so no existence pre-check here.
 const PURPOSES = [
-  { key: 'research', title: 'Research a market or topic', desc: 'Scans trends and competitors, summarizes findings.', template: 'local:scout' },
-  { key: 'strategy', title: 'Advise on strategy', desc: 'Turns inputs into clear, actionable recommendations.', template: 'local:sage' },
-  { key: 'writing', title: 'Write content & reports', desc: 'Drafts reports, proposals, and client deliverables.', template: 'local:scribe' },
-  { key: 'blank', title: 'Start from scratch', desc: 'A blank Claude Code agent you shape yourself.', template: '' },
+  { key: 'research', get "title"() { return uiText("Research a market or topic") }, get desc() { return uiText('Scans trends and competitors, summarizes findings.') }, template: 'local:scout' },
+  { key: 'strategy', get "title"() { return uiText("Advise on strategy") }, get desc() { return uiText('Turns inputs into clear, actionable recommendations.') }, template: 'local:sage' },
+  { key: 'writing', get "title"() { return uiText("Write content & reports") }, get desc() { return uiText('Drafts reports, proposals, and client deliverables.') }, template: 'local:scribe' },
+  { key: 'blank', get "title"() { return uiText("Start from scratch") }, get desc() { return uiText('A blank Claude Code agent you shape yourself.') }, template: '' },
 ]
 
 const creating = ref(false)
@@ -129,7 +129,7 @@ const chosen = ref('')
 function showMe() {
   const name = props.ctx.demoAgent
   if (!name) return
-  chosen.value = `Finishing setup opens ${name}'s chat, so you can watch it work.`
+  chosen.value = uiText("Finishing setup opens {name}'s chat, so you can watch it work.", { name })
   emit('complete', { next: `/agents/${name}?tab=chat`, label: chosen.value })
 }
 
@@ -147,8 +147,10 @@ function onCreated(agent) {
   // The WS agent_created event can lag while the container spins up.
   network.fetchAgents()
   chosen.value = name
-    ? `${name} is created. Finishing setup opens its chat.`
-    : 'Your agent is created.'
+    ? uiText('{name} is created. Finishing setup opens its chat.', { name })
+    : uiText('Your agent is created.')
   emit('complete', name ? { next: `/agents/${name}?tab=chat`, label: chosen.value } : undefined)
 }
+
+import { t as uiText } from '@/i18n'
 </script>

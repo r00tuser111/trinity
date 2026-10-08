@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Sync health indicator helpers (#389 S1).
  *
@@ -39,19 +41,19 @@ export function syncHealthColor(entry) {
 }
 
 export function syncHealthLabel(entry) {
-  if (!entry) return 'Sync status unknown'
+  if (!entry) return uiText("Sync status unknown")
   const status = entry.last_sync_status || 'never'
-  if (status === 'never') return 'No sync attempts yet'
+  if (status === 'never') return uiText("No sync attempts yet")
   if (entry.behind_working && entry.behind_working > 0) {
-    return `Working branch has ${entry.behind_working} unseen commit(s) from a peer`
+    return uiText("Working branch has {arg1} unseen commit(s) from a peer", { arg1: (entry.behind_working) })
   }
   if (status === 'failed') {
-    const summary = entry.last_error_summary || 'unknown error'
+    const summary = entry.last_error_summary || uiText('unknown error')
     const failures = entry.consecutive_failures || 0
-    return `Last sync failed (${failures} in a row): ${summary}`
+    return uiText("Last sync failed ({arg1} in a row): {arg2}", { arg1: (failures), arg2: (summary) })
   }
   if (entry.last_sync_at) {
-    return `Last synced ${new Date(entry.last_sync_at).toLocaleString()}`
+    return uiText("Last synced {arg1}", { arg1: (new Date(entry.last_sync_at).toLocaleString()) })
   }
-  return 'Sync status: success'
+  return uiText("Sync status: success")
 }

@@ -6,9 +6,9 @@
        rendered through the SAME `components/reports/` dispatch the agent page
        and Agent Detail use (Technical Notes: "do not build a second rendering
        layer"). -->
-  <section v-if="items.length" class="mt-6" aria-label="Deliverables from this conversation">
+  <section v-if="items.length" class="mt-6" :aria-label="uiText(&quot;Deliverables from this conversation&quot;)">
     <h3 class="mb-2 text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-      Delivered here
+      {{ uiText("Delivered here") }}
     </h3>
 
     <div
@@ -48,7 +48,7 @@
         />
         <div v-else-if="!payloads[d.id]" class="pt-3 space-y-2" aria-busy="true">
           <div v-for="row in 2" :key="row" class="animate-pulse motion-reduce:animate-none h-8 rounded-lg bg-gray-100 dark:bg-gray-800/60"></div>
-          <span class="sr-only">Loading this deliverable…</span>
+          <span class="sr-only">{{ uiText("Loading this deliverable…") }}</span>
         </div>
         <div v-else class="pt-3">
           <!-- `:fallback-component` is the client-side rule from #2162: where an
@@ -68,8 +68,8 @@
             v-if="hasMoreRows(d.id)"
             class="mt-2 text-xs text-gray-500 dark:text-gray-400"
           >
-            Showing the first {{ shownRows(d.id) }} of
-            {{ rowMeta[d.id].total }} rows — open this agent's Reports for all of it.
+            {{ uiText("Showing the first") }} {{ shownRows(d.id) }} {{ uiText("of") }}
+            {{ rowMeta[d.id].total }} {{ uiText("rows — open this agent's Reports for all of it.") }}
           </p>
           <!-- ent#366: "Useful / Not what I needed" on the work itself — the
                affordance ent#365 left this card as the surface for. Different
@@ -152,7 +152,7 @@ async function loadPayload(d) {
     payloads[d.id] = full?.payload ?? {}
     if (full?.row_meta) rowMeta[d.id] = full.row_meta
   } catch (e) {
-    errors[d.id] = e?.response?.data?.detail || "Couldn't open this deliverable."
+    errors[d.id] = e?.response?.data?.detail || uiText("Couldn't open this deliverable.")
   }
 }
 
@@ -195,4 +195,6 @@ watch(() => [props.agentName, props.sessionId], () => {
 }, { immediate: true })
 
 watch(() => props.refreshKey, load)
+
+import { t as uiText } from '@/i18n'
 </script>

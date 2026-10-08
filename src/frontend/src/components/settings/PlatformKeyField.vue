@@ -15,7 +15,7 @@
         <a :href="p.providerUrl" target="_blank" rel="noopener noreferrer" :class="LINK_CLASS">
           {{ p.providerLabel }} ↗
         </a>
-        <a :href="p.docsUrl" target="_blank" rel="noopener noreferrer" :class="LINK_CLASS">Docs ↗</a>
+        <a :href="p.docsUrl" target="_blank" rel="noopener noreferrer" :class="LINK_CLASS">{{ uiText("Docs ↗") }}</a>
       </span>
     </div>
     <p class="text-[12.5px] text-gray-600 dark:text-gray-300">{{ p.enables }}</p>
@@ -37,7 +37,7 @@
         v-model="key"
         type="password"
         :label="p.label"
-        :placeholder="status?.configured ? 'Paste a new key to replace it' : p.placeholder"
+        :placeholder="status?.configured ? uiText(&quot;Paste a new key to replace it&quot;) : p.placeholder"
         :error="keyError"
         :disabled="busy"
         autocomplete="off"
@@ -47,9 +47,9 @@
       <BaseInput
         v-if="provider === 'resend'"
         v-model="fromAddress"
-        label="Send codes from"
+        :label="uiText(&quot;Send codes from&quot;)"
         placeholder="noreply@your-domain.com"
-        help="An address on a domain you have verified in Resend."
+        :help="uiText(&quot;An address on a domain you have verified in Resend.&quot;)"
         :error="fromError"
         :disabled="busy"
         autocomplete="off"
@@ -65,7 +65,7 @@
           :disabled="!key.trim()"
           :data-testid="`platform-key-${provider}-save`"
         >
-          Check &amp; save
+          {{ uiText("Check & save") }}
         </BaseButton>
         <BaseButton
           v-if="status?.configured && status?.source === 'settings'"
@@ -75,7 +75,7 @@
           :data-testid="`platform-key-${provider}-remove`"
           @click="remove"
         >
-          Remove
+          {{ uiText("Remove") }}
         </BaseButton>
       </div>
     </form>
@@ -138,12 +138,12 @@ const busyLabel = ref('')
 
 const statusText = computed(() => {
   if (!store.hasLoaded) {
-    return store.loadError ? "Couldn't read whether a key is set." : 'Checking whether a key is set…'
+    return store.loadError ? uiText("Couldn't read whether a key is set.") : uiText("Checking whether a key is set…")
   }
   if (status.value?.configured) return configuredLine(status.value)
   return props.firstRun
-    ? `Not set. ${p.value.skipConsequence} ${laterHint()}`
-    : `Not set. ${p.value.skipConsequence}`
+    ? uiText("Not set. {arg1} {arg2}", { arg1: (p.value.skipConsequence), arg2: (laterHint()) })
+    : uiText("Not set. {arg1}", { arg1: (p.value.skipConsequence) })
 })
 
 // Pre-fill the sender once, from the address in force — never over an edit,
@@ -180,20 +180,20 @@ async function checkAndSave() {
   verbError.value = ''
   busy.value = true
   try {
-    busyLabel.value = 'Checking…'
+    busyLabel.value = uiText("Checking…")
     const result = describeKeyTest(props.provider, await store.test(props.provider, body))
     if (!result.ok) {
       if (result.field === 'from') fromError.value = result.error
       else keyError.value = result.error
       return
     }
-    busyLabel.value = 'Saving…'
+    busyLabel.value = uiText("Saving…")
     await store.save(props.provider, body)
     warning.value = result.warning
     key.value = ''
     emit('saved', props.provider)
   } catch (e) {
-    verbError.value = apiErrorMessage(e, `Couldn't save the ${p.value.title} key — try again.`)
+    verbError.value = apiErrorMessage(e, uiText("Couldn't save the {arg1} key — try again.", { arg1: (p.value.title) }))
   } finally {
     busy.value = false
   }
@@ -203,13 +203,15 @@ async function remove() {
   verbError.value = ''
   warning.value = ''
   busy.value = true
-  busyLabel.value = 'Removing…'
+  busyLabel.value = uiText("Removing…")
   try {
     await store.remove(props.provider)
   } catch (e) {
-    verbError.value = apiErrorMessage(e, `Couldn't remove the ${p.value.title} key — try again.`)
+    verbError.value = apiErrorMessage(e, uiText("Couldn't remove the {arg1} key — try again.", { arg1: (p.value.title) }))
   } finally {
     busy.value = false
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

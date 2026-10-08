@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 // #471 — pure display logic for subscription pressure/headroom.
 // Kept out of components so vitest (node env, no mount harness) can reach it,
 // and so the Settings panel, AgentTile chip and AgentListPanel badge cannot
@@ -73,23 +75,25 @@ export function pressureBadge(entry) {
   // Auth-only: every recorded failure was the provider refusing the credential.
   const authOnly = authEvents > 0 && authEvents === events
   const level = tokenRejected || limitedNow ? 'crit' : 'warn'
-  const text = tokenRejected || authOnly ? 'sub auth' : (limitedNow ? 'sub limit' : 'sub 429s')
+  const text = tokenRejected || authOnly ? uiText('sub auth') : (limitedNow ? uiText('sub limit') : uiText('sub 429s'))
 
   const parts = [`${sub}:`]
-  if (tokenRejected) parts.push('provider token rejected — re-register it in Settings,')
-  else if (limitedNow) parts.push('rate-limited now,')
-  parts.push(`${events} failure event${events === 1 ? '' : 's'} in 24h`)
-  if (authEvents > 0) parts.push(`(${authEvents} auth)`)
-  if (entry.utilization_5h_pct != null) parts.push(`· 5h window ${entry.utilization_5h_pct}% used`)
+  if (tokenRejected) parts.push(uiText('provider token rejected — re-register it in Settings,'))
+  else if (limitedNow) parts.push(uiText('rate-limited now,'))
+  parts.push(events === 1
+    ? uiText('{count} failure event in 24h', { count: events })
+    : uiText('{count} failure events in 24h', { count: events }))
+  if (authEvents > 0) parts.push(uiText('({count} auth)', { count: authEvents }))
+  if (entry.utilization_5h_pct != null) parts.push(uiText('· 5h window {pct}% used', { pct: entry.utilization_5h_pct }))
   return { level, text, title: parts.join(' ') }
 }
 
 /** "62% of 5h window · resets 14:05" — null when the window is absent. */
 export function headroomWindowLabel(win, windowName) {
   if (!win || win.utilization_pct == null) return null
-  let label = `${win.utilization_pct}% of ${windowName} window`
+  let label = uiText("{arg1}% of {arg2} window", { arg1: (win.utilization_pct), arg2: (windowName) })
   const reset = formatResetTime(win.resets_at)
-  if (reset) label += ` · resets ${reset}`
+  if (reset) label += uiText(" · resets {arg1}", { arg1: (reset) })
   return label
 }
 
@@ -110,11 +114,11 @@ export function usageSourceLabel(usage) {
   if (usage.source === 'anthropic' && usage.headroom) {
     const age = usage.headroom.snapshot_age_seconds
     if (age == null) return 'actual (Anthropic)'
-    if (age < 90) return 'actual (Anthropic) · just now'
+    if (age < 90) return uiText("actual (Anthropic) · just now")
     const mins = Math.round(age / 60)
-    return `actual (Anthropic) · ${mins} min ago`
+    return uiText("actual (Anthropic) · {arg1} min ago", { arg1: (mins) })
   }
-  return 'observed (estimate from recorded consumption)'
+  return uiText("observed (estimate from recorded consumption)")
 }
 
 /** True when the reading is provider-truth AND recent enough to present as a gauge. */

@@ -3,9 +3,9 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-3">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Role Matrix</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Role Matrix") }}</h3>
         <span class="text-xs text-gray-500 dark:text-gray-400">
-          EMI Pattern: Executor / Monitor / Informed
+          {{ uiText("EMI Pattern: Executor / Monitor / Informed") }}
         </span>
       </div>
       <div class="flex items-center gap-2">
@@ -19,7 +19,7 @@
               : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
           ]"
         >
-          {{ editMode ? 'Editing' : 'Edit Mode' }}
+          {{ editMode ? uiText("Editing") : uiText("Edit Mode") }}
         </button>
         <!-- Show all agents toggle -->
         <label class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -28,7 +28,7 @@
             v-model="showAllAgents"
             class="rounded border-gray-300 dark:border-gray-600 text-action-primary-600 focus:ring-action-primary-500"
           />
-          Show all agents
+          {{ uiText("Show all agents") }}
         </label>
       </div>
     </div>
@@ -37,15 +37,15 @@
     <div class="flex items-center gap-4 mb-4 text-sm text-gray-600 dark:text-gray-400">
       <div class="flex items-center gap-1.5">
         <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-action-primary-100 dark:bg-action-primary-900/40 text-action-primary-700 dark:text-action-primary-400 font-semibold text-xs">E</span>
-        <span>Executor</span>
+        <span>{{ uiText("Executor") }}</span>
       </div>
       <div class="flex items-center gap-1.5">
         <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-state-autonomous-100 dark:bg-state-autonomous-900/40 text-state-autonomous-700 dark:text-state-autonomous-400 font-semibold text-xs">M</span>
-        <span>Monitor</span>
+        <span>{{ uiText("Monitor") }}</span>
       </div>
       <div class="flex items-center gap-1.5">
         <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-400 font-semibold text-xs">I</span>
-        <span>Informed</span>
+        <span>{{ uiText("Informed") }}</span>
       </div>
     </div>
 
@@ -55,8 +55,8 @@
       class="text-center py-12 text-gray-500 dark:text-gray-400 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg"
     >
       <UsersIcon class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-      <p class="font-medium">No steps defined</p>
-      <p class="text-sm mt-1">Add steps to your process to assign agent roles</p>
+      <p class="font-medium">{{ uiText("No steps defined") }}</p>
+      <p class="text-sm mt-1">{{ uiText("Add steps to your process to assign agent roles") }}</p>
     </div>
 
     <!-- Matrix table -->
@@ -65,7 +65,7 @@
         <thead>
           <tr class="bg-gray-50 dark:bg-gray-800/50">
             <th class="px-4 py-3 text-left font-medium text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 min-w-[150px]">
-              Step
+              {{ uiText("Step") }}
             </th>
             <th
               v-for="agent in visibleAgents"
@@ -82,7 +82,7 @@
                 @click="showAddAgentModal = true"
                 class="text-action-primary-600 dark:text-action-primary-400 hover:text-action-primary-700 dark:hover:text-action-primary-300 text-xs"
               >
-                + Add Agent
+                {{ uiText("+ Add Agent") }}
               </button>
             </th>
           </tr>
@@ -103,9 +103,9 @@
                 <span
                   v-if="!hasExecutor(step.id)"
                   class="px-1.5 py-0.5 text-xs font-medium bg-status-danger-100 dark:bg-status-danger-900/30 text-status-danger-700 dark:text-status-danger-400 rounded"
-                  title="Step must have an executor"
+                  :title="uiText(&quot;Step must have an executor&quot;)"
                 >
-                  No executor
+                  {{ uiText("No executor") }}
                 </span>
                 <span class="text-xs text-gray-400 dark:text-gray-500">({{ step.type }})</span>
               </div>
@@ -163,11 +163,11 @@
       @click.self="showAddAgentModal = false"
     >
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Add Agent to Matrix</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">{{ uiText("Add Agent to Matrix") }}</h3>
         <input
           v-model="newAgentName"
           type="text"
-          placeholder="Enter agent name"
+          :placeholder="uiText(&quot;Enter agent name&quot;)"
           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-action-primary-500 focus:border-action-primary-500"
           @keyup.enter="addAgent"
         />
@@ -176,14 +176,14 @@
             @click="showAddAgentModal = false"
             class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
           >
-            Cancel
+            {{ uiText("Cancel") }}
           </button>
           <button
             @click="addAgent"
             :disabled="!newAgentName.trim()"
             class="px-4 py-2 text-sm font-medium text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg"
           >
-            Add
+            {{ uiText("Add") }}
           </button>
         </div>
       </div>
@@ -274,13 +274,13 @@ const validationWarnings = computed(() => {
   props.steps.forEach(step => {
     const roles = localRoles.value[step.id];
     if (!roles?.executor) {
-      warnings.push(`Step "${step.name}" has no executor assigned`);
+      warnings.push(uiText('Step "{name}" has no executor assigned', { name: step.name }));
     }
     if (roles?.executor && roles?.monitors?.includes(roles.executor)) {
-      warnings.push(`Step "${step.name}": executor is also a monitor (redundant)`);
+      warnings.push(uiText('Step "{name}": executor is also a monitor (redundant)', { name: step.name }));
     }
     if (roles?.executor && roles?.informed?.includes(roles.executor)) {
-      warnings.push(`Step "${step.name}": executor is also informed (redundant)`);
+      warnings.push(uiText('Step "{name}": executor is also informed (redundant)', { name: step.name }));
     }
   });
   return warnings;
@@ -333,16 +333,16 @@ function getRoleTooltip(stepId, agent) {
   const role = getRole(stepId, agent);
   if (editMode.value) {
     switch (role) {
-      case 'executor': return 'Click to change to Monitor';
-      case 'monitor': return 'Click to change to Informed';
-      case 'informed': return 'Click to remove';
-      default: return 'Click to set as Executor';
+      case 'executor': return uiText("Click to change to Monitor");
+      case 'monitor': return uiText("Click to change to Informed");
+      case 'informed': return uiText("Click to remove");
+      default: return uiText("Click to set as Executor");
     }
   }
   switch (role) {
-    case 'executor': return `${agent} executes this step`;
-    case 'monitor': return `${agent} monitors this step`;
-    case 'informed': return `${agent} is informed about this step`;
+    case 'executor': return uiText("{arg1} executes this step", { arg1: (agent) });
+    case 'monitor': return uiText("{arg1} monitors this step", { arg1: (agent) });
+    case 'informed': return uiText("{arg1} is informed about this step", { arg1: (agent) });
     default: return '';
   }
 }
@@ -411,6 +411,8 @@ function emitUpdate() {
 watch(() => props.readOnly, (newVal) => {
   if (newVal) editMode.value = false;
 });
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

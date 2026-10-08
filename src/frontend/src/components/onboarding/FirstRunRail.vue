@@ -14,7 +14,7 @@
   >
     <div class="mb-1 flex items-center gap-2.5">
       <TrinityMark class="h-[26px] w-[26px] flex-none text-action-primary-600 dark:text-action-primary-500" />
-      <span class="text-sm font-[550] text-gray-900 dark:text-gray-100">Set up Trinity</span>
+      <span class="text-sm font-[550] text-gray-900 dark:text-gray-100">{{ t('Set up Trinity') }}</span>
     </div>
 
     <p class="mb-4 text-[12.5px] tabular-nums text-gray-500 dark:text-gray-400 max-sm:mb-2" data-testid="first-run-progress">
@@ -34,7 +34,7 @@
       />
     </div>
 
-    <nav aria-label="Setup steps" class="max-sm:hidden">
+    <nav :aria-label="t('Setup steps')" class="max-sm:hidden">
       <ul class="flex flex-col gap-0.5">
         <li v-for="s in steps" :key="s.key">
           <!-- Colour lives on mutually exclusive arms, never a static class
@@ -73,9 +73,9 @@
             </span>
 
             <span class="min-w-0">
-              <span class="block" :class="states[s.key] === 'current' ? 'font-[550]' : ''">{{ s.name }}</span>
+              <span class="block" :class="states[s.key] === 'current' ? 'font-[550]' : ''">{{ t(s.name) }}</span>
               <span class="mt-px block text-[11px] text-gray-500 dark:text-gray-400">
-                {{ subline(s) }}
+                {{ t(subline(s)) }}
               </span>
             </span>
           </button>
@@ -92,13 +92,14 @@
         data-testid="first-run-finish-later"
         @click="$emit('close')"
       >
-        Finish later
+        {{ t('Finish later') }}
       </button>
     </div>
   </aside>
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { computed } from 'vue'
 import TrinityMark from '../TrinityMark.vue'
 
@@ -113,10 +114,10 @@ const props = defineProps({
 defineEmits(['go', 'close'])
 
 const doneCount = computed(() => props.steps.filter((s) => props.states[s.key] === 'done').length)
-const progressLabel = computed(() => `${doneCount.value} of ${props.steps.length} done`)
+const progressLabel = computed(() => t('{done} of {total} done', { done: doneCount.value, total: props.steps.length }))
 
 const subline = (s) => {
-  if (props.states[s.key] === 'skipped') return `Skipped — ${s.settingsPath}`
+  if (props.states[s.key] === 'skipped') return t('Skipped — {path}', { path: t(s.settingsPath) })
   if (props.states[s.key] === 'done') return 'Done'
   return s.tag
 }

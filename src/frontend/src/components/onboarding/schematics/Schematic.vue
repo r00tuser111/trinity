@@ -13,7 +13,7 @@
   <svg
     viewBox="0 0 200 140"
     role="img"
-    :aria-label="LABELS[name]"
+    :aria-label="t(LABELS[name])"
     fill="none"
     class="h-[140px] w-[200px] flex-none text-action-primary-600 dark:text-action-primary-500 opacity-90 max-sm:h-[118px] max-sm:w-[168px]"
   >
@@ -110,6 +110,8 @@
 </template>
 
 <script setup>
+import { msg, t } from '@/i18n'
+
 defineProps({
   name: {
     type: String,
@@ -119,11 +121,11 @@ defineProps({
 })
 
 const LABELS = {
-  secure: 'Diagram: this server reaches the public network through a named, gated route.',
-  email: 'Diagram: an identity bound to the admin account, with a one-time code in transit.',
-  claude: 'Diagram: one credential feeds every agent on the instance.',
-  keys: 'Diagram: three optional ports on the instance, one connected and two open.',
-  agent: 'Diagram: three running agents, one of them in conversation.',
-  sharing: 'Diagram: coarse counts leaving the instance through a narrowing aperture.',
+  secure: msg('Diagram: this server reaches the public network through a named, gated route.'),
+  email: msg('Diagram: an identity bound to the admin account, with a one-time code in transit.'),
+  claude: msg('Diagram: one credential feeds every agent on the instance.'),
+  keys: msg('Diagram: three optional ports on the instance, one connected and two open.'),
+  agent: msg('Diagram: three running agents, one of them in conversation.'),
+  sharing: msg('Diagram: coarse counts leaving the instance through a narrowing aperture.'),
 }
 </script>

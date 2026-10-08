@@ -320,8 +320,8 @@ describe('wiring — the producers call the builder and the old literals are gon
   // The store's ordering is proved behaviourally above; this pins the shape so
   // the un-awaited form cannot come back.
   it('the desktop store awaits the refetch BEFORE assigning the not-recorded copy', () => {
-    expect(store).toMatch(/await fetchItems\(\)\s*\n\s*error\.value = QUEUE_RESPONSE_NOT_RECORDED/)
-    expect(store).not.toMatch(/error\.value = QUEUE_RESPONSE_NOT_RECORDED\s*\n\s*fetchItems\(\)/)
+    expect(store).toMatch(/await fetchItems\(\)\s*\n\s*error\.value = uiText\(QUEUE_RESPONSE_NOT_RECORDED\)/)
+    expect(store).not.toMatch(/error\.value = uiText\(QUEUE_RESPONSE_NOT_RECORDED\)\s*\n\s*fetchItems\(\)/)
   })
 
   // `/m`'s fetchQueue + prune are `<script setup>` internals and vitest runs

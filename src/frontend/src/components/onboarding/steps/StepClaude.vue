@@ -13,8 +13,8 @@
 <template>
   <div data-testid="first-run-step-claude">
     <FirstRunStepHeader
-      kicker="Model access"
-      :title="connected ? 'Claude is connected' : 'Connect Claude'"
+      :kicker="uiText(&quot;Model access&quot;)"
+      :title="connected ? uiText(&quot;Claude is connected&quot;) : uiText(&quot;Connect Claude&quot;)"
       :lead="lead"
       :badge="connected ? 'Done' : 'Required'"
       schematic="claude"
@@ -55,7 +55,7 @@
             :disabled="!value.trim()"
             data-testid="first-run-claude-connect"
           >
-            Check &amp; connect
+            {{ uiText("Check & connect") }}
           </BaseButton>
           <BaseButton
             v-if="otherTab"
@@ -64,13 +64,13 @@
             data-testid="first-run-claude-move"
             @click="tab = otherTab"
           >
-            Move it to the {{ otherTabLabel }} tab
+            {{ uiText("Move it to the") }} {{ otherTabLabel }} {{ uiText("tab") }}
           </BaseButton>
           <span class="flex gap-3 text-[12.5px]">
             <a :href="copy.providerUrl" target="_blank" rel="noopener noreferrer" :class="LINK_CLASS">
               {{ copy.providerLabel }} ↗
             </a>
-            <a :href="CLAUDE_DOCS_URL" target="_blank" rel="noopener noreferrer" :class="LINK_CLASS">Docs ↗</a>
+            <a :href="CLAUDE_DOCS_URL" target="_blank" rel="noopener noreferrer" :class="LINK_CLASS">{{ uiText("Docs ↗") }}</a>
           </span>
         </div>
       </form>
@@ -130,12 +130,12 @@ const connected = computed(() => savedHere.value || !!props.ctx.claudeAuthConfig
 const otherTab = computed(() => claudeTabFor(tab.value, value.value))
 const otherTabLabel = computed(() => CLAUDE_TABS.find((t) => t.id === otherTab.value)?.label || '')
 
-const lead =
-  'Every agent thinks with Claude. Until this instance has a Claude credential no agent can run — ' +
-  "this is the one step you can't skip. It is checked with Anthropic before it is saved, and stored encrypted."
+const lead = computed(() =>
+  uiText("Every agent thinks with Claude. Until this instance has a Claude credential no agent can run — this is the one step you can't skip. It is checked with Anthropic before it is saved, and stored encrypted.")
+)
 
 const connectedText = computed(() =>
-  savedHere.value ? claudeSavedText(connectedAgents.value) : CLAUDE_ALREADY_CONNECTED
+  savedHere.value ? claudeSavedText(connectedAgents.value) : uiText(CLAUDE_ALREADY_CONNECTED)
 )
 
 // A new paste, or a tab change, clears the verdict about the previous one.
@@ -151,7 +151,7 @@ async function connect() {
   verbError.value = ''
   warning.value = ''
   busy.value = true
-  busyLabel.value = 'Checking with Anthropic…'
+  busyLabel.value = uiText("Checking with Anthropic…")
   try {
     const isToken = tab.value === 'subscription'
     const result = describeKeyTest(
@@ -164,7 +164,7 @@ async function connect() {
       fieldError.value = result.error
       return
     }
-    busyLabel.value = 'Saving…'
+    busyLabel.value = uiText("Saving…")
     const saved = isToken
       ? await subscriptions.registerToken(FIRST_RUN_SUBSCRIPTION_NAME, credential)
       : await keys.save('anthropic', { api_key: credential })
@@ -174,9 +174,11 @@ async function connect() {
     savedHere.value = true
     emit('complete')
   } catch (e) {
-    verbError.value = apiErrorMessage(e, "Couldn't save the credential — try again.")
+    verbError.value = apiErrorMessage(e, uiText("Couldn't save the credential — try again."))
   } finally {
     busy.value = false
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -1,3 +1,5 @@
+import { t as uiText, msg } from '../i18n/index.js'
+
 /**
  * trinity-enterprise#620 — ONE vocabulary for "what the agent is doing".
  *
@@ -23,16 +25,16 @@
 
 /** The verbs, keyed by the agent's display tool name. Object comes from `summary`. */
 const VERBS = Object.freeze({
-  Read: 'Reading',
-  Edit: 'Editing',
-  Write: 'Writing',
-  MultiEdit: 'Editing',
-  NotebookEdit: 'Editing',
-  Glob: 'Finding',
-  Grep: 'Searching for',
-  Bash: 'Running',
-  WebSearch: 'Searching for',
-  WebFetch: 'Fetching',
+  Read: { bare: msg('Reading…'), withObject: msg('Reading {object}') },
+  Edit: { bare: msg('Editing…'), withObject: msg('Editing {object}') },
+  Write: { bare: msg('Writing…'), withObject: msg('Writing {object}') },
+  MultiEdit: { bare: msg('Editing…'), withObject: msg('Editing {object}') },
+  NotebookEdit: { bare: msg('Editing…'), withObject: msg('Editing {object}') },
+  Glob: { bare: msg('Finding…'), withObject: msg('Finding {object}') },
+  Grep: { bare: msg('Searching for…'), withObject: msg('Searching for {object}') },
+  Bash: { bare: msg('Running…'), withObject: msg('Running {object}') },
+  WebSearch: { bare: msg('Searching for…'), withObject: msg('Searching for {object}') },
+  WebFetch: { bare: msg('Fetching…'), withObject: msg('Fetching {object}') },
 })
 
 /** Tools whose object is machine text (a path, a command, a pattern): rendered in mono. */
@@ -56,32 +58,32 @@ export function activityLine(activity) {
   const summary = typeof activity.summary === 'string' ? activity.summary.trim() : ''
   const object = NO_OBJECT.has(summary) ? null : summary
 
-  if (!tool) return line('Thinking', null, false)
-  if (tool === 'Reply') return line('Writing a reply', null, false)
+  if (!tool) return line(uiText('Thinking'), null, false)
+  if (tool === 'Reply') return line(uiText('Writing a reply'), null, false)
 
   if (tool.startsWith('mcp:')) {
-    const server = tool.slice(4) || 'a tool'
+    const server = tool.slice(4) || uiText('a tool')
     // A delegation through the platform names its target when the summary is
     // the roster-masked `agent_name: x` the backend produced.
     const m = object && /^agent_name:\s*(.+)$/.exec(object)
-    if (server === 'trinity' && m) return line(`Delegating to ${m[1]}`, null, false)
-    return line(`Using ${server}`, null, false)
+    if (server === 'trinity' && m) return line(uiText('Delegating to {target}', { target: m[1] }), null, false)
+    return line(uiText('Using {tool}', { tool: server }), null, false)
   }
   if (tool === 'Task' || tool.startsWith('Task:')) {
-    const who = tool.includes(':') ? tool.slice(5) : 'an agent'
-    return line(object ? `Delegating to ${who}: ${object}` : `Delegating to ${who}`, null, false)
+    const who = tool.includes(':') ? tool.slice(5) : uiText('an agent')
+    return line(object ? uiText('Delegating to {target}: {object}', { target: who, object }) : uiText('Delegating to {target}', { target: who }), null, false)
   }
   // Two tools whose summary is a fixed phrase, not an object.
-  if (tool === 'AskUserQuestion') return line('Asking a question', null, false)
-  if (tool === 'TodoWrite') return line('Planning the next steps', null, false)
+  if (tool === 'AskUserQuestion') return line(uiText('Asking a question'), null, false)
+  if (tool === 'TodoWrite') return line(uiText('Planning the next steps'), null, false)
 
   const verb = VERBS[tool]
   if (verb) {
-    if (!object) return line(`${verb}…`, null, false)
-    return line(`${verb} ${object}`, object, MONO_TOOLS.has(tool))
+    if (!object) return line(uiText(verb.bare), null, false)
+    return line(uiText(verb.withObject, { object }), object, MONO_TOOLS.has(tool))
   }
   // An unknown tool still says its name — never "Using a tool…".
-  return line(object ? `Using ${tool}: ${object}` : `Using ${tool}`, object, false)
+  return line(object ? uiText('Using {tool}: {object}', { tool, object }) : uiText('Using {tool}', { tool }), object, false)
 }
 
 function line(text, object, mono) {
@@ -139,9 +141,9 @@ export function summariseToolInput(tool, input) {
     case 'WebSearch':
       return (str('query') || '...').slice(0, 40)
     case 'TodoWrite':
-      return 'Updating todos'
+      return uiText("Updating todos")
     case 'AskUserQuestion':
-      return 'Asking question'
+      return uiText("Asking question")
     default: {
       for (const [key, value] of Object.entries(input)) {
         if (typeof value === 'string' && value.length < 50) return `${key}: ${value.slice(0, 30)}`

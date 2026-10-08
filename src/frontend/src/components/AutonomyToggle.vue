@@ -8,15 +8,15 @@
         modelValue ? 'text-state-autonomous-600 dark:text-state-autonomous-400' : 'text-gray-500 dark:text-gray-400'
       ]"
     >
-      {{ modelValue ? 'AUTO' : 'Manual' }}
+      {{ modelValue ? t('AUTO') : t('Manual') }}
     </span>
     <button
       @click="toggle"
       :disabled="disabled || loading"
       role="switch"
       :aria-checked="modelValue"
-      :aria-label="`Autonomy mode is ${modelValue ? 'enabled' : 'disabled'}. Click to ${modelValue ? 'disable' : 'enable'} scheduled tasks.`"
-      :title="modelValue ? 'Autonomy Mode ON - Click to disable scheduled tasks' : 'Autonomy Mode OFF - Click to enable scheduled tasks'"
+      :aria-label="uiText(&quot;Autonomy mode is {arg1}. Click to {arg2} scheduled tasks.&quot;, { arg1: (modelValue ? 'enabled' : 'disabled'), arg2: (modelValue ? 'disable' : 'enable') })"
+      :title="modelValue ? t('Autonomy Mode ON - Click to disable scheduled tasks') : t('Autonomy Mode OFF - Click to enable scheduled tasks')"
       class="relative inline-flex items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
       :class="[
         sizeClasses,
@@ -24,7 +24,7 @@
         (disabled || loading) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
       ]"
     >
-      <span class="sr-only">Toggle autonomy mode</span>
+      <span class="sr-only">{{ t('Toggle autonomy mode') }}</span>
       <span
         class="inline-block transform rounded-full bg-white shadow transition-transform"
         :class="[
@@ -53,6 +53,7 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 /**
  * AutonomyToggle - Unified toggle control for agent autonomy mode
  *
@@ -147,4 +148,6 @@ function toggle() {
     emit('toggle', newValue)
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -18,13 +18,13 @@
       aria-hidden="true"
     >
       <p class="text-sm font-medium text-action-primary-700 dark:text-action-primary-200">
-        Drop files to send to {{ recipientLabel }}
+        {{ uiText("Drop files to send to") }} {{ recipientLabel }}
       </p>
     </div>
 
     <!-- Header: who is in the room (ent#361 AC#2) -->
     <header class="shrink-0 flex items-center gap-2 px-3 sm:px-4 h-14 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-      <button class="sm:hidden -ml-1 p-2 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200" aria-label="Menu" @click="$emit('open-menu')">
+      <button class="sm:hidden -ml-1 p-2 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200" :aria-label="uiText(&quot;Menu&quot;)" @click="$emit('open-menu')">
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
       </button>
 
@@ -32,9 +32,9 @@
         <!-- ent#473: the room's name, renameable in place by any human member. -->
         <PortalEditableTitle
           :value="room?.name || ''"
-          placeholder="Chat"
+          :placeholder="uiText(&quot;Chat&quot;)"
           :rename="rename ? saveName : null"
-          label="Rename this chat"
+          :label="uiText(&quot;Rename this chat&quot;)"
           text-class="font-semibold text-sm"
         />
         <div class="flex items-center gap-1 mt-0.5">
@@ -46,7 +46,7 @@
             :title="a"
           />
           <span class="text-xs text-gray-500 dark:text-gray-400 truncate">
-            {{ agentParticipants.join(', ') || 'no agents yet' }}
+            {{ agentParticipants.join(', ') || uiText("no agents yet") }}
           </span>
         </div>
       </div>
@@ -62,7 +62,7 @@
         :class="notice.level === 'critical'
           ? 'text-status-danger-600 dark:text-status-danger-400 font-medium'
           : 'text-status-warning-600 dark:text-status-warning-400'"
-        :title="`${notice.headline}. ${notice.detail}`"
+        :title="uiText(&quot;{arg1}. {arg2}&quot;, { arg1: (notice.headline), arg2: (notice.detail) })"
         data-testid="room-budget-headline"
       >
         {{ notice.headline }}
@@ -77,9 +77,9 @@
         <button
           v-if="!isClosed"
           class="px-2 py-1.5 rounded-lg text-xs font-medium text-action-primary-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-          title="Add another agent to this conversation"
+          :title="uiText(&quot;Add another agent to this conversation&quot;)"
           @click="addOpen = !addOpen"
-        >+ Add agent</button>
+        >{{ uiText("+ Add agent") }}</button>
         <!-- ent#625: the theme switch, filled by the shell (see PortalConversation). -->
         <slot name="header-end" />
       </div>
@@ -88,7 +88,7 @@
     <!-- Add-agent picker (AC#3) -->
     <div v-if="addOpen" class="shrink-0 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 px-4 py-2">
       <p v-if="!addable.length" class="text-xs text-gray-500 dark:text-gray-400">
-        Every agent shared with you is already here.
+        {{ uiText("Every agent shared with you is already here.") }}
       </p>
       <div v-else class="flex flex-wrap gap-1.5">
         <button
@@ -111,7 +111,7 @@
     <div class="relative flex-1 min-h-0 flex flex-col">
     <div ref="scrollEl" class="flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-5" @scroll.passive="onTranscriptScroll">
       <div class="max-w-[var(--ws-message-max,64rem)] mx-auto space-y-6">
-        <p v-if="loading" class="text-center text-sm text-gray-400">Loading…</p>
+        <p v-if="loading" class="text-center text-sm text-gray-400">{{ uiText("Loading…") }}</p>
 
         <div v-for="m in messages" :key="m.seq">
           <!-- A system line is the room narrating itself: a join, a budget
@@ -178,8 +178,8 @@
               <span class="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style="animation-delay:300ms"></span>
             </span>
             <span class="text-xs text-gray-500 dark:text-gray-400">
-              {{ workingAgents.length === 1 ? `${workingAgents[0]} is thinking…`
-                : `${workingAgents.join(', ')} are thinking…` }}
+              {{ workingAgents.length === 1 ? uiText("{arg1} is thinking…", { arg1: (workingAgents[0]) })
+                : uiText("{arg1} are thinking…", { arg1: (workingAgents.join(', ')) }) }}
             </span>
           </div>
         </div>
@@ -221,7 +221,7 @@
              own (message budget, cost cap, TTL) — silence would read as the
              agents having stopped answering. -->
         <p v-if="isClosed" class="text-xs text-center text-gray-500 dark:text-gray-400 py-2">
-          This conversation has ended{{ room?.stop_reason ? ` (${closedReason})` : '' }}. Start a new chat to keep going.
+          {{ uiText("This conversation has ended") }}{{ room?.stop_reason ? uiText(" ({arg1})", { arg1: (closedReason) }) : '' }}{{ uiText(". Start a new chat to keep going.") }}
         </p>
         <!-- ent#524: one chip per file, with its own outcome, and the
              recipients named — a room's upload is a fan-out and the person
@@ -253,14 +253,14 @@
             :class="f.error
               ? 'bg-status-danger-50 dark:bg-status-danger-900/30 text-status-danger-700 dark:text-status-danger-300'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300'"
-            :title="f.error || `${f.name} → ${recipientLabel}`"
+            :title="f.error || uiText(&quot;{arg1} → {arg2}&quot;, { arg1: (f.name), arg2: (recipientLabel) })"
             data-testid="portal-room-attachment-chip"
           >
             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
             <span class="max-w-[10rem] truncate">{{ f.name }}</span>
             <svg v-if="attachmentState(f) === 'uploading'" class="w-3 h-3 animate-spin text-gray-400" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
             <span v-else-if="attachmentState(f) === 'failed'" class="max-w-[16rem] truncate opacity-90">· {{ f.error }}</span>
-            <span v-else class="opacity-70">· to {{ recipientLabel }}</span>
+            <span v-else class="opacity-70">{{ uiText("· to") }} {{ recipientLabel }}</span>
           </span>
         </div>
         <!-- #2794: `v-if="!isClosed"`, NOT a `v-else`.
@@ -324,7 +324,7 @@
                   type="submit"
                   class="shrink-0 h-11 w-11 flex items-center justify-center rounded-xl bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-40 transition"
                   :disabled="!input.trim() || sending"
-                  title="Send"
+                  :title="uiText(&quot;Send&quot;)"
                 >
                   <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" /></svg>
                 </button>
@@ -356,7 +356,7 @@
             class="ml-auto shrink-0"
             data-testid="portal-room-carry-notice-dismiss"
             @click="emit('dismiss-carry-notice')"
-          >Dismiss</BaseButton>
+          >{{ uiText("Dismiss") }}</BaseButton>
         </div>
       </div>
     </div>
@@ -502,7 +502,7 @@ const isClosed = computed(() => room.value?.status === 'closed')
 // failing the whole drop.
 const recipientLabel = computed(() => {
   const names = agentParticipants.value
-  if (!names.length) return 'this room'
+  if (!names.length) return uiText("this room")
   if (names.length === 1) return names[0]
   if (names.length === 2) return `${names[0]} and ${names[1]}`
   return `${names.length} agents`
@@ -591,19 +591,19 @@ watch(workingAgents, (list) => emit('work-state', workSignalFromRoom(list)), { i
 const notice = computed(() => budgetNotice(room.value))
 
 const closedReason = computed(() => ({
-  max_messages: 'message limit reached',
-  max_cost: 'cost limit reached',
-  expired: 'timed out',
-  user_closed: 'closed',
+  max_messages: uiText('message limit reached'),
+  max_cost: uiText('cost limit reached'),
+  expired: uiText('timed out'),
+  user_closed: uiText('closed'),
 }[room.value?.stop_reason] || room.value?.stop_reason))
 
 // AC#6: the placeholder names who is actually here, so it is obvious that a
 // message goes to several agents and which @name will reach whom.
 const placeholder = computed(() => {
   const names = agentParticipants.value
-  if (!names.length) return 'Message…'
-  if (names.length === 1) return `Message ${names[0]}…`
-  return `Message ${names.join(', ')} — @name to wake one`
+  if (!names.length) return uiText('Message…')
+  if (names.length === 1) return uiText('Message {name}…', { name: names[0] })
+  return uiText("Message {arg1} — @name to wake one", { arg1: (names.join(', ')) })
 })
 
 // Agents shared with the caller who are not already participants.
@@ -850,7 +850,7 @@ async function load({ full = false } = {}) {
     if (full) await pinToBottom()
     else if (incoming.length) await onMessagesArrived(incoming.length)
   } catch (err) {
-    if (full) sendError.value = 'Could not load this conversation.'
+    if (full) sendError.value = uiText("Could not load this conversation.")
   } finally {
     loading_ = false
     loading.value = false
@@ -885,7 +885,7 @@ async function send() {
   } catch (err) {
     const detail = err?.response?.data?.detail
     sendError.value = detail?.message || (typeof detail === 'string' ? detail : null)
-      || 'That message was not delivered.'
+      || uiText("That message was not delivered.")
     input.value = text        // give it back rather than losing what they typed
     resetTypeahead()
   } finally {
@@ -907,7 +907,7 @@ async function addAgent(name) {
   } catch (err) {
     const detail = err?.response?.data?.detail
     addError.value = detail?.message || (typeof detail === 'string' ? detail : null)
-      || `Could not add ${name}.`
+      || uiText("Could not add {arg1}.", { arg1: (name) })
   } finally {
     adding.value = false
   }
@@ -965,4 +965,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', onViewportResize)
   stopPolling()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

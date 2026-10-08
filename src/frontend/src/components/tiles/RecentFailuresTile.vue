@@ -1,7 +1,7 @@
 <template>
   <InfoTile
     scope="Fleet"
-    title="Recent failures"
+    :title="uiText(&quot;Recent failures&quot;)"
     :stamp="stamp"
     :stamp-title="stampTitle"
     :state="tile.state"
@@ -143,7 +143,7 @@ const rows = computed(() =>
       // the full code has to be recoverable.
       title: [
         code ? `[${code}]` : null,
-        summary || 'No error detail recorded',
+        summary || uiText('No error detail recorded'),
         formatLocalDateTime(r.started_at),
       ].filter(Boolean).join('\n'),
       code,
@@ -160,13 +160,14 @@ const stamp = computed(() => {
 })
 
 const stampTitle = computed(() =>
-  'Failed executions across the agents you can access, last 24 hours. '
-  + "Counts legacy 'error' rows too, which the list below filters out.",
+  uiText("Failed executions across the agents you can access, last 24 hours. Counts legacy 'error' rows too, which the list below filters out."),
 )
 
 function retry() {
   gridStore.refreshBatchData()
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

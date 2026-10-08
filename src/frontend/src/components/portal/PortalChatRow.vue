@@ -47,10 +47,10 @@
       v-if="rename"
       dense
       :value="rawTitle"
-      placeholder="New chat"
+      :placeholder="uiText(&quot;New chat&quot;)"
       :rename="(t) => rename(thread, t)"
       :text-class="unread ? 'text-sm font-semibold' : 'text-sm'"
-      label="Rename this chat"
+      :label="uiText(&quot;Rename this chat&quot;)"
     />
     <span v-else class="text-sm truncate flex-1" :class="unread ? 'font-semibold' : ''">{{ title }}</span>
 
@@ -98,4 +98,6 @@ const title = computed(() => threadTitle(props.thread))
 // The stored title itself — the editor pre-fills from it and shows the
 // placeholder when it is empty, never the fallback word as a draft.
 const rawTitle = computed(() => (props.thread.title || '').trim())
+
+import { t as uiText } from '@/i18n'
 </script>

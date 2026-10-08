@@ -138,7 +138,7 @@ describe('ent#556 the tab title identifies the product and the subject', () => {
     // The router renders `Trinity — <label>`, so a Workspace tab reads
     // "Trinity — Workspace". The platform has ONE title format (#1418) and
     // this surface does not get a second one.
-    const workspaceTitles = ROUTER.match(/title: 'Workspace'/g) || []
+    const workspaceTitles = ROUTER.match(/get "title"\(\) \{ return uiText\("Workspace"\) \}/g) || []
     expect(workspaceTitles.length).toBeGreaterThanOrEqual(3)
   })
 

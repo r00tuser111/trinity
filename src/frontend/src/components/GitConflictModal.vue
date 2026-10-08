@@ -31,7 +31,7 @@
 
           <!-- Developer-facing raw git output (S5 / issue #386). -->
           <details v-if="rawStderr" class="mt-4 text-xs text-gray-600 dark:text-gray-400" data-testid="gcm-details">
-            <summary class="cursor-pointer select-none">Git details (for developers)</summary>
+            <summary class="cursor-pointer select-none">{{ uiText("Git details (for developers)") }}</summary>
             <pre class="mt-2 whitespace-pre-wrap bg-gray-50 dark:bg-gray-900/40 rounded p-2 overflow-auto max-h-60" data-testid="gcm-raw-stderr">{{ rawStderr }}</pre>
           </details>
 
@@ -47,8 +47,8 @@
                 </svg>
               </div>
               <div class="ml-4 text-left">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Stash & Reapply (Recommended)</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Save local changes, pull remote, then reapply your changes</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ uiText("Stash & Reapply (Recommended)") }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ uiText("Save local changes, pull remote, then reapply your changes") }}</p>
               </div>
             </button>
 
@@ -62,8 +62,8 @@
                 </svg>
               </div>
               <div class="ml-4 text-left">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Force Replace Local</p>
-                <p class="text-xs text-status-danger-600 dark:text-status-danger-400 mt-0.5">Discard all local changes and reset to remote (destructive!)</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ uiText("Force Replace Local") }}</p>
+                <p class="text-xs text-status-danger-600 dark:text-status-danger-400 mt-0.5">{{ uiText("Discard all local changes and reset to remote (destructive!)") }}</p>
               </div>
             </button>
           </div>
@@ -80,8 +80,8 @@
                 </svg>
               </div>
               <div class="ml-4 text-left">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Pull First, Then Push (Recommended)</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Fetch remote changes, merge with yours, then push</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ uiText("Pull First, Then Push (Recommended)") }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ uiText("Fetch remote changes, merge with yours, then push") }}</p>
               </div>
             </button>
 
@@ -95,8 +95,8 @@
                 </svg>
               </div>
               <div class="ml-4 text-left">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Force Push</p>
-                <p class="text-xs text-status-danger-600 dark:text-status-danger-400 mt-0.5">Overwrite remote with your local changes (destructive!)</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ uiText("Force Push") }}</p>
+                <p class="text-xs text-status-danger-600 dark:text-status-danger-400 mt-0.5">{{ uiText("Overwrite remote with your local changes (destructive!)") }}</p>
               </div>
             </button>
           </div>
@@ -108,7 +108,7 @@
             @click="$emit('dismiss')"
             class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           >
-            Cancel
+            {{ uiText("Cancel") }}
           </button>
         </div>
       </div>
@@ -131,11 +131,10 @@
             </div>
             <div class="ml-4 flex-1">
               <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                Your agent cannot sync
+                {{ uiText("Your agent cannot sync") }}
               </h3>
               <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Your agent's branch and <code class="font-mono text-xs">{{ pullBranchLabel }}</code> have diverged —
-                each side has commits the other doesn't. Pull First and Force Push would both lose data.
+                {{ uiText("Your agent's branch and") }} <code class="font-mono text-xs">{{ pullBranchLabel }}</code> {{ uiText("have diverged — each side has commits the other doesn't. Pull First and Force Push would both lose data.") }}
               </p>
               <p v-if="divergenceSummary" class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                 {{ divergenceSummary }}
@@ -154,10 +153,9 @@
                 </svg>
               </div>
               <div class="ml-4 text-left">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Adopt latest upstream (preserve my state)</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ uiText("Adopt latest upstream (preserve my state)") }}</p>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  Reset the agent's source files to <code class="font-mono">{{ pullBranchLabel }}</code> while keeping
-                  its workspace / persistent state intact. Recommended.
+                  {{ uiText("Reset the agent's source files to") }} <code class="font-mono">{{ pullBranchLabel }}</code> {{ uiText("while keeping its workspace / persistent state intact. Recommended.") }}
                 </p>
               </div>
             </button>
@@ -172,10 +170,10 @@
                 </svg>
               </div>
               <div class="ml-4 text-left">
-                <p class="text-sm font-medium text-gray-900 dark:text-white">Force push anyway</p>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ uiText("Force push anyway") }}</p>
                 <p class="text-xs text-status-danger-600 dark:text-status-danger-400 mt-0.5">
-                  Overwrites the remote working branch with your local history. Does NOT bring in
-                  {{ pullBranchLabel }}'s commits. Destructive.
+                  {{ uiText("Overwrites the remote working branch with your local history. Does NOT bring in") }}
+                  {{ pullBranchLabel }}{{ uiText("'s commits. Destructive.") }}
                 </p>
               </div>
             </button>
@@ -187,7 +185,7 @@
             @click="$emit('dismiss')"
             class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
           >
-            Cancel
+            {{ uiText("Cancel") }}
           </button>
         </div>
       </div>
@@ -247,50 +245,54 @@ const isPull = computed(() => props.conflict?.type === 'pull')
 // Fallback entries preserve the pre-S5 strings verbatim for unknown classes.
 const COPY = {
   AHEAD_ONLY: {
-    title: 'You have local changes to push',
-    body: ['Your agent has changes that are not yet on the remote.', 'The remote has not moved since your last sync.'],
-    recommendation: 'Push your changes to share them with the team.'
+    get "title"() { return uiText("You have local changes to push") },
+    get body() { return [uiText('Your agent has changes that are not yet on the remote.'), uiText('The remote has not moved since your last sync.')] },
+    get recommendation() { return uiText('Push your changes to share them with the team.') }
   },
   BEHIND_ONLY: {
-    title: 'The remote has new changes',
-    body: ['The remote branch has commits your agent does not have yet.', 'You have no unpushed local changes.'],
-    recommendation: 'Pull the latest changes to catch up.'
+    get "title"() { return uiText("The remote has new changes") },
+    get body() { return [uiText('The remote branch has commits your agent does not have yet.'), uiText('You have no unpushed local changes.')] },
+    get recommendation() { return uiText('Pull the latest changes to catch up.') }
   },
   PARALLEL_HISTORY: {
-    title: 'Your agent and main have diverged',
-    body: [
-      'Main has been rewritten since your agent forked from it.',
-      'A normal pull cannot replay your changes on top of the new main.',
-      'A force push would silently hide the improved main from your agent.'
-    ],
-    recommendation: 'Use "Adopt latest upstream" (blocked on #384) to re-fork from main while keeping your workspace state.'
+    get "title"() { return uiText("Your agent and main have diverged") },
+    get body() {
+      return [
+        uiText('Main has been rewritten since your agent forked from it.'),
+        uiText('A normal pull cannot replay your changes on top of the new main.'),
+        uiText('A force push would silently hide the improved main from your agent.')
+      ]
+    },
+    get recommendation() { return uiText('Use "Adopt latest upstream" (blocked on #384) to re-fork from main while keeping your workspace state.') }
   },
   UNCOMMITTED_LOCAL: {
-    title: 'Uncommitted local changes are blocking the sync',
-    body: ['Git refuses to pull because your workspace has uncommitted edits that would be overwritten.'],
-    recommendation: 'Use "Stash & Reapply" to save your edits, pull the remote, then reapply them.'
+    get "title"() { return uiText("Uncommitted local changes are blocking the sync") },
+    get body() { return [uiText('Git refuses to pull because your workspace has uncommitted edits that would be overwritten.')] },
+    get recommendation() { return uiText('Use "Stash & Reapply" to save your edits, pull the remote, then reapply them.') }
   },
   AUTH_FAILURE: {
-    title: 'Git could not authenticate with the remote',
-    body: ['The remote rejected the credentials git sent.', 'This is usually an expired or missing GitHub PAT.'],
-    recommendation: 'Update the agent\u2019s GitHub PAT on the Credentials tab and retry.'
+    get "title"() { return uiText("Git could not authenticate with the remote") },
+    get body() { return [uiText('The remote rejected the credentials git sent.'), uiText('This is usually an expired or missing GitHub PAT.')] },
+    get recommendation() { return uiText('Update the agent\u2019s GitHub PAT on the Credentials tab and retry.') }
   },
   WORKING_BRANCH_EXTERNAL_WRITE: {
-    title: 'Another process wrote to this working branch',
-    body: [
-      'The remote working branch moved between when your agent read it and when it tried to push.',
-      'This usually means a second agent or operator just pushed to the same branch.'
-    ],
-    recommendation: 'Refresh git status and decide whether to adopt the other side\u2019s work or overwrite it.'
+    get "title"() { return uiText("Another process wrote to this working branch") },
+    get body() {
+      return [
+        uiText('The remote working branch moved between when your agent read it and when it tried to push.'),
+        uiText('This usually means a second agent or operator just pushed to the same branch.')
+      ]
+    },
+    get recommendation() { return uiText('Refresh git status and decide whether to adopt the other side\u2019s work or overwrite it.') }
   },
   UNKNOWN: {
-    title: 'Your agent cannot sync',
-    body: ['Git returned an error that Trinity does not yet classify.'],
-    recommendation: 'Expand "Git details" below and share the output with whoever set up the agent.'
+    get "title"() { return uiText("Your agent cannot sync") },
+    get body() { return [uiText('Git returned an error that Trinity does not yet classify.')] },
+    get recommendation() { return uiText('Expand "Git details" below and share the output with whoever set up the agent.') }
   }
 }
 
-const FALLBACK_TITLE = (isPull) => (isPull ? 'Pull Conflict' : 'Push Conflict')
+const FALLBACK_TITLE = (isPull) => (isPull ? uiText('Pull Conflict') : uiText('Push Conflict'))
 
 const copy = computed(() => {
   const cls = props.conflict?.conflictClass
@@ -302,10 +304,12 @@ const copy = computed(() => {
   return {
     title: FALLBACK_TITLE(isPull.value),
     body: [],
-    recommendation: props.conflict?.message || 'A conflict was detected. Choose how to proceed:'
+    recommendation: props.conflict?.message || uiText('A conflict was detected. Choose how to proceed:')
   }
 })
 
 const rawStderr = computed(() => props.conflict?.rawStderr || '')
 const pullBranchLabel = computed(() => props.pullBranch || 'upstream')
+
+import { t as uiText } from '@/i18n'
 </script>

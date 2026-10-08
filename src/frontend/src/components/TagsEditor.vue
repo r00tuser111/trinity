@@ -12,7 +12,7 @@
           v-if="editable"
           @click="removeTag(tag)"
           class="hover:text-violet-900 dark:hover:text-violet-100 ml-0.5"
-          :title="'Remove ' + tag"
+          :title="uiText(&quot;Remove &quot;) + tag"
         >
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -30,7 +30,7 @@
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          <span>Add</span>
+          <span>{{ uiText("Add") }}</span>
         </button>
 
         <div v-else class="relative">
@@ -67,7 +67,7 @@
         v-if="tags.length === 0 && !editable"
         class="text-xs text-gray-400 dark:text-gray-500 italic"
       >
-        No tags
+        {{ uiText("No tags") }}
       </span>
     </div>
 
@@ -130,17 +130,17 @@ function addTag() {
 
   // Validate format
   if (!/^[a-z0-9-]+$/.test(normalized)) {
-    error.value = 'Tags can only contain letters, numbers, and hyphens'
+    error.value = uiText("Tags can only contain letters, numbers, and hyphens")
     return
   }
 
   if (normalized.length > 50) {
-    error.value = 'Tag too long (max 50 characters)'
+    error.value = uiText("Tag too long (max 50 characters)")
     return
   }
 
   if (tags.value.includes(normalized)) {
-    error.value = 'Tag already exists'
+    error.value = uiText("Tag already exists")
     return
   }
 
@@ -176,4 +176,6 @@ function handleBlur() {
     }
   }, 150)
 }
+
+import { t as uiText } from '@/i18n'
 </script>

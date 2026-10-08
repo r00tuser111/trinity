@@ -8,15 +8,15 @@
         modelValue ? 'text-state-locked-600 dark:text-state-locked-400' : 'text-gray-500 dark:text-gray-400'
       ]"
     >
-      {{ modelValue ? 'Read-Only' : 'Editable' }}
+      {{ modelValue ? uiText("Read-Only") : uiText("Editable") }}
     </span>
     <button
       @click="toggle"
       :disabled="disabled || loading"
       role="switch"
       :aria-checked="modelValue"
-      :aria-label="`Read-only mode is ${modelValue ? 'enabled' : 'disabled'}. Click to ${modelValue ? 'allow' : 'prevent'} code modifications.`"
-      :title="modelValue ? 'Read-Only Mode ON - Agent cannot modify source code' : 'Read-Only Mode OFF - Agent can modify all files'"
+      :aria-label="uiText(&quot;Read-only mode is {arg1}. Click to {arg2} code modifications.&quot;, { arg1: (modelValue ? 'enabled' : 'disabled'), arg2: (modelValue ? 'allow' : 'prevent') })"
+      :title="modelValue ? uiText(&quot;Read-Only Mode ON - Agent cannot modify source code&quot;) : uiText(&quot;Read-Only Mode OFF - Agent can modify all files&quot;)"
       class="relative inline-flex items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
       :class="[
         sizeClasses,
@@ -24,7 +24,7 @@
         (disabled || loading) ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
       ]"
     >
-      <span class="sr-only">Toggle read-only mode</span>
+      <span class="sr-only">{{ uiText("Toggle read-only mode") }}</span>
       <span
         class="inline-block transform rounded-full bg-white shadow transition-transform"
         :class="[
@@ -168,4 +168,6 @@ function toggle() {
     emit('toggle', newValue)
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

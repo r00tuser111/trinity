@@ -26,7 +26,7 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-            {{ item.status === 'expired' ? 'Expired' : 'Cancelled' }}
+            {{ item.status === 'expired' ? uiText("Expired") : uiText("Cancelled") }}
           </span>
           <span v-else class="inline-flex items-center gap-1 text-xs text-status-success-600 dark:text-status-success-400">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,9 +77,11 @@ function timeAgo(isoString) {
   const diffHr = Math.floor(diffMs / 3600000)
   const diffDay = Math.floor(diffMs / 86400000)
 
-  if (diffMin < 1) return 'just now'
-  if (diffMin < 60) return `${diffMin}m ago`
-  if (diffHr < 24) return `${diffHr}h ago`
-  return `${diffDay}d ago`
+  if (diffMin < 1) return uiText("just now")
+  if (diffMin < 60) return uiText("{arg1}m ago", { arg1: (diffMin) })
+  if (diffHr < 24) return uiText("{arg1}h ago", { arg1: (diffHr) })
+  return uiText("{arg1}d ago", { arg1: (diffDay) })
 }
+
+import { t as uiText } from '@/i18n'
 </script>

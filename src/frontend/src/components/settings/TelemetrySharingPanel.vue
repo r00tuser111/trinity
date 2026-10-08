@@ -1,12 +1,9 @@
 <template>
   <div class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-      <h2 class="text-lg font-medium text-gray-900 dark:text-white">Usage sharing</h2>
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Usage sharing") }}</h2>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Optionally share <span class="font-medium">anonymous, aggregate</span> usage
-        so we can see whether the platform works outside our own instance, and so you
-        can see how your setup compares to the fleet. Off by default, reversible any
-        time — nothing is shared until you turn this on. (ent#12, ent#437)
+        {{ uiText("Optionally share") }} <span class="font-medium">{{ uiText("anonymous, aggregate") }}</span> {{ uiText("usage so we can see whether the platform works outside our own instance, and so you can see how your setup compares to the fleet. Off by default, reversible any time — nothing is shared until you turn this on. (ent#12, ent#437)") }}
       </p>
     </div>
 
@@ -20,22 +17,21 @@
         v-if="store.status.hard_disabled"
         class="rounded-md border border-status-warning-100 dark:border-status-warning-500/30 bg-status-warning-100/60 dark:bg-status-warning-500/16 px-4 py-3 text-sm text-status-warning-700 dark:text-status-warning-300"
       >
-        Sharing is disabled by configuration
-        (<code class="text-xs">TELEMETRY_SHARING_ENABLED=false</code> or
-        <code class="text-xs">DO_NOT_TRACK</code>). The toggle stays off and nothing leaves the box.
+        {{ uiText("Sharing is disabled by configuration (") }}<code class="text-xs">TELEMETRY_SHARING_ENABLED=false</code> {{ uiText("or") }}
+        <code class="text-xs">DO_NOT_TRACK</code>{{ uiText("). The toggle stays off and nothing leaves the box.") }}
       </div>
 
       <!-- Toggle -->
       <div class="flex items-start justify-between gap-4">
         <div>
-          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Share anonymous usage</p>
+          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Share anonymous usage") }}</p>
           <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
             <template v-if="store.status.enabled">
-              On since {{ fmt(store.status.consent_at) }}.
-              <template v-if="store.status.last_shared_at">Last delivered {{ fmt(store.status.last_shared_at) }} to {{ receiverLabel(store.status.last_shared_host) }}.</template>
-              <template v-else>Nothing delivered yet.</template>
+              {{ uiText("On since") }} {{ fmt(store.status.consent_at) }}.
+              <template v-if="store.status.last_shared_at">{{ uiText("Last delivered") }} {{ fmt(store.status.last_shared_at) }} {{ uiText("to") }} {{ receiverLabel(store.status.last_shared_host) }}.</template>
+              <template v-else>{{ uiText("Nothing delivered yet.") }}</template>
             </template>
-            <template v-else>Currently off — no egress.</template>
+            <template v-else>{{ uiText("Currently off — no egress.") }}</template>
           </p>
         </div>
         <button
@@ -58,41 +54,35 @@
 
       <!-- Backfill selection (only meaningful when turning on) -->
       <div v-if="!store.status.enabled && !store.status.hard_disabled" class="flex items-center gap-2 text-sm">
-        <label class="text-gray-600 dark:text-gray-300">On consent, also share the last</label>
+        <label class="text-gray-600 dark:text-gray-300">{{ uiText("On consent, also share the last") }}</label>
         <select v-model.number="backfillDays" class="text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100">
-          <option :value="7">7 days</option>
-          <option :value="30">30 days</option>
-          <option :value="90">90 days</option>
-          <option :value="0">no history</option>
+          <option :value="7">{{ uiText("7 days") }}</option>
+          <option :value="30">{{ uiText("30 days") }}</option>
+          <option :value="90">{{ uiText("90 days") }}</option>
+          <option :value="0">{{ uiText("no history") }}</option>
         </select>
-        <span class="text-gray-600 dark:text-gray-300">of local history, so your benchmarks are accurate.</span>
+        <span class="text-gray-600 dark:text-gray-300">{{ uiText("of local history, so your benchmarks are accurate.") }}</span>
       </div>
 
       <!-- Share identity (ent#437) -->
       <div class="text-xs text-gray-500 dark:text-gray-400">
-        <span class="font-medium text-gray-700 dark:text-gray-300">Share id:</span>
+        <span class="font-medium text-gray-700 dark:text-gray-300">{{ uiText("Share id:") }}</span>
         <code v-if="store.status.sharing_id" class="ml-1 rounded bg-gray-100 dark:bg-gray-750 px-1 py-0.5 text-gray-700 dark:text-gray-300">{{ store.status.sharing_id }}</code>
-        <span v-else class="ml-1">none — a random id is minted when you turn sharing on.</span>
+        <span v-else class="ml-1">{{ uiText("none — a random id is minted when you turn sharing on.") }}</span>
         <span class="block mt-0.5">
-          It is discarded when you turn sharing off and a new one is minted next time, so a
-          revoke forgets you locally. It is never your install id and is never sent beside it.
-          Anything already sent stays with the receiver; on request it can be deleted there by this id.
+          {{ uiText("It is discarded when you turn sharing off and a new one is minted next time, so a revoke forgets you locally. It is never your install id and is never sent beside it. Anything already sent stays with the receiver; on request it can be deleted there by this id.") }}
         </span>
       </div>
 
       <!-- What's shared / inspectable preview -->
       <details class="rounded-md border border-gray-200 dark:border-gray-700">
         <summary class="cursor-pointer px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-          Exactly what would be shared (inspect before you consent)
+          {{ uiText("Exactly what would be shared (inspect before you consent)") }}
         </summary>
         <div class="px-4 pb-4 pt-1">
           <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            Anonymized aggregates only — release version, platform, edition, install lane,
-            feature list, agent &amp; execution <span class="font-medium">counts</span>,
-            activation-funnel counts, and an outcome mix (how runs ended, by trigger and
-            by status, plus provider rate-limit and auth failure counts).
-            <span class="font-medium">No PII, no content, no prompts, no emails, no agent
-            names.</span> Keyed by the random share id above.
+            {{ uiText("Anonymized aggregates only — release version, platform, edition, install lane, feature list, agent & execution") }} <span class="font-medium">{{ uiText("counts") }}</span>{{ uiText(", activation-funnel counts, and an outcome mix (how runs ended, by trigger and by status, plus provider rate-limit and auth failure counts).") }}
+            <span class="font-medium">{{ uiText("No PII, no content, no prompts, no emails, no agent names.") }}</span> {{ uiText("Keyed by the random share id above.") }}
           </p>
           <pre class="max-h-72 overflow-auto rounded bg-gray-50 dark:bg-gray-900 p-3 text-xs text-gray-700 dark:text-gray-300"><code>{{ prettyPreview }}</code></pre>
         </div>
@@ -100,24 +90,24 @@
 
       <!-- Recent sends (ent#437) — inspect AFTER the fact -->
       <div>
-        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Recent sends</p>
+        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Recent sends") }}</p>
         <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ receiverLine }}</p>
         <p
           v-if="!store.status.recent_sends.length"
           class="mt-2 text-xs text-gray-500 dark:text-gray-400"
         >
-          Nothing sent yet — nothing leaves the box until sharing is on. The last
-          {{ RECENT_LIMIT }} attempts, successes and failures alike, appear here.
+          {{ uiText("Nothing sent yet — nothing leaves the box until sharing is on. The last") }}
+          {{ RECENT_LIMIT }} {{ uiText("attempts, successes and failures alike, appear here.") }}
         </p>
         <ul v-else class="mt-2 divide-y divide-gray-200 dark:divide-gray-750 rounded-md border border-gray-200 dark:border-gray-750">
           <li v-for="(send, i) in store.status.recent_sends" :key="i" class="px-3 py-2 text-xs">
             <details>
               <summary class="cursor-pointer flex flex-wrap items-center gap-2 text-gray-700 dark:text-gray-300">
-                <BaseBadge :variant="send.ok ? 'success' : 'warning'" dot>{{ send.ok ? 'delivered' : 'not delivered' }}</BaseBadge>
+                <BaseBadge :variant="send.ok ? 'success' : 'warning'" dot>{{ send.ok ? uiText("delivered") : uiText("not delivered") }}</BaseBadge>
                 <span class="tabular-nums" :title="send.sent_at">{{ fmt(send.sent_at) }}</span>
                 <span class="text-gray-500 dark:text-gray-400">
-                  {{ send.backfill ? 'backfill' : 'heartbeat' }} · {{ send.window_days }}d window · to {{ receiverLabel(send.host) }}
-                  <template v-if="send.http_status"> · HTTP {{ send.http_status }}</template>
+                  {{ send.backfill ? uiText("backfill") : uiText("heartbeat") }} · {{ send.window_days }}{{ uiText("d window · to") }} {{ receiverLabel(send.host) }}
+                  <template v-if="send.http_status"> {{ uiText("· HTTP") }} {{ send.http_status }}</template>
                   <template v-else-if="send.error"> · {{ send.error }}</template>
                 </span>
               </summary>
@@ -128,8 +118,8 @@
       </div>
 
       <p class="text-xs text-gray-400 dark:text-gray-500">
-        Reversible: turn this off any time and egress stops immediately.
-        <a href="https://github.com/abilityai/trinity/blob/main/docs/PRODUCT_EVENTS.md" target="_blank" rel="noopener" class="underline">Payload schema &amp; details</a>.
+        {{ uiText("Reversible: turn this off any time and egress stops immediately.") }}
+        <a href="https://github.com/abilityai/trinity/blob/main/docs/PRODUCT_EVENTS.md" target="_blank" rel="noopener" class="underline">{{ uiText("Payload schema & details") }}</a>.
       </p>
     </div>
   </div>
@@ -147,7 +137,7 @@ const store = useTelemetrySharingStore()
 const backfillDays = ref(30)
 
 const prettyPreview = computed(() =>
-  store.payloadPreview ? JSON.stringify(store.payloadPreview, null, 2) : '(load to preview)'
+  store.payloadPreview ? JSON.stringify(store.payloadPreview, null, 2) : uiText('(load to preview)')
 )
 
 // #2571: the line is decided from what the newest attempt RECORDED (its origin),
@@ -172,7 +162,7 @@ function pretty(obj) {
 // disclosure must say so rather than open onto the word "null".
 function payloadText(send) {
   if (send.payload) return pretty(send.payload)
-  return `No payload — this attempt failed before one was built${send.error ? ` (${send.error})` : ''}.`
+  return uiText("No payload — this attempt failed before one was built{arg1}.", { arg1: (send.error ? ` (${send.error})` : '') })
 }
 
 function fmt(iso) {
@@ -189,4 +179,6 @@ async function toggle() {
 onMounted(() => {
   store.load({ preview: true })
 })
+
+import { t as uiText } from '@/i18n'
 </script>

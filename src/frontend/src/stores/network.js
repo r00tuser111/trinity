@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import { readStoredToken } from '@/utils/platformSession'
 import { ref, computed } from 'vue'
@@ -80,10 +82,10 @@ export const useNetworkStore = defineStore('network', () => {
     const now = Date.now()
     const diff = now - getTimestampMs(lastEventTime.value)
 
-    if (diff < 1000) return 'Just now'
-    if (diff < 60000) return `${Math.floor(diff / 1000)}s ago`
-    if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`
-    return `${Math.floor(diff / 3600000)}h ago`
+    if (diff < 1000) return uiText("Just now")
+    if (diff < 60000) return uiText("{arg1}s ago", { arg1: (Math.floor(diff / 1000)) })
+    if (diff < 3600000) return uiText("{arg1}m ago", { arg1: (Math.floor(diff / 60000)) })
+    return uiText("{arg1}h ago", { arg1: (Math.floor(diff / 3600000)) })
   })
 
   // Replay computed properties
@@ -1784,7 +1786,7 @@ export const useNetworkStore = defineStore('network', () => {
     const agent = agents.value.find(a => a.name === agentName)
     if (!node && !agent) {
       console.error('[Network] Agent not found:', agentName)
-      return { success: false, error: 'Agent not found' }
+      return { success: false, error: uiText('Agent not found') }
     }
 
     const currentState = node ? node.data.autonomy_enabled : agent.autonomy_enabled
@@ -1817,7 +1819,7 @@ export const useNetworkStore = defineStore('network', () => {
       console.error('[Network] Failed to toggle autonomy:', error)
       return {
         success: false,
-        error: error.response?.data?.detail || 'Failed to update autonomy mode'
+        error: error.response?.data?.detail || uiText('Failed to update autonomy mode')
       }
     }
   }
@@ -1844,7 +1846,7 @@ export const useNetworkStore = defineStore('network', () => {
     const agent = agents.value.find(a => a.name === agentName)
     if (!node && !agent) {
       console.error('[Network] Agent not found:', agentName)
-      return { success: false, error: 'Agent not found' }
+      return { success: false, error: uiText('Agent not found') }
     }
 
     const isRunning = (node ? node.data.status : agent.status) === 'running'
@@ -1870,7 +1872,7 @@ export const useNetworkStore = defineStore('network', () => {
       console.error('[Network] Failed to toggle agent running:', error)
       return {
         success: false,
-        error: error.response?.data?.detail || 'Failed to toggle agent'
+        error: error.response?.data?.detail || uiText('Failed to toggle agent')
       }
     } finally {
       runningToggleLoading.value[agentName] = false

@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">File Sharing</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("File Sharing") }}</h3>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      Let the agent publish files from its
+      {{ uiText("Let the agent publish files from its") }}
       <code class="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">/home/developer/public/</code>
-      directory via time-limited download URLs. Agents call the
+      {{ uiText("directory via time-limited download URLs. Agents call the") }}
       <code class="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">share_file</code>
-      MCP tool once this toggle is on.
+      {{ uiText("MCP tool once this toggle is on.") }}
     </p>
 
     <!-- Toggle -->
@@ -23,10 +23,10 @@
       </label>
       <div class="flex-1">
         <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-          {{ status.enabled ? 'Enabled' : 'Disabled' }}
+          {{ status.enabled ? uiText("Enabled") : uiText("Disabled") }}
         </div>
         <div class="text-xs text-gray-500 dark:text-gray-400">
-          Flipping this toggle requires restarting the agent before it takes effect.
+          {{ uiText("Flipping this toggle requires restarting the agent before it takes effect.") }}
         </div>
       </div>
     </div>
@@ -36,17 +36,17 @@
       v-if="status.restart_required"
       class="mb-4 rounded-md bg-state-autonomous-50 dark:bg-state-autonomous-900/30 border border-state-autonomous-200 dark:border-state-autonomous-800 px-4 py-3 text-sm text-state-autonomous-800 dark:text-state-autonomous-200"
     >
-      Configuration changed — restart the agent to mount or detach
+      {{ uiText("Configuration changed — restart the agent to mount or detach") }}
       <code class="font-mono text-xs">/home/developer/public/</code>.
     </div>
 
     <!-- Quota + file count -->
     <div v-if="status.enabled" class="mb-4 text-sm text-gray-600 dark:text-gray-400">
       <span class="font-medium text-gray-900 dark:text-gray-100">{{ files.length }}</span>
-      active file{{ files.length === 1 ? '' : 's' }} ·
+      {{ uiText("active file") }}{{ files.length === 1 ? '' : 's' }} ·
       <span class="font-medium text-gray-900 dark:text-gray-100">{{ formatBytes(totalBytes) }}</span>
-      of <span>{{ formatBytes(quotaBytes) }}</span>
-      used
+      {{ uiText("of") }} <span>{{ formatBytes(quotaBytes) }}</span>
+      {{ uiText("used") }}
     </div>
 
     <!-- Files table -->
@@ -57,11 +57,11 @@
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-800">
           <tr>
-            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Filename</th>
-            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Size</th>
-            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Expires</th>
-            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Downloads</th>
-            <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Actions</th>
+            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ uiText("Filename") }}</th>
+            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ uiText("Size") }}</th>
+            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ uiText("Expires") }}</th>
+            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ uiText("Downloads") }}</th>
+            <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ uiText("Actions") }}</th>
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
@@ -80,14 +80,14 @@
                 class="px-2 py-1 text-xs font-medium rounded-md text-action-primary-700 dark:text-action-primary-300 bg-action-primary-50 dark:bg-action-primary-900/40 hover:bg-action-primary-100 dark:hover:bg-action-primary-900/70 mr-2"
                 :title="file.url"
               >
-                {{ copiedId === file.file_id ? 'Copied!' : 'Copy URL' }}
+                {{ copiedId === file.file_id ? uiText("Copied!") : uiText("Copy URL") }}
               </button>
               <button
                 @click="revoke(file)"
                 :disabled="revokingId === file.file_id"
                 class="px-2 py-1 text-xs font-medium rounded-md text-status-danger-700 dark:text-status-danger-300 bg-status-danger-50 dark:bg-status-danger-900/40 hover:bg-status-danger-100 dark:hover:bg-status-danger-900/70 disabled:opacity-50"
               >
-                {{ revokingId === file.file_id ? 'Revoking…' : 'Revoke' }}
+                {{ revokingId === file.file_id ? uiText("Revoking…") : uiText("Revoke") }}
               </button>
             </td>
           </tr>
@@ -100,8 +100,8 @@
       v-else-if="status.enabled"
       class="text-sm text-gray-500 dark:text-gray-400 italic"
     >
-      No active shares yet. The agent will publish files via the
-      <code class="font-mono text-xs">share_file</code> MCP tool.
+      {{ uiText("No active shares yet. The agent will publish files via the") }}
+      <code class="font-mono text-xs">share_file</code> {{ uiText("MCP tool.") }}
     </div>
   </div>
 </template>
@@ -134,7 +134,7 @@ async function loadStatus() {
     status.value = await agentsStore.getFileSharingStatus(props.agentName)
     if (status.value.enabled) await loadFiles()
   } catch (e) {
-    showNotification({ type: 'error', message: `Failed to load file-sharing status: ${e.message}` })
+    showNotification({ type: 'error', get "message"() { return uiText("Failed to load file-sharing status: {arg1}", { arg1: (e.message) }) } })
   } finally {
     statusLoading.value = false
   }
@@ -147,7 +147,7 @@ async function loadFiles() {
     totalBytes.value = resp.total_bytes || 0
     quotaBytes.value = resp.quota_bytes || 500 * 1024 * 1024
   } catch (e) {
-    showNotification({ type: 'error', message: `Failed to list shared files: ${e.message}` })
+    showNotification({ type: 'error', get "message"() { return uiText("Failed to list shared files: {arg1}", { arg1: (e.message) }) } })
   }
 }
 
@@ -166,7 +166,7 @@ async function onToggle(enabled) {
   } catch (e) {
     showNotification({
       type: 'error',
-      message: e.response?.data?.detail || `Failed to toggle file sharing: ${e.message}`,
+      message: e.response?.data?.detail || uiText("Failed to toggle file sharing: {arg1}", { arg1: (e.message) }),
     })
     // Reload status to reflect actual state
     await loadStatus()
@@ -176,16 +176,16 @@ async function onToggle(enabled) {
 }
 
 async function revoke(file) {
-  if (!confirm(`Revoke the download link for "${file.filename}"? Existing URLs will stop working.`)) return
+  if (!confirm(uiText("Revoke the download link for \"{arg1}\"? Existing URLs will stop working.", { arg1: (file.filename) }))) return
   revokingId.value = file.file_id
   try {
     await agentsStore.revokeSharedFile(props.agentName, file.file_id)
     await loadFiles()
-    showNotification({ type: 'success', message: `Revoked ${file.filename}` })
+    showNotification({ type: 'success', get "message"() { return uiText("Revoked {arg1}", { arg1: (file.filename) }) } })
   } catch (e) {
     showNotification({
       type: 'error',
-      message: e.response?.data?.detail || `Revoke failed: ${e.message}`,
+      message: e.response?.data?.detail || uiText("Revoke failed: {arg1}", { arg1: (e.message) }),
     })
   } finally {
     revokingId.value = null
@@ -200,7 +200,7 @@ async function copyUrl(file) {
       if (copiedId.value === file.file_id) copiedId.value = null
     }, 1500)
   } catch {
-    showNotification({ type: 'error', message: 'Clipboard copy failed — use the title tooltip to copy manually.' })
+    showNotification({ type: 'error', get "message"() { return uiText("Clipboard copy failed — use the title tooltip to copy manually.") } })
   }
 }
 
@@ -227,4 +227,6 @@ function relativeTime(iso) {
 }
 
 onMounted(loadStatus)
+
+import { t as uiText } from '@/i18n'
 </script>

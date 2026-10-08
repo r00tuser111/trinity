@@ -120,7 +120,7 @@ describe('AgentHeader offers the door', () => {
   it('renders Talk with a stable test id and a click that navigates', () => {
     expect(HEADER).toContain('data-testid="agent-talk"')
     expect(HEADER).toContain('@click="goToTalk"')
-    expect(talk).toContain('>\n            Talk\n          </button>')
+    expect(talk).toContain("{{ t('Talk') }}")
   })
 
   it('is NOT gated — no `v-if` on the button (#2559 G-1)', () => {

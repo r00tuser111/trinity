@@ -30,7 +30,7 @@
 
     <LoadFailed
       v-else-if="view.state === 'failed'"
-      title="Couldn't load loops"
+      :title="uiText(&quot;Couldn't load loops&quot;)"
       :message="store.error || 'The loops for this chat could not be read.'"
       :retrying="store.loading"
       @retry="store.fetchLoops()"
@@ -49,7 +49,7 @@
         <p class="text-sm font-semibold">{{ emptyCopy.title }}</p>
         <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400 max-w-[36ch] mx-auto">{{ emptyCopy.body }}</p>
         <BaseButton size="sm" variant="primary" class="mt-4" @click="showForm = true">
-          Start a loop
+          {{ uiText("Start a loop") }}
         </BaseButton>
       </div>
 
@@ -71,8 +71,8 @@
             <div class="min-w-0 flex-1">
               <p class="text-xs font-medium" :class="toneClass(loop)">{{ statusLabel(loop) }}</p>
               <p class="text-[11px] text-gray-500 dark:text-gray-400">
-                Run {{ loop.runs_completed }} of {{ loop.max_runs }}
-                <span v-if="loop.failed_runs"> · {{ loop.failed_runs }} failed</span>
+                {{ uiText("Run") }} {{ loop.runs_completed }} {{ uiText("of") }} {{ loop.max_runs }}
+                <span v-if="loop.failed_runs"> · {{ loop.failed_runs }} {{ uiText("failed") }}</span>
               </p>
             </div>
             <BaseButton
@@ -83,7 +83,7 @@
               :data-testid="`portal-loop-stop-${loop.loop_id}`"
               @click="onStop(loop)"
             >
-              {{ store.stoppingIds.includes(loop.loop_id) ? 'Stopping…' : 'Stop' }}
+              {{ store.stoppingIds.includes(loop.loop_id) ? uiText("Stopping…") : uiText("Stop") }}
             </BaseButton>
           </div>
 
@@ -105,32 +105,32 @@
       <!-- Start form: guardrails visible BEFORE start (AC #1) -->
       <div v-if="showForm" class="rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-2" data-testid="portal-loop-form">
         <label class="block text-[11px] text-gray-500 dark:text-gray-400">
-          Agent
+          {{ uiText("Agent") }}
           <select v-model="form.agent" class="mt-0.5 w-full text-xs rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800">
             <option v-for="p in participants" :key="p" :value="p">{{ p }}</option>
           </select>
         </label>
         <label class="block text-[11px] text-gray-500 dark:text-gray-400">
-          Do this each run
+          {{ uiText("Do this each run") }}
           <textarea
             v-model="form.message"
             rows="2"
             data-testid="portal-loop-message"
             class="mt-0.5 w-full text-xs rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800"
-            placeholder="Take the next item and…"
+            :placeholder="uiText(&quot;Take the next item and…&quot;)"
           ></textarea>
         </label>
         <p v-if="errors.message" class="text-[11px] text-status-danger-600 dark:text-status-danger-400">{{ errors.message }}</p>
 
         <div class="grid grid-cols-2 gap-2">
           <label class="block text-[11px] text-gray-500 dark:text-gray-400">
-            Runs
+            {{ uiText("Runs") }}
             <input v-model.number="form.max_runs" type="number" min="1" max="100"
                    class="mt-0.5 w-full text-xs rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800" />
           </label>
           <label class="block text-[11px] text-gray-500 dark:text-gray-400">
-            Cost budget (USD)
-            <input v-model="form.max_cost_usd" type="number" step="0.01" min="0" placeholder="none"
+            {{ uiText("Cost budget (USD)") }}
+            <input v-model="form.max_cost_usd" type="number" step="0.01" min="0" :placeholder="uiText(&quot;none&quot;)"
                    class="mt-0.5 w-full text-xs rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800" />
           </label>
         </div>
@@ -138,19 +138,19 @@
         <p v-if="errors.max_cost_usd" class="text-[11px] text-status-danger-600 dark:text-status-danger-400">{{ errors.max_cost_usd }}</p>
 
         <p class="text-[11px] text-gray-500 dark:text-gray-400">
-          It also stops by itself after
+          {{ uiText("It also stops by itself after") }}
           <strong>{{ GUARDRAIL_DEFAULTS.no_progress_threshold }}</strong>
-          identical replies in a row, and after
+          {{ uiText("identical replies in a row, and after") }}
           <strong>{{ GUARDRAIL_DEFAULTS.max_consecutive_failures }}</strong>
-          consecutive failures. No time limit unless you set one.
+          {{ uiText("consecutive failures. No time limit unless you set one.") }}
         </p>
 
         <p v-if="startError" class="text-[11px] text-status-danger-600 dark:text-status-danger-400" role="alert">{{ startError }}</p>
         <div class="flex gap-2">
           <BaseButton size="sm" variant="primary" :disabled="store.starting" @click="onStart">
-            {{ store.starting ? 'Starting…' : 'Start' }}
+            {{ store.starting ? uiText("Starting…") : uiText("Start") }}
           </BaseButton>
-          <BaseButton size="sm" variant="secondary" @click="showForm = false">Cancel</BaseButton>
+          <BaseButton size="sm" variant="secondary" @click="showForm = false">{{ uiText("Cancel") }}</BaseButton>
         </div>
       </div>
 
@@ -160,7 +160,7 @@
         variant="secondary"
         @click="showForm = true"
       >
-        Start another loop
+        {{ uiText("Start another loop") }}
       </BaseButton>
     </template>
   </div>
@@ -220,9 +220,9 @@ function rowState(agent) { return participantState(agent, liveSignal.value) }
 // The registry's copy when docked in the rail; this fallback only when hosted
 // elsewhere without a `tab`.
 const EMPTY_FALLBACK = {
-  title: 'No loops running',
-  body: 'A loop runs the same instruction several times in a row — working through a list, retrying until something succeeds, refining a draft. It stops at its run limit, and you can stop it any time.',
-  action: 'Start a loop',
+  get "title"() { return uiText("No loops running") },
+  get "body"() { return uiText('A loop runs the same instruction several times in a row — working through a list, retrying until something succeeds, refining a draft. It stops at its run limit, and you can stop it any time.') },
+  get "action"() { return uiText('Start a loop') },
 }
 const emptyCopy = computed(() => railEmptyCopy(props.tab || { empty: EMPTY_FALLBACK }, participants.value))
 
@@ -264,7 +264,7 @@ async function onStart() {
 
 async function onStop(loop) {
   const res = await store.stopLoop(loop.loop_id)
-  if (!res.success) store.error = 'Could not stop that loop.'
+  if (!res.success) store.error = uiText("Could not stop that loop.")
 }
 
 // The form's agent follows the participant SET, and only the set: keyed on the
@@ -277,4 +277,6 @@ watch(participantsKey, () => {
   const names = participants.value
   if (!names.includes(form.agent)) form.agent = names[0] || null
 }, { immediate: true })
+
+import { t as uiText } from '@/i18n'
 </script>

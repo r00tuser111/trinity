@@ -1,3 +1,5 @@
+import { t as uiText } from '../../i18n/index.js'
+
 /**
  * The Files tab's pure rules (#2582 / ent#548) — what to preview, in what
  * order, and who may do what to a row.
@@ -196,7 +198,7 @@ export function previewCapNotice(shownBytes, totalBytes) {
   const total = Number(totalBytes) || 0
   const shown = Number(shownBytes) || 0
   if (!total || shown >= total) return ''
-  return `Showing the first ${humanSize(shown)} of ${humanSize(total)} · Download the full file`
+  return uiText("Showing the first {arg1} of {arg2} · Download the full file", { arg1: (humanSize(shown)), arg2: (humanSize(total)) })
 }
 
 export function humanSize(n) {
@@ -215,7 +217,7 @@ export function humanSize(n) {
  * `undefined` and "the server names the reason" quietly degrades to a generic
  * string for exactly the verbs this issue added. Read the blob first.
  */
-export async function errorDetail(err, fallback = 'Something went wrong.') {
+export async function errorDetail(err, fallback = uiText('Something went wrong.')) {
   const data = err?.response?.data
   if (data && typeof data.text === 'function') {
     try {
@@ -320,7 +322,7 @@ export function uploadTargets(participants = []) {
   const names = (participants || []).filter(Boolean)
   if (names.length < 2) return names.map((name) => ({ value: name, label: name }))
   return [
-    { value: ALL_PARTICIPANTS, label: `Everyone in this chat (${names.length} agents)` },
+    { value: ALL_PARTICIPANTS, get "label"() { return uiText("Everyone in this chat ({arg1} agents)", { arg1: (names.length) }) } },
     ...names.map((name) => ({ value: name, label: name })),
   ]
 }
@@ -361,10 +363,10 @@ export function resolveRecipients(target, participants = []) {
  */
 export function uploadTargetLabel(target, participants = []) {
   const names = resolveRecipients(target, participants)
-  if (!names.length) return 'the agent'
+  if (!names.length) return uiText("the agent")
   if (names.length === 1) return names[0]
-  if (names.length === 2) return `${names[0]} and ${names[1]}`
-  return `all ${names.length} agents`
+  if (names.length === 2) return uiText('{first} and {second}', { first: names[0], second: names[1] })
+  return uiText('all {count} agents', { count: names.length })
 }
 
 /**
@@ -376,11 +378,11 @@ export function uploadTargetLabel(target, participants = []) {
 export function uploadReceipt({ files = [], recipients = [] } = {}) {
   const f = files.filter(Boolean)
   if (!f.length || !recipients.length) return ''
-  const what = f.length === 1 ? `“${f[0]}”` : `${f.length} files`
+  const what = f.length === 1 ? `“${f[0]}”` : uiText('{count} files', { count: f.length })
   const who = recipients.length === 1
     ? recipients[0]
     : recipients.length === 2
-      ? `${recipients[0]} and ${recipients[1]}`
-      : `all ${recipients.length} agents`
-  return `Sent ${what} to ${who}.`
+      ? uiText('{first} and {second}', { first: recipients[0], second: recipients[1] })
+      : uiText('all {count} agents', { count: recipients.length })
+  return uiText('Sent {what} to {who}.', { what, who })
 }

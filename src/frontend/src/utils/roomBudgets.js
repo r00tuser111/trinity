@@ -6,6 +6,8 @@
  * silently keep the previous cap — so clearing is explicit, and the two cases are
  * separated here rather than inline in the panel, where they cannot be tested.
  */
+import { t as uiText } from '../i18n/index.js'
+
 
 export const ROOM_COST_KEY = 'room_default_max_cost_usd'
 
@@ -82,13 +84,13 @@ export function budgetNotice(room) {
         remaining,
         // Plural spelled out: this is the line that has to land.
         headline: remaining === 0
-          ? 'This room has reached its message limit'
+          ? uiText('This room has reached its message limit')
           : remaining === 1
-            ? '1 message left in this room'
-            : `${remaining} messages left in this room`,
+            ? uiText('1 message left in this room')
+            : uiText('{count} messages left in this room', { count: remaining }),
         detail: critical
-          ? 'At the limit the room closes for good — the transcript stays readable, but nobody can post again. Start a new chat to carry on.'
-          : `It closes permanently at ${maxMsgs} messages. Each agent reply counts, so a question that wakes three agents spends four.`,
+          ? uiText('At the limit the room closes for good — the transcript stays readable, but nobody can post again. Start a new chat to carry on.')
+          : uiText('It closes permanently at {count} messages. Each agent reply counts, so a question that wakes three agents spends four.', { count: maxMsgs }),
       }
     }
   }
@@ -102,8 +104,8 @@ export function budgetNotice(room) {
       kind: 'cost',
       level: cost / maxCost >= 0.95 ? 'critical' : 'warn',
       remaining: Math.max(0, maxCost - cost),
-      headline: `$${cost.toFixed(2)} of $${maxCost.toFixed(2)} spent in this room`,
-      detail: 'At the limit the room closes for good. Start a new chat to carry on.',
+      headline: uiText('${spent} of ${limit} spent in this room', { spent: cost.toFixed(2), limit: maxCost.toFixed(2) }),
+      detail: uiText('At the limit the room closes for good. Start a new chat to carry on.'),
     }
   }
 

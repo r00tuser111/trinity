@@ -2,9 +2,9 @@
   <div>
     <div class="flex justify-between items-start mb-6">
       <div>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white">MCP API Keys</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('MCP API Keys') }}</h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Manage API keys for accessing the Trinity MCP server
+          {{ t('Manage API keys for accessing the Trinity MCP server') }}
         </p>
       </div>
       <button
@@ -14,7 +14,7 @@
         <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        Create API Key
+        {{ t('Create API Key') }}
       </button>
     </div>
 
@@ -27,9 +27,9 @@
           </svg>
         </div>
         <div class="ml-3 flex-1">
-          <h3 class="text-sm font-medium text-status-info-800 dark:text-status-info-300">Connect to MCP Server</h3>
+          <h3 class="text-sm font-medium text-status-info-800 dark:text-status-info-300">{{ t('Connect to MCP Server') }}</h3>
           <p class="text-sm text-status-info-700 dark:text-status-info-400 mt-1">
-            Add this to your <code class="bg-status-info-100 dark:bg-status-info-800 px-1 rounded">.mcp.json</code> configuration:
+            {{ t('Add this to your') }} <code class="bg-status-info-100 dark:bg-status-info-800 px-1 rounded">.mcp.json</code> {{ t('configuration:') }}
           </p>
           <pre class="mt-2 bg-status-info-100 dark:bg-status-info-800 rounded p-3 text-xs overflow-x-auto text-status-info-900 dark:text-status-info-100">{
   "mcpServers": {
@@ -50,15 +50,15 @@
     <div class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg overflow-hidden">
       <div v-if="loading" class="p-8 text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-action-primary-600 mx-auto"></div>
-        <p class="mt-4 text-gray-500 dark:text-gray-400">Loading API keys...</p>
+        <p class="mt-4 text-gray-500 dark:text-gray-400">{{ t('Loading API keys...') }}</p>
       </div>
 
       <div v-else-if="displayedKeys.length === 0" class="text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No API keys</h3>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Create an API key to start using the MCP server.</p>
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">{{ t('No API keys') }}</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('Create an API key to start using the MCP server.') }}</p>
       </div>
 
       <ul v-else class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -83,10 +83,10 @@
                   <h3 class="text-sm font-medium text-gray-900 dark:text-white">{{ key.name }}</h3>
                   <span class="ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                         :class="key.is_active ? 'bg-status-success-100 dark:bg-status-success-900/50 text-status-success-800 dark:text-status-success-300' : 'bg-status-danger-100 dark:bg-status-danger-900/50 text-status-danger-800 dark:text-status-danger-300'">
-                    {{ key.is_active ? 'Active' : 'Revoked' }}
+                    {{ key.is_active ? t('Active') : t('Revoked') }}
                   </span>
                   <span v-if="key.scope === 'agent'" class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-accent-purple-100 dark:bg-accent-purple-900/50 text-accent-purple-800 dark:text-accent-purple-300">
-                    Agent
+                    {{ t('Agent') }}
                   </span>
                   <!-- #2323: a bounded read-only machine credential. Badged
                        because an unbadged ops key is visually identical to an
@@ -94,19 +94,19 @@
                        having a bounded tier at all. -->
                   <span v-else-if="key.scope === 'ops'"
                         class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-info-100 dark:bg-status-info-900/50 text-status-info-800 dark:text-status-info-300"
-                        title="Read-only machine credential — fleet health, telemetry, execution and subscription reads only">
-                    Ops (read-only)
+                        :title="t('Read-only machine credential — fleet health, telemetry, execution and subscription reads only')">
+                    {{ t('Ops (read-only)') }}
                   </span>
                   <span v-else-if="key.scope === 'system'" class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-urgent-100 dark:bg-status-urgent-900/50 text-status-urgent-800 dark:text-status-urgent-300">
-                    System
+                    {{ t('System') }}
                   </span>
                   <!-- ent#163: this key can act as ANY end user with portal
                        access, so it must never render like an ordinary user
                        key on the page where an admin audits keys. -->
                   <span v-else-if="key.scope === 'portal_delegate'"
                         class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-warning-100 dark:bg-status-warning-900/50 text-status-warning-800 dark:text-status-warning-300"
-                        title="Can exchange an end-user email for a portal session — treat as a delegated-identity credential">
-                    Portal Delegate
+                        :title="t('Can exchange an end-user email for a portal session — treat as a delegated-identity credential')">
+                    {{ t('Portal Delegate') }}
                   </span>
                 </div>
                 <p v-if="key.description" class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ key.description }}</p>
@@ -138,13 +138,13 @@
                     </svg>
                     {{ key.user_email }}
                   </span>
-                  <span class="whitespace-nowrap tabular-nums">Created {{ formatDate(key.created_at) }}</span>
-                  <span class="whitespace-nowrap tabular-nums">Last used {{ key.last_used_at ? formatDate(key.last_used_at) : 'never' }}</span>
+                  <span class="whitespace-nowrap tabular-nums">{{ t('Created') }} {{ formatDate(key.created_at) }}</span>
+                  <span class="whitespace-nowrap tabular-nums">{{ t('Last used') }} {{ key.last_used_at ? formatDate(key.last_used_at) : t('never') }}</span>
                   <span class="flex items-center whitespace-nowrap tabular-nums">
                     <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
-                    {{ key.usage_count }} requests
+                    {{ key.usage_count }} {{ t('requests') }}
                   </span>
                 </div>
               </div>
@@ -155,13 +155,13 @@
                 @click="revokeKey(key.id)"
                 class="inline-flex items-center px-3 py-1.5 border border-status-warning-300 dark:border-status-warning-600 shadow-sm text-xs font-medium rounded text-status-warning-700 dark:text-status-warning-300 bg-white dark:bg-gray-700 hover:bg-status-warning-50 dark:hover:bg-status-warning-900/30"
               >
-                Revoke
+                {{ t('Revoke') }}
               </button>
               <button
                 @click="deleteKey(key.id)"
                 class="inline-flex items-center px-3 py-1.5 border border-status-danger-300 dark:border-status-danger-600 shadow-sm text-xs font-medium rounded text-status-danger-700 dark:text-status-danger-300 bg-white dark:bg-gray-700 hover:bg-status-danger-50 dark:hover:bg-status-danger-900/30"
               >
-                Delete
+                {{ t('Delete') }}
               </button>
             </div>
           </div>
@@ -176,26 +176,26 @@
 
         <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Create MCP API Key</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">{{ t('Create MCP API Key') }}</h3>
 
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Name') }}</label>
                 <input
                   v-model="newKey.name"
                   type="text"
                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                  placeholder="My Claude Code Key"
+                  :placeholder="t('My Claude Code Key')"
                 />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description (optional)</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Description (optional)') }}</label>
                 <textarea
                   v-model="newKey.description"
                   rows="2"
                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                  placeholder="Used for..."
+                  :placeholder="t('Used for...')"
                 ></textarea>
               </div>
 
@@ -208,15 +208,14 @@
                    started as: the scopes are mutually exclusive (one column), so
                    a checkbox pair can express a state the backend cannot store. -->
               <div v-if="isAdmin" class="space-y-2">
-                <span class="block text-sm font-medium scope-label">Key scope</span>
+                <span class="block text-sm font-medium scope-label">{{ t('Key scope') }}</span>
 
                 <label class="flex items-start gap-2 cursor-pointer">
                   <input type="radio" value="user" v-model="newKey.scope" class="mt-0.5 text-action-primary-600 focus:ring-action-primary-500" />
                   <span class="text-sm scope-label">
-                    Standard
+                    {{ t('Standard') }}
                     <span class="scope-hint">
-                      Carries your own role in full, including admin. Use for your
-                      own tooling.
+                      {{ t('Carries your own role in full, including admin. Use for your own tooling.') }}
                     </span>
                   </span>
                 </label>
@@ -224,15 +223,10 @@
                 <label class="flex items-start gap-2 cursor-pointer">
                   <input type="radio" value="ops" v-model="newKey.scope" class="mt-0.5 text-action-primary-600 focus:ring-action-primary-500" />
                   <span class="text-sm scope-label">
-                    Ops (read-only)
+                    {{ t('Ops (read-only)') }}
                     <span class="scope-hint">
-                      Bounded machine credential for a monitoring integration: fleet
-                      health, telemetry, roster, execution and subscription
-                      <em>reads</em> only — every write and every other endpoint is
-                      refused, and it gets no MCP tools. It stays bound to this
-                      account: if your admin role is removed or the account is
-                      suspended, the key stops working, so mint it under an account
-                      that is not offboarded with a person.
+                      {{ t('Bounded machine credential for a monitoring integration: fleet health, telemetry, roster, execution and subscription') }}
+                      <em>{{ t('reads') }}</em> {{ t('only — every write and every other endpoint is refused, and it gets no MCP tools. It stays bound to this account: if your admin role is removed or the account is suspended, the key stops working, so mint it under an account that is not offboarded with a person.') }}
                     </span>
                   </span>
                 </label>
@@ -240,11 +234,9 @@
                 <label class="flex items-start gap-2 cursor-pointer">
                   <input type="radio" value="portal_delegate" v-model="newKey.scope" class="mt-0.5 text-action-primary-600 focus:ring-action-primary-500" />
                   <span class="text-sm scope-label">
-                    Portal delegate
+                    {{ t('Portal delegate') }}
                     <span class="scope-hint">
-                      Lets a trusted backend exchange one of your client emails for a
-                      portal session — it acts as that person. It can do nothing else:
-                      every other endpoint is refused. Revoke it to stop delegation.
+                      {{ t('Lets a trusted backend exchange one of your client emails for a portal session — it acts as that person. It can do nothing else: every other endpoint is refused. Revoke it to stop delegation.') }}
                     </span>
                   </span>
                 </label>
@@ -258,13 +250,13 @@
               :disabled="creating || !newKey.name"
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-action-primary-600 text-base font-medium text-white hover:bg-action-primary-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
             >
-              {{ creating ? 'Creating...' : 'Create' }}
+              {{ creating ? t('Creating...') : t('Create') }}
             </button>
             <button
               @click="showCreateModal = false"
               class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
-              Cancel
+              {{ t('Cancel') }}
             </button>
           </div>
         </div>
@@ -284,7 +276,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 class="ml-4 text-lg font-medium text-gray-900 dark:text-white">Your MCP API Key is Ready!</h3>
+              <h3 class="ml-4 text-lg font-medium text-gray-900 dark:text-white">{{ t('Your MCP API Key is Ready!') }}</h3>
             </div>
 
             <div class="bg-status-warning-50 dark:bg-status-warning-900/30 border border-status-warning-200 dark:border-status-warning-800 rounded-lg p-4 mb-4">
@@ -294,7 +286,7 @@
                 </svg>
                 <div class="ml-3">
                   <p class="text-sm font-medium text-status-warning-800 dark:text-status-warning-300">
-                    Copy the configuration below before closing - the key won't be shown again!
+                    {{ t('Copy the configuration below before closing - the key won\'t be shown again!') }}
                   </p>
                 </div>
               </div>
@@ -304,8 +296,8 @@
               <div>
                 <div class="flex items-center justify-between mb-1">
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    MCP Configuration
-                    <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">(add to your .mcp.json)</span>
+                    {{ t('MCP Configuration') }}
+                    <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">{{ t('(add to your .mcp.json)') }}</span>
                   </label>
                   <button
                     @click="copyMcpConfig"
@@ -320,14 +312,14 @@
                     <svg v-else class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    {{ copiedConfig ? 'Copied!' : 'Copy Config' }}
+                    {{ copiedConfig ? t('Copied!') : t('Copy Config') }}
                   </button>
                 </div>
                 <pre class="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 text-xs overflow-x-auto text-status-success-400 font-mono border border-gray-700">{{ getMcpConfig(createdApiKey) }}</pre>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">API Key Only</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('API Key Only') }}</label>
                 <div class="flex items-center space-x-2">
                   <input
                     :type="showApiKey ? 'text' : 'password'"
@@ -338,7 +330,7 @@
                   <button
                     @click="showApiKey = !showApiKey"
                     class="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                    title="Show/hide key"
+                    :title="t('Show/hide key')"
                   >
                     <svg v-if="!showApiKey" class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -351,7 +343,7 @@
                   <button
                     @click="copyApiKey"
                     class="p-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
-                    title="Copy key"
+                    :title="t('Copy key')"
                   >
                     <svg v-if="!copied" class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -370,7 +362,7 @@
               @click="closeKeyModal"
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-action-primary-600 text-base font-medium text-white hover:bg-action-primary-700 focus:outline-none sm:text-sm"
             >
-              I've copied the configuration
+              {{ t('I\'ve copied the configuration') }}
             </button>
           </div>
         </div>
@@ -390,6 +382,9 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 // MCP Keys settings tab — extracted from views/ApiKeys.vue (#302).
 // Lives at /settings?tab=mcp-keys; the old /api-keys route now redirects
 // here. Visible to ALL authenticated users (non-admin too); other tabs
@@ -545,19 +540,19 @@ const createKey = async () => {
       await fetchApiKeys()
     } else {
       const error = await response.json()
-      alert(`Failed to create API key: ${error.detail}`)
+      alert(uiText("Failed to create API key: {arg1}", { arg1: (error.detail) }))
     }
   } catch (error) {
     console.error('Failed to create API key:', error)
-    alert('Failed to create API key')
+    alert(uiText("Failed to create API key"))
   } finally {
     creating.value = false
   }
 }
 
 const revokeKey = (keyId) => {
-  confirmDialog.title = 'Revoke API Key'
-  confirmDialog.message = 'Are you sure you want to revoke this API key? It will no longer work for authentication.'
+  confirmDialog.title = uiText("Revoke API Key")
+  confirmDialog.message = uiText("Are you sure you want to revoke this API key? It will no longer work for authentication.")
   confirmDialog.confirmText = 'Revoke'
   confirmDialog.variant = 'warning'
   confirmDialog.onConfirm = async () => {
@@ -580,8 +575,8 @@ const revokeKey = (keyId) => {
 }
 
 const deleteKey = (keyId) => {
-  confirmDialog.title = 'Delete API Key'
-  confirmDialog.message = 'Are you sure you want to permanently delete this API key?'
+  confirmDialog.title = uiText("Delete API Key")
+  confirmDialog.message = uiText("Are you sure you want to permanently delete this API key?")
   confirmDialog.confirmText = 'Delete'
   confirmDialog.variant = 'danger'
   confirmDialog.onConfirm = async () => {
@@ -606,7 +601,7 @@ const deleteKey = (keyId) => {
 const copyApiKey = async () => {
   const ok = await copyToClipboard(createdApiKey.value)
   if (!ok) {
-    alert('Failed to copy API key. Please select the key text and copy it manually.')
+    alert(uiText("Failed to copy API key. Please select the key text and copy it manually."))
     return
   }
   copied.value = true
@@ -618,7 +613,7 @@ const copyApiKey = async () => {
 const copyMcpConfig = async () => {
   const ok = await copyToClipboard(getMcpConfig(createdApiKey.value))
   if (!ok) {
-    alert('Failed to copy config. Please select the config text and copy it manually.')
+    alert(uiText("Failed to copy config. Please select the config text and copy it manually."))
     return
   }
   copiedConfig.value = true

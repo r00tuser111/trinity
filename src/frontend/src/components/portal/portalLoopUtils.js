@@ -1,3 +1,5 @@
+import { t as uiText } from '../../i18n/index.js'
+
 /**
  * Pure rules behind the Workspace loop panel (ent#458).
  *
@@ -71,19 +73,19 @@ export function loopStatusLabel(loop) {
   if (status === 'queued') return 'Queued'
   if (status === 'running') return 'Running'
   if (status === 'completed') return 'Done'
-  if (status === 'completed_with_errors') return 'Done, with errors'
+  if (status === 'completed_with_errors') return uiText("Done, with errors")
   if (status === 'failed') {
-    return reason === 'max_consecutive_failures' ? 'Failed — too many errors in a row' : 'Failed'
+    return reason === 'max_consecutive_failures' ? uiText("Failed — too many errors in a row") : 'Failed'
   }
-  if (status === 'interrupted') return 'Interrupted by a restart'
+  if (status === 'interrupted') return uiText("Interrupted by a restart")
   if (status === 'stopped') {
     switch (reason) {
-      case 'budget_exhausted': return 'Stopped — cost budget reached'
-      case 'deadline_exceeded': return 'Stopped — time limit reached'
-      case 'no_progress': return 'Stopped — it stopped making progress'
-      case 'stop_signal_matched': return 'Stopped — it reported it was done'
+      case 'budget_exhausted': return uiText("Stopped — cost budget reached")
+      case 'deadline_exceeded': return uiText("Stopped — time limit reached")
+      case 'no_progress': return uiText("Stopped — it stopped making progress")
+      case 'stop_signal_matched': return uiText("Stopped — it reported it was done")
       case 'max_runs_reached': return 'Done'
-      case 'user_stopped': return 'Stopped by you'
+      case 'user_stopped': return uiText("Stopped by you")
       default: return 'Stopped'
     }
   }
@@ -141,7 +143,7 @@ export function stripSummary(loops) {
   const agents = new Set(active.map((l) => l.agent_name).filter(Boolean))
   const loopWord = active.length === 1 ? 'loop' : 'loops'
   if (agents.size <= 1) return `${active.length} ${loopWord} running`
-  return `${active.length} ${loopWord} running on ${agents.size} agents`
+  return uiText("{arg1} {arg2} running on {arg3} agents", { arg1: (active.length), arg2: (loopWord), arg3: (agents.size) })
 }
 
 /** Group loops by agent, active first, so a room shows who is busy. */
@@ -172,36 +174,36 @@ export function byAgent(loops, participants) {
 export function validateStartForm(form, { agentTimeoutCap } = {}) {
   const errors = {}
   const message = (form?.message || '').trim()
-  if (!message) errors.message = 'Say what the loop should do each run.'
+  if (!message) errors.message = uiText("Say what the loop should do each run.")
 
   const runs = Number(form?.max_runs)
   if (!Number.isInteger(runs) || runs < 1 || runs > 100) {
-    errors.max_runs = 'Between 1 and 100 runs.'
+    errors.max_runs = uiText("Between 1 and 100 runs.")
   }
 
   // `1` is rejected, not clamped: "stop after 1 identical reply" cannot mean
   // anything — repetition needs at least two (#1157).
   const k = form?.no_progress_threshold
   if (k !== null && k !== undefined && k !== '' && Number(k) === 1) {
-    errors.no_progress_threshold = 'Use 0 to switch this off, or 2 or more.'
+    errors.no_progress_threshold = uiText("Use 0 to switch this off, or 2 or more.")
   }
 
   const perRun = numberOrNull(form?.timeout_per_run)
   if (perRun !== null && typeof agentTimeoutCap === 'number' && perRun > agentTimeoutCap) {
     // ent#338: the agent's own ceiling. The server refuses this too — surfacing
     // it here is what stops the user discovering their ceiling by rejection.
-    errors.timeout_per_run = `This agent's limit is ${agentTimeoutCap}s.`
+    errors.timeout_per_run = uiText("This agent's limit is {arg1}s.", { arg1: (agentTimeoutCap) })
   }
 
   const deadline = numberOrNull(form?.max_duration_seconds)
   const effectivePerRun = perRun ?? (typeof agentTimeoutCap === 'number' ? agentTimeoutCap : null)
   if (deadline !== null && effectivePerRun !== null && deadline < effectivePerRun) {
-    errors.max_duration_seconds = `Must be at least one run (${effectivePerRun}s).`
+    errors.max_duration_seconds = uiText("Must be at least one run ({arg1}s).", { arg1: (effectivePerRun) })
   }
 
   const budget = numberOrNull(form?.max_cost_usd)
   if (budget !== null && !(budget > 0)) {
-    errors.max_cost_usd = 'Leave empty for no budget, or enter more than 0.'
+    errors.max_cost_usd = uiText("Leave empty for no budget, or enter more than 0.")
   }
 
   return { valid: Object.keys(errors).length === 0, errors }
@@ -251,11 +253,11 @@ export function startErrorMessage(err) {
   const detail = err?.response?.data?.detail
   if (detail && typeof detail === 'object') {
     if (detail.error === 'loop_timeout_exceeds_agent_cap') {
-      return `Per-run timeout is above this agent's limit of ${detail.agent_cap_seconds}s.`
+      return uiText("Per-run timeout is above this agent's limit of {arg1}s.", { arg1: (detail.agent_cap_seconds) })
     }
     if (detail.message) return detail.message
   }
   if (typeof detail === 'string') return detail
-  if (err?.response?.status === 403) return 'You do not have access to run loops on this agent.'
-  return 'Could not start the loop.'
+  if (err?.response?.status === 403) return uiText("You do not have access to run loops on this agent.")
+  return uiText("Could not start the loop.")
 }

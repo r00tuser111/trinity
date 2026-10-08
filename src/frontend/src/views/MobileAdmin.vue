@@ -12,20 +12,20 @@
             <line x1="24" y1="17" x2="17" y2="26" stroke="#6366f1" stroke-width="1"/>
             <line x1="24" y1="17" x2="31" y2="26" stroke="#6366f1" stroke-width="1"/>
           </svg>
-          <h1 class="text-xl font-semibold text-white">Trinity Mobile</h1>
+          <h1 class="text-xl font-semibold text-white">{{ uiText("Trinity Mobile") }}</h1>
         </div>
         <form @submit.prevent="handleLogin" class="login-form">
           <input
             v-model="loginPassword"
             type="password"
-            placeholder="Admin password"
+            :placeholder="uiText(&quot;Admin password&quot;)"
             class="login-input"
             autocomplete="current-password"
             autocapitalize="off"
             :disabled="loginLoading"
           />
           <button type="submit" class="login-button" :disabled="loginLoading || !loginPassword">
-            {{ loginLoading ? 'Signing in...' : 'Sign In' }}
+            {{ loginLoading ? uiText("Signing in...") : uiText("Sign In") }}
           </button>
           <p v-if="loginError" class="login-error">{{ loginError }}</p>
         </form>
@@ -69,7 +69,7 @@
             <p>{{ actionError }}</p>
             <p v-if="actionErrorDetail" class="action-error-detail">{{ actionErrorDetail }}</p>
           </div>
-          <button class="action-error-dismiss" aria-label="Dismiss error" @click="clearActionError">✕</button>
+          <button class="action-error-dismiss" :aria-label="uiText(&quot;Dismiss error&quot;)" @click="clearActionError">✕</button>
         </div>
 
         <!-- AGENTS TAB -->
@@ -79,7 +79,7 @@
             <input
               v-model="agentSearch"
               type="text"
-              placeholder="Search agents..."
+              :placeholder="uiText(&quot;Search agents...&quot;)"
               class="search-input"
             />
           </div>
@@ -97,17 +97,17 @@
             @retry="fetchAgents"
             @dismiss="fetchError.agents = ''"
           />
-          <div v-if="agentsView.state === 'loading'" class="skeleton-rows" aria-busy="true"><div v-for="n in 3" :key="n" class="skeleton-row"></div><span class="sr-only">Loading agents...</span></div>
+          <div v-if="agentsView.state === 'loading'" class="skeleton-rows" aria-busy="true"><div v-for="n in 3" :key="n" class="skeleton-row"></div><span class="sr-only">{{ uiText("Loading agents...") }}</span></div>
           <LoadFailed
             v-else-if="agentsView.state === 'failed'"
             dense
-            title="Couldn't load agents"
+            :title="uiText(&quot;Couldn't load agents&quot;)"
             message="The agent list didn't load. Try again or pull down to refresh."
             :detail="fetchError.agents"
             :retrying="loading.agents"
             @retry="fetchAgents"
           />
-          <div v-else-if="agentsView.state === 'empty'" class="empty-state">No agents found</div>
+          <div v-else-if="agentsView.state === 'empty'" class="empty-state">{{ uiText("No agents found") }}</div>
           <div v-else class="agent-list">
             <div
               v-for="agent in filteredAgents"
@@ -143,7 +143,7 @@
                     :disabled="togglingAgents[agent.name]"
                   >
                     <span v-if="togglingAgents[agent.name]" class="animate-spin inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"></span>
-                    <span v-else>{{ agent.status === 'running' ? 'Stop' : 'Start' }}</span>
+                    <span v-else>{{ agent.status === 'running' ? uiText("Stop") : uiText("Start") }}</span>
                   </button>
                 </div>
               </div>
@@ -152,7 +152,7 @@
               <div v-if="expandedAgent === agent.name" class="agent-details" @click.stop>
                 <!-- Autonomy toggle -->
                 <div class="detail-row">
-                  <span class="detail-label">Mode</span>
+                  <span class="detail-label">{{ uiText("Mode") }}</span>
                   <button
                     @click="toggleAutonomy(agent)"
                     class="autonomy-toggle-btn"
@@ -160,27 +160,27 @@
                     :disabled="togglingAutonomy[agent.name]"
                   >
                     <span v-if="togglingAutonomy[agent.name]" class="animate-spin inline-block w-3 h-3 border-2 border-current border-t-transparent rounded-full"></span>
-                    <span v-else>{{ agent.autonomy_enabled ? 'AUTO' : 'Manual' }}</span>
+                    <span v-else>{{ agent.autonomy_enabled ? 'AUTO' : uiText("Manual") }}</span>
                   </button>
                 </div>
 
                 <!-- Chat button -->
                 <div class="detail-row">
-                  <span class="detail-label">Chat</span>
+                  <span class="detail-label">{{ uiText("Chat") }}</span>
                   <button
                     @click="openChat(agent)"
                     class="chat-open-btn"
                     :disabled="agent.status !== 'running'"
                   >
-                    {{ agent.status !== 'running' ? 'Start agent first' : 'Open Chat' }}
+                    {{ agent.status !== 'running' ? uiText("Start agent first") : uiText("Open Chat") }}
                   </button>
                 </div>
 
                 <!-- Logs -->
                 <div class="detail-row">
-                  <span class="detail-label">Logs</span>
+                  <span class="detail-label">{{ uiText("Logs") }}</span>
                   <button @click="fetchAgentLogs(agent.name)" class="text-xs text-action-primary-400 underline">
-                    {{ agentLogs[agent.name] ? 'Refresh' : 'Load' }}
+                    {{ agentLogs[agent.name] ? uiText("Refresh") : uiText("Load") }}
                   </button>
                 </div>
                 <pre v-if="agentLogs[agent.name]" class="logs-view">{{ agentLogs[agent.name] }}</pre>
@@ -216,17 +216,17 @@
               @retry="fetchQueue"
               @dismiss="fetchError.queue = ''"
             />
-            <div v-if="queueView.state === 'loading'" class="skeleton-rows" aria-busy="true"><div v-for="n in 3" :key="n" class="skeleton-row"></div><span class="sr-only">Loading queue...</span></div>
+            <div v-if="queueView.state === 'loading'" class="skeleton-rows" aria-busy="true"><div v-for="n in 3" :key="n" class="skeleton-row"></div><span class="sr-only">{{ uiText("Loading queue...") }}</span></div>
             <LoadFailed
               v-else-if="queueView.state === 'failed'"
               dense
-              title="Couldn't load the queue"
+              :title="uiText(&quot;Couldn't load the queue&quot;)"
               message="We can't tell whether your agents need you. Try again."
               :detail="fetchError.queue"
               :retrying="loading.queue"
               @retry="fetchQueue"
             />
-            <div v-else-if="queueView.state === 'empty'" class="empty-state">No pending items</div>
+            <div v-else-if="queueView.state === 'empty'" class="empty-state">{{ uiText("No pending items") }}</div>
             <div v-else class="ops-list">
               <div
                 v-for="item in queueItems"
@@ -254,7 +254,7 @@
                      restated consequence, the safe action first and focused —
                      and is NOT a confirm overlay (see the note on #1924). -->
                 <template v-if="queueResponseKind(item) === 'approval'">
-                  <div class="ops-options" role="group" aria-label="Options">
+                  <div class="ops-options" role="group" :aria-label="uiText(&quot;Options&quot;)">
                     <button
                       v-for="(opt, idx) in optionsOf(item)"
                       :key="idx + ':' + opt"
@@ -268,13 +268,13 @@
                   </div>
                   <div v-if="selectedOptions[item.id]" class="ops-approval-form" data-testid="queue-approval-form">
                     <p class="ops-card-body" role="status" data-testid="queue-consequence">
-                      Sending <strong>{{ selectedOptions[item.id] }}</strong> to {{ item.agent_name }} — it reads this as your decision on its next run.
+                      {{ uiText("Sending") }} <strong>{{ selectedOptions[item.id] }}</strong> {{ uiText("to") }} {{ item.agent_name }} {{ uiText("— it reads this as your decision on its next run.") }}
                     </p>
                     <input
                       v-model="responseTexts[item.id]"
                       type="text"
                       enterkeyhint="done"
-                      placeholder="Add a note (optional)..."
+                      :placeholder="uiText(&quot;Add a note (optional)...&quot;)"
                       class="ops-response-input"
                       data-testid="queue-note"
                       :disabled="respondingItems[item.id]"
@@ -287,14 +287,14 @@
                         :ref="(el) => registerCancelButton(item.id, el)"
                         :disabled="respondingItems[item.id]"
                         @click="clearSelection(item.id)"
-                      >Cancel</button>
+                      >{{ uiText("Cancel") }}</button>
                       <button
                         type="button"
                         class="ops-respond-btn ops-send-btn"
                         data-testid="queue-send"
                         :disabled="respondingItems[item.id]"
                         @click="submitApproval(item)"
-                      >Send: {{ selectedOptions[item.id] }}</button>
+                      >{{ uiText("Send:") }} {{ selectedOptions[item.id] }}</button>
                     </div>
                   </div>
                 </template>
@@ -305,13 +305,13 @@
                     data-testid="queue-ack"
                     :disabled="respondingItems[item.id]"
                     @click="acknowledgeQueueItem(item)"
-                  >Got it</button>
+                  >{{ uiText("Got it") }}</button>
                 </div>
                 <div v-else class="ops-response-row">
                   <input
                     v-model="responseTexts[item.id]"
                     type="text"
-                    placeholder="Type response..."
+                    :placeholder="uiText(&quot;Type response...&quot;)"
                     class="ops-response-input"
                     data-testid="queue-answer"
                     @keyup.enter="submitAnswer(item)"
@@ -322,7 +322,7 @@
                     data-testid="queue-answer-send"
                     :disabled="respondingItems[item.id] || !String(responseTexts[item.id] || '').trim()"
                     @click="submitAnswer(item)"
-                  >Send</button>
+                  >{{ uiText("Send") }}</button>
                 </div>
                 <div v-if="respondErrors[item.id]" class="mt-2" data-testid="queue-respond-error">
                   <InlineError
@@ -346,17 +346,17 @@
               @retry="fetchNotifications"
               @dismiss="fetchError.notifications = ''"
             />
-            <div v-if="notificationsView.state === 'loading'" class="skeleton-rows" aria-busy="true"><div v-for="n in 3" :key="n" class="skeleton-row"></div><span class="sr-only">Loading...</span></div>
+            <div v-if="notificationsView.state === 'loading'" class="skeleton-rows" aria-busy="true"><div v-for="n in 3" :key="n" class="skeleton-row"></div><span class="sr-only">{{ uiText("Loading...") }}</span></div>
             <LoadFailed
               v-else-if="notificationsView.state === 'failed'"
               dense
-              title="Couldn't load notifications"
+              :title="uiText(&quot;Couldn't load notifications&quot;)"
               message="The notification list didn't load. Try again."
               :detail="fetchError.notifications"
               :retrying="loading.notifications"
               @retry="fetchNotifications"
             />
-            <div v-else-if="notificationsView.state === 'empty'" class="empty-state">No notifications</div>
+            <div v-else-if="notificationsView.state === 'empty'" class="empty-state">{{ uiText("No notifications") }}</div>
             <div v-else class="ops-list">
               <div v-for="notif in notifications" :key="notif.id" class="ops-card">
                 <div class="ops-card-header">
@@ -372,7 +372,7 @@
                     @click="acknowledgeNotification(notif.id)"
                     class="ops-ack-btn"
                   >
-                    Acknowledge
+                    {{ uiText("Acknowledge") }}
                   </button>
                 </div>
               </div>
@@ -384,7 +384,7 @@
         <div v-if="activeTab === 'system'" class="tab-panel">
           <!-- Fleet Health Summary -->
           <div class="system-section">
-            <h2 class="section-title">Fleet Health</h2>
+            <h2 class="section-title">{{ uiText("Fleet Health") }}</h2>
             <InlineError
               v-if="fleetView.stale"
               class="mb-3"
@@ -394,11 +394,11 @@
               @retry="fetchFleetHealth"
               @dismiss="fetchError.fleet = ''"
             />
-            <div v-if="fleetView.state === 'loading'" class="skeleton-rows" aria-busy="true"><div v-for="n in 3" :key="n" class="skeleton-row"></div><span class="sr-only">Loading...</span></div>
+            <div v-if="fleetView.state === 'loading'" class="skeleton-rows" aria-busy="true"><div v-for="n in 3" :key="n" class="skeleton-row"></div><span class="sr-only">{{ uiText("Loading...") }}</span></div>
             <LoadFailed
               v-else-if="fleetView.state === 'failed'"
               dense
-              title="Couldn't load fleet health"
+              :title="uiText(&quot;Couldn't load fleet health&quot;)"
               message="The fleet summary didn't load. Try again."
               :detail="fetchError.fleet"
               :retrying="loading.fleet"
@@ -407,52 +407,52 @@
             <div v-else class="health-grid">
               <div class="health-card">
                 <div class="health-value text-white">{{ fleetSummary.total }}</div>
-                <div class="health-label">Total</div>
+                <div class="health-label">{{ uiText("Total") }}</div>
               </div>
               <div class="health-card">
                 <div class="health-value text-status-success-400">{{ fleetSummary.running }}</div>
-                <div class="health-label">Running</div>
+                <div class="health-label">{{ uiText("Running") }}</div>
               </div>
               <div class="health-card">
                 <div class="health-value text-gray-400">{{ fleetSummary.stopped }}</div>
-                <div class="health-label">Stopped</div>
+                <div class="health-label">{{ uiText("Stopped") }}</div>
               </div>
               <div class="health-card">
                 <div class="health-value text-status-warning-400">{{ fleetSummary.high_context }}</div>
-                <div class="health-label">High Ctx</div>
+                <div class="health-label">{{ uiText("High Ctx") }}</div>
               </div>
             </div>
           </div>
 
           <!-- Quick Actions -->
           <div class="system-section">
-            <h2 class="section-title">Actions</h2>
+            <h2 class="section-title">{{ uiText("Actions") }}</h2>
             <div class="actions-grid">
               <button @click="confirmAction('emergency-stop')" class="action-btn action-danger" :disabled="actionLoading">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
                 </svg>
-                Emergency Stop
+                {{ uiText("Emergency Stop") }}
               </button>
               <button @click="confirmAction('fleet-restart')" class="action-btn action-warning" :disabled="actionLoading">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                 </svg>
-                Fleet Restart
+                {{ uiText("Fleet Restart") }}
               </button>
               <button @click="confirmAction('pause-schedules')" class="action-btn action-default" :disabled="actionLoading">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Pause Schedules
+                {{ uiText("Pause Schedules") }}
               </button>
               <button @click="confirmAction('resume-schedules')" class="action-btn action-default" :disabled="actionLoading">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                Resume Schedules
+                {{ uiText("Resume Schedules") }}
               </button>
             </div>
           </div>
@@ -475,10 +475,10 @@
           <div class="chat-header-info">
             <span class="chat-header-name">{{ chatAgent }}</span>
             <span class="chat-header-status" :class="chatExecutionStatus === 'running' ? 'text-status-warning-400' : ''">
-              {{ chatExecutionStatus === 'running' ? 'Thinking...' : 'Ready' }}
+              {{ chatExecutionStatus === 'running' ? uiText("Thinking...") : uiText("Ready") }}
             </span>
           </div>
-          <button @click="startNewChat" class="chat-new-btn">New</button>
+          <button @click="startNewChat" class="chat-new-btn">{{ uiText("New") }}</button>
         </div>
 
         <!-- Sessions dropdown -->
@@ -490,19 +490,19 @@
             :class="{ active: s.id === chatSessionId }"
             @click="selectSession(s)"
           >
-            <span class="session-preview">{{ s.last_message || 'Empty session' }}</span>
-            <span class="session-meta">{{ s.message_count }} msgs &middot; {{ formatTime(s.started_at) }}</span>
+            <span class="session-preview">{{ s.last_message || uiText("Empty session") }}</span>
+            <span class="session-meta">{{ s.message_count }} {{ uiText("msgs ·") }} {{ formatTime(s.started_at) }}</span>
           </div>
-          <div v-if="chatSessions.length === 0" class="empty-state" style="padding: 16px;">No previous sessions</div>
+          <div v-if="chatSessions.length === 0" class="empty-state" style="padding: 16px;">{{ uiText("No previous sessions") }}</div>
         </div>
         <button @click="showSessions = !showSessions" class="sessions-toggle">
-          {{ showSessions ? 'Hide' : 'Sessions' }} ({{ chatSessions.length }})
+          {{ showSessions ? uiText("Hide") : uiText("Sessions") }} ({{ chatSessions.length }})
         </button>
 
         <!-- Messages -->
         <div class="chat-messages" ref="chatMessagesEl">
           <div v-if="chatMessages.length === 0" class="empty-state" style="padding: 40px 16px;">
-            Send a message to start chatting
+            {{ uiText("Send a message to start chatting") }}
           </div>
           <div
             v-for="(msg, i) in chatMessages"
@@ -524,7 +524,7 @@
         <div class="chat-input-bar">
           <textarea
             v-model="chatInput"
-            placeholder="Message..."
+            :placeholder="uiText(&quot;Message...&quot;)"
             class="chat-input"
             rows="1"
             @keydown.enter.exact.prevent="sendChatMessage"
@@ -550,7 +550,7 @@
           <h3 class="confirm-title">{{ confirmDialog.title }}</h3>
           <p class="confirm-message">{{ confirmDialog.message }}</p>
           <div class="confirm-actions">
-            <button @click="confirmDialog = null" class="confirm-cancel">Cancel</button>
+            <button @click="confirmDialog = null" class="confirm-cancel">{{ uiText("Cancel") }}</button>
             <button @click="executeAction(confirmDialog.action)" class="confirm-execute" :class="confirmDialog.danger ? 'btn-danger' : 'btn-default'">
               {{ confirmDialog.confirmLabel }}
             </button>
@@ -715,19 +715,19 @@ const pendingQueueCount = computed(() => queueItems.value.filter(i => i.status =
 const pendingNotifCount = computed(() => notifications.value.filter(n => n.status === 'pending').length)
 
 const opsTabs = computed(() => [
-  { id: 'queue', label: 'Queue', count: pendingQueueCount.value },
-  { id: 'notifications', label: 'Alerts', count: pendingNotifCount.value }
+  { id: 'queue', get "label"() { return uiText("Queue") }, count: pendingQueueCount.value },
+  { id: 'notifications', get "label"() { return uiText("Alerts") }, count: pendingNotifCount.value }
 ])
 
 const tabs = computed(() => [
-  { id: 'agents', label: 'Agents', badge: 0, critical: false },
+  { id: 'agents', get "label"() { return uiText("Agents") }, badge: 0, critical: false },
   {
     id: 'ops',
-    label: 'Ops',
+    get "label"() { return uiText("Ops") },
     badge: pendingQueueCount.value + pendingNotifCount.value,
     critical: queueItems.value.some(i => i.priority === 'critical')
   },
-  { id: 'system', label: 'System', badge: 0, critical: false }
+  { id: 'system', get "label"() { return uiText("System") }, badge: 0, critical: false }
 ])
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
@@ -737,7 +737,7 @@ async function handleLogin() {
   loginError.value = ''
   const success = await authStore.loginWithCredentials('admin', loginPassword.value)
   if (!success) {
-    loginError.value = authStore.authError || 'Invalid password'
+    loginError.value = authStore.authError || uiText("Invalid password")
   } else {
     loginPassword.value = ''
     loadAllData()
@@ -795,7 +795,7 @@ async function fetchAgents() {
     console.error('Failed to fetch agents:', e)
     // Data already on screen stays; the template renders failed (no data) or the
     // stale banner (data) from this field.
-    fetchError.agents = apiErrorMessage(e, 'Request failed')
+    fetchError.agents = apiErrorMessage(e, uiText("Request failed"))
   } finally {
     loading.agents = false
   }
@@ -826,7 +826,7 @@ async function fetchQueue() {
   } catch (e) {
     if (seq !== queueFetchSeq) return // superseded — its failure is not news
     console.error('Failed to fetch queue:', e)
-    fetchError.queue = apiErrorMessage(e, 'Request failed')
+    fetchError.queue = apiErrorMessage(e, uiText("Request failed"))
   } finally {
     // The newest fetch owns the spinner; a superseded one leaves it to the
     // request that is still running (`return` in try/catch runs this block).
@@ -844,7 +844,7 @@ async function fetchNotifications() {
     fetchError.notifications = ''
   } catch (e) {
     console.error('Failed to fetch notifications:', e)
-    fetchError.notifications = apiErrorMessage(e, 'Request failed')
+    fetchError.notifications = apiErrorMessage(e, uiText("Request failed"))
   } finally {
     loading.notifications = false
   }
@@ -860,7 +860,7 @@ async function fetchFleetHealth() {
     fetchError.fleet = ''
   } catch (e) {
     console.error('Failed to fetch fleet health:', e)
-    fetchError.fleet = apiErrorMessage(e, 'Request failed')
+    fetchError.fleet = apiErrorMessage(e, uiText("Request failed"))
   } finally {
     loading.fleet = false
   }
@@ -869,9 +869,9 @@ async function fetchFleetHealth() {
 async function fetchAgentLogs(name) {
   try {
     const res = await http.get(`/api/agents/${name}/logs`, { params: { tail: 30 } })
-    agentLogs[name] = res.data.logs || 'No logs available'
+    agentLogs[name] = res.data.logs || uiText('No logs available')
   } catch (e) {
-    agentLogs[name] = 'Failed to load logs'
+    agentLogs[name] = uiText('Failed to load logs')
   }
 }
 
@@ -905,8 +905,8 @@ function clearActionError() {
 
 function reportActionFailure(e, what) {
   console.error(`Failed to ${what}:`, e)
-  actionError.value = `Couldn't ${what}. Nothing was changed — try again.`
-  actionErrorDetail.value = apiErrorMessage(e, 'Request failed')
+  actionError.value = uiText("Couldn't {arg1}. Nothing was changed — try again.", { arg1: (what) })
+  actionErrorDetail.value = apiErrorMessage(e, uiText("Request failed"))
 }
 
 async function toggleAgent(name, currentStatus) {
@@ -919,7 +919,7 @@ async function toggleAgent(name, currentStatus) {
     }
     await fetchAgents()
   } catch (e) {
-    reportActionFailure(e, `${currentStatus === 'running' ? 'stop' : 'start'} ${name}`)
+    reportActionFailure(e, currentStatus === 'running' ? uiText('stop {name}', { name }) : uiText('start {name}', { name }))
   } finally {
     togglingAgents[name] = false
   }
@@ -934,7 +934,7 @@ async function toggleAutonomy(agent) {
   } catch (e) {
     // The toggle reverts to the server value, so without this the switch just
     // springs back with no reason given (#1926).
-    reportActionFailure(e, `change autonomy for ${agent.name}`)
+    reportActionFailure(e, uiText('change autonomy for {name}', { name: agent.name }))
   } finally {
     togglingAutonomy[agent.name] = false
   }
@@ -1089,7 +1089,7 @@ async function pollExecution(agentName, executionId) {
       console.error('Poll error:', e)
     }
   }
-  return { status: 'failed', error: 'Timed out waiting for response' }
+  return { status: 'failed', error: uiText('Timed out waiting for response') }
 }
 
 function scrollChatToBottom() {
@@ -1197,8 +1197,8 @@ async function sendQueueResponse(item, body) {
       // per-card message would vanish with the card.
       queueItems.value = queueItems.value.filter(i => i.id !== id)
       clearQueueItemState(id)
-      actionError.value = QUEUE_RESPONSE_NOT_RECORDED
-      actionErrorDetail.value = apiErrorMessage(e, 'Request failed')
+      actionError.value = uiText(QUEUE_RESPONSE_NOT_RECORDED)
+      actionErrorDetail.value = apiErrorMessage(e, uiText("Request failed"))
       scrollContainer.value?.scrollTo?.({ top: 0, behavior: 'smooth' })
       await fetchQueue()
     } else {
@@ -1206,8 +1206,8 @@ async function sendQueueResponse(item, body) {
       // NEXT TO the control (p18) and keep the selection + note for a retry.
       // No "nothing was changed" claim: a timed-out POST may have landed.
       respondErrors[id] = {
-        message: "Couldn't send your response — the agent is still waiting. Try again.",
-        detail: apiErrorMessage(e, 'Request failed'),
+        get "message"() { return uiText("Couldn't send your response — the agent is still waiting. Try again.") },
+        detail: apiErrorMessage(e, uiText('Request failed')),
       }
     }
     return false
@@ -1239,7 +1239,7 @@ async function acknowledgeNotification(id) {
     await http.post(`/api/notifications/${id}/acknowledge`)
     await fetchNotifications()
   } catch (e) {
-    reportActionFailure(e, 'acknowledge that notification')
+    reportActionFailure(e, uiText('acknowledge that notification'))
   }
 }
 
@@ -1248,27 +1248,27 @@ async function acknowledgeNotification(id) {
 function confirmAction(action) {
   const configs = {
     'emergency-stop': {
-      title: 'Emergency Stop',
-      message: 'This will pause ALL schedules and stop ALL running agents. Are you sure?',
-      confirmLabel: 'Emergency Stop',
+      get "title"() { return uiText("Emergency Stop") },
+      get "message"() { return uiText("This will pause ALL schedules and stop ALL running agents. Are you sure?") },
+      get "confirmLabel"() { return uiText("Emergency Stop") },
       danger: true
     },
     'fleet-restart': {
-      title: 'Fleet Restart',
-      message: 'This will restart all running agents. They will be briefly unavailable.',
-      confirmLabel: 'Restart All',
+      get "title"() { return uiText("Fleet Restart") },
+      get "message"() { return uiText("This will restart all running agents. They will be briefly unavailable.") },
+      get "confirmLabel"() { return uiText("Restart All") },
       danger: false
     },
     'pause-schedules': {
-      title: 'Pause Schedules',
-      message: 'This will pause all enabled schedules across all agents.',
-      confirmLabel: 'Pause All',
+      get "title"() { return uiText("Pause Schedules") },
+      get "message"() { return uiText("This will pause all enabled schedules across all agents.") },
+      get "confirmLabel"() { return uiText("Pause All") },
       danger: false
     },
     'resume-schedules': {
-      title: 'Resume Schedules',
-      message: 'This will resume all paused schedules across all agents.',
-      confirmLabel: 'Resume All',
+      get "title"() { return uiText("Resume Schedules") },
+      get "message"() { return uiText("This will resume all paused schedules across all agents.") },
+      get "confirmLabel"() { return uiText("Resume All") },
       danger: false
     }
   }
@@ -1291,11 +1291,11 @@ async function executeAction(action) {
     } else if (action === 'resume-schedules') {
       res = await http.post('/api/ops/schedules/resume')
     }
-    actionResult.value = { success: true, message: res.data.message || 'Action completed' }
+    actionResult.value = { success: true, message: res.data.message || uiText('Action completed') }
     await fetchFleetHealth()
     await fetchAgents()
   } catch (e) {
-    actionResult.value = { success: false, message: e.response?.data?.detail || 'Action failed' }
+    actionResult.value = { success: false, message: e.response?.data?.detail || uiText('Action failed') }
   } finally {
     actionLoading.value = false
     setTimeout(() => { actionResult.value = null }, 5000)
@@ -1456,9 +1456,9 @@ function formatTime(dateStr) {
   const d = new Date(dateStr)
   const now = new Date()
   const diff = now - d
-  if (diff < 60000) return 'just now'
-  if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago'
-  if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago'
+  if (diff < 60000) return uiText("just now")
+  if (diff < 3600000) return Math.floor(diff / 60000) + uiText("m ago")
+  if (diff < 86400000) return Math.floor(diff / 3600000) + uiText("h ago")
   return d.toLocaleDateString()
 }
 
@@ -1516,6 +1516,8 @@ watch(() => authStore.isAuthenticated, (isAuth) => {
     stopPolling()
   }
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

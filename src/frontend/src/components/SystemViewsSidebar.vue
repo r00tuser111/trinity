@@ -8,12 +8,12 @@
     <!-- Header -->
     <div class="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700">
       <span v-if="!isCollapsed" class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-        Systems
+        {{ t('Systems') }}
       </span>
       <button
         @click="toggleCollapse"
         class="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded transition-colors"
-        :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+        :title="isCollapsed ? t('Expand sidebar') : t('Collapse sidebar')"
       >
         <svg v-if="isCollapsed" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
@@ -39,7 +39,7 @@
         <span class="w-5 h-5 flex items-center justify-center mr-2 text-base">
           {{ isCollapsed ? '○' : '' }}
         </span>
-        <span v-if="!isCollapsed" class="truncate">All Agents</span>
+        <span v-if="!isCollapsed" class="truncate">{{ t('All Agents') }}</span>
       </button>
 
       <!-- Divider -->
@@ -60,7 +60,7 @@
           :key="n"
           class="h-5 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"
         ></div>
-        <span class="sr-only">Loading…</span>
+        <span class="sr-only">{{ t('Loading…') }}</span>
       </div>
 
       <button
@@ -92,7 +92,7 @@
             <button
               @click.stop="$emit('edit', view)"
               class="p-0.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
-              title="Edit"
+              :title="t('Edit')"
             >
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -119,18 +119,19 @@
           'w-full flex items-center justify-center py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors',
           isCollapsed ? 'px-2' : 'px-3'
         ]"
-        :title="isCollapsed ? 'New View' : ''"
+        :title="isCollapsed ? t('New View') : ''"
       >
         <svg class="w-4 h-4" :class="{ 'mr-2': !isCollapsed }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
-        <span v-if="!isCollapsed">New View</span>
+        <span v-if="!isCollapsed">{{ t('New View') }}</span>
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { ref, computed, onMounted } from 'vue'
 import { useSystemViewsStore } from '@/stores/systemViews'
 import ActivationChecklist from '@/components/onboarding/ActivationChecklist.vue'

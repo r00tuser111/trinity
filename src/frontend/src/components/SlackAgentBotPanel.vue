@@ -5,12 +5,10 @@
     <div class="flex items-start justify-between gap-3">
       <div class="min-w-0">
         <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100">
-          Dedicated Slack bot
+          {{ uiText("Dedicated Slack bot") }}
         </h4>
         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-          Give this agent its own Slack bot identity — its own name and avatar,
-          directly DM-able and <code>@mention</code>-able, alongside other agents
-          in the same channel.
+          {{ uiText("Give this agent its own Slack bot identity — its own name and avatar, directly DM-able and") }} <code>@mention</code>{{ uiText("-able, alongside other agents in the same channel.") }}
         </p>
       </div>
       <span
@@ -20,18 +18,18 @@
           ? 'text-status-success-700 dark:text-status-success-300 bg-status-success-50 dark:bg-status-success-900/30'
           : 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700'"
       >
-        {{ status.enabled ? 'Active' : 'Disabled' }}
+        {{ status.enabled ? uiText("Active") : uiText("Disabled") }}
       </span>
     </div>
 
-    <p v-if="loading" class="text-xs text-gray-500 dark:text-gray-400 mt-3">Loading…</p>
+    <p v-if="loading" class="text-xs text-gray-500 dark:text-gray-400 mt-3">{{ uiText("Loading…") }}</p>
 
     <!-- Configured -->
     <div v-else-if="status.configured" class="mt-3">
       <div class="text-sm text-gray-700 dark:text-gray-300">
-        <span class="font-medium">{{ status.bot_name || 'bot' }}</span>
+        <span class="font-medium">{{ status.bot_name || uiText("bot") }}</span>
         <span class="text-gray-500 dark:text-gray-400">
-          · {{ status.bot_user_id }} · team {{ status.team_id }}
+          · {{ status.bot_user_id }} {{ uiText("· team") }} {{ status.team_id }}
         </span>
       </div>
       <div class="flex items-center gap-3 mt-3">
@@ -43,7 +41,7 @@
                  border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200
                  hover:bg-gray-50 dark:hover:bg-gray-700"
         >
-          {{ status.enabled ? 'Disable' : 'Enable' }}
+          {{ status.enabled ? uiText("Disable") : uiText("Enable") }}
         </button>
         <button
           type="button"
@@ -53,7 +51,7 @@
                  border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200
                  hover:bg-gray-50 dark:hover:bg-gray-700"
         >
-          Replace tokens
+          {{ uiText("Replace tokens") }}
         </button>
         <button
           type="button"
@@ -62,13 +60,13 @@
           class="text-xs text-status-danger-600 dark:text-status-danger-400
                  hover:text-status-danger-800 disabled:opacity-50"
         >
-          Remove
+          {{ uiText("Remove") }}
         </button>
       </div>
     </div>
 
     <p v-else class="text-xs text-gray-500 dark:text-gray-400 mt-3">
-      Not configured — this agent posts under the shared workspace bot.
+      {{ uiText("Not configured — this agent posts under the shared workspace bot.") }}
     </p>
 
     <!-- Token form -->
@@ -77,7 +75,7 @@
         v-model="botToken"
         type="password"
         autocomplete="off"
-        placeholder="Bot token (xoxb-…)"
+        :placeholder="uiText(&quot;Bot token (xoxb-…)&quot;)"
         class="w-full text-sm px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600
                bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
       />
@@ -85,7 +83,7 @@
         v-model="appToken"
         type="password"
         autocomplete="off"
-        placeholder="App-level token (xapp-…, needs connections:write)"
+        :placeholder="uiText(&quot;App-level token (xapp-…, needs connections:write)&quot;)"
         class="w-full text-sm px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600
                bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
       />
@@ -96,10 +94,10 @@
         class="text-xs px-3 py-1.5 rounded bg-action-primary-600 text-white
                hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {{ busy ? 'Validating…' : 'Save & validate' }}
+        {{ busy ? uiText("Validating…") : uiText("Save & validate") }}
       </button>
       <p class="text-xs text-gray-500 dark:text-gray-400">
-        Tokens are validated against Slack and stored encrypted; they are never shown again.
+        {{ uiText("Tokens are validated against Slack and stored encrypted; they are never shown again.") }}
       </p>
     </div>
 
@@ -174,10 +172,10 @@ async function save() {
     })
     botToken.value = ''
     appToken.value = ''
-    flash('success', 'Slack bot configured')
+    flash('success', uiText('Slack bot configured'))
     await load()
   } catch (e) {
-    flash('error', describe(e, 'Failed to configure the Slack bot'))
+    flash('error', describe(e, uiText('Failed to configure the Slack bot')))
   } finally {
     busy.value = false
   }
@@ -189,7 +187,7 @@ async function toggleEnabled() {
     await axios.put(`${BASE}/${props.agentName}/enabled`, { enabled: !status.value.enabled })
     await load()
   } catch (e) {
-    flash('error', describe(e, 'Failed to update'))
+    flash('error', describe(e, uiText('Failed to update')))
   } finally {
     busy.value = false
   }
@@ -199,14 +197,16 @@ async function removeBot() {
   busy.value = true
   try {
     await axios.delete(`${BASE}/${props.agentName}`)
-    flash('success', 'Dedicated bot removed')
+    flash('success', uiText('Dedicated bot removed'))
     await load()
   } catch (e) {
-    flash('error', describe(e, 'Failed to remove'))
+    flash('error', describe(e, uiText('Failed to remove')))
   } finally {
     busy.value = false
   }
 }
 
 onMounted(load)
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -8,7 +8,7 @@
       <div class="h-4 w-1/3 rounded bg-gray-200 dark:bg-gray-800 animate-pulse motion-reduce:animate-none"></div>
       <div class="h-3 w-2/3 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
       <div class="h-3 w-1/2 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
-      <span class="sr-only">Loading git status…</span>
+      <span class="sr-only">{{ uiText("Loading git status…") }}</span>
     </div>
 
     <!-- Git Not Enabled -->
@@ -16,8 +16,8 @@
       <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
       </svg>
-      <p class="mt-2 text-gray-500 dark:text-gray-400">Git sync not enabled for this agent</p>
-      <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Push this agent to a GitHub repository to enable sync</p>
+      <p class="mt-2 text-gray-500 dark:text-gray-400">{{ uiText("Git sync not enabled for this agent") }}</p>
+      <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">{{ uiText("Push this agent to a GitHub repository to enable sync") }}</p>
 
       <!-- Initialize Button -->
       <button
@@ -27,7 +27,7 @@
         <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
         </svg>
-        Initialize GitHub Sync
+        {{ uiText("Initialize GitHub Sync") }}
       </button>
     </div>
 
@@ -48,7 +48,7 @@
               </div>
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
-                  Initialize GitHub Sync
+                  {{ uiText("Initialize GitHub Sync") }}
                 </h3>
                 <div class="mt-4 space-y-4">
                   <!-- Error Message -->
@@ -59,7 +59,7 @@
                   <!-- Repository Owner -->
                   <div>
                     <label for="repo-owner" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Repository Owner
+                      {{ uiText("Repository Owner") }}
                     </label>
                     <input
                       type="text"
@@ -69,13 +69,13 @@
                       :disabled="initializing"
                       class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                     />
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Your GitHub username or organization name</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ uiText("Your GitHub username or organization name") }}</p>
                   </div>
 
                   <!-- Repository Name -->
                   <div>
                     <label for="repo-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Repository Name
+                      {{ uiText("Repository Name") }}
                     </label>
                     <input
                       type="text"
@@ -85,7 +85,7 @@
                       :disabled="initializing"
                       class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                     />
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Name for the new repository</p>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ uiText("Name for the new repository") }}</p>
                   </div>
 
                   <!-- Options -->
@@ -98,7 +98,7 @@
                       class="h-4 w-4 text-action-primary-600 focus:ring-action-primary-500 border-gray-300 rounded"
                     />
                     <label for="create-repo" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                      Create repository if it doesn't exist
+                      {{ uiText("Create repository if it doesn't exist") }}
                     </label>
                   </div>
 
@@ -111,7 +111,7 @@
                       class="h-4 w-4 text-action-primary-600 focus:ring-action-primary-500 border-gray-300 rounded"
                     />
                     <label for="private-repo" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                      Make repository private
+                      {{ uiText("Make repository private") }}
                     </label>
                   </div>
 
@@ -123,19 +123,19 @@
                       </svg>
                       <div class="ml-3 flex-1">
                         <p class="text-xs text-blue-700 dark:text-blue-300">
-                          This will:
+                          {{ uiText("This will:") }}
                         </p>
                         <ul class="mt-1 text-xs text-blue-700 dark:text-blue-300 list-disc list-inside space-y-1">
-                          <li>Initialize git in the agent workspace</li>
-                          <li>Commit the current state</li>
-                          <li>Push to GitHub</li>
-                          <li>Enable bidirectional sync</li>
+                          <li>{{ uiText("Initialize git in the agent workspace") }}</li>
+                          <li>{{ uiText("Commit the current state") }}</li>
+                          <li>{{ uiText("Push to GitHub") }}</li>
+                          <li>{{ uiText("Enable bidirectional sync") }}</li>
                         </ul>
                         <p class="mt-2 text-xs text-blue-700 dark:text-blue-300">
-                          <strong>Note:</strong> GitHub PAT must be configured in Settings with <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">repo</code> scope.
+                          <strong>{{ uiText("Note:") }}</strong> {{ uiText("GitHub PAT must be configured in Settings with") }} <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">repo</code> {{ uiText("scope.") }}
                         </p>
                         <p class="mt-1 text-xs text-blue-700 dark:text-blue-300">
-                          <strong>Timing:</strong> This may take 10-60 seconds depending on the size of your agent's files.
+                          <strong>{{ uiText("Timing:") }}</strong> {{ uiText("This may take 10-60 seconds depending on the size of your agent's files.") }}
                         </p>
                       </div>
                     </div>
@@ -155,7 +155,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              {{ initializing ? 'Initializing...' : 'Initialize' }}
+              {{ initializing ? uiText("Initializing...") : uiText("Initialize") }}
             </button>
             <button
               type="button"
@@ -163,7 +163,7 @@
               :disabled="initializing"
               class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Cancel
+              {{ uiText("Cancel") }}
             </button>
           </div>
         </div>
@@ -175,13 +175,13 @@
       <svg class="mx-auto h-12 w-12 text-status-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
       </svg>
-      <p class="mt-2">Agent must be running to view git status</p>
+      <p class="mt-2">{{ uiText("Agent must be running to view git status") }}</p>
       <div v-if="gitStatus?.config" class="mt-4 text-left max-w-md mx-auto bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Saved Configuration:</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Repo: {{ gitStatus.config.github_repo }}</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Branch: {{ gitStatus.config.working_branch }}</p>
+        <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ uiText("Saved Configuration:") }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ uiText("Repo:") }} {{ gitStatus.config.github_repo }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ uiText("Branch:") }} {{ gitStatus.config.working_branch }}</p>
         <p v-if="gitStatus.config.last_sync_at" class="text-sm text-gray-500 dark:text-gray-400">
-          Last sync: {{ formatDate(gitStatus.config.last_sync_at) }}
+          {{ uiText("Last sync:") }} {{ formatDate(gitStatus.config.last_sync_at) }}
         </p>
       </div>
     </div>
@@ -207,10 +207,10 @@
                   {{ gitStatus.branch }}
                 </span>
                 <span v-if="gitStatus.ahead > 0" class="text-xs text-status-success-600">
-                  {{ gitStatus.ahead }} ahead
+                  {{ gitStatus.ahead }} {{ uiText("ahead") }}
                 </span>
                 <span v-if="gitStatus.behind > 0" class="text-xs text-status-urgent-600">
-                  {{ gitStatus.behind }} behind
+                  {{ gitStatus.behind }} {{ uiText("behind") }}
                 </span>
               </div>
             </div>
@@ -224,7 +224,7 @@
                   : 'bg-status-warning-100 dark:bg-status-warning-900/30 text-status-warning-800 dark:text-status-warning-300'
               ]"
             >
-              {{ gitStatus.sync_status === 'up_to_date' ? 'Synced' : 'Changes pending' }}
+              {{ gitStatus.sync_status === 'up_to_date' ? uiText("Synced") : uiText("Changes pending") }}
             </span>
           </div>
         </div>
@@ -232,7 +232,7 @@
 
       <!-- Pending Changes -->
       <div v-if="gitStatus.changes && gitStatus.changes.length > 0">
-        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Pending Changes ({{ gitStatus.changes_count }})</h3>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Pending Changes (") }}{{ gitStatus.changes_count }})</h3>
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           <ul class="divide-y divide-gray-200 dark:divide-gray-700 max-h-48 overflow-y-auto">
             <li v-for="change in gitStatus.changes" :key="change.path" class="px-4 py-2 flex items-center space-x-3 text-sm">
@@ -252,7 +252,7 @@
 
       <!-- Last Commit -->
       <div v-if="gitStatus.last_commit">
-        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Last Commit</h3>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Last Commit") }}</h3>
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
           <div class="flex items-start space-x-3">
             <div class="flex-shrink-0">
@@ -266,7 +266,7 @@
               <p class="text-sm font-medium text-gray-900 dark:text-white">{{ gitStatus.last_commit.message }}</p>
               <div class="flex items-center space-x-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
                 <code class="bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded">{{ gitStatus.last_commit.short_sha }}</code>
-                <span>by {{ gitStatus.last_commit.author }}</span>
+                <span>{{ uiText("by") }} {{ gitStatus.last_commit.author }}</span>
                 <span>&bull;</span>
                 <span>{{ formatDate(gitStatus.last_commit.date) }}</span>
               </div>
@@ -277,7 +277,7 @@
 
       <!-- Recent Commits -->
       <div v-if="gitLog && gitLog.commits && gitLog.commits.length > 1">
-        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Recent Commits</h3>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Recent Commits") }}</h3>
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
           <ul class="divide-y divide-gray-200 dark:divide-gray-700 max-h-64 overflow-y-auto">
             <li v-for="commit in gitLog.commits.slice(1)" :key="commit.sha" class="px-4 py-3">
@@ -297,9 +297,9 @@
 
       <!-- Database Config (if different from live) -->
       <div v-if="gitStatus.db_config" class="text-xs text-gray-500 dark:text-gray-400 border-t dark:border-gray-700 pt-4">
-        <p>Last sync: {{ gitStatus.db_config.last_sync_at ? formatDate(gitStatus.db_config.last_sync_at) : 'Never' }}</p>
+        <p>{{ uiText("Last sync:") }} {{ gitStatus.db_config.last_sync_at ? formatDate(gitStatus.db_config.last_sync_at) : uiText("Never") }}</p>
         <p v-if="gitStatus.db_config.last_commit_sha">
-          Last synced commit: <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">{{ gitStatus.db_config.last_commit_sha.substring(0, 7) }}</code>
+          {{ uiText("Last synced commit:") }} <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">{{ gitStatus.db_config.last_commit_sha.substring(0, 7) }}</code>
         </p>
       </div>
 
@@ -314,7 +314,7 @@
 
       <!-- GitHub PAT Settings (#347) -->
       <div class="border-t dark:border-gray-700 pt-4 mt-4">
-        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">GitHub Authentication</h3>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">{{ uiText("GitHub Authentication") }}</h3>
 
         <!-- PAT Status -->
         <div v-if="patStatus" class="bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
@@ -325,12 +325,12 @@
               </svg>
               <div>
                 <p class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ patStatus.configured ? 'Agent-specific PAT' : 'Using Global PAT' }}
+                  {{ patStatus.configured ? uiText("Agent-specific PAT") : uiText("Using Global PAT") }}
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                  <span v-if="patStatus.configured" class="text-status-success-600 dark:text-status-success-400">Custom PAT configured for this agent</span>
-                  <span v-else-if="patStatus.has_global" class="text-blue-600 dark:text-blue-400">Using system-wide GitHub PAT from Settings</span>
-                  <span v-else class="text-status-warning-600 dark:text-status-warning-400">No PAT configured - git operations may fail</span>
+                  <span v-if="patStatus.configured" class="text-status-success-600 dark:text-status-success-400">{{ uiText("Custom PAT configured for this agent") }}</span>
+                  <span v-else-if="patStatus.has_global" class="text-blue-600 dark:text-blue-400">{{ uiText("Using system-wide GitHub PAT from Settings") }}</span>
+                  <span v-else class="text-status-warning-600 dark:text-status-warning-400">{{ uiText("No PAT configured - git operations may fail") }}</span>
                 </p>
               </div>
             </div>
@@ -338,7 +338,7 @@
               @click="showPatModal = true"
               class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500"
             >
-              {{ patStatus.configured ? 'Change' : 'Configure' }}
+              {{ patStatus.configured ? uiText("Change") : uiText("Configure") }}
             </button>
           </div>
 
@@ -349,7 +349,7 @@
               :disabled="patSaving"
               class="text-xs text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-800 dark:hover:text-status-danger-300"
             >
-              Clear agent PAT (revert to global)
+              {{ uiText("Clear agent PAT (revert to global)") }}
             </button>
           </div>
         </div>
@@ -358,7 +358,7 @@
         <!-- #1921: the PAT-status line, placeholder-shaped. -->
         <div v-else class="py-4" aria-busy="true">
           <div class="h-3 w-1/2 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
-          <span class="sr-only">Loading…</span>
+          <span class="sr-only">{{ uiText("Loading…") }}</span>
         </div>
       </div>
 
@@ -376,7 +376,7 @@
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
                   <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="pat-modal-title">
-                    Configure GitHub PAT
+                    {{ uiText("Configure GitHub PAT") }}
                   </h3>
                   <div class="mt-4 space-y-4">
                     <!-- Error Message -->
@@ -392,7 +392,7 @@
                     <!-- PAT Input -->
                     <div>
                       <label for="github-pat" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Personal Access Token
+                        {{ uiText("Personal Access Token") }}
                       </label>
                       <input
                         type="password"
@@ -403,7 +403,7 @@
                         class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 sm:text-sm dark:bg-gray-700 dark:text-white font-mono"
                       />
                       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        Token must have <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">repo</code> scope
+                        {{ uiText("Token must have") }} <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">repo</code> {{ uiText("scope") }}
                       </p>
                     </div>
 
@@ -414,9 +414,9 @@
                           <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                         </svg>
                         <div class="ml-3 flex-1 text-xs text-blue-700 dark:text-blue-300">
-                          <p><strong>Per-agent PAT</strong> allows this agent to use a different GitHub account than other agents.</p>
-                          <p class="mt-1">The PAT is validated against GitHub and encrypted at rest.</p>
-                          <p class="mt-1"><strong>Note:</strong> Restart the agent for the new PAT to take effect in git operations.</p>
+                          <p><strong>{{ uiText("Per-agent PAT") }}</strong> {{ uiText("allows this agent to use a different GitHub account than other agents.") }}</p>
+                          <p class="mt-1">{{ uiText("The PAT is validated against GitHub and encrypted at rest.") }}</p>
+                          <p class="mt-1"><strong>{{ uiText("Note:") }}</strong> {{ uiText("Restart the agent for the new PAT to take effect in git operations.") }}</p>
                         </div>
                       </div>
                     </div>
@@ -435,7 +435,7 @@
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {{ patSaving ? 'Validating...' : 'Save PAT' }}
+                {{ patSaving ? uiText("Validating...") : uiText("Save PAT") }}
               </button>
               <button
                 type="button"
@@ -443,7 +443,7 @@
                 :disabled="patSaving"
                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Cancel
+                {{ uiText("Cancel") }}
               </button>
             </div>
           </div>
@@ -552,7 +552,7 @@ const initializeGitHub = async () => {
     repoName.value = ''
   } catch (error) {
     console.error('[GitPanel] GitHub initialization failed:', error)
-    initializeError.value = error.response?.data?.detail || error.message || 'Failed to initialize GitHub sync'
+    initializeError.value = error.response?.data?.detail || error.message || uiText("Failed to initialize GitHub sync")
   } finally {
     console.log('[GitPanel] Initialization complete, setting initializing = false')
     initializing.value = false
@@ -586,21 +586,21 @@ const savePat = async () => {
 
   try {
     const response = await agentsStore.setGitHubPAT(props.agentName, newPat.value)
-    patSuccess.value = `PAT configured successfully for GitHub user: ${response.github_username}`
+    patSuccess.value = uiText('PAT configured successfully for GitHub user: {user}', { user: response.github_username })
     await loadPatStatus()
     // Close modal after short delay to show success message
     setTimeout(() => {
       closePatModal()
     }, 1500)
   } catch (error) {
-    patError.value = error.response?.data?.detail || error.message || 'Failed to save PAT'
+    patError.value = error.response?.data?.detail || error.message || uiText("Failed to save PAT")
   } finally {
     patSaving.value = false
   }
 }
 
 const clearPat = async () => {
-  if (!confirm('Clear the agent-specific PAT and revert to using the global PAT?')) return
+  if (!confirm(uiText("Clear the agent-specific PAT and revert to using the global PAT?"))) return
 
   patSaving.value = true
   try {
@@ -627,10 +627,10 @@ const formatDate = (dateString) => {
   const now = new Date()
   const diffSeconds = Math.floor((now - date) / 1000)
 
-  if (diffSeconds < 60) return 'just now'
-  if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m ago`
-  if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)}h ago`
-  if (diffSeconds < 604800) return `${Math.floor(diffSeconds / 86400)}d ago`
+  if (diffSeconds < 60) return uiText("just now")
+  if (diffSeconds < 3600) return uiText("{arg1}m ago", { arg1: (Math.floor(diffSeconds / 60)) })
+  if (diffSeconds < 86400) return uiText("{arg1}h ago", { arg1: (Math.floor(diffSeconds / 3600)) })
+  if (diffSeconds < 604800) return uiText("{arg1}d ago", { arg1: (Math.floor(diffSeconds / 86400)) })
   return date.toLocaleDateString()
 }
 
@@ -665,4 +665,6 @@ watch(() => props.agentStatus, (newStatus) => {
 onMounted(() => {
   loadGitStatus()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

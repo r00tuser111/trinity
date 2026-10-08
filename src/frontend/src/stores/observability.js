@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { formatCost } from '../composables/useFormatters'
@@ -210,7 +212,7 @@ export const useObservabilityStore = defineStore('observability', {
         // data — a failed GET is not the collector declaring itself down.
         // Before a first success there is nothing to protect and nothing is
         // known, so the pre-existing unavailable verdict stands.
-        this.refreshError = error.response?.data?.detail || error.message || 'Failed to fetch metrics'
+        this.refreshError = error.response?.data?.detail || error.message || uiText("Failed to fetch metrics")
         if (!this.hasLoaded) {
           this.error = this.refreshError
           this.available = false
@@ -282,9 +284,9 @@ export const useObservabilityStore = defineStore('observability', {
       if (!model) return 'Unknown'
 
       // Common model name patterns
-      if (model.includes('haiku')) return 'Claude Haiku'
-      if (model.includes('sonnet')) return 'Claude Sonnet'
-      if (model.includes('opus')) return 'Claude Opus'
+      if (model.includes('haiku')) return uiText("Claude Haiku")
+      if (model.includes('sonnet')) return uiText("Claude Sonnet")
+      if (model.includes('opus')) return uiText("Claude Opus")
 
       // Return as-is if no match
       return model

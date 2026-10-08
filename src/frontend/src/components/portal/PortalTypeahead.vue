@@ -24,11 +24,11 @@
       <span class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ heading }}</span>
       <span class="text-[11px] text-gray-400 dark:text-gray-500 hidden sm:block">
         <kbd class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] font-mono">↑↓</kbd>
-        move
-        <kbd class="ml-1.5 px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] font-mono">Tab</kbd>
-        insert
-        <kbd class="ml-1.5 px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] font-mono">Esc</kbd>
-        close
+        {{ uiText("move") }}
+        <kbd class="ml-1.5 px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] font-mono">{{ uiText("Tab") }}</kbd>
+        {{ uiText("insert") }}
+        <kbd class="ml-1.5 px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] font-mono">{{ uiText("Esc") }}</kbd>
+        {{ uiText("close") }}
       </span>
     </div>
 
@@ -70,13 +70,13 @@
       v-if="overflow > 0 || hiddenCount > 0"
       class="px-3 py-1.5 border-t border-gray-100 dark:border-gray-800 text-[11px] text-gray-400 dark:text-gray-500"
     >
-      <span v-if="overflow > 0">{{ overflow }} more — keep typing to filter</span>
+      <span v-if="overflow > 0">{{ overflow }} {{ uiText("more — keep typing to filter") }}</span>
       <!-- #2213: two DIFFERENT omissions, said separately. `overflow` is rows this
            popup chose not to draw and typing will reach; `hiddenCount` is skills
            that never reached the browser, which typing cannot reach — so it must
            not be folded into the same number, and it must say what to do instead. -->
       <span v-if="hiddenCount > 0" :class="overflow > 0 ? 'block' : ''">
-        {{ hiddenCount }} more not listed here — ask for it by name
+        {{ hiddenCount }} {{ uiText("more not listed here — ask for it by name") }}
       </span>
     </div>
 
@@ -101,15 +101,19 @@ defineEmits(['pick', 'hover'])
 
 const listEl = ref(null)
 
-const heading = computed(() => (props.kind === '/' ? 'Playbooks' : 'Agents'))
+const heading = computed(() => (props.kind === '/' ? uiText('Playbooks') : uiText('Agents')))
 
 const status = computed(() => {
-  if (!props.rows.length) return props.emptyMessage || 'No suggestions'
+  if (!props.rows.length) return props.emptyMessage || uiText("No suggestions")
   const n = props.rows.length + props.overflow
-  const hidden = props.hiddenCount > 0
-    ? ` ${props.hiddenCount} further playbook${props.hiddenCount === 1 ? '' : 's'} are not listed and must be asked for by name.`
-    : ''
-  return `${n} suggestion${n === 1 ? '' : 's'}. Use the arrow keys to choose one.${hidden}`
+  const lead = n === 1
+    ? uiText('{count} suggestion. Use the arrow keys to choose one.', { count: n })
+    : uiText('{count} suggestions. Use the arrow keys to choose one.', { count: n })
+  if (props.hiddenCount <= 0) return lead
+  const hidden = props.hiddenCount === 1
+    ? uiText('{count} further playbook are not listed and must be asked for by name.', { count: props.hiddenCount })
+    : uiText('{count} further playbooks are not listed and must be asked for by name.', { count: props.hiddenCount })
+  return `${lead} ${hidden}`
 })
 
 // Keep the chosen row in view without moving the page (principle 5: updates
@@ -119,4 +123,6 @@ watch(() => props.activeIndex, async (i) => {
   await nextTick()
   listEl.value?.children?.[i]?.scrollIntoView({ block: 'nearest' })
 })
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -1,3 +1,5 @@
+import { t as uiText } from '../../i18n/index.js'
+
 /**
  * Decidable rules for the agent canvas (ent#438, widened by ent#536).
  *
@@ -120,13 +122,13 @@ export function freshness(canvas, now = Date.now()) {
   const lastRunAt = canvas?.agent_last_run_at || null
   // The first fact is UNCONDITIONAL — an unreadable `updated_at` still renders,
   // degrading to relativeTime's own fallback rather than vanishing.
-  const label = updatedAt ? `Updated ${relativeTime(updatedAt, now)}` : 'Never updated'
+  const label = updatedAt ? uiText("Updated {arg1}", { arg1: (relativeTime(updatedAt, now)) }) : uiText("Never updated")
   // The second is OMISSIBLE, and the gate is PARSEABILITY, not truthiness: a
   // truthy-but-unparseable value would otherwise reach relativeTime and render
   // "agent last ran at an unknown time" — a narrated non-fact, exactly what
   // this function refuses to produce.
   const runnable = lastRunAt && !Number.isNaN(Date.parse(lastRunAt))
-  const runLabel = runnable ? `agent last ran ${relativeTime(lastRunAt, now)}` : null
+  const runLabel = runnable ? uiText("agent last ran {arg1}", { arg1: (relativeTime(lastRunAt, now)) }) : null
   // `line` is what the panel renders; the parts are returned beside it so a
   // test can assert each fact independently of the joining.
   return { label, runLabel, line: runLabel ? `${label} · ${runLabel}` : label }
@@ -135,15 +137,15 @@ export function freshness(canvas, now = Date.now()) {
 /** Compact relative time. Returns an absolute-ish fallback for a bad value. */
 export function relativeTime(iso, now = Date.now()) {
   const then = Date.parse(iso)
-  if (Number.isNaN(then)) return 'at an unknown time'
+  if (Number.isNaN(then)) return uiText("at an unknown time")
   const secs = Math.max(0, Math.round((now - then) / 1000))
-  if (secs < 60) return 'just now'
+  if (secs < 60) return uiText("just now")
   const mins = Math.round(secs / 60)
-  if (mins < 60) return `${mins}m ago`
+  if (mins < 60) return uiText("{arg1}m ago", { arg1: (mins) })
   const hours = Math.round(mins / 60)
-  if (hours < 24) return `${hours}h ago`
+  if (hours < 24) return uiText("{arg1}h ago", { arg1: (hours) })
   const days = Math.round(hours / 24)
-  if (days < 30) return `${days}d ago`
+  if (days < 30) return uiText("{arg1}d ago", { arg1: (days) })
   return new Date(then).toISOString().slice(0, 10)
 }
 
@@ -158,14 +160,14 @@ export function relativeTime(iso, now = Date.now()) {
 export function emptyState(viewer) {
   if (viewer === 'client') {
     return {
-      title: 'Nothing published here yet',
-      body: 'This agent has not put anything on its canvas for you. Ask it in the chat — it can publish results here as it works.',
+      get "title"() { return uiText("Nothing published here yet") },
+      get body() { return uiText('This agent has not put anything on its canvas for you. Ask it in the chat — it can publish results here as it works.') },
       action: 'chat',
     }
   }
   return {
-    title: 'No canvas yet',
-    body: 'A canvas is a surface your agent keeps current — a status board, a running tally, a chart, the latest version of an analysis. Ask it in chat to "put it on your canvas", or have it call set_canvas.',
+    get "title"() { return uiText("No canvas yet") },
+    get body() { return uiText('A canvas is a surface your agent keeps current — a status board, a running tally, a chart, the latest version of an analysis. Ask it in chat to "put it on your canvas", or have it call set_canvas.') },
     action: null,
   }
 }
@@ -285,8 +287,8 @@ export function canvasAutoSelect(visible, selectedId, query) {
 export function bulkDeletePrompt(count) {
   const n = Number(count) || 0
   if (n <= 0) return null
-  if (n === 1) return 'Delete this canvas? The agent can create it again, but its current contents will be gone.'
-  return `Delete ${n} canvases? The agent can create them again, but their current contents will be gone.`
+  if (n === 1) return uiText("Delete this canvas? The agent can create it again, but its current contents will be gone.")
+  return uiText("Delete {arg1} canvases? The agent can create them again, but their current contents will be gone.", { arg1: (n) })
 }
 
 /**
@@ -307,7 +309,7 @@ export function canvasHeadroom(count, max) {
     limit,
     atLimit,
     label: atLimit
-      ? `${used} of ${limit} canvases — the agent cannot create another until one is removed`
+      ? uiText("{arg1} of {arg2} canvases — the agent cannot create another until one is removed", { arg1: (used), arg2: (limit) })
       : near
         ? `${used} of ${limit} canvases`
         : null,
@@ -339,9 +341,9 @@ export function bulkDeleteOutcome(requested, deleted) {
   const asked = Number(requested) || 0
   const got = Array.isArray(deleted) ? deleted.length : Number(deleted) || 0
   if (!asked) return null
-  if (got === asked) return got === 1 ? 'Canvas deleted' : `${got} canvases deleted`
-  if (got === 0) return 'Nothing was deleted — those canvases were already gone'
-  return `${got} of ${asked} deleted — the rest were already gone`
+  if (got === asked) return got === 1 ? uiText("Canvas deleted") : uiText("{arg1} canvases deleted", { arg1: (got) })
+  if (got === 0) return uiText("Nothing was deleted — those canvases were already gone")
+  return uiText("{arg1} of {arg2} deleted — the rest were already gone", { arg1: (got), arg2: (asked) })
 }
 
 // ---------------------------------------------------------------------------

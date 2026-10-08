@@ -16,28 +16,26 @@
     <div v-else-if="store.outcomeUnknown">
       <div class="rounded-lg border-2 border-status-warning-400 dark:border-status-warning-600 bg-status-warning-50 dark:bg-status-warning-900/20 p-4">
         <h3 class="font-semibold text-status-warning-900 dark:text-status-warning-100 flex items-center gap-2">
-          <span aria-hidden="true">❓</span> Outcome unknown — deployment may still be running
+          <span aria-hidden="true">❓</span> {{ uiText("Outcome unknown — deployment may still be running") }}
         </h3>
         <p class="mt-2 text-sm text-status-warning-800 dark:text-status-warning-200">
           {{ store.outcomeUnknown }}
         </p>
         <p class="mt-2 text-sm text-status-warning-800 dark:text-status-warning-200">
-          <strong>Do not simply try again.</strong> Check your agent list first — deploying the
-          same manifest a second time creates a duplicate, suffixed copy of every agent that
-          did get created.
+          <strong>{{ uiText("Do not simply try again.") }}</strong> {{ uiText("Check your agent list first — deploying the same manifest a second time creates a duplicate, suffixed copy of every agent that did get created.") }}
         </p>
         <div class="mt-3 flex flex-wrap gap-2">
           <button
             class="rounded-lg bg-action-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-action-primary-700"
             @click="goToAgents"
           >
-            Check the agent list
+            {{ uiText("Check the agent list") }}
           </button>
           <button
             class="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
             @click="startOver"
           >
-            Start over
+            {{ uiText("Start over") }}
           </button>
         </div>
       </div>
@@ -67,17 +65,17 @@
         <!-- Pick from bundled -->
         <div v-if="source === 'bundled'" class="mt-4">
           <div v-if="store.bundledLoading" class="text-sm text-gray-500 dark:text-gray-400">
-            Loading bundled systems…
+            {{ uiText("Loading bundled systems…") }}
           </div>
           <div
             v-else-if="!store.bundled.length"
             class="rounded-lg border border-dashed border-gray-300 dark:border-gray-600 p-6 text-center"
           >
             <p class="text-sm text-gray-600 dark:text-gray-400">
-              No bundled system manifests are available on this instance.
+              {{ uiText("No bundled system manifests are available on this instance.") }}
             </p>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              You can still paste or upload a manifest.
+              {{ uiText("You can still paste or upload a manifest.") }}
             </p>
           </div>
           <ul v-else class="grid gap-3 sm:grid-cols-2">
@@ -98,13 +96,13 @@
                   v-if="!m.valid"
                   class="shrink-0 rounded-full bg-status-danger-100 dark:bg-status-danger-900/40 px-2 py-0.5 text-xs font-medium text-status-danger-800 dark:text-status-danger-200"
                 >
-                  cannot deploy
+                  {{ uiText("cannot deploy") }}
                 </span>
                 <span
                   v-else-if="m.already_deployed"
                   class="shrink-0 rounded-full bg-status-warning-100 dark:bg-status-warning-900/40 px-2 py-0.5 text-xs font-medium text-status-warning-800 dark:text-status-warning-200"
                 >
-                  already installed
+                  {{ uiText("already installed") }}
                 </span>
               </div>
               <!-- Plain text, never v-html (H-005). -->
@@ -116,19 +114,19 @@
               </p>
               <div class="mt-2 flex flex-wrap gap-1.5 text-xs">
                 <span class="rounded bg-gray-100 dark:bg-gray-700 px-2 py-0.5 text-gray-700 dark:text-gray-300">
-                  {{ m.agent_count }} agent(s)
+                  {{ m.agent_count }} {{ uiText("agent(s)") }}
                 </span>
                 <span
                   v-if="m.schedule_count"
                   class="rounded bg-status-warning-100 dark:bg-status-warning-900/40 px-2 py-0.5 text-status-warning-800 dark:text-status-warning-200"
                 >
-                  {{ m.schedule_count }} schedule(s)
+                  {{ m.schedule_count }} {{ uiText("schedule(s)") }}
                 </span>
                 <span
                   v-if="m.sets_prompt"
                   class="rounded bg-status-warning-100 dark:bg-status-warning-900/40 px-2 py-0.5 text-status-warning-800 dark:text-status-warning-200"
                 >
-                  replaces global prompt
+                  {{ uiText("replaces global prompt") }}
                 </span>
                 <span
                   v-if="m.permissions_preset"
@@ -142,7 +140,7 @@
                 :data-testid="`bundled-load-${m.id}`"
                 @click="pickBundled(m)"
               >
-                {{ selectedId === m.id ? 'Loaded below' : 'Load this manifest' }}
+                {{ selectedId === m.id ? uiText("Loaded below") : uiText("Load this manifest") }}
               </button>
             </li>
           </ul>
@@ -154,10 +152,10 @@
             class="flex cursor-pointer flex-col items-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-6 text-center hover:border-action-primary-400"
           >
             <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
-              Choose a .yaml or .yml manifest
+              {{ uiText("Choose a .yaml or .yml manifest") }}
             </span>
             <span class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              Read in your browser — the file itself is never uploaded
+              {{ uiText("Read in your browser — the file itself is never uploaded") }}
             </span>
             <input
               type="file"
@@ -171,7 +169,7 @@
             {{ uploadError }}
           </p>
           <p v-else-if="uploadName" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Loaded <span class="font-mono">{{ uploadName }}</span>
+            {{ uiText("Loaded") }} <span class="font-mono">{{ uploadName }}</span>
           </p>
         </div>
       </div>
@@ -180,10 +178,10 @@
       <div>
         <div class="flex items-baseline justify-between">
           <label for="manifest-yaml" class="text-sm font-medium text-gray-700 dark:text-gray-200">
-            Manifest YAML
+            {{ uiText("Manifest YAML") }}
           </label>
           <span v-if="store.manifestText" class="text-xs text-gray-500 dark:text-gray-400">
-            {{ store.manifestText.length }} characters
+            {{ store.manifestText.length }} {{ uiText("characters") }}
           </span>
         </div>
         <BaseTextarea
@@ -192,7 +190,7 @@
           :model-value="store.manifestText"
           rows="16"
           spellcheck="false"
-          placeholder="name: my-system&#10;agents:&#10;  worker:&#10;    template: local:default"
+          :placeholder="uiText(&quot;name: my-system agents: worker: template: local:default&quot;)"
           class="mt-1"
           data-testid="manifest-textarea"
           @update:model-value="store.setManifestText($event)"
@@ -217,7 +215,7 @@
           data-testid="dry-run"
           @click="store.dryRun()"
         >
-          {{ store.isLoading ? 'Checking…' : 'Preview' }}
+          {{ store.isLoading ? uiText("Checking…") : uiText("Preview") }}
         </button>
         <button
           :disabled="!canDeployNow"
@@ -225,7 +223,7 @@
           data-testid="deploy"
           @click="store.deploy()"
         >
-          {{ store.isDeploying ? 'Deploying…' : 'Deploy' }}
+          {{ store.isDeploying ? uiText("Deploying…") : uiText("Deploy") }}
         </button>
         <p class="text-xs text-gray-500 dark:text-gray-400">{{ deployHint }}</p>
       </div>
@@ -268,9 +266,9 @@ import BaseTextarea from '../base/BaseTextarea.vue'
 const MANIFEST_MAX_BYTES = 256 * 1024
 
 const SOURCES = [
-  { id: 'bundled', label: 'Pick a system' },
-  { id: 'upload', label: 'Upload a file' },
-  { id: 'paste', label: 'Paste YAML' }
+  { id: 'bundled', get "label"() { return uiText("Pick a system") } },
+  { id: 'upload', get "label"() { return uiText("Upload a file") } },
+  { id: 'paste', get "label"() { return uiText("Paste YAML") } }
 ]
 
 const router = useRouter()
@@ -287,7 +285,7 @@ const canDeployNow = computed(
 )
 
 const deployHint = computed(() => {
-  if (store.isDeploying) return 'This can take a minute per agent — do not close the page.'
+  if (store.isDeploying) return uiText("This can take a minute per agent — do not close the page.")
   if (!store.manifestText.trim()) return ''
   if (!store.previewIsCurrent) {
     // `previewedText`, not `preview`: editing clears the preview PAYLOAD, so
@@ -295,12 +293,12 @@ const deployHint = computed(() => {
     // previewed to "Preview first". The marker outlives the payload precisely so
     // these two states stay distinguishable.
     return store.previewedText
-      ? 'The manifest changed — preview again before deploying.'
-      : 'Preview first to see what this would create.'
+      ? uiText("The manifest changed — preview again before deploying.")
+      : uiText("Preview first to see what this would create.")
   }
-  if (store.previewHasBlockers) return 'Fix the blockers below before deploying.'
+  if (store.previewHasBlockers) return uiText("Fix the blockers below before deploying.")
   if (store.needsAcknowledgement && !acknowledged.value) {
-    return 'Confirm the highlighted consequences below to enable Deploy.'
+    return uiText("Confirm the highlighted consequences below to enable Deploy.")
   }
   return ''
 })
@@ -333,15 +331,15 @@ function onFile (event) {
   resetLocalState()
   uploadName.value = file.name
   if (!/\.(ya?ml)$/i.test(file.name)) {
-    uploadError.value = 'Please choose a .yaml or .yml file.'
+    uploadError.value = uiText("Please choose a .yaml or .yml file.")
     return
   }
   if (file.size > MANIFEST_MAX_BYTES) {
-    uploadError.value = `That file is larger than ${Math.round(MANIFEST_MAX_BYTES / 1024)} KB.`
+    uploadError.value = uiText("That file is larger than {arg1} KB.", { arg1: (Math.round(MANIFEST_MAX_BYTES / 1024)) })
     return
   }
   const reader = new FileReader()
-  reader.onerror = () => { uploadError.value = 'Could not read that file.' }
+  reader.onerror = () => { uploadError.value = uiText("Could not read that file.") }
   reader.onload = () => { store.setManifestText(String(reader.result || '')) }
   reader.readAsText(file)
 }
@@ -372,4 +370,6 @@ function goToAgents () {
 onMounted(() => {
   store.fetchBundled()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -1,3 +1,5 @@
+import { msg, t as uiText } from '../../i18n/index.js'
+
 // Shared helpers for the client-portal chat shell (#138).
 
 // Deterministic per-agent color — used for the avatar tint and the small thread
@@ -94,7 +96,7 @@ export function asksByAgent(asks) {
 export function askBadgeTitle(count) {
   const n = Number(count) || 0
   if (n <= 0) return ''
-  return `${n} ${n === 1 ? 'ask is' : 'asks are'} waiting on your answer`
+  return uiText("{arg1} {arg2} waiting on your answer", { arg1: (n), arg2: (n === 1 ? 'ask is' : 'asks are') })
 }
 
 // The agent row's accessible name.
@@ -109,10 +111,10 @@ export function agentRowTitle({ label, name, unread = 0, askCount = 0, chipTitle
   const reads = Number(unread) || 0
 
   const parts = []
-  if (asks > 0) parts.push(`${asks} ${asks === 1 ? 'ask' : 'asks'} waiting on you`)
-  if (reads > 0) parts.push(`${reads} unread ${reads === 1 ? 'reply' : 'replies'}`)
+  if (asks > 0) parts.push(asks === 1 ? uiText('{count} ask waiting on you', { count: asks }) : uiText('{count} asks waiting on you', { count: asks }))
+  if (reads > 0) parts.push(reads === 1 ? uiText('{count} unread reply', { count: reads }) : uiText('{count} unread replies', { count: reads }))
 
-  const base = parts.length ? `${who} — ${parts.join(', ')}` : `Open ${who}`
+  const base = parts.length ? `${who} — ${parts.join(', ')}` : uiText('Open {arg1}', { arg1: who })
   return chipTitle ? `${base} — ${chipTitle}` : base
 }
 
@@ -255,7 +257,7 @@ export function shortDate(iso) {
 }
 
 export function threadTitle(t) {
-  return (t.title || '').trim() || 'New chat'
+  return (t.title || '').trim() || uiText("New chat")
 }
 
 // --- Chat titles (ent#473) --------------------------------------------------
@@ -263,7 +265,7 @@ export function threadTitle(t) {
 // so a person is told BEFORE the request; the server stays the authority and
 // its named 400 (`invalid_title`) is rendered verbatim when the two disagree.
 export const CHAT_TITLE_MAX_CHARS = 100
-export const TITLE_EXAMPLE = 'Q3 invoice discrepancy'
+export const TITLE_EXAMPLE = msg('Q3 invoice discrepancy')
 
 // Control characters other than \t/\n/\r are dropped as whitespace; a line
 // break INSIDE the trimmed text is a refusal rather than a silent join.
@@ -283,11 +285,11 @@ export function normalizeChatTitle(raw) {
 }
 
 export function chatTitleProblem(reason, have = 0) {
-  if (reason === 'multiline') return `A title is one line — remove the line breaks. Example: ${TITLE_EXAMPLE}`
+  if (reason === 'multiline') return uiText("A title is one line — remove the line breaks. Example: {arg1}", { arg1: (uiText(TITLE_EXAMPLE)) })
   if (reason === 'too_long') {
-    return `Keep the title to ${CHAT_TITLE_MAX_CHARS} characters or fewer (this one is ${have}). Example: ${TITLE_EXAMPLE}`
+    return uiText("Keep the title to {arg1} characters or fewer (this one is {arg2}). Example: {arg3}", { arg1: (CHAT_TITLE_MAX_CHARS), arg2: (have), arg3: (uiText(TITLE_EXAMPLE)) })
   }
-  return `A title can't be empty. Example: ${TITLE_EXAMPLE}`
+  return uiText("A title can't be empty. Example: {arg1}", { arg1: (uiText(TITLE_EXAMPLE)) })
 }
 
 // The sentence for a rename the SERVER refused. A named 400 carries the
@@ -298,8 +300,8 @@ export function renameFailureMessage(err) {
   if (detail && typeof detail === 'object' && detail.code === 'invalid_title' && detail.message) {
     return String(detail.message)
   }
-  if (err?.response?.status === 404) return "This chat isn't yours to rename any more — reload to see the current list."
-  return "Couldn't save the new title. Check your connection and try again."
+  if (err?.response?.status === 404) return uiText("This chat isn't yours to rename any more — reload to see the current list.")
+  return uiText("Couldn't save the new title. Check your connection and try again.")
 }
 
 // --- The agent's chats as tabs (ent#451, #2579) -----------------------------
@@ -326,12 +328,12 @@ export function renameFailureMessage(err) {
 // once the list carries it (the sort below falls back to `created_at`), so
 // adoption swaps the tab in place instead of making it jump.
 export const NEW_CHAT_TAB_ID = '__new_chat__'
-export const NEW_CHAT_TAB_LABEL = 'New chat'
+export const NEW_CHAT_TAB_LABEL = msg('New chat')
 
 // ent#523: the pinned Main chat's tab label. A constant because three places
 // have to agree on it — the strip, the details list, and the test — and a chat
 // whose title is literally "Main" would otherwise be indistinguishable from it.
-export const MAIN_TAB_LABEL = 'Main'
+export const MAIN_TAB_LABEL = msg('Main')
 
 export function agentChatTabs(threads, agentName, { activeId = null, draft = false } = {}) {
   if (!agentName) return []
@@ -363,7 +365,7 @@ export function agentChatTabs(threads, agentName, { activeId = null, draft = fal
       // Main is named by its ROLE, never by its title: it is the same thread
       // for the life of the pair, and a derived title from whatever was said
       // in it first would make the pinned tab wander.
-      label: t.is_main ? MAIN_TAB_LABEL : threadTitle(t),
+      label: t.is_main ? uiText(MAIN_TAB_LABEL) : threadTitle(t),
       // The bookmark the approved design (board A3) draws on Main. It is the
       // one tab that is pinned rather than ordered, so it is the one that says
       // so in the strip rather than only in its position.
@@ -380,7 +382,7 @@ export function agentChatTabs(threads, agentName, { activeId = null, draft = fal
       // looking at keeps its identity across the gap between "the thread now
       // exists" and "the list says so".
       id: activeId || NEW_CHAT_TAB_ID,
-      label: NEW_CHAT_TAB_LABEL,
+      label: uiText(NEW_CHAT_TAB_LABEL),
       provisional: true,
       pinned: false,
       thread: null,
@@ -461,12 +463,12 @@ export function isMacLike(platform) {
 // reassures on every load trains people to skip it.
 export function titleGenerationNotice(health) {
   if (!health || typeof health !== 'object') return null
-  const when = health.last_failure_at ? ` Last attempt: ${health.last_failure_at}.` : ''
+  const when = health.last_failure_at ? ` ${uiText('Last attempt: {time}.', { time: health.last_failure_at })}` : ''
   if (health.state === 'no_credential') {
     return {
       level: 'warning',
-      title: "Workspace chat titles aren't being generated",
-      body: `No Anthropic API key and no subscription token was available for the agent, so new chats keep a title taken from their first message. Add an API key under Credentials, or assign the agent a subscription.${when}`,
+      get "title"() { return uiText("Workspace chat titles aren't being generated") },
+      get body() { return `${uiText('No Anthropic API key and no subscription token was available for the agent, so new chats keep a title taken from their first message. Add an API key under Credentials, or assign the agent a subscription.')}${when}` },
     }
   }
   if (health.state === 'failing') {
@@ -474,8 +476,13 @@ export function titleGenerationNotice(health) {
     const why = health.last_failure ? ` (${health.last_failure})` : ''
     return {
       level: 'warning',
-      title: 'Workspace chat titles are failing to generate',
-      body: `${n} attempt${n === 1 ? '' : 's'} in a row failed${why}; new chats keep a title taken from their first message until the model call succeeds again.${when}`,
+      get "title"() { return uiText("Workspace chat titles are failing to generate") },
+      get body() {
+        const params = { count: n, why }
+        return `${n === 1
+          ? uiText('{count} attempt in a row failed{why}; new chats keep a title taken from their first message until the model call succeeds again.', params)
+          : uiText('{count} attempts in a row failed{why}; new chats keep a title taken from their first message until the model call succeeds again.', params)}${when}`
+      },
     }
   }
   return null
@@ -568,10 +575,10 @@ export function deliveryFailureReason(err) {
   // A ClientPortalError always sends a string. Anything else is a framework
   // shape (a 422 validation list, {msg: ...}) — say something true rather than
   // rendering "[object Object]" at the user.
-  if (!err?.response) return "Couldn't reach Trinity — check your connection and try again."
-  if (err.response.status === 413) return 'That message or attachment is too large.'
-  if (err.response.status === 429) return 'Too many messages just now — wait a moment and retry.'
-  return `The message wasn't delivered (error ${err.response.status}).`
+  if (!err?.response) return uiText("Couldn't reach Trinity — check your connection and try again.")
+  if (err.response.status === 413) return uiText("That message or attachment is too large.")
+  if (err.response.status === 429) return uiText("Too many messages just now — wait a moment and retry.")
+  return uiText("The message wasn't delivered (error {arg1}).", { arg1: (err.response.status) })
 }
 
 // #2128 — one place decides what a click does to the selection, so single- and
@@ -653,8 +660,8 @@ export function shouldEscapeStage(path, query) {
 // browser the person just asked to leave — the reported bug with an honest
 // sign on it. A client's button ends only their portal session, and says so.
 // Pure so the label the view renders is the one the test pins.
-export const SIGN_OUT_LABEL_PLATFORM = 'Sign out of Trinity'
-export const SIGN_OUT_LABEL_CLIENT = 'Sign out'
+export const SIGN_OUT_LABEL_PLATFORM = msg('Sign out of Trinity')
+export const SIGN_OUT_LABEL_CLIENT = msg('Sign out')
 
 export function signOutLabelFor(isPlatformSession) {
   return isPlatformSession ? SIGN_OUT_LABEL_PLATFORM : SIGN_OUT_LABEL_CLIENT
@@ -672,10 +679,10 @@ export function signOutLabelFor(isPlatformSession) {
 // chart stacks by — those entries are the keys it indexes `by_type` with, so a
 // translated array would find nothing and draw an empty chart.
 export const PORTAL_BUCKET_LABELS = {
-  'Chat/Tasks': 'Chat',
-  'MCP': 'Tool call',
-  'Channels': 'Messaging',
-  'Public': 'Public link',
+  get 'Chat/Tasks'() { return uiText('Chat') },
+  get 'MCP'() { return uiText('Tool call') },
+  get 'Channels'() { return uiText('Messaging') },
+  get 'Public'() { return uiText('Public link') },
 }
 
 // ---------------------------------------------------------------------------
@@ -879,28 +886,28 @@ export function availabilityChip(agent, { detailed = false } = {}) {
   const owner = String(agent?.owner ?? '').trim()
   // The card already carries the owner, so naming them costs nothing and is far
   // more actionable than "its owner".
-  const who = owner ? owner : 'its owner'
+  const who = owner ? owner : uiText('its owner')
 
   if (!detailed) {
     return {
       state,
-      label: 'Unavailable',
+      get "label"() { return uiText("Unavailable") },
       variant: 'warning',
-      title: `This agent can't take a message right now — ask ${who} to start it.`,
+      get "title"() { return uiText("This agent can't take a message right now — ask {arg1} to start it.", { arg1: (who) }) },
     }
   }
   return state === AVAILABILITY_STOPPED
     ? {
       state,
-      label: 'Stopped',
+      get "label"() { return uiText("Stopped") },
       variant: 'warning',
-      title: `This agent is stopped — ask ${who} to start it.`,
+      get "title"() { return uiText("This agent is stopped — ask {arg1} to start it.", { arg1: (who) }) },
     }
     : {
       state,
-      label: 'Unavailable',
+      get "label"() { return uiText("Unavailable") },
       variant: 'danger',
-      title: `This agent has no running container — ask ${who} to start it.`,
+      get "title"() { return uiText("This agent has no running container — ask {arg1} to start it.", { arg1: (who) }) },
     }
 }
 
@@ -937,11 +944,11 @@ export function reservesAvailabilitySlot(rows, opts = {}) {
   return rows.some((a) => availabilityChip(a, opts) !== null)
 }
 
-export const EMPTY_REASON_NO_PLAYBOOKS = 'No playbooks are available for this agent right now.'
-export const EMPTY_REASON_NO_PEERS = 'No other agents are shared with you.'
+export const EMPTY_REASON_NO_PLAYBOOKS = msg('No playbooks are available for this agent right now.')
+export const EMPTY_REASON_NO_PEERS = msg('No other agents are shared with you.')
 export const EMPTY_REASON_NO_MENTIONABLE_PEERS =
-  "The other agents shared with you can't be @mentioned — their names aren't valid mention handles."
-export const EMPTY_REASON_NO_ROOM_PEERS = 'No other agents are in this conversation yet.'
+  msg("The other agents shared with you can't be @mentioned — their names aren't valid mention handles.")
+export const EMPTY_REASON_NO_ROOM_PEERS = msg('No other agents are in this conversation yet.')
 
 function rank(haystack, query) {
   const h = String(haystack ?? '').toLowerCase()
@@ -1031,10 +1038,10 @@ export function filterAgentCandidates(roster, query, {
  * class made visible instead of silent.
  */
 export function typeaheadEmptyMessage(kind, result, { scope = 'roster' } = {}) {
-  if (kind === '/') return EMPTY_REASON_NO_PLAYBOOKS
+  if (kind === '/') return uiText(EMPTY_REASON_NO_PLAYBOOKS)
   if (!result || result.enabled === false) return null
-  if (result.peerCount > 0 && result.mentionableCount === 0) return EMPTY_REASON_NO_MENTIONABLE_PEERS
-  return scope === 'room' ? EMPTY_REASON_NO_ROOM_PEERS : EMPTY_REASON_NO_PEERS
+  if (result.peerCount > 0 && result.mentionableCount === 0) return uiText(EMPTY_REASON_NO_MENTIONABLE_PEERS)
+  return uiText(scope === 'room' ? EMPTY_REASON_NO_ROOM_PEERS : EMPTY_REASON_NO_PEERS)
 }
 
 // Bounded window + honest overflow count — the `planHintDisplay` house pattern
@@ -1058,7 +1065,7 @@ export function boundCandidates(list, limit = TYPEAHEAD_LIMIT) {
 // answering different questions about the same list.
 export const SIDEBAR_AGENT_RESULT_LIMIT = 8
 
-export const SEARCH_PLACEHOLDER = 'Search agents and chats…'
+export const SEARCH_PLACEHOLDER = msg('Search agents and chats…')
 
 /**
  * Agent matches for the sidebar search.
@@ -1141,12 +1148,12 @@ export function sidebarSearchState({
 export function searchEmptyLines(state, query = '', { agentsEmpty = false } = {}) {
   const q = String(query ?? '')
   const noAgents = agentsEmpty || state === 'chats-only' || state === 'none'
-  const agents = (state !== 'roster-loading' && noAgents) ? 'No agents match.' : null
+  const agents = (state !== 'roster-loading' && noAgents) ? uiText('No agents match.') : null
   let chats = null
-  if (state === 'searching') chats = 'Searching chats…'
-  else if (state === 'agents-only' || state === 'none') chats = 'No chats match.'
+  if (state === 'searching') chats = uiText('Searching chats…')
+  else if (state === 'agents-only' || state === 'none') chats = uiText('No chats match.')
   const hint = state === 'none'
-    ? (q ? 'Try another word, or clear the search.' : null)
+    ? (q ? uiText("Try another word, or clear the search.") : null)
     : null
   return { agents, chats, hint }
 }
@@ -1170,10 +1177,10 @@ export function agentToggleLabel({
   rosterCount = 0,
   matchCount = 0,
 } = {}) {
-  if (expanded) return 'Show fewer'
+  if (expanded) return uiText("Show fewer")
   return searching
-    ? `Show all (${Number(matchCount) || 0} matches)`
-    : `Show all (${Number(rosterCount) || 0})`
+    ? uiText("Show all ({arg1} matches)", { arg1: (Number(matchCount) || 0) })
+    : uiText("Show all ({arg1})", { arg1: (Number(rosterCount) || 0) })
 }
 
 // While searching the toggle is only meaningful when it has something to do:
@@ -1354,22 +1361,22 @@ export const MIN_RECORDING_BYTES = 1500
 // A speech attempt that produced no result and no error still failed, and the
 // user needs to hear that rather than watch the mic quietly switch itself off.
 export const SPEECH_NO_RESULT_MESSAGE =
-  "Didn't catch anything — try again and speak once the mic turns red."
+  msg("Didn't catch anything — try again and speak once the mic turns red.")
 
 // The measured Chromium case: `start()` returns and the engine never reports
 // anything at all. Without a watchdog the button stays lit forever, which is
 // the one state that cannot be recovered from by waiting.
 export const SPEECH_UNRESPONSIVE_MESSAGE =
-  "Your browser's dictation service didn't respond — type your message instead."
+  msg("Your browser's dictation service didn't respond — type your message instead.")
 
 export const RECORDING_TOO_SHORT_MESSAGE =
-  'That recording was too short — hold the mic on while you speak.'
+  msg('That recording was too short — hold the mic on while you speak.')
 
 export const TRANSCRIPT_EMPTY_MESSAGE =
-  "Didn't catch that — try again, or type your message instead."
+  msg("Didn't catch that — try again, or type your message instead.")
 
 export const TTS_FAILED_MESSAGE =
-  "Couldn't play that reply aloud — the text is above."
+  msg("Couldn't play that reply aloud — the text is above.")
 
 // How long to wait for the browser's speech engine to say ANYTHING before
 // declaring it unresponsive. Long enough not to trip a slow-but-working start,
@@ -1394,25 +1401,25 @@ export function resolveMicMode({ speechApi = false, canRecord = false, serverStt
 // teaches people the feature is broken when it just obeyed them.
 const SPEECH_ERROR_MESSAGES = {
   'not-allowed':
-    'Microphone access is blocked — allow it for this site in your browser, then try again.',
+    msg('Microphone access is blocked — allow it for this site in your browser, then try again.'),
   'service-not-allowed':
-    "Your browser wouldn't let its dictation service run — type your message instead.",
+    msg("Your browser wouldn't let its dictation service run — type your message instead."),
   network:
-    "Your browser's dictation service is unreachable — type your message instead.",
-  'audio-capture': 'No microphone was found — check your input device.',
-  'no-speech': "Didn't hear anything — try again and speak once the mic turns red.",
-  'language-not-supported': 'Your browser cannot dictate in this language.',
-  'bad-grammar': 'Your browser rejected the dictation request — type your message instead.',
+    msg("Your browser's dictation service is unreachable — type your message instead."),
+  'audio-capture': msg('No microphone was found — check your input device.'),
+  'no-speech': msg("Didn't hear anything — try again and speak once the mic turns red."),
+  'language-not-supported': msg('Your browser cannot dictate in this language.'),
+  'bad-grammar': msg('Your browser rejected the dictation request — type your message instead.'),
 }
 
 export function speechErrorMessage(code) {
   if (code === 'aborted') return null
-  if (code && SPEECH_ERROR_MESSAGES[code]) return SPEECH_ERROR_MESSAGES[code]
+  if (code && SPEECH_ERROR_MESSAGES[code]) return uiText(SPEECH_ERROR_MESSAGES[code])
   // An unknown code is still a code: naming it beats "something went wrong",
   // and it is the string a support conversation actually needs.
   return code
-    ? `Dictation stopped (${code}) — type your message instead.`
-    : 'Dictation stopped unexpectedly — type your message instead.'
+    ? uiText("Dictation stopped ({arg1}) — type your message instead.", { arg1: (code) })
+    : uiText("Dictation stopped unexpectedly — type your message instead.")
 }
 
 // getUserMedia / MediaRecorder rejections are DOMExceptions distinguished only
@@ -1422,14 +1429,14 @@ export function recorderErrorMessage(err) {
   switch (err?.name) {
     case 'NotAllowedError':
     case 'SecurityError':
-      return 'Microphone access is blocked — allow it for this site in your browser, then try again.'
+      return uiText("Microphone access is blocked — allow it for this site in your browser, then try again.")
     case 'NotFoundError':
     case 'OverconstrainedError':
-      return 'No microphone was found — check your input device.'
+      return uiText("No microphone was found — check your input device.")
     case 'NotReadableError':
-      return 'Your microphone is in use by another app — close it and try again.'
+      return uiText("Your microphone is in use by another app — close it and try again.")
     default:
-      return "Couldn't start the microphone — type your message instead."
+      return uiText("Couldn't start the microphone — type your message instead.")
   }
 }
 
@@ -1439,11 +1446,11 @@ export function recorderErrorMessage(err) {
 export function transcriptionErrorMessage(err) {
   const detail = err?.response?.data?.detail
   if (typeof detail === 'string' && detail.trim()) return detail.trim()
-  if (!err?.response) return "Couldn't reach Trinity to transcribe that — type your message instead."
-  if (err.response.status === 429) return 'Too many voice messages just now — wait a moment and try again.'
-  if (err.response.status === 413) return 'That recording is too long.'
-  if (err.response.status === 404) return 'Voice input is not set up on this workspace — type your message instead.'
-  return `Transcription failed (error ${err.response.status}) — type your message instead.`
+  if (!err?.response) return uiText("Couldn't reach Trinity to transcribe that — type your message instead.")
+  if (err.response.status === 429) return uiText("Too many voice messages just now — wait a moment and try again.")
+  if (err.response.status === 413) return uiText("That recording is too long.")
+  if (err.response.status === 404) return uiText("Voice input is not set up on this workspace — type your message instead.")
+  return uiText("Transcription failed (error {arg1}) — type your message instead.", { arg1: (err.response.status) })
 }
 
 // One verdict for a finished dictation attempt, so "what do we tell the user"
@@ -1456,10 +1463,10 @@ export function transcriptionErrorMessage(err) {
 // remaining case — ended, no words, no reason — is the silent failure this
 // issue was filed for.
 export function speechAttemptOutcome({ gotText = false, errorCode = null, timedOut = false } = {}) {
-  if (timedOut) return SPEECH_UNRESPONSIVE_MESSAGE
+  if (timedOut) return uiText(SPEECH_UNRESPONSIVE_MESSAGE)
   if (errorCode) return speechErrorMessage(errorCode)   // null when the user stopped it
   if (gotText) return null
-  return SPEECH_NO_RESULT_MESSAGE
+  return uiText(SPEECH_NO_RESULT_MESSAGE)
 }
 
 // What the recorded clip actually IS. Measured (Playwright, fake mic):
@@ -1577,7 +1584,7 @@ export function resolveComposerGrowth(metrics, max) {
  * would act on it.
  */
 export function expiredLabel(expiresAt, now = Date.now()) {
-  const bare = 'This expired before it was answered.'
+  const bare = uiText('This expired before it was answered.')
   if (!expiresAt) return bare
 
   const at = Date.parse(expiresAt)
@@ -1589,17 +1596,17 @@ export function expiredLabel(expiresAt, now = Date.now()) {
   if (ms < 0) return bare
 
   const mins = Math.floor(ms / 60000)
-  if (mins < 1) return 'This expired moments ago, before it was answered.'
-  if (mins < 60) return `This expired ${mins}m ago, before it was answered.`
+  if (mins < 1) return uiText("This expired moments ago, before it was answered.")
+  if (mins < 60) return uiText("This expired {arg1}m ago, before it was answered.", { arg1: (mins) })
 
   const hours = Math.floor(mins / 60)
-  if (hours < 24) return `This expired ${hours}h ago, before it was answered.`
+  if (hours < 24) return uiText("This expired {arg1}h ago, before it was answered.", { arg1: (hours) })
 
   const days = Math.floor(hours / 24)
-  if (days < 30) return `This expired ${days}d ago, before it was answered.`
+  if (days < 30) return uiText("This expired {arg1}d ago, before it was answered.", { arg1: (days) })
 
   // Past a month, "43d ago" stops meaning anything — a date does.
-  return `This expired on ${new Date(at).toLocaleDateString()}, before it was answered.`
+  return uiText("This expired on {arg1}, before it was answered.", { arg1: (new Date(at).toLocaleDateString()) })
 }
 
 /**
@@ -1649,10 +1656,10 @@ export function relativeTime(iso, now = Date.now()) {
   const then = new Date(iso).getTime()
   if (!Number.isFinite(then)) return ''
   const diff = Math.max(0, now - then)
-  if (diff < 60_000) return 'just now'
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`
-  if (diff < 7 * 86_400_000) return `${Math.floor(diff / 86_400_000)}d ago`
+  if (diff < 60_000) return uiText("just now")
+  if (diff < 3_600_000) return uiText("{arg1}m ago", { arg1: (Math.floor(diff / 60_000)) })
+  if (diff < 86_400_000) return uiText("{arg1}h ago", { arg1: (Math.floor(diff / 3_600_000)) })
+  if (diff < 7 * 86_400_000) return uiText("{arg1}d ago", { arg1: (Math.floor(diff / 86_400_000)) })
   return new Date(then).toISOString().slice(0, 10)
 }
 
@@ -1663,8 +1670,8 @@ export function relativeTime(iso, now = Date.now()) {
 // message is judged as an answer ("did this help?"), a deliverable as a piece of
 // work ("was this what you needed?"). Same underlying up/down.
 export const RATING_LABELS = {
-  message: { up: 'Helpful', down: 'Not helpful' },
-  deliverable: { up: 'Useful', down: 'Not what I needed' },
+  message: { get up() { return uiText('Helpful') }, get down() { return uiText('Not helpful') } },
+  deliverable: { get up() { return uiText('Useful') }, get down() { return uiText('Not what I needed') } },
 }
 
 export function ratingLabels(targetKind) {
@@ -1687,14 +1694,14 @@ export function shouldPromptForComment(rating) {
 
 // The tally, as words. RAW COUNTS, never a percentage — one thumbs-down out of
 // one rating is "100% negative", a number that looks like evidence and is not.
-export const RATINGS_UNAVAILABLE_TEXT = 'Ratings unavailable right now.'
-export const RATINGS_EMPTY_TEXT = 'No ratings yet.'
+export const RATINGS_UNAVAILABLE_TEXT = msg('Ratings unavailable right now.')
+export const RATINGS_EMPTY_TEXT = msg('No ratings yet.')
 
 export function ratingTallyText(tally, targetKind = 'message') {
-  if (!tally || tally.unavailable) return RATINGS_UNAVAILABLE_TEXT
+  if (!tally || tally.unavailable) return uiText(RATINGS_UNAVAILABLE_TEXT)
   const up = Number(tally.up) || 0
   const down = Number(tally.down) || 0
-  if (up + down === 0) return RATINGS_EMPTY_TEXT
+  if (up + down === 0) return uiText(RATINGS_EMPTY_TEXT)
   const labels = ratingLabels(targetKind)
   return `${up} ${labels.up.toLowerCase()} · ${down} ${labels.down.toLowerCase()}`
 }
@@ -1702,8 +1709,8 @@ export function ratingTallyText(tally, targetKind = 'message') {
 // What to tell someone after their words are saved. Both branches are honest:
 // "passed to the agent" only when it was, and otherwise the comment is still
 // recorded — never a promise of a follow-up that will not happen (AC #6).
-export const FEEDBACK_SENT_TEXT = 'Thanks — passed on to the agent.'
-export const FEEDBACK_RECORDED_TEXT = 'Thanks — recorded for the team.'
+export const FEEDBACK_SENT_TEXT = msg('Thanks — passed on to the agent.')
+export const FEEDBACK_RECORDED_TEXT = msg('Thanks — recorded for the team.')
 
 // `already_dispatched` (ent#366 review) reads as SENT, not merely recorded: the
 // agent was handed this target's feedback on the first down-rating and one turn
@@ -1712,7 +1719,7 @@ export const FEEDBACK_RECORDED_TEXT = 'Thanks — recorded for the team.'
 const FEEDBACK_REACHED_AGENT = new Set(['dispatched', 'already_dispatched'])
 
 export function feedbackAcknowledgement(captureFeedback) {
-  return FEEDBACK_REACHED_AGENT.has(captureFeedback) ? FEEDBACK_SENT_TEXT : FEEDBACK_RECORDED_TEXT
+  return FEEDBACK_REACHED_AGENT.has(captureFeedback) ? uiText(FEEDBACK_SENT_TEXT) : uiText(FEEDBACK_RECORDED_TEXT)
 }
 
 // --- Agents at the centre (ent#523) ------------------------------------------
@@ -1866,10 +1873,10 @@ export function composerAvailabilityNotice(agent) {
 // nothing rather than an empty line.
 export function answerConfirmation(answered, agentLabel = null) {
   if (!answered || answered.status !== 'answered') return null
-  const who = (agentLabel || answered.agent_name || 'the agent')
+  const who = (agentLabel || answered.agent_name || uiText('the agent'))
   return answered.resume_requested === true
-    ? `Sent — ${who} is picking this up.`
-    : 'Sent.'
+    ? uiText("Sent — {arg1} is picking this up.", { arg1: (who) })
+    : uiText('Sent.')
 }
 
 // How long a confirmation stays before it clears itself. Long enough to read a

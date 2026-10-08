@@ -1,16 +1,14 @@
 <template>
   <div class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg p-6">
-    <h2 class="text-lg font-medium text-gray-900 dark:text-white">Personal GitHub Token</h2>
+    <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Personal GitHub Token") }}</h2>
     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-      Add your own GitHub Personal Access Token so you can create agents from
-      repositories you have access to. When set, new agents you create from a
-      <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">github:</code> repo
-      use your token instead of the platform's shared token.
+      {{ uiText("Add your own GitHub Personal Access Token so you can create agents from repositories you have access to. When set, new agents you create from a") }}
+      <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">github:</code> {{ uiText("repo use your token instead of the platform's shared token.") }}
     </p>
 
     <div class="mt-4 max-w-xl">
       <label for="user-github-pat" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-        Personal Access Token
+        {{ uiText("Personal Access Token") }}
       </label>
       <div class="mt-1 flex gap-2">
         <div class="relative flex-1">
@@ -18,7 +16,7 @@
             :type="showPat ? 'text' : 'password'"
             id="user-github-pat"
             v-model="pat"
-            :placeholder="status.configured ? '•••••••••• (configured)' : 'ghp_... or github_pat_...'"
+            :placeholder="status.configured ? uiText(&quot;•••••••••• (configured)&quot;) : 'ghp_... or github_pat_...'"
             :disabled="saving"
             :class="[SETTINGS_TEXT_INPUT_CLASS, 'w-full pr-10']"
           />
@@ -45,7 +43,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
           </svg>
-          Save
+          {{ uiText("Save") }}
         </button>
         <button
           v-if="status.configured"
@@ -53,7 +51,7 @@
           :disabled="removing"
           class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50"
         >
-          Remove
+          {{ uiText("Remove") }}
         </button>
       </div>
 
@@ -62,18 +60,18 @@
         {{ message }}
       </p>
       <p v-else-if="status.configured" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-        A personal token is configured. Your new agents use it to clone GitHub repos.
+        {{ uiText("A personal token is configured. Your new agents use it to clone GitHub repos.") }}
       </p>
       <p v-else-if="!status.has_global" class="mt-2 text-sm text-status-warning-700 dark:text-status-warning-400">
-        No personal token, and the platform has no shared token — creating an agent from a repo will need one of these.
+        {{ uiText("No personal token, and the platform has no shared token — creating an agent from a repo will need one of these.") }}
       </p>
       <p v-else class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-        No personal token — your new agents fall back to the platform's shared token.
+        {{ uiText("No personal token — your new agents fall back to the platform's shared token.") }}
       </p>
 
       <p class="mt-3 text-xs text-gray-400 dark:text-gray-500">
-        Stored encrypted; never shown again after saving. A classic token needs the
-        <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">repo</code> scope, or use a fine-grained token with Contents read access.
+        {{ uiText("Stored encrypted; never shown again after saving. A classic token needs the") }}
+        <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">repo</code> {{ uiText("scope, or use a fine-grained token with Contents read access.") }}
       </p>
     </div>
   </div>
@@ -112,13 +110,13 @@ const save = async () => {
     status.configured = true
     error.value = false
     message.value = data.github_username
-      ? `Saved — verified as GitHub user "${data.github_username}".`
-      : 'Personal GitHub token saved.'
+      ? uiText("Saved — verified as GitHub user \"{arg1}\".", { arg1: (data.github_username) })
+      : uiText("Personal GitHub token saved.")
     pat.value = ''
   } catch (e) {
     error.value = true
     // Honest surfacing: 400 = GitHub rejected it; 503 = we couldn't reach GitHub.
-    message.value = e?.response?.data?.detail || 'Failed to save token.'
+    message.value = e?.response?.data?.detail || uiText("Failed to save token.")
   } finally {
     saving.value = false
   }
@@ -131,14 +129,16 @@ const remove = async () => {
   try {
     await axios.delete('/api/users/me/github-pat')
     status.configured = false
-    message.value = 'Personal token removed — new agents will use the platform token.'
+    message.value = uiText("Personal token removed — new agents will use the platform token.")
   } catch (e) {
     error.value = true
-    message.value = e?.response?.data?.detail || 'Failed to remove token.'
+    message.value = e?.response?.data?.detail || uiText("Failed to remove token.")
   } finally {
     removing.value = false
   }
 }
 
 onMounted(loadStatus)
+
+import { t as uiText } from '@/i18n'
 </script>

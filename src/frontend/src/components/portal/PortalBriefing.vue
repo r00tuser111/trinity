@@ -41,7 +41,7 @@
          expands IN PLACE (no nested scroll region: the chat pane stays the single
          scroll axis, and the set itself is belted server-side at ≤24). -->
     <div v-if="playbooks.length" class="mt-7">
-      <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2 text-left">Things you can ask</div>
+      <div class="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2 text-left">{{ uiText("Things you can ask") }}</div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         <button
           v-for="(p, i) in hintPlan.visible"
@@ -72,7 +72,7 @@
         :aria-expanded="expanded"
         @click="expanded = !expanded"
       >
-        {{ expanded ? 'Show fewer' : `Show all ${hintPlan.total}` }}
+        {{ expanded ? uiText("Show fewer") : uiText("Show all {arg1}", { arg1: (hintPlan.total) }) }}
       </button>
     </div>
     </template>
@@ -102,8 +102,8 @@ const playbooks = computed(() => props.agent.playbooks || [])
 const zone = computed(() => briefingZone(props.agent))
 const fallbackLine = computed(() =>
   zone.value.unavailable
-    ? "Couldn't load suggestions for this agent right now."
-    : 'Start a conversation below.'
+    ? uiText("Couldn't load suggestions for this agent right now.")
+    : uiText('Start a conversation below.')
 )
 
 // #2101: local by design. Portal.vue keys PortalConversation (and this slot
@@ -117,4 +117,6 @@ const hintPlan = computed(() => planHintDisplay(playbooks.value, expanded.value)
 // portalUtils.js in ent#392: the `/` typeahead inserts the same thing this card
 // does, and two copies of that rule would let a hint and its typeahead row
 // prefill different text.
+
+import { t as uiText } from '@/i18n'
 </script>

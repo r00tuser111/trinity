@@ -2,7 +2,7 @@
   <div
     class="flex flex-col-reverse gap-px"
     :style="{ height: height ? height + 'px' : undefined, width: width + 'px' }"
-    :title="capped + '/' + max + ' slots'"
+    :title="capped + '/' + max + uiText(&quot; slots&quot;)"
   >
     <div
       v-for="i in max"
@@ -43,6 +43,8 @@ const fillClass = computed(() => {
   if (u < 100) return 'bg-status-urgent-500'
   return 'bg-status-danger-500'
 })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

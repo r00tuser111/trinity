@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '../api'
@@ -93,10 +95,10 @@ export const usePortalLoopsStore = defineStore('portalLoops', () => {
         // the error line says the view may be incomplete (#2382's rule: a
         // failed refresh keeps the data and says so).
         error.value = results.some((r) => r.status === 'rejected')
-          ? 'Some agents could not be reached; this list may be incomplete.'
+          ? uiText("Some agents could not be reached; this list may be incomplete.")
           : null
       } else {
-        error.value = 'Could not load loops.'
+        error.value = uiText("Could not load loops.")
       }
     } finally {
       if (token === _fetchToken) loading.value = false

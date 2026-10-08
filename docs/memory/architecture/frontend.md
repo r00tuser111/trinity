@@ -77,3 +77,41 @@ strips the key **once** in `bootstrap()`'s `finally` keyed on its presence (so a
 deep-link early return, a fall-through, `?voice=0` and a throw all strip), and
 hands off to `PortalConversation`'s exposed `startVoiceCall` through a template
 ref after a `nextTick`.
+
+### Interface languages (I18N-001)
+
+`src/i18n/index.js` owns the reactive, browser-local language preference (`en`
+/ `zh-CN`). Non-English catalogs are lazy chunks (`loaders` in `i18n/index.js`),
+so English sessions never download them; `main.js` mounts after
+`initializeLocale()` resolves, and a runtime switch keeps the current language
+until the chosen catalog arrives (the latest choice wins). A saved `trinity-locale`
+wins over browser language; unsupported languages fall back to English, and
+blocked storage still permits switching for the current page. The document
+`lang` follows the selection. No reload, component key change, or backend write
+is involved, so forms and ongoing conversations survive a language switch.
+
+`LanguageSelect.vue` composes the native `BaseSelect` ghost variant in the
+NavBar, sign-in/setup, first-run overlay and Workspace header. Source English
+is the fallback message catalog; `i18n/zh-CN.json` contains Simplified Chinese.
+Call `t('Source copy', { name })` at render time or inside a computed value;
+use `{name}` placeholders for dynamic values. Additional languages need a
+catalog and an entry in `LANGUAGES`/`loaders`. Never call `t()` at module top
+level — the result would freeze in the startup language. Mark copy stored in
+constants with `msg('Source copy')` (identity; lets the audit see it) and call
+`t()` where it renders, or expose it through a getter/computed. Route titles are
+`meta` getters re-read from the matched record on a language switch (the merged
+`to.meta` is a snapshot). One sentence is one message: interpolate rather than
+concatenate translated fragments. Translate interface labels only,
+never identifiers, option values, user text, agent output, code or API payloads.
+Tab labels are translated before reaching OverflowTabs so it remeasures them.
+Shared timestamp helpers follow the selected locale without changing timezones.
+
+`npm run check:i18n` (`scripts/check-i18n.mjs` over `scripts/i18n-audit.mjs`)
+counts untranslated source copy in templates and scripts (`t`/`translate`/
+`uiText`/`msg` calls are recognized; files headed `// GENERATED ... DO NOT EDIT`
+are skipped) and fails below 95%; coverage currently stands at 100%. Server
+errors and agent/user content stay untranslated. `tests/unit/i18n.spec.js`
+exercises persistence, detection, fallback, storage denial, interpolation, lazy
+catalog loading and mounted switching with form state; `npm run test:i18n`
+(Playwright, mocked API) checks the selector, live switching, document `lang`
+and tab title across themes and viewports.

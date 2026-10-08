@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Turn an Axios/FastAPI error into a string a human should read.
  *
@@ -21,7 +23,7 @@
  * @param {string}  fallback message when nothing usable can be extracted
  * @returns {string} a single human-readable sentence
  */
-export function apiErrorMessage(err, fallback = 'Something went wrong') {
+export function apiErrorMessage(err, fallback = uiText('Something went wrong')) {
   const detail = err?.response?.data?.detail
 
   // 422: array of Pydantic validation errors. Prefer the field's own message —

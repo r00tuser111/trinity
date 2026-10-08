@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Skills domain store (#235).
  *
@@ -123,7 +125,7 @@ export const useSkillsStore = defineStore('skills', () => {
         library.value = []
       }
     } catch (e) {
-      error.value = e?.response?.data?.detail || 'Could not load skills'
+      error.value = e?.response?.data?.detail || uiText("Could not load skills")
     } finally {
       loading.value = false
     }
@@ -143,7 +145,7 @@ export const useSkillsStore = defineStore('skills', () => {
       assigned.value = data || []
       return true
     } catch (e) {
-      error.value = e?.response?.data?.detail || 'Could not save skill assignments'
+      error.value = e?.response?.data?.detail || uiText("Could not save skill assignments")
       return false
     } finally {
       saving.value = false
@@ -172,8 +174,8 @@ export const useSkillsStore = defineStore('skills', () => {
       // 409 = an injection is already running (SkillInjectionBusy). Say so
       // rather than reporting a generic failure the operator can't act on.
       error.value = e?.response?.status === 409
-        ? 'A skill sync is already running for this agent. Try again in a moment.'
-        : (e?.response?.data?.detail || 'Skill sync failed')
+        ? uiText("A skill sync is already running for this agent. Try again in a moment.")
+        : (e?.response?.data?.detail || uiText("Skill sync failed"))
       return null
     } finally {
       injecting.value = false

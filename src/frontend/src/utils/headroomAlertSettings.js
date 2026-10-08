@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Decidable rules for the weekly-headroom alert settings control (ent#434).
  *
@@ -26,7 +28,7 @@ export function thresholdValidationError(raw, bounds = {}) {
   const text = String(raw ?? '').trim()
   if (text === '') return ''
   if (!/^\d+$/.test(text)) {
-    return `Whole numbers only — "${text}" is not one. Example: 75.`
+    return uiText("Whole numbers only — \"{arg1}\" is not one. Example: 75.", { arg1: (text) })
   }
   const value = Number(text)
   if (value === 0) return ''
@@ -34,8 +36,7 @@ export function thresholdValidationError(raw, bounds = {}) {
   const max = bounds.max ?? FALLBACK_MAX_PCT
   if (value < min || value > max) {
     return (
-      `Must be 0 to switch the alerts off, or between ${min} and ${max}. ` +
-      `${value} is outside that. Example: 75.`
+      uiText("Must be 0 to switch the alerts off, or between {arg1} and {arg2}. {arg3} is outside that. Example: 75.", { arg1: min, arg2: max, arg3: value })
     )
   }
   return ''
@@ -56,16 +57,21 @@ export function thresholdChanged(draft, serverValue) {
  * a fabricated explanation.
  */
 export const INACTIVE_COPY = {
-  no_subscriptions:
-    'Inactive — no subscriptions are registered, so there is nothing to watch.',
-  threshold_disabled:
-    'Off — set a threshold above to start watching weekly limits.',
-  auto_refresh_off:
-    'Inactive — automatic quota checking is switched off above, so nothing is being measured.',
-  redis_unavailable:
-    'Inactive — the platform cache is unreachable, so the sampler is holding off rather than guessing.',
-  count_unavailable:
-    'Unknown — the subscription list could not be read, so this cannot be reported honestly.',
+  get no_subscriptions() {
+    return uiText('Inactive — no subscriptions are registered, so there is nothing to watch.')
+  },
+  get threshold_disabled() {
+    return uiText('Off — set a threshold above to start watching weekly limits.')
+  },
+  get auto_refresh_off() {
+    return uiText('Inactive — automatic quota checking is switched off above, so nothing is being measured.')
+  },
+  get redis_unavailable() {
+    return uiText('Inactive — the platform cache is unreachable, so the sampler is holding off rather than guessing.')
+  },
+  get count_unavailable() {
+    return uiText('Unknown — the subscription list could not be read, so this cannot be reported honestly.')
+  },
 }
 
 /**
@@ -78,19 +84,23 @@ export const INACTIVE_COPY = {
  */
 export function alertStatusLine(weeklyAlert, loaded) {
   const alert = weeklyAlert || {}
-  if (!loaded) return { text: 'Checking…', tone: 'muted' }
+  if (!loaded) return { get "text"() { return uiText("Checking…") }, tone: 'muted' }
   if (alert.active) {
     const escalation = alert.escalation_pct
-    const tail =
-      escalation && escalation !== alert.threshold_pct
-        ? `, escalating at ${escalation}%.`
-        : '.'
-    return { text: `Active — warning at ${alert.threshold_pct}%${tail}`, tone: 'active' }
+    const escalates = escalation && escalation !== alert.threshold_pct
+    return {
+      get "text"() {
+        return escalates
+          ? uiText('Active — warning at {threshold}%, escalating at {escalation}%.', { threshold: alert.threshold_pct, escalation })
+          : uiText('Active — warning at {threshold}%.', { threshold: alert.threshold_pct })
+      },
+      tone: 'active',
+    }
   }
   return {
     text:
       INACTIVE_COPY[alert.inactive_reason] ||
-      'Inactive — this backend did not report a reason.',
+      uiText("Inactive — this backend did not report a reason."),
     tone: 'muted',
   }
 }
@@ -113,15 +123,14 @@ export function describeSaveFailure(err) {
   }
   if (err?.response) {
     // The server answered and refused, but not in the shape we parse.
-    return `The server refused the change (HTTP ${err.response.status}).`
+    return uiText("The server refused the change (HTTP {arg1}).", { arg1: (err.response.status) })
   }
   if (err?.request) {
     // A request went out and nothing came back — this IS the connection case.
-    return 'No response from the server. Check your connection and try again.'
+    return uiText("No response from the server. Check your connection and try again.")
   }
   // Never reached the network at all: a client-side bug, most often a stale
   // module after a hot reload. Say that, and name the reliable remedy.
   const kind = err?.name || 'Error'
-  return `The change was not sent (${kind}). Reload the page and try again; ` +
-    'if it persists this is a bug, not a connection problem.'
+  return uiText("The change was not sent ({arg1}). Reload the page and try again; if it persists this is a bug, not a connection problem.", { arg1: kind })
 }

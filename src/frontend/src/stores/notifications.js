@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Notifications Store
  *
@@ -115,7 +117,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
       hasLoaded.value = true
     } catch (err) {
       console.error('Failed to fetch notifications:', err)
-      error.value = err.response?.data?.detail || 'Failed to load notifications'
+      error.value = err.response?.data?.detail || uiText("Failed to load notifications")
     } finally {
       loading.value = false
     }
@@ -201,7 +203,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
       await fetchPendingCount()
       return response.data
     } catch (err) {
-      error.value = err.response?.data?.detail || 'Failed to dismiss notifications'
+      error.value = err.response?.data?.detail || uiText("Failed to dismiss notifications")
       throw err
     }
   }

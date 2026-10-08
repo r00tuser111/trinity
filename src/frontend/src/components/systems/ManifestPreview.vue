@@ -16,20 +16,20 @@
               ? 'text-status-danger-800 dark:text-status-danger-200'
               : 'text-status-success-800 dark:text-status-success-200'"
           >
-            {{ hasBlockers ? 'This manifest cannot deploy yet' : 'No blockers found' }}
+            {{ hasBlockers ? uiText("This manifest cannot deploy yet") : uiText("No blockers found") }}
           </h3>
           <!-- Never "this will deploy": github: templates are not probed, so the
                preview genuinely cannot promise a remote-template manifest works. -->
           <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
             <template v-if="hasBlockers">
-              Fix the {{ preview.failed.length }} problem{{ preview.failed.length === 1 ? '' : 's' }} below, then preview again.
+              {{ uiText("Fix the") }} {{ preview.failed.length }} {{ uiText("problem") }}{{ preview.failed.length === 1 ? '' : 's' }} {{ uiText("below, then preview again.") }}
             </template>
             <template v-else-if="hasRemoteTemplates">
-              Local templates and resource settings check out. This manifest also uses
-              <code class="text-xs">github:</code> templates, which are only verified at deploy time.
+              {{ uiText("Local templates and resource settings check out. This manifest also uses") }}
+              <code class="text-xs">github:</code> {{ uiText("templates, which are only verified at deploy time.") }}
             </template>
             <template v-else>
-              Local templates and resource settings check out.
+              {{ uiText("Local templates and resource settings check out.") }}
             </template>
           </p>
         </div>
@@ -38,7 +38,7 @@
 
     <!-- Blockers ---------------------------------------------------------- -->
     <section v-if="hasBlockers">
-      <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Blockers</h4>
+      <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">{{ uiText("Blockers") }}</h4>
       <ul class="space-y-2">
         <li
           v-for="f in preview.failed"
@@ -67,12 +67,10 @@
       class="rounded-lg border-2 border-status-warning-400 dark:border-status-warning-600 bg-status-warning-50 dark:bg-status-warning-900/20 p-4"
     >
       <h4 class="font-semibold text-status-warning-900 dark:text-status-warning-100 flex items-center gap-2">
-        <span aria-hidden="true">⚠️</span> These agents already exist
+        <span aria-hidden="true">⚠️</span> {{ uiText("These agents already exist") }}
       </h4>
       <p class="mt-1 text-sm text-status-warning-800 dark:text-status-warning-200">
-        Deploying creates <strong>separate, suffixed copies</strong> rather than updating the
-        existing agents. There is no un-deploy: removing them afterwards is manual, one agent
-        at a time.
+        {{ uiText("Deploying creates") }} <strong>{{ uiText("separate, suffixed copies") }}</strong> {{ uiText("rather than updating the existing agents. There is no un-deploy: removing them afterwards is manual, one agent at a time.") }}
       </p>
       <ul class="mt-2 space-y-1">
         <li
@@ -88,15 +86,15 @@
     <!-- Agents ------------------------------------------------------------ -->
     <section>
       <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
-        Agents to create ({{ agents.length }})
+        {{ uiText("Agents to create (") }}{{ agents.length }})
       </h4>
       <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
           <thead class="bg-gray-50 dark:bg-gray-800">
             <tr>
-              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">Agent name</th>
-              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">In manifest</th>
-              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">Template</th>
+              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">{{ uiText("Agent name") }}</th>
+              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">{{ uiText("In manifest") }}</th>
+              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">{{ uiText("Template") }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
@@ -109,21 +107,20 @@
         </table>
       </div>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-        Names are provisional — they are resolved again at deploy, so an agent created in the
-        meantime can shift them.
+        {{ uiText("Names are provisional — they are resolved again at deploy, so an agent created in the meantime can shift them.") }}
       </p>
     </section>
 
     <!-- Permission topology ---------------------------------------------- -->
     <section>
       <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
-        Permissions
+        {{ uiText("Permissions") }}
         <span v-if="permissionGrantCount" class="font-normal text-gray-500 dark:text-gray-400">
-          — {{ permissionGrantCount }} grant{{ permissionGrantCount === 1 ? '' : 's' }}
+          — {{ permissionGrantCount }} {{ uiText("grant") }}{{ permissionGrantCount === 1 ? '' : 's' }}
         </span>
       </h4>
       <p v-if="!permissionSources.length" class="text-sm text-gray-500 dark:text-gray-400">
-        No inter-agent permissions are configured. Agents will not be able to call each other.
+        {{ uiText("No inter-agent permissions are configured. Agents will not be able to call each other.") }}
       </p>
       <ul v-else class="space-y-1">
         <li
@@ -137,32 +134,32 @@
             <span class="font-mono text-gray-700 dark:text-gray-300">{{ targets.join(', ') }}</span>
           </template>
           <span v-else class="ml-1 text-gray-500 dark:text-gray-400 italic">
-            permissions cleared (cannot call anyone)
+            {{ uiText("permissions cleared (cannot call anyone)") }}
           </span>
         </li>
       </ul>
       <p v-if="permissionSources.length" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-        Shown assuming every agent is created. If some fail, only the agents that exist are wired up.
+        {{ uiText("Shown assuming every agent is created. If some fail, only the agents that exist are wired up.") }}
       </p>
     </section>
 
     <!-- Schedules --------------------------------------------------------- -->
     <section>
       <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
-        Schedules ({{ schedules.length }})
+        {{ uiText("Schedules (") }}{{ schedules.length }})
       </h4>
       <p v-if="!schedules.length" class="text-sm text-gray-500 dark:text-gray-400">
-        No schedules. The agents will only run when you or another agent triggers them.
+        {{ uiText("No schedules. The agents will only run when you or another agent triggers them.") }}
       </p>
       <div v-else class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
           <thead class="bg-gray-50 dark:bg-gray-800">
             <tr>
-              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">Agent</th>
-              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">Name</th>
-              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">Cron</th>
-              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">Message</th>
-              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">State</th>
+              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">{{ uiText("Agent") }}</th>
+              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">{{ uiText("Name") }}</th>
+              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">{{ uiText("Cron") }}</th>
+              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">{{ uiText("Message") }}</th>
+              <th class="px-3 py-2 text-left font-medium text-gray-500 dark:text-gray-400">{{ uiText("State") }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
@@ -176,9 +173,9 @@
                   v-if="s.enabled"
                   class="inline-flex items-center rounded-full bg-status-warning-100 dark:bg-status-warning-900/40 px-2 py-0.5 text-xs font-medium text-status-warning-800 dark:text-status-warning-200"
                 >
-                  runs automatically
+                  {{ uiText("runs automatically") }}
                 </span>
-                <span v-else class="text-xs text-gray-500 dark:text-gray-400">disabled</span>
+                <span v-else class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("disabled") }}</span>
               </td>
             </tr>
           </tbody>
@@ -188,7 +185,7 @@
 
     <!-- Other warnings ---------------------------------------------------- -->
     <section v-if="otherWarnings.length">
-      <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Notes</h4>
+      <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">{{ uiText("Notes") }}</h4>
       <ul class="space-y-1">
         <li
           v-for="w in otherWarnings"
@@ -206,16 +203,16 @@
       class="rounded-lg border-2 border-status-warning-400 dark:border-status-warning-600 bg-status-warning-50 dark:bg-status-warning-900/20 p-4"
     >
       <h4 class="font-semibold text-status-warning-900 dark:text-status-warning-100 flex items-center gap-2">
-        <span aria-hidden="true">⚠️</span> This changes more than just these agents
+        <span aria-hidden="true">⚠️</span> {{ uiText("This changes more than just these agents") }}
       </h4>
       <ul class="mt-2 space-y-1 text-sm text-status-warning-800 dark:text-status-warning-200 list-disc list-inside">
         <li v-if="preview.prompt_updated">
-          It <strong>replaces the platform-wide system prompt</strong> for
-          <strong>every agent on this Trinity instance</strong>, not only the ones created here.
+          {{ uiText("It") }} <strong>{{ uiText("replaces the platform-wide system prompt") }}</strong> {{ uiText("for") }}
+          <strong>{{ uiText("every agent on this Trinity instance") }}</strong>{{ uiText(", not only the ones created here.") }}
         </li>
         <li v-if="enabledScheduleCount">
-          It starts <strong>{{ enabledScheduleCount }} recurring schedule{{ enabledScheduleCount === 1 ? '' : 's' }}</strong>
-          immediately. These agents will run on their own, on a timer, and consume API budget.
+          {{ uiText("It starts") }} <strong>{{ enabledScheduleCount }} {{ uiText("recurring schedule") }}{{ enabledScheduleCount === 1 ? '' : 's' }}</strong>
+          {{ uiText("immediately. These agents will run on their own, on a timer, and consume API budget.") }}
         </li>
       </ul>
       <label class="mt-3 flex items-start gap-2 cursor-pointer">
@@ -227,7 +224,7 @@
           @change="$emit('update:acknowledged', $event.target.checked)"
         />
         <span class="text-sm font-medium text-status-warning-900 dark:text-status-warning-100">
-          I understand and want to continue
+          {{ uiText("I understand and want to continue") }}
         </span>
       </label>
     </section>
@@ -291,4 +288,6 @@ const duplicateWarnings = computed(
 const otherWarnings = computed(
   () => (props.preview.warnings || []).filter(w => !DUPLICATE_RE.test(w))
 )
+
+import { t as uiText } from '@/i18n'
 </script>

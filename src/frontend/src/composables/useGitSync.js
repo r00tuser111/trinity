@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { ref, computed, onUnmounted } from 'vue'
 
 /**
@@ -104,23 +106,23 @@ export function useGitSync(agentRef, agentsStore, showNotification) {
       const untracked = result.removed_paths?.length || 0
       const unignored = result.unignored_paths?.length || 0
       const sweepNotes = []
-      if (untracked > 0) sweepNotes.push(`${untracked} untracked by .gitignore`)
-      if (unignored > 0) sweepNotes.push(`${unignored} newly un-ignored and committed`)
+      if (untracked > 0) sweepNotes.push(uiText('{count} untracked by .gitignore', { count: untracked }))
+      if (unignored > 0) sweepNotes.push(uiText('{count} newly un-ignored and committed', { count: unignored }))
       const untrackedNote = sweepNotes.length ? ` — ${sweepNotes.join(', ')}` : ''
       if (result.success) {
         if (result.files_changed > 0) {
           showNotification(
-            `Synced ${result.files_changed} file(s) to GitHub${untrackedNote}`,
+            uiText("Synced {arg1} file(s) to GitHub{arg2}", { arg1: (result.files_changed), arg2: (untrackedNote) }),
             'success'
           )
         } else {
           showNotification(
-            `${result.message || 'Already up to date'}${untrackedNote}`,
+            `${result.message || uiText('Already up to date')}${untrackedNote}`,
             'success'
           )
         }
       } else {
-        showNotification(`${result.message || 'Sync failed'}${untrackedNote}`, 'error')
+        showNotification(`${result.message || uiText('Sync failed')}${untrackedNote}`, 'error')
       }
       // Refresh status after sync
       await loadGitStatus()
@@ -128,7 +130,7 @@ export function useGitSync(agentRef, agentsStore, showNotification) {
       console.error('Git sync failed:', err)
       const status = err.response?.status
       const conflictType = err.response?.headers?.['x-conflict-type']
-      const message = err.response?.data?.detail || 'Failed to sync to GitHub'
+      const message = err.response?.data?.detail || uiText("Failed to sync to GitHub")
 
       if (status === 409 && conflictType) {
         // Conflict detected - show modal with options.
@@ -165,9 +167,9 @@ export function useGitSync(agentRef, agentsStore, showNotification) {
     try {
       const result = await agentsStore.pullFromGithub(agentRef.value.name, { strategy })
       if (result.success) {
-        showNotification(result.message || 'Pulled latest changes from GitHub', 'success')
+        showNotification(result.message || uiText("Pulled latest changes from GitHub"), 'success')
       } else {
-        showNotification(result.message || 'Pull failed', 'error')
+        showNotification(result.message || uiText("Pull failed"), 'error')
       }
       // Refresh status after pull
       await loadGitStatus()
@@ -175,7 +177,7 @@ export function useGitSync(agentRef, agentsStore, showNotification) {
       console.error('Git pull failed:', err)
       const status = err.response?.status
       const conflictType = err.response?.headers?.['x-conflict-type']
-      const message = err.response?.data?.detail || 'Failed to pull from GitHub'
+      const message = err.response?.data?.detail || uiText("Failed to pull from GitHub")
 
       if (status === 409 && conflictType) {
         // Conflict detected - show modal with options.
@@ -232,14 +234,14 @@ export function useGitSync(agentRef, agentsStore, showNotification) {
     try {
       const result = await agentsStore.adoptUpstreamPreserveState?.(agentName)
       if (result?.success) {
-        showNotification(result.message || 'Adopted latest upstream', 'success')
+        showNotification(result.message || uiText("Adopted latest upstream"), 'success')
       } else if (result) {
-        showNotification(result.message || 'Adopt upstream failed', 'error')
+        showNotification(result.message || uiText("Adopt upstream failed"), 'error')
       } else {
         // Store method not yet wired (waiting on #384). Surface a clear
         // not-implemented error instead of a silent no-op.
         showNotification(
-          'Adopt-upstream action requires backend endpoint from issue #384 (not yet available).',
+          uiText("Adopt-upstream action requires backend endpoint from issue #384 (not yet available)."),
           'error'
         )
       }
@@ -247,10 +249,10 @@ export function useGitSync(agentRef, agentsStore, showNotification) {
     } catch (err) {
       console.error('Adopt upstream failed:', err)
       const status = err.response?.status
-      const message = err.response?.data?.detail || err.message || 'Failed to adopt upstream'
+      const message = err.response?.data?.detail || err.message || uiText("Failed to adopt upstream")
       if (status === 404) {
         showNotification(
-          'Adopt-upstream endpoint not available yet (blocked on issue #384).',
+          uiText("Adopt-upstream endpoint not available yet (blocked on issue #384)."),
           'error'
         )
       } else {

@@ -12,6 +12,7 @@
  * blank cell on an operator's dashboard.
  */
 import { registerWidget } from '@/utils/gridWidgets'
+import { msg } from '../../i18n/index.js'
 import FleetSummaryTile from './FleetSummaryTile.vue'
 import RecentFailuresTile from './RecentFailuresTile.vue'
 import ExecutionsTile from './ExecutionsTile.vue'
@@ -19,7 +20,7 @@ import SubscriptionPressureTile from './SubscriptionPressureTile.vue'
 
 registerWidget({
   id: 'fleet-summary',
-  title: 'Fleet summary',
+  title: msg('Fleet summary'),
   scope: 'Fleet',
   component: FleetSummaryTile,
   adminOnly: false,
@@ -29,7 +30,7 @@ registerWidget({
 
 registerWidget({
   id: 'recent-failures',
-  title: 'Recent failures',
+  title: msg('Recent failures'),
   component: RecentFailuresTile,
   adminOnly: false,
   defaultOn: true,
@@ -40,7 +41,7 @@ registerWidget({
 
 registerWidget({
   id: 'executions',
-  title: 'Executions',
+  title: msg('Executions'),
   component: ExecutionsTile,
   adminOnly: false,
   defaultOn: true,
@@ -52,7 +53,7 @@ registerWidget({
 
 registerWidget({
   id: 'subscription-pressure',
-  title: 'Subscription pressure',
+  title: msg('Subscription pressure'),
   component: SubscriptionPressureTile,
   // The FIRST admin-only tile, and not a stylistic choice: every endpoint it
   // reads (`/api/subscriptions`, `/{id}/usage`) is admin-gated because the

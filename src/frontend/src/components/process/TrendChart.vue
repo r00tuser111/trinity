@@ -2,9 +2,9 @@
   <div class="trend-chart">
     <!-- Chart Header -->
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ title }}</h3>
+      <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ uiText(title) }}</h3>
       <div class="text-xs text-gray-500 dark:text-gray-400">
-        Last {{ days }} days
+        {{ uiText("Last") }} {{ days }} {{ uiText("days") }}
       </div>
     </div>
 
@@ -82,7 +82,7 @@
         v-if="chartData.length === 0"
         class="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-500"
       >
-        No data available
+        {{ uiText("No data available") }}
       </div>
     </div>
 
@@ -90,11 +90,11 @@
     <div v-if="chartType === 'executions'" class="flex items-center justify-center gap-4 mt-4 text-xs">
       <div class="flex items-center gap-1">
         <div class="w-3 h-3 bg-status-success-500 rounded"></div>
-        <span class="text-gray-600 dark:text-gray-400">Completed</span>
+        <span class="text-gray-600 dark:text-gray-400">{{ uiText("Completed") }}</span>
       </div>
       <div class="flex items-center gap-1">
         <div class="w-3 h-3 bg-status-danger-500 rounded"></div>
-        <span class="text-gray-600 dark:text-gray-400">Failed</span>
+        <span class="text-gray-600 dark:text-gray-400">{{ uiText("Failed") }}</span>
       </div>
     </div>
   </div>
@@ -107,7 +107,7 @@ import { formatCost } from '../../composables/useFormatters'
 const props = defineProps({
   title: {
     type: String,
-    default: 'Execution Trend',
+    default: msg('Execution Trend'),
   },
   data: {
     type: Array,
@@ -173,6 +173,8 @@ function formatDateShort(dateStr) {
   const date = new Date(dateStr)
   return date.getDate().toString()
 }
+
+import { msg, t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

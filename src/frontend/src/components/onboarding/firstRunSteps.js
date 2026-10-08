@@ -6,6 +6,7 @@
  * `vitest.config.js` runs `environment: 'node'` with no component-mount
  * harness. The overlay is a dispatcher over this module. No `.vue` imports.
  */
+import { msg } from '../../i18n/index.js'
 import { DOMAIN_POSTURE, HARDENING_GUIDE_DISMISSED_KEY } from './hardeningGuide'
 import { readEmailNudgeDismissed, readSnoozedUntil } from './telemetryConsent'
 
@@ -29,11 +30,11 @@ export const FIRST_RUN_SKIPPED_KEY = 'trinity_first_run_skipped' // JSON array o
 const REGISTRY = [
   {
     key: 'secure',
-    name: 'Secure this instance',
+    name: msg('Secure this instance'),
     tag: 'Recommended',
     required: false,
     minutes: 2,
-    settingsPath: 'Settings → General',
+    settingsPath: msg('Settings → General'),
     // Absorbs HardeningGuide.vue (#2380/#2564). `marketplaceInstall` is the
     // server-resolved `hardening_guide_eligible` PROVENANCE gate — never TLS
     // state, or the whole managed fleet behind Tailscale would qualify.
@@ -42,11 +43,11 @@ const REGISTRY = [
   },
   {
     key: 'email',
-    name: 'Sign-in email',
+    name: msg('Sign-in email'),
     tag: 'Optional',
     required: false,
     minutes: 1,
-    settingsPath: 'Settings → General',
+    settingsPath: msg('Settings → General'),
     // FALLBACK ONLY. A marketplace operator sets their email while claiming the
     // instance at /setup (ent#580), so this is false and the step never
     // renders — the "no duplicate asks" AC is this predicate. It survives for
@@ -57,21 +58,21 @@ const REGISTRY = [
   },
   {
     key: 'claude',
-    name: 'Connect Claude',
+    name: msg('Connect Claude'),
     tag: 'Required',
     required: true, // the ONLY blocking step
     minutes: 2,
-    settingsPath: 'Settings → Integrations',
+    settingsPath: msg('Settings → Integrations'),
     eligible: (c) => !!c.isAdmin,
     pending: (c) => !c.claudeAuthConfigured,
   },
   {
     key: 'keys',
-    name: 'Other keys',
+    name: msg('Other keys'),
     tag: 'Optional',
     required: false,
     minutes: 2,
-    settingsPath: 'Settings → Integrations',
+    settingsPath: msg('Settings → Integrations'),
     ridesAlong: true,
     eligible: (c) => !!c.isAdmin,
     // No state says "the optional keys are done"; it reads done only once the
@@ -80,11 +81,11 @@ const REGISTRY = [
   },
   {
     key: 'agent',
-    name: 'Your first agent',
+    name: msg('Your first agent'),
     tag: 'Optional',
     required: false,
     minutes: 2,
-    settingsPath: 'the dashboard',
+    settingsPath: msg('the dashboard'),
     // Absorbs FrontDeskPanel (ent#319) + the ent#52 wizard intro. The server's
     // first-run flag — no agent of your own yet — is both the auto-open signal
     // the front desk used and this step's completion: create one and it is done.
@@ -93,11 +94,11 @@ const REGISTRY = [
   },
   {
     key: 'sharing',
-    name: 'Usage sharing',
+    name: msg('Usage sharing'),
     tag: 'Optional',
     required: false,
     minutes: 1,
-    settingsPath: 'Settings → General',
+    settingsPath: msg('Settings → General'),
     // Absorbs FinishSetupCard section 2 (ent#437 / ent#12). Same server terms:
     // consent on, or "Don't ask again", or disabled by config.
     eligible: (c) => !!c.isAdmin && !c.telemetryHardDisabled,

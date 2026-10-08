@@ -15,7 +15,7 @@
     v-if="tabs.length"
     type="button"
     class="sm:hidden w-full flex items-center gap-2 border-t border-gray-200 dark:border-gray-700 px-4 py-2 text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-    aria-label="Open the conversation rail"
+    :aria-label="uiText(&quot;Open the conversation rail&quot;)"
     data-testid="portal-rail-strip"
     @click="$emit('open')"
   >
@@ -51,4 +51,6 @@ function dotClass(shape) {
   if (shape === RAIL_SIGNAL_UPDATED) return 'block w-1.5 h-1.5 rounded-full bg-action-primary-500'
   return ''
 }
+
+import { t as uiText } from '@/i18n'
 </script>

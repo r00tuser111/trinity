@@ -71,6 +71,8 @@
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -113,9 +115,9 @@ const label = computed(() => {
 })
 
 const tooltipText = computed(() => {
-  if (isClaudeRuntime.value) return 'Anthropic Claude Code Runtime'
-  if (isGeminiRuntime.value) return 'Google Gemini CLI Runtime'
-  if (isCodexRuntime.value) return 'OpenAI Codex CLI Runtime'
+  if (isClaudeRuntime.value) return uiText("Anthropic Claude Code Runtime")
+  if (isGeminiRuntime.value) return uiText("Google Gemini CLI Runtime")
+  if (isCodexRuntime.value) return uiText("OpenAI Codex CLI Runtime")
   return `Runtime: ${props.runtime}`
 })
 

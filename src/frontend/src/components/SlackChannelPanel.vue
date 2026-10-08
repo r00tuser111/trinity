@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Slack Channel</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Slack Channel") }}</h3>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      Bind this agent to a Slack channel so users can interact via @mentions.
+      {{ uiText("Bind this agent to a Slack channel so users can interact via @mentions.") }}
     </p>
 
     <!-- Loading -->
@@ -11,12 +11,12 @@
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      Loading...
+      {{ uiText("Loading...") }}
     </div>
 
     <!-- Access Denied -->
     <div v-else-if="accessDenied" class="text-sm text-gray-500 dark:text-gray-400">
-      Only the agent owner can manage Slack channel bindings.
+      {{ uiText("Only the agent owner can manage Slack channel bindings.") }}
     </div>
 
     <!-- Bound State -->
@@ -41,7 +41,7 @@
             :title="dmDefaultTooltip"
           >
             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-            DM default
+            {{ uiText("DM default") }}
           </span>
           <button
             v-else
@@ -50,7 +50,7 @@
             :title="dmDefaultTooltip"
             class="text-xs px-2 py-1 border border-action-primary-300 dark:border-action-primary-700 text-action-primary-700 dark:text-action-primary-300 hover:bg-action-primary-50 dark:hover:bg-action-primary-900/30 rounded disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ makingDefault ? 'Setting...' : 'Make default' }}
+            {{ makingDefault ? uiText("Setting...") : uiText("Make default") }}
           </button>
           <button
             @click="unbindChannel"
@@ -58,7 +58,7 @@
             :title="unbindBlocked ? unbindBlockedTooltip : undefined"
             class="text-sm text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-800 dark:hover:text-status-danger-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ unbinding ? 'Removing...' : 'Unbind' }}
+            {{ unbinding ? uiText("Removing...") : uiText("Unbind") }}
           </button>
         </div>
       </div>
@@ -68,11 +68,10 @@
       <div class="mt-4 flex items-start justify-between gap-3 pt-3 border-t border-gray-200 dark:border-gray-700">
         <div class="min-w-0">
           <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-            Allow proactive messages
+            {{ uiText("Allow proactive messages") }}
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            Lets this agent post to #{{ channel.channel_name }} without being asked first
-            (task updates, alerts). Replies to a user always work regardless.
+            {{ uiText("Lets this agent post to #") }}{{ channel.channel_name }} {{ uiText("without being asked first (task updates, alerts). Replies to a user always work regardless.") }}
           </p>
         </div>
         <button
@@ -106,7 +105,7 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        {{ creating ? 'Creating...' : 'Create Slack Channel' }}
+        {{ creating ? uiText("Creating...") : uiText("Create Slack Channel") }}
       </button>
     </div>
 
@@ -141,10 +140,9 @@ const channel = ref({ bound: false })
 const togglingProactive = ref(false)
 const message = ref(null)
 
-const dmDefaultTooltip =
-  'Direct messages to the bot in this Slack workspace (no @mention, ' +
-  'no channel context) are routed to the DM-default agent. Only one ' +
-  'agent per workspace can be the DM default at a time.'
+const dmDefaultTooltip = computed(() => uiText(
+  'Direct messages to the bot in this Slack workspace (no @mention, no channel context) are routed to the DM-default agent. Only one agent per workspace can be the DM default at a time.',
+))
 
 // Unbind is blocked when this agent is the DM default AND other agents
 // are bound to the same workspace — otherwise DMs would have nowhere to
@@ -155,9 +153,9 @@ const unbindBlocked = computed(
     channel.value.is_dm_default &&
     (channel.value.workspace_agent_count ?? 1) > 1
 )
-const unbindBlockedTooltip =
-  'This agent is the DM default for the workspace. Set a different ' +
-  'agent as DM default first, then you can unbind this one.'
+const unbindBlockedTooltip = computed(() => uiText(
+  'This agent is the DM default for the workspace. Set a different agent as DM default first, then you can unbind this one.',
+))
 
 async function loadChannel() {
   loading.value = true
@@ -186,15 +184,15 @@ async function createChannel() {
     const data = response.data
 
     if (data.status === 'already_bound') {
-      message.value = { type: 'success', text: `Already bound to #${data.channel_name} in ${data.workspace_name}` }
+      message.value = { type: 'success', get "text"() { return uiText("Already bound to #{arg1} in {arg2}", { arg1: (data.channel_name), arg2: (data.workspace_name) }) } }
     } else {
-      message.value = { type: 'success', text: `Channel #${data.channel_name} created in ${data.workspace_name}` }
+      message.value = { type: 'success', get "text"() { return uiText("Channel #{arg1} created in {arg2}", { arg1: (data.channel_name), arg2: (data.workspace_name) }) } }
     }
 
     await loadChannel()
     setTimeout(() => { message.value = null }, 3000)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to create Slack channel'
+    const detail = e.response?.data?.detail || uiText('Failed to create Slack channel')
     message.value = { type: 'error', text: detail }
   } finally {
     creating.value = false
@@ -206,11 +204,11 @@ async function unbindChannel() {
   message.value = null
   try {
     await axios.delete(`/api/agents/${props.agentName}/slack/channel`)
-    message.value = { type: 'success', text: 'Channel unbound' }
+    message.value = { type: 'success', get "text"() { return uiText("Channel unbound") } }
     await loadChannel()
     setTimeout(() => { message.value = null }, 3000)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to unbind channel'
+    const detail = e.response?.data?.detail || uiText('Failed to unbind channel')
     message.value = { type: 'error', text: detail }
   } finally {
     unbinding.value = false
@@ -230,7 +228,7 @@ async function toggleProactive() {
     )
     message.value = {
       type: 'success',
-      text: next ? 'Proactive messages enabled for this channel' : 'Proactive messages disabled',
+      text: next ? uiText("Proactive messages enabled for this channel") : uiText("Proactive messages disabled"),
     }
     await loadChannel()
     setTimeout(() => { message.value = null }, 3000)
@@ -238,7 +236,7 @@ async function toggleProactive() {
     const detail = e.response?.data?.detail
     message.value = {
       type: 'error',
-      text: (detail && (detail.message || detail)) || 'Failed to update proactive setting',
+      text: (detail && (detail.message || detail)) || uiText("Failed to update proactive setting"),
     }
   } finally {
     togglingProactive.value = false
@@ -254,15 +252,15 @@ async function makeDmDefault() {
     )
     const data = response.data
     if (data.status === 'unchanged') {
-      message.value = { type: 'success', text: 'Already the DM default' }
+      message.value = { type: 'success', get "text"() { return uiText("Already the DM default") } }
     } else {
       const prev = data.previous ? ` (was ${data.previous})` : ''
-      message.value = { type: 'success', text: `Set as DM default${prev}` }
+      message.value = { type: 'success', get "text"() { return uiText("Set as DM default{arg1}", { arg1: (prev) }) } }
     }
     await loadChannel()
     setTimeout(() => { message.value = null }, 3000)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to set DM default'
+    const detail = e.response?.data?.detail || uiText('Failed to set DM default')
     message.value = { type: 'error', text: detail }
   } finally {
     makingDefault.value = false
@@ -271,4 +269,6 @@ async function makeDmDefault() {
 
 watch(() => props.agentName, () => loadChannel())
 onMounted(() => loadChannel())
+
+import { t as uiText } from '@/i18n'
 </script>

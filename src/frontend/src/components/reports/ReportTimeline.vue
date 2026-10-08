@@ -6,7 +6,7 @@
       <p class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ ev.label }}</p>
       <p v-if="ev.detail" class="text-xs text-gray-500 dark:text-gray-400">{{ ev.detail }}</p>
     </li>
-    <li v-if="events.length === 0" class="ml-4 text-xs text-gray-400">No events.</li>
+    <li v-if="events.length === 0" class="ml-4 text-xs text-gray-400">{{ uiText("No events.") }}</li>
   </ol>
 </template>
 
@@ -17,4 +17,6 @@ import { computed } from 'vue'
 const props = defineProps({ payload: { type: Object, default: () => ({}) } })
 
 const events = computed(() => (Array.isArray(props.payload?.events) ? props.payload.events : []))
+
+import { t as uiText } from '@/i18n'
 </script>

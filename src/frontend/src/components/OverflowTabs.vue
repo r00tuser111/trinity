@@ -6,6 +6,7 @@ export const FIXED_TAB_WIDTH = 'w-40'
 </script>
 
 <script setup>
+import { t } from '@/i18n'
 /**
  * Responsive tab strip with a "More ▾" overflow dropdown (#1114).
  *
@@ -58,7 +59,7 @@ const props = defineProps({
   // contract's counted "N more". Default keeps every existing strip's "More".
   // The mirror row measures the WIDEST label this strip can need (every tab
   // hidden), so a count that grows never reflows the fit decision.
-  moreLabel: { type: Function, default: () => 'More' },
+  moreLabel: { type: Function, default: () => t('More') },
   // ent#451: a compact strip for a chat's tabs above the thread — smaller
   // pad and type, same measurement, same overflow behaviour.
   dense: { type: Boolean, default: false },

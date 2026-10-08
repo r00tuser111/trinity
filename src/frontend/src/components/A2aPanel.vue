@@ -1,12 +1,10 @@
 <template>
   <div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Expose via A2A</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Expose via A2A") }}</h3>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      Make this agent reachable over the open
-      <a href="https://a2a-protocol.org" target="_blank" rel="noopener" class="text-action-primary-600 hover:underline">A2A protocol</a>
-      so external orchestrators (Google ADK, LangChain, Bedrock, another Trinity) can discover its
-      Agent Card and task it. Callers authenticate with a Trinity MCP API key; only identities you
-      allow-list below may task it.
+      {{ uiText("Make this agent reachable over the open") }}
+      <a href="https://a2a-protocol.org" target="_blank" rel="noopener" class="text-action-primary-600 hover:underline">{{ uiText("A2A protocol") }}</a>
+      {{ uiText("so external orchestrators (Google ADK, LangChain, Bedrock, another Trinity) can discover its Agent Card and task it. Callers authenticate with a Trinity MCP API key; only identities you allow-list below may task it.") }}
     </p>
 
     <!-- Toggle -->
@@ -23,12 +21,12 @@
       </label>
       <div class="flex-1">
         <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-          {{ config.a2a_exposed ? 'Exposed over A2A' : 'Not exposed' }}
+          {{ config.a2a_exposed ? uiText("Exposed over A2A") : uiText("Not exposed") }}
         </div>
         <div class="text-xs text-gray-500 dark:text-gray-400">
           {{ config.a2a_exposed
-            ? 'External orchestrators can discover and task this agent (subject to the allow-list below).'
-            : 'Off by default. Enable to publish the public Agent Card and accept inbound A2A tasks.' }}
+            ? uiText("External orchestrators can discover and task this agent (subject to the allow-list below).")
+            : uiText("Off by default. Enable to publish the public Agent Card and accept inbound A2A tasks.") }}
         </div>
       </div>
     </div>
@@ -38,18 +36,15 @@
       v-if="!config.a2a_exposed"
       class="mt-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400"
     >
-      While off, the public routes return <code class="font-mono text-xs">404</code> — the agent is
-      invisible to the A2A ecosystem. Toggle <span class="font-medium">Expose over A2A</span> above to
-      publish its card and start accepting tasks.
+      {{ uiText("While off, the public routes return") }} <code class="font-mono text-xs">404</code> {{ uiText("— the agent is invisible to the A2A ecosystem. Toggle") }} <span class="font-medium">{{ uiText("Expose over A2A") }}</span> {{ uiText("above to publish its card and start accepting tasks.") }}
     </div>
 
     <template v-else>
       <!-- Agent Card URL (one-click copy, #1575 idiom) -->
       <div class="mt-5 pt-5 border-t border-gray-200 dark:border-gray-700">
-        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Agent Card URL</h4>
+        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">{{ uiText("Agent Card URL") }}</h4>
         <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-          Give this discovery URL to an external A2A client — its SDK fetches the card, then tasks the
-          agent over JSON-RPC. Auth is a Trinity MCP API key as a Bearer token.
+          {{ uiText("Give this discovery URL to an external A2A client — its SDK fetches the card, then tasks the agent over JSON-RPC. Auth is a Trinity MCP API key as a Bearer token.") }}
         </p>
         <div class="flex items-center gap-2">
           <code class="flex-1 font-mono text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1.5 rounded overflow-x-auto whitespace-nowrap">{{ cardUrl }}</code>
@@ -62,7 +57,7 @@
               : 'text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'"
           >
             <svg v-if="copied === 'card'" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            {{ copied === 'card' ? 'Copied!' : 'Copy' }}
+            {{ copied === 'card' ? uiText("Copied!") : uiText("Copy") }}
           </button>
         </div>
       </div>
@@ -70,21 +65,21 @@
       <!-- Advertised skills (ent#180: curated) -->
       <div class="mt-5 pt-5 border-t border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between mb-1">
-          <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Advertised skills</h4>
+          <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ uiText("Advertised skills") }}</h4>
           <button
             v-if="!skillsEditing && capabilities.length"
             @click="startEditSkills"
             class="text-xs text-action-primary-600 dark:text-action-primary-400 hover:underline"
-          >Choose…</button>
+          >{{ uiText("Choose…") }}</button>
         </div>
         <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-          What an external caller sees on the card. Hiding a skill stops it being
-          <em>advertised</em> — it does not stop a caller asking for it, since A2A messages are free-form text.
+          {{ uiText("What an external caller sees on the card. Hiding a skill stops it being") }}
+          <em>{{ uiText("advertised") }}</em> {{ uiText("— it does not stop a caller asking for it, since A2A messages are free-form text.") }}
         </p>
 
         <!-- read view -->
         <template v-if="!skillsEditing">
-          <div v-if="cardLoading" class="text-sm text-gray-500 dark:text-gray-400">Loading card…</div>
+          <div v-if="cardLoading" class="text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading card…") }}</div>
           <div v-else-if="skills.length" class="flex flex-wrap gap-2">
             <span
               v-for="s in skills"
@@ -93,13 +88,13 @@
             >{{ s.name || s.id }}</span>
           </div>
           <div v-else-if="config.curated_skills && !config.curated_skills.length" class="text-sm text-gray-500 dark:text-gray-400">
-            Nothing advertised — the card lists no skills by your choice.
+            {{ uiText("Nothing advertised — the card lists no skills by your choice.") }}
           </div>
           <div v-else class="text-sm text-gray-500 dark:text-gray-400">
-            No skills advertised — the agent's template declares no capabilities.
+            {{ uiText("No skills advertised — the agent's template declares no capabilities.") }}
           </div>
           <p v-if="!config.curated_skills && capabilities.length" class="mt-2 text-xs text-gray-400 dark:text-gray-500">
-            Advertising all {{ capabilities.length }} capabilities (default).
+            {{ uiText("Advertising all") }} {{ capabilities.length }} {{ uiText("capabilities (default).") }}
           </p>
         </template>
 
@@ -117,38 +112,37 @@
           </div>
           <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
             {{ skillDraft.length === capabilities.length
-               ? 'All selected — the card advertises everything (the default).'
+               ? uiText("All selected — the card advertises everything (the default).")
                : skillDraft.length
-                 ? `${skillDraft.length} of ${capabilities.length} advertised.`
-                 : 'None selected — the card will advertise no skills.' }}
+                 ? uiText("{arg1} of {arg2} advertised.", { arg1: (skillDraft.length), arg2: (capabilities.length) })
+                 : uiText("None selected — the card will advertise no skills.") }}
           </p>
           <div class="mt-3 flex items-center gap-2">
             <button
               @click="saveSkills"
               :disabled="busy"
               class="px-3 py-1 text-xs rounded bg-action-primary-600 text-white hover:bg-action-primary-700 disabled:opacity-50"
-            >Save</button>
+            >{{ uiText("Save") }}</button>
             <button
               @click="skillsEditing = false"
               class="px-3 py-1 text-xs rounded border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
-            >Cancel</button>
+            >{{ uiText("Cancel") }}</button>
             <button
               v-if="config.curated_skills"
               @click="clearSkillCuration"
               :disabled="busy"
               class="ml-auto text-xs text-gray-500 dark:text-gray-400 hover:underline disabled:opacity-50"
-            >Reset to all</button>
+            >{{ uiText("Reset to all") }}</button>
           </div>
         </template>
       </div>
 
       <!-- Inbound allow-list -->
       <div class="mt-5 pt-5 border-t border-gray-200 dark:border-gray-700">
-        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Inbound allow-list</h4>
+        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">{{ uiText("Inbound allow-list") }}</h4>
         <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-          Trinity accounts permitted to task this agent inbound — the caller's account
-          <strong>email</strong> (or username, when the account has no email). Empty =
-          any authenticated owner/shared caller. Non-empty = only these identities.
+          {{ uiText("Trinity accounts permitted to task this agent inbound — the caller's account") }}
+          <strong>{{ uiText("email") }}</strong> {{ uiText("(or username, when the account has no email). Empty = any authenticated owner/shared caller. Non-empty = only these identities.") }}
         </p>
         <div v-if="config.inbound_allowlist.length" class="space-y-2 mb-3">
           <div
@@ -162,11 +156,11 @@
               @click="removeIdentity(id)"
               :disabled="busy"
               class="text-status-danger-600 hover:text-status-danger-700 text-xs font-medium disabled:opacity-50"
-            >Remove</button>
+            >{{ uiText("Remove") }}</button>
           </div>
         </div>
         <div v-else class="text-sm text-gray-500 dark:text-gray-400 mb-3">
-          No restriction — any authenticated owner/shared caller may task the agent.
+          {{ uiText("No restriction — any authenticated owner/shared caller may task the agent.") }}
         </div>
         <form class="flex items-center gap-2" @submit.prevent="addIdentity">
           <input
@@ -179,16 +173,15 @@
             type="submit"
             :disabled="busy || !newIdentity"
             class="px-3 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50"
-          >Add</button>
+          >{{ uiText("Add") }}</button>
         </form>
       </div>
 
       <!-- Outbound endpoint registry -->
       <div class="mt-5 pt-5 border-t border-gray-200 dark:border-gray-700">
-        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Outbound endpoints</h4>
+        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">{{ uiText("Outbound endpoints") }}</h4>
         <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-          External A2A endpoints this agent may call (for the outbound <code class="font-mono">call_a2a_agent</code> tool).
-          Credentials are stored encrypted and never shown again.
+          {{ uiText("External A2A endpoints this agent may call (for the outbound") }} <code class="font-mono">call_a2a_agent</code> {{ uiText("tool). Credentials are stored encrypted and never shown again.") }}
         </p>
         <div v-if="config.outbound_endpoints.length" class="space-y-2 mb-3">
           <div
@@ -204,22 +197,22 @@
               <span
                 v-if="ep.has_credentials"
                 class="px-1.5 py-0.5 text-xs rounded bg-status-success-100 dark:bg-status-success-900/40 text-status-success-700 dark:text-status-success-300"
-              >🔒 credentialed</span>
+              >{{ uiText("🔒 credentialed") }}</span>
               <button
                 type="button"
                 @click="removeEndpoint(ep.id)"
                 :disabled="busy"
                 class="text-status-danger-600 hover:text-status-danger-700 text-xs font-medium disabled:opacity-50"
-              >Remove</button>
+              >{{ uiText("Remove") }}</button>
             </div>
           </div>
         </div>
-        <div v-else class="text-sm text-gray-500 dark:text-gray-400 mb-3">No outbound endpoints registered.</div>
+        <div v-else class="text-sm text-gray-500 dark:text-gray-400 mb-3">{{ uiText("No outbound endpoints registered.") }}</div>
         <form class="grid grid-cols-1 sm:grid-cols-2 gap-2" @submit.prevent="addEndpoint">
           <input
             v-model.trim="newEndpoint.name"
             type="text"
-            placeholder="Label (e.g. acme-orchestrator)"
+            :placeholder="uiText(&quot;Label (e.g. acme-orchestrator)&quot;)"
             class="px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-action-primary-500 focus:outline-none"
           />
           <input
@@ -231,7 +224,7 @@
           <input
             v-model="newEndpoint.credentials"
             type="password"
-            placeholder="Credential / token (optional)"
+            :placeholder="uiText(&quot;Credential / token (optional)&quot;)"
             autocomplete="new-password"
             class="px-3 py-1.5 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-action-primary-500 focus:outline-none"
           />
@@ -239,7 +232,7 @@
             type="submit"
             :disabled="busy || !newEndpoint.name || !newEndpoint.url"
             class="px-3 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50"
-          >Register endpoint</button>
+          >{{ uiText("Register endpoint") }}</button>
         </form>
       </div>
     </template>
@@ -307,7 +300,7 @@ async function load() {
       loadCapabilities()
     }
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to load A2A config: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to load A2A config: {error}', { error: e.message }), 'error')
   } finally {
     loading.value = false
   }
@@ -340,9 +333,9 @@ async function saveSkills() {
     config.value = await agentsStore.setA2aSkills(props.agentName, all ? null : skillDraft.value)
     skillsEditing.value = false
     await loadSkills()
-    notifyUser('Advertised skills updated')
+    notifyUser(uiText('Advertised skills updated'))
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to update skills: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to update skills: {error}', { error: e.message }), 'error')
   } finally {
     busy.value = false
   }
@@ -354,9 +347,9 @@ async function clearSkillCuration() {
     config.value = await agentsStore.setA2aSkills(props.agentName, null)
     skillsEditing.value = false
     await loadSkills()
-    notifyUser('Advertising all skills')
+    notifyUser(uiText('Advertising all skills'))
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to reset skills: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to reset skills: {error}', { error: e.message }), 'error')
   } finally {
     busy.value = false
   }
@@ -378,11 +371,11 @@ async function onToggle(enabled) {
   toggleLoading.value = true
   try {
     config.value = await agentsStore.setA2aExposure(props.agentName, enabled)
-    notifyUser(enabled ? 'Agent exposed over A2A.' : 'No longer exposed over A2A.', 'success')
+    notifyUser(enabled ? uiText('Agent exposed over A2A.') : uiText('No longer exposed over A2A.'), 'success')
     if (enabled) loadSkills()
     else skills.value = []
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to toggle A2A exposure: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to toggle A2A exposure: {error}', { error: e.message }), 'error')
     await load()  // reflect actual state
   } finally {
     toggleLoading.value = false
@@ -395,9 +388,9 @@ async function addIdentity() {
   try {
     config.value = await agentsStore.updateA2aAllowlist(props.agentName, { add: [newIdentity.value] })
     newIdentity.value = ''
-    notifyUser('Identity added to the inbound allow-list.', 'success')
+    notifyUser(uiText('Identity added to the inbound allow-list.'), 'success')
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to add identity: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to add identity: {error}', { error: e.message }), 'error')
   } finally {
     busy.value = false
   }
@@ -407,9 +400,9 @@ async function removeIdentity(id) {
   busy.value = true
   try {
     config.value = await agentsStore.updateA2aAllowlist(props.agentName, { remove: [id] })
-    notifyUser('Identity removed.', 'success')
+    notifyUser(uiText('Identity removed.'), 'success')
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to remove identity: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to remove identity: {error}', { error: e.message }), 'error')
   } finally {
     busy.value = false
   }
@@ -422,9 +415,9 @@ async function addEndpoint() {
     await agentsStore.registerA2aEndpoint(props.agentName, { ...newEndpoint.value })
     newEndpoint.value = { name: '', url: '', credentials: '' }
     await load()
-    notifyUser('Outbound endpoint registered.', 'success')
+    notifyUser(uiText('Outbound endpoint registered.'), 'success')
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to register endpoint: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to register endpoint: {error}', { error: e.message }), 'error')
   } finally {
     busy.value = false
   }
@@ -435,9 +428,9 @@ async function removeEndpoint(id) {
   try {
     await agentsStore.removeA2aEndpoint(props.agentName, id)
     await load()
-    notifyUser('Endpoint removed.', 'success')
+    notifyUser(uiText('Endpoint removed.'), 'success')
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to remove endpoint: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to remove endpoint: {error}', { error: e.message }), 'error')
   } finally {
     busy.value = false
   }
@@ -446,8 +439,10 @@ async function removeEndpoint(id) {
 async function copyText(text, id = '') {
   const ok = await copyToClipboard(text)
   if (ok && id) flashCopied(id)
-  notifyUser(ok ? 'Copied to clipboard.' : 'Copy failed — select and copy manually.', ok ? 'success' : 'error')
+  notifyUser(ok ? uiText('Copied to clipboard.') : uiText('Copy failed — select and copy manually.'), ok ? 'success' : 'error')
 }
 
 onMounted(load)
+
+import { t as uiText } from '@/i18n'
 </script>

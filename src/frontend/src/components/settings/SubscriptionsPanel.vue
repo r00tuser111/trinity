@@ -6,9 +6,9 @@
        surface goes through stores/subscriptions.js (Invariants #6/#7). -->
   <div class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-      <h2 class="text-lg font-medium text-gray-900 dark:text-white">Claude Subscriptions</h2>
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Claude Subscriptions") }}</h2>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Manage Claude Max/Pro subscription credentials. Register once, assign to multiple agents.
+        {{ uiText("Manage Claude Max/Pro subscription credentials. Register once, assign to multiple agents.") }}
       </p>
     </div>
 
@@ -17,7 +17,7 @@
         <!-- Panel-local error line (extraction keeps failures beside their cause) -->
         <div v-if="error" class="bg-status-danger-50 dark:bg-status-danger-900/30 border border-status-danger-200 dark:border-status-danger-800 rounded-lg px-4 py-2 text-sm text-status-danger-700 dark:text-status-danger-300 flex items-start justify-between">
           <span>{{ error }}</span>
-          <button class="ml-3 text-xs underline" @click="error = null">dismiss</button>
+          <button class="ml-3 text-xs underline" @click="error = null">{{ uiText("dismiss") }}</button>
         </div>
 
         <!-- Encryption Not Configured Warning -->
@@ -29,10 +29,9 @@
               </svg>
             </div>
             <div class="ml-3">
-              <h3 class="text-sm font-medium text-status-warning-800 dark:text-status-warning-300">Encryption not configured</h3>
+              <h3 class="text-sm font-medium text-status-warning-800 dark:text-status-warning-300">{{ uiText("Encryption not configured") }}</h3>
               <p class="mt-1 text-sm text-status-warning-700 dark:text-status-warning-400">
-                Subscription storage requires <code class="px-1 py-0.5 bg-status-warning-100 dark:bg-status-warning-900 rounded text-xs">CREDENTIAL_ENCRYPTION_KEY</code> in your <code class="px-1 py-0.5 bg-status-warning-100 dark:bg-status-warning-900 rounded text-xs">.env</code> file.
-                Generate with: <code class="px-1 py-0.5 bg-status-warning-100 dark:bg-status-warning-900 rounded text-xs">openssl rand -hex 32</code> and restart the backend.
+                {{ uiText("Subscription storage requires") }} <code class="px-1 py-0.5 bg-status-warning-100 dark:bg-status-warning-900 rounded text-xs">CREDENTIAL_ENCRYPTION_KEY</code> {{ uiText("in your") }} <code class="px-1 py-0.5 bg-status-warning-100 dark:bg-status-warning-900 rounded text-xs">.env</code> {{ uiText("file. Generate with:") }} <code class="px-1 py-0.5 bg-status-warning-100 dark:bg-status-warning-900 rounded text-xs">openssl rand -hex 32</code> {{ uiText("and restart the backend.") }}
               </p>
             </div>
           </div>
@@ -40,25 +39,25 @@
 
         <!-- Add Subscription Form -->
         <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Add Subscription</h3>
+          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{{ uiText("Add Subscription") }}</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label for="subscription-name" class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                Name
+                {{ uiText("Name") }}
               </label>
               <input
                 type="text"
                 id="subscription-name"
                 v-model="newSubscription.name"
-                placeholder="e.g., eugene-max"
+                :placeholder="uiText(&quot;e.g., eugene-max&quot;)"
                 class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white text-sm"
                 :disabled="addingSubscription"
               />
             </div>
             <div>
               <label for="subscription-type" class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                Type
+                {{ uiText("Type") }}
               </label>
               <select
                 id="subscription-type"
@@ -66,9 +65,9 @@
                 class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white text-sm"
                 :disabled="addingSubscription"
               >
-                <option value="max">Claude Max</option>
-                <option value="pro">Claude Pro</option>
-                <option value="">Unknown</option>
+                <option value="max">{{ uiText("Claude Max") }}</option>
+                <option value="pro">{{ uiText("Claude Pro") }}</option>
+                <option value="">{{ uiText("Unknown") }}</option>
               </select>
             </div>
           </div>
@@ -76,7 +75,7 @@
           <!-- Token Input (SUB-002) -->
           <div class="mt-4">
             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-              Token (from <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">claude setup-token</code>)
+              {{ uiText("Token (from") }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">claude setup-token</code>)
             </label>
             <input
               type="password"
@@ -87,10 +86,10 @@
               :class="{ 'border-status-danger-400 dark:border-status-danger-500': newSubscription.token && !newSubscription.token.startsWith('sk-ant-oat01-') }"
             />
             <p v-if="newSubscription.token && !newSubscription.token.startsWith('sk-ant-oat01-')" class="mt-1 text-xs text-status-danger-500">
-              Token must start with sk-ant-oat01-
+              {{ uiText("Token must start with sk-ant-oat01-") }}
             </p>
             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Run <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">claude setup-token</code> locally to generate a long-lived token (~1 year)
+              {{ uiText("Run") }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">claude setup-token</code> {{ uiText("locally to generate a long-lived token (~1 year)") }}
             </p>
           </div>
 
@@ -100,7 +99,7 @@
               v-if="newSubscription.name || newSubscription.token"
               class="mr-3 inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
             >
-              Clear
+              {{ uiText("Clear") }}
             </button>
             <button
               @click="addSubscription"
@@ -111,7 +110,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Register Subscription
+              {{ uiText("Register Subscription") }}
             </button>
           </div>
         </div>
@@ -122,23 +121,23 @@
             <thead class="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Name
+                  {{ uiText("Name") }}
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Type
+                  {{ uiText("Type") }}
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Agents
+                  {{ uiText("Agents") }}
                 </th>
                 <!-- #471: live pressure column -->
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Pressure
+                  {{ uiText("Pressure") }}
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Created
+                  {{ uiText("Created") }}
                 </th>
                 <th scope="col" class="relative px-6 py-3">
-                  <span class="sr-only">Actions</span>
+                  <span class="sr-only">{{ uiText("Actions") }}</span>
                 </th>
               </tr>
             </thead>
@@ -150,7 +149,7 @@
               </tr>
               <tr v-else-if="subscriptions.length === 0">
                 <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                  No subscriptions registered. Add one above using your Claude credentials.
+                  {{ uiText("No subscriptions registered. Add one above using your Claude credentials.") }}
                 </td>
               </tr>
               <template v-else v-for="sub in subscriptions" :key="sub.id">
@@ -166,13 +165,13 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span v-if="sub.subscription_type" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                           :class="sub.subscription_type === 'max' ? 'bg-accent-purple-100 text-accent-purple-800 dark:bg-accent-purple-900 dark:text-accent-purple-200' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'">
-                      {{ sub.subscription_type === 'max' ? 'Max' : sub.subscription_type === 'pro' ? 'Pro' : sub.subscription_type }}
+                      {{ sub.subscription_type === 'max' ? uiText("Max") : sub.subscription_type === 'pro' ? uiText("Pro") : sub.subscription_type }}
                     </span>
                     <span v-else class="text-sm text-gray-500 dark:text-gray-400">—</span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                      {{ sub.agent_count || 0 }} agent{{ (sub.agent_count || 0) === 1 ? '' : 's' }}
+                      {{ sub.agent_count || 0 }} {{ uiText("agent") }}{{ (sub.agent_count || 0) === 1 ? '' : 's' }}
                     </span>
                   </td>
                   <!-- #471: compact pressure cell — gauge when provider-fresh, warn chip on events, honest '—' -->
@@ -181,7 +180,7 @@
                     <template v-else-if="usageFor(sub.id) && !usageFor(sub.id).error">
                       <span v-if="usageFor(sub.id).rate_limited_now"
                             class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-danger-100 text-status-danger-800 dark:bg-status-danger-900/50 dark:text-status-danger-300"
-                            :title="`Rate-limited now · ${usageFor(sub.id).failure_events_24h} failure event(s) in 24h`">
+                            :title="uiText(&quot;Rate-limited now · {arg1} failure event(s) in 24h&quot;, { arg1: (usageFor(sub.id).failure_events_24h) })">
                         rate-limited
                       </span>
                       <span v-else-if="headroomIsFresh(usageFor(sub.id))"
@@ -195,11 +194,11 @@
                       <span v-else-if="(usageFor(sub.id).failure_events_24h || 0) > 0"
                             class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-warning-100 text-status-warning-800 dark:bg-status-warning-900/50 dark:text-status-warning-300"
                             :title="failureKindLabel(usageFor(sub.id).failure_events_by_kind) || ''">
-                        {{ usageFor(sub.id).failure_events_24h }} event{{ usageFor(sub.id).failure_events_24h === 1 ? '' : 's' }} (24h)
+                        {{ usageFor(sub.id).failure_events_24h }} {{ uiText("event") }}{{ usageFor(sub.id).failure_events_24h === 1 ? '' : 's' }} (24h)
                       </span>
-                      <span v-else class="text-xs text-gray-400 dark:text-gray-500">ok</span>
+                      <span v-else class="text-xs text-gray-400 dark:text-gray-500">{{ uiText("ok") }}</span>
                     </template>
-                    <span v-else-if="usageFor(sub.id) && usageFor(sub.id).error" class="text-xs text-gray-400 dark:text-gray-500" title="Usage unavailable">—</span>
+                    <span v-else-if="usageFor(sub.id) && usageFor(sub.id).error" class="text-xs text-gray-400 dark:text-gray-500" :title="uiText(&quot;Usage unavailable&quot;)">—</span>
                     <span v-else class="text-xs text-gray-400 dark:text-gray-500">—</span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -211,7 +210,7 @@
                       :disabled="deletingSubscription === sub.id"
                       class="text-status-danger-600 hover:text-status-danger-900 dark:text-status-danger-400 dark:hover:text-status-danger-300 disabled:opacity-50"
                     >
-                      {{ deletingSubscription === sub.id ? 'Deleting...' : 'Delete' }}
+                      {{ deletingSubscription === sub.id ? uiText("Deleting...") : uiText("Delete") }}
                     </button>
                   </td>
                 </tr>
@@ -222,7 +221,7 @@
                       <!-- #471: usage & headroom block -->
                       <div class="mb-4 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-3">
                         <div class="flex items-center justify-between mb-2">
-                          <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Usage</h4>
+                          <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ uiText("Usage") }}</h4>
                           <div class="flex items-center gap-2">
                             <span v-if="usageFor(sub.id) && !usageFor(sub.id).error" class="text-xs text-gray-400 dark:text-gray-500">
                               {{ usageSourceLabel(usageFor(sub.id)) }}
@@ -231,20 +230,20 @@
                               @click.stop="refreshHeadroom(sub.id)"
                               :disabled="subsStore.refreshingHeadroom[sub.id]"
                               class="inline-flex items-center px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50"
-                              title="Fetch live utilization from Anthropic (sends one ~1-token probe on this subscription's own quota)"
+                              :title="uiText(&quot;Fetch live utilization from Anthropic (sends one ~1-token probe on this subscription's own quota)&quot;)"
                             >
                               <svg v-if="subsStore.refreshingHeadroom[sub.id]" class="animate-spin mr-1 h-3 w-3" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                               </svg>
-                              Refresh
+                              {{ uiText("Refresh") }}
                             </button>
                           </div>
                         </div>
 
-                        <div v-if="usageLoading[sub.id]" class="text-xs text-gray-400 py-2">Loading usage…</div>
+                        <div v-if="usageLoading[sub.id]" class="text-xs text-gray-400 py-2">{{ uiText("Loading usage…") }}</div>
                         <div v-else-if="!usageFor(sub.id) || usageFor(sub.id).error" class="text-xs text-gray-500 dark:text-gray-400 py-2">
-                          Usage unavailable right now — try Refresh.
+                          {{ uiText("Usage unavailable right now — try Refresh.") }}
                         </div>
                         <template v-else>
                           <!-- Live headroom (provider truth) -->
@@ -256,7 +255,7 @@
                               {{ headroomWindowLabel(usageFor(sub.id).headroom.seven_day, '7d') }}
                             </div>
                             <div v-if="usageFor(sub.id).headroom.status !== 'ok'" class="text-xs text-status-warning-600 dark:text-status-warning-400">
-                              Probe status: {{ usageFor(sub.id).headroom.status }}
+                              {{ uiText("Probe status:") }} {{ usageFor(sub.id).headroom.status }}
                             </div>
                           </div>
 
@@ -264,23 +263,23 @@
                           <table class="w-full text-xs">
                             <thead>
                               <tr class="text-gray-500 dark:text-gray-400">
-                                <th class="text-left font-medium py-1">Window</th>
-                                <th class="text-right font-medium py-1" title="Estimated from recorded context occupancy — an inference, not a billed counter">≈ In tokens (est.)</th>
-                                <th class="text-right font-medium py-1">Out tokens</th>
-                                <th class="text-right font-medium py-1">Cost</th>
-                                <th class="text-right font-medium py-1">Messages</th>
+                                <th class="text-left font-medium py-1">{{ uiText("Window") }}</th>
+                                <th class="text-right font-medium py-1" :title="uiText(&quot;Estimated from recorded context occupancy — an inference, not a billed counter&quot;)">{{ uiText("≈ In tokens (est.)") }}</th>
+                                <th class="text-right font-medium py-1">{{ uiText("Out tokens") }}</th>
+                                <th class="text-right font-medium py-1">{{ uiText("Cost") }}</th>
+                                <th class="text-right font-medium py-1">{{ uiText("Messages") }}</th>
                               </tr>
                             </thead>
                             <tbody class="text-gray-800 dark:text-gray-200">
                               <tr>
-                                <td class="py-0.5">Last 5h</td>
+                                <td class="py-0.5">{{ uiText("Last 5h") }}</td>
                                 <td class="text-right">{{ formatTokens(usageFor(sub.id).window_5h.input_tokens) }}</td>
                                 <td class="text-right">{{ formatTokens(usageFor(sub.id).window_5h.output_tokens) }}</td>
                                 <td class="text-right">≈{{ formatCost(usageFor(sub.id).window_5h.cost_usd) }}</td>
                                 <td class="text-right">{{ usageFor(sub.id).window_5h.message_count }}</td>
                               </tr>
                               <tr>
-                                <td class="py-0.5">Last 7d</td>
+                                <td class="py-0.5">{{ uiText("Last 7d") }}</td>
                                 <td class="text-right">{{ formatTokens(usageFor(sub.id).window_7d.input_tokens) }}</td>
                                 <td class="text-right">{{ formatTokens(usageFor(sub.id).window_7d.output_tokens) }}</td>
                                 <td class="text-right">≈{{ formatCost(usageFor(sub.id).window_7d.cost_usd) }}</td>
@@ -289,12 +288,12 @@
                             </tbody>
                           </table>
                           <p class="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-                            Cost is API-equivalent (what this consumption would cost at API prices) — not a bill.
+                            {{ uiText("Cost is API-equivalent (what this consumption would cost at API prices) — not a bill.") }}
                           </p>
 
                           <!-- Failure events -->
                           <div v-if="(usageFor(sub.id).failure_events_24h || 0) > 0" class="mt-2 text-xs text-status-warning-700 dark:text-status-warning-400">
-                            ⚠ {{ usageFor(sub.id).failure_events_24h }} subscription failure event{{ usageFor(sub.id).failure_events_24h === 1 ? '' : 's' }} in the last 24h
+                            ⚠ {{ usageFor(sub.id).failure_events_24h }} {{ uiText("subscription failure event") }}{{ usageFor(sub.id).failure_events_24h === 1 ? '' : 's' }} {{ uiText("in the last 24h") }}
                             <span v-if="failureKindLabel(usageFor(sub.id).failure_events_by_kind)">({{ failureKindLabel(usageFor(sub.id).failure_events_by_kind) }})</span>
                           </div>
 
@@ -304,22 +303,22 @@
                               @click.stop="toggleBreakdown(sub.id)"
                               class="text-xs text-action-primary-600 dark:text-action-primary-400 hover:underline"
                             >
-                              {{ showBreakdown.has(sub.id) ? 'Hide per-agent breakdown' : 'Show per-agent breakdown' }}
+                              {{ showBreakdown.has(sub.id) ? uiText("Hide per-agent breakdown") : uiText("Show per-agent breakdown") }}
                             </button>
                             <div v-if="showBreakdown.has(sub.id)" class="mt-2">
-                              <div v-if="subsStore.breakdownLoading[sub.id]" class="text-xs text-gray-400">Loading…</div>
+                              <div v-if="subsStore.breakdownLoading[sub.id]" class="text-xs text-gray-400">{{ uiText("Loading…") }}</div>
                               <div v-else-if="!breakdownFor(sub.id) || breakdownFor(sub.id).error" class="text-xs text-gray-500 dark:text-gray-400">
-                                Breakdown unavailable —
-                                <button class="underline" @click.stop="subsStore.fetchBreakdown(sub.id)">retry</button>
+                                {{ uiText("Breakdown unavailable —") }}
+                                <button class="underline" @click.stop="subsStore.fetchBreakdown(sub.id)">{{ uiText("retry") }}</button>
                               </div>
                               <table v-else-if="(breakdownFor(sub.id).window_7d || []).length" class="w-full text-xs">
                                 <thead>
                                   <tr class="text-gray-500 dark:text-gray-400">
-                                    <th class="text-left font-medium py-1">Agent (7d, by cost)</th>
-                                    <th class="text-right font-medium py-1">Cost</th>
-                                    <th class="text-right font-medium py-1">Out tokens</th>
-                                    <th class="text-right font-medium py-1">Messages</th>
-                                    <th class="text-right font-medium py-1">5h cost</th>
+                                    <th class="text-left font-medium py-1">{{ uiText("Agent (7d, by cost)") }}</th>
+                                    <th class="text-right font-medium py-1">{{ uiText("Cost") }}</th>
+                                    <th class="text-right font-medium py-1">{{ uiText("Out tokens") }}</th>
+                                    <th class="text-right font-medium py-1">{{ uiText("Messages") }}</th>
+                                    <th class="text-right font-medium py-1">{{ uiText("5h cost") }}</th>
                                   </tr>
                                 </thead>
                                 <tbody class="text-gray-800 dark:text-gray-200">
@@ -332,20 +331,20 @@
                                   </tr>
                                 </tbody>
                               </table>
-                              <p v-else class="text-xs text-gray-500 dark:text-gray-400 italic">No recorded consumption in the last 7 days.</p>
+                              <p v-else class="text-xs text-gray-500 dark:text-gray-400 italic">{{ uiText("No recorded consumption in the last 7 days.") }}</p>
                             </div>
                           </div>
                         </template>
                       </div>
 
                       <div class="mb-2 text-gray-600 dark:text-gray-400">
-                        <strong>Owner:</strong> {{ sub.owner_email || 'Unknown' }}
+                        <strong>{{ uiText("Owner:") }}</strong> {{ sub.owner_email || uiText("Unknown") }}
                       </div>
                       <div v-if="sub.rate_limit_tier" class="mb-2 text-gray-600 dark:text-gray-400">
-                        <strong>Rate Limit Tier:</strong> {{ sub.rate_limit_tier }}
+                        <strong>{{ uiText("Rate Limit Tier:") }}</strong> {{ sub.rate_limit_tier }}
                       </div>
                       <div>
-                        <strong class="text-gray-600 dark:text-gray-400">Assigned Agents:</strong>
+                        <strong class="text-gray-600 dark:text-gray-400">{{ uiText("Assigned Agents:") }}</strong>
                         <div v-if="sub.agents && sub.agents.length > 0" class="mt-2 flex flex-wrap gap-2">
                           <span v-for="agent in sub.agents" :key="agent"
                                 class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-action-primary-100 text-action-primary-800 dark:bg-action-primary-900 dark:text-action-primary-200">
@@ -358,7 +357,7 @@
                               @click.stop="unassignAgentFromSubscription(agent)"
                               :disabled="unassigningAgent === agent"
                               class="ml-1.5 inline-flex items-center justify-center h-4 w-4 rounded-full hover:bg-action-primary-200 dark:hover:bg-action-primary-800 text-action-primary-600 dark:text-action-primary-300 disabled:opacity-50"
-                              title="Remove agent from subscription"
+                              :title="uiText(&quot;Remove agent from subscription&quot;)"
                             >
                               <svg v-if="unassigningAgent === agent" class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -371,7 +370,7 @@
                           </span>
                         </div>
                         <p v-else class="mt-1 text-gray-500 dark:text-gray-400 italic">
-                          No agents assigned yet.
+                          {{ uiText("No agents assigned yet.") }}
                         </p>
                         <!-- Assign Agent Dropdown -->
                         <div class="mt-3 flex items-center gap-2">
@@ -381,13 +380,13 @@
                             class="flex-1 max-w-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white"
                             @click.stop
                           >
-                            <option value="" disabled selected>{{ loadingAgents ? 'Loading agents...' : 'Select agent...' }}</option>
+                            <option value="" disabled selected>{{ loadingAgents ? uiText("Loading agents...") : uiText("Select agent...") }}</option>
                             <option
                               v-for="agent in getAvailableAgents(sub.id)"
                               :key="agent.name"
                               :value="agent.name"
                             >
-                              {{ agentOptionLabel(agent) }}{{ agentSubscriptionMap[agent.name] ? ` (on ${agentSubscriptionMap[agent.name]})` : '' }}
+                              {{ agentOptionLabel(agent) }}{{ agentSubscriptionMap[agent.name] ? uiText(" (on {arg1})", { arg1: (agentSubscriptionMap[agent.name]) }) : '' }}
                             </option>
                           </select>
                           <button
@@ -399,7 +398,7 @@
                               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            Assign
+                            {{ uiText("Assign") }}
                           </button>
                         </div>
                       </div>
@@ -412,7 +411,7 @@
         </div>
 
         <p class="text-xs text-gray-500 dark:text-gray-400">
-          Expand a subscription row to see usage, live headroom, and assign or remove agents. Running agents will restart automatically.
+          {{ uiText("Expand a subscription row to see usage, live headroom, and assign or remove agents. Running agents will restart automatically.") }}
         </p>
 
         <!-- Auto-Switch Toggle (SUB-003) -->
@@ -420,10 +419,10 @@
           <div class="flex items-center justify-between">
             <div class="flex-1 mr-4">
               <label for="auto-switch-toggle" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Automatically switch subscriptions when usage limits are reached
+                {{ uiText("Automatically switch subscriptions when usage limits are reached") }}
               </label>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                When enabled, agents will automatically try a different subscription after 2 consecutive rate-limit errors. Requires at least 2 registered subscriptions.
+                {{ uiText("When enabled, agents will automatically try a different subscription after 2 consecutive rate-limit errors. Requires at least 2 registered subscriptions.") }}
               </p>
             </div>
             <button
@@ -451,15 +450,10 @@
           <div class="flex items-center justify-between">
             <div class="flex-1 mr-4">
               <label for="headroom-refresh-toggle" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Check subscription quota automatically
+                {{ uiText("Check subscription quota automatically") }}
               </label>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Reads actual utilization from Anthropic by sending a minimal (~1-token) probe on each subscription's own quota,
-                at most every {{ Math.round((subsStore.headroomAutoRefresh.refresh_seconds || 900) / 60) }} minutes per subscription.
-                Trinity checks in the background whether or not anyone is watching &mdash; to keep this page current, to notice a
-                rate-limited subscription recovering, and to watch weekly limits for the alert below.
-                Probes appear as tiny messages in the Anthropic console. When off, headroom updates only via the Refresh button
-                and weekly-limit alerts stop.
+                {{ uiText("Reads actual utilization from Anthropic by sending a minimal (~1-token) probe on each subscription's own quota, at most every") }} {{ Math.round((subsStore.headroomAutoRefresh.refresh_seconds || 900) / 60) }} {{ uiText("minutes per subscription. Trinity checks in the background whether or not anyone is watching — to keep this page current, to notice a rate-limited subscription recovering, and to watch weekly limits for the alert below. Probes appear as tiny messages in the Anthropic console. When off, headroom updates only via the Refresh button and weekly-limit alerts stop.") }}
               </p>
             </div>
             <button
@@ -487,21 +481,17 @@
           <div class="flex items-center justify-between">
             <div class="flex-1 mr-4">
               <label for="api-key-fallback-toggle" class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Fall back to the platform API key
+                {{ uiText("Fall back to the platform API key") }}
               </label>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                When every subscription is out of quota, keep the agent working by moving it onto the
-                platform API key instead of failing the message. The agent's subscription assignment is
-                cleared when this happens and you are notified &mdash; it is not a temporary redirect.
-                Turn it off if spend must only ever go through subscriptions.
+                {{ uiText("When every subscription is out of quota, keep the agent working by moving it onto the platform API key instead of failing the message. The agent's subscription assignment is cleared when this happens and you are notified — it is not a temporary redirect. Turn it off if spend must only ever go through subscriptions.") }}
               </p>
               <p
                 v-if="subsStore.apiKeyFallback.loaded && subsStore.apiKeyFallback.enabled
                   && subsStore.apiKeyFallback.key_configured === false"
                 class="mt-1 text-xs text-status-warning-600 dark:text-status-warning-400"
               >
-                No platform API key is configured, so this has nothing to fall back to. Add one under
-                API Keys for it to take effect.
+                {{ uiText("No platform API key is configured, so this has nothing to fall back to. Add one under API Keys for it to take effect.") }}
               </p>
             </div>
             <button
@@ -532,13 +522,10 @@
                 for="headroom-alert-threshold"
                 class="text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                Warn me before the weekly limit
+                {{ uiText("Warn me before the weekly limit") }}
               </label>
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Raises an operator alert when a subscription passes this share of its 7-day
-                window, so there is still time to stagger schedules or move agents. Urgency
-                follows your own burn rate: at this threshold but on track to finish the week
-                under 100%, the alert is filed low priority. Set to 0 to turn the alerts off.
+                {{ uiText("Raises an operator alert when a subscription passes this share of its 7-day window, so there is still time to stagger schedules or move agents. Urgency follows your own burn rate: at this threshold but on track to finish the week under 100%, the alert is filed low priority. Set to 0 to turn the alerts off.") }}
               </p>
               <p class="mt-2 text-xs" :class="alertStatusClass">
                 {{ alertStatusText }}
@@ -563,7 +550,7 @@
                 :loading="savingThreshold"
                 @click="saveThreshold"
               >
-                Save
+                {{ uiText("Save") }}
               </BaseButton>
             </div>
           </div>
@@ -724,8 +711,8 @@ function formatDate(dateString) {
   const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24))
   if (diffInDays === 0) return 'Today'
   if (diffInDays === 1) return 'Yesterday'
-  if (diffInDays < 7) return `${diffInDays} days ago`
-  if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`
+  if (diffInDays < 7) return uiText("{arg1} days ago", { arg1: (diffInDays) })
+  if (diffInDays < 30) return uiText("{arg1} weeks ago", { arg1: (Math.floor(diffInDays / 7)) })
   return date.toLocaleDateString()
 }
 
@@ -751,7 +738,7 @@ async function loadSubscriptions() {
   } catch (e) {
     console.error('Failed to load subscriptions:', e)
     if (e.response?.status !== 403) {
-      error.value = e.response?.data?.detail || 'Failed to load subscriptions'
+      error.value = e.response?.data?.detail || uiText("Failed to load subscriptions")
     }
   } finally {
     loadingSubscriptions.value = false
@@ -775,14 +762,14 @@ async function addSubscription() {
     clearNewSubscription()
     await loadSubscriptions()
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to register subscription'
+    error.value = e.response?.data?.detail || uiText("Failed to register subscription")
   } finally {
     addingSubscription.value = false
   }
 }
 
 async function deleteSubscription(subscription) {
-  if (!confirm(`Delete subscription "${subscription.name}"?\n\nThis will clear the subscription from all ${subscription.agent_count || 0} assigned agent(s).`)) {
+  if (!confirm(uiText("Delete subscription \"{arg1}\"?\n\nThis will clear the subscription from all {arg2} assigned agent(s).", { arg1: (subscription.name), arg2: (subscription.agent_count || 0) }))) {
     return
   }
   deletingSubscription.value = subscription.id
@@ -794,7 +781,7 @@ async function deleteSubscription(subscription) {
     expandedSubscriptions.value.delete(subscription.id)
     await loadSubscriptions()
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to delete subscription'
+    error.value = e.response?.data?.detail || uiText("Failed to delete subscription")
   } finally {
     deletingSubscription.value = null
   }
@@ -823,7 +810,7 @@ function toggleBreakdown(subId) {
 async function refreshHeadroom(subId) {
   const result = await subsStore.refreshHeadroom(subId)
   if (result === null) {
-    error.value = 'Headroom refresh failed — see backend logs'
+    error.value = uiText("Headroom refresh failed — see backend logs")
   }
 }
 
@@ -864,14 +851,14 @@ async function assignAgentToSubscription(subName, agentName) {
     await loadSubscriptions()
     selectedAgentToAssign.value = {}
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to assign agent'
+    error.value = e.response?.data?.detail || uiText("Failed to assign agent")
   } finally {
     assigningAgent.value = null
   }
 }
 
 async function unassignAgentFromSubscription(agentName) {
-  if (!confirm(`Remove "${agentsStore.displayNameForSlug(agentName)}" from this subscription?\n\nIf the agent is running, it will be restarted.`)) return
+  if (!confirm(uiText("Remove \"{arg1}\" from this subscription?\n\nIf the agent is running, it will be restarted.", { arg1: (agentsStore.displayNameForSlug(agentName)) }))) return
   unassigningAgent.value = agentName
   error.value = null
   try {
@@ -880,7 +867,7 @@ async function unassignAgentFromSubscription(agentName) {
     })
     await loadSubscriptions()
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to unassign agent'
+    error.value = e.response?.data?.detail || uiText("Failed to unassign agent")
   } finally {
     unassigningAgent.value = null
   }
@@ -908,7 +895,7 @@ async function toggleAutoSwitch() {
     })
     autoSwitchEnabled.value = newValue
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to update auto-switch setting'
+    error.value = e.response?.data?.detail || uiText("Failed to update auto-switch setting")
   } finally {
     savingAutoSwitch.value = false
   }
@@ -922,7 +909,7 @@ async function toggleApiKeyFallback() {
   try {
     await subsStore.setApiKeyFallback(!subsStore.apiKeyFallback.enabled)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to update the API-key fallback setting'
+    error.value = e.response?.data?.detail || uiText("Failed to update the API-key fallback setting")
   } finally {
     savingApiKeyFallback.value = false
   }
@@ -935,7 +922,7 @@ async function toggleHeadroomAutoRefresh() {
   try {
     await subsStore.setHeadroomAutoRefresh(!subsStore.headroomAutoRefresh.enabled)
   } catch (e) {
-    error.value = e.response?.data?.detail || 'Failed to update headroom auto-refresh setting'
+    error.value = e.response?.data?.detail || uiText("Failed to update headroom auto-refresh setting")
   } finally {
     savingHeadroomToggle.value = false
   }
@@ -947,4 +934,6 @@ onMounted(() => {
   subsStore.fetchHeadroomAutoRefresh()
   subsStore.fetchApiKeyFallback()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

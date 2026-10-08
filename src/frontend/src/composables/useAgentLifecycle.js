@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { ref, reactive } from 'vue'
 
 /**
@@ -24,7 +26,7 @@ export function useAgentLifecycle(agentRef, agentsStore, router, showNotificatio
       agentRef.value.status = 'running'
       showNotification(result.message, 'success')
     } catch (err) {
-      showNotification(err.message || 'Failed to start agent', 'error')
+      showNotification(err.message || uiText("Failed to start agent"), 'error')
     } finally {
       actionLoading.value = false
     }
@@ -38,7 +40,7 @@ export function useAgentLifecycle(agentRef, agentsStore, router, showNotificatio
       agentRef.value.status = 'stopped'
       showNotification(result.message, 'success')
     } catch (err) {
-      showNotification(err.message || 'Failed to stop agent', 'error')
+      showNotification(err.message || uiText("Failed to stop agent"), 'error')
     } finally {
       actionLoading.value = false
     }
@@ -46,8 +48,8 @@ export function useAgentLifecycle(agentRef, agentsStore, router, showNotificatio
 
   const deleteAgent = () => {
     if (!agentRef.value) return
-    confirmDialog.title = 'Delete Agent'
-    confirmDialog.message = 'Are you sure you want to delete this agent?'
+    confirmDialog.title = uiText("Delete Agent")
+    confirmDialog.message = uiText("Are you sure you want to delete this agent?")
     confirmDialog.confirmText = 'Delete'
     confirmDialog.variant = 'danger'
     confirmDialog.onConfirm = async () => {
@@ -58,7 +60,7 @@ export function useAgentLifecycle(agentRef, agentsStore, router, showNotificatio
         // a list intent, and must not override the user's saved view mode).
         router.push('/')
       } catch (err) {
-        showNotification(err.message || 'Failed to delete agent', 'error')
+        showNotification(err.message || uiText("Failed to delete agent"), 'error')
       }
     }
     confirmDialog.visible = true

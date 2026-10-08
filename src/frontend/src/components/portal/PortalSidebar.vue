@@ -33,7 +33,7 @@
         v-if="totalWaiting"
         class="shrink-0 min-w-[1.25rem] px-1.5 h-5 rounded-full bg-action-primary-600 text-white text-[11px] font-semibold flex items-center justify-center"
         :class="askCount ? 'ml-1.5' : 'ml-auto'"
-        :title="`${totalWaiting} ${totalWaiting === 1 ? 'reply' : 'replies'} you haven't read`"
+        :title="uiText(&quot;{arg1} {arg2} you haven't read&quot;, { arg1: (totalWaiting), arg2: (totalWaiting === 1 ? 'reply' : 'replies') })"
       >{{ totalWaiting > 99 ? '99+' : totalWaiting }}</span>
     </div>
 
@@ -45,12 +45,12 @@
            dead-end this surface is supposed to have stopped having. -->
       <button
         :disabled="!roster.length"
-        :title="roster.length ? 'Start a new conversation' : 'No agents available yet'"
+        :title="roster.length ? translate('Start a new conversation') : translate('No agents available yet')"
         class="w-full flex items-center gap-2 rounded-xl border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm font-medium hover:bg-white dark:hover:bg-gray-900 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent"
         @click="$emit('new-chat')"
       >
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-        New chat
+        {{ translate('New chat') }}
       </button>
 
       <!-- Search -->
@@ -59,7 +59,7 @@
         <input
           :value="search"
           type="search"
-          :placeholder="SEARCH_PLACEHOLDER"
+          :placeholder="translate(SEARCH_PLACEHOLDER)"
           class="w-full rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm pl-9 pr-3 py-2 focus:ring-2 focus:ring-action-primary-500/40 focus:border-action-primary-500 focus:outline-none"
           @input="$emit('update:search', $event.target.value)"
         />
@@ -82,7 +82,7 @@
         <!-- ent#402: while searching the label states the MATCH count. The
              toggle beside the rows states the overflow, so this must not
              repeat it — one fact, one place. -->
-        <div class="px-1.5 pt-1 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ isSearching ? agentResultsLabel(agentResults.total) : 'Agents' }}</div>
+        <div class="px-1.5 pt-1 pb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ isSearching ? agentResultsLabel(agentResults.total) : translate('Agents') }}</div>
 
         <!-- #2159: the roster load is the first thing that happens after
              sign-in and it is not instant on a large fleet. Without this the
@@ -97,7 +97,7 @@
               <div class="h-2.5 w-1/3 rounded bg-gray-100 dark:bg-gray-800/60"></div>
             </div>
           </div>
-          <span class="sr-only">Loading your agents…</span>
+          <span class="sr-only">{{ translate('Loading your agents…') }}</span>
         </div>
 
         <button
@@ -176,7 +176,7 @@
                child still sits between the date and the edge, and `gap-2.5` on
                the row would keep paying 10px for it. -->
           <span v-if="reserveAvailability" class="shrink-0 min-w-[4.5rem] flex justify-end">
-            <BaseBadge v-if="chipFor(a)" :variant="chipFor(a).variant">{{ chipFor(a).label }}</BaseBadge>
+            <BaseBadge v-if="chipFor(a)" :variant="chipFor(a).variant">{{ translate(chipFor(a).label) }}</BaseBadge>
           </span>
           <!-- #2424: the ask badge ent#364's comment above already promised.
                It got an aggregate in the brand header and nothing per row, so
@@ -227,11 +227,11 @@
              an external client can only ask whoever invited them. -->
         <div v-if="!roster.length && !loadingRoster" class="px-2 py-3 text-xs text-gray-500 dark:text-gray-400">
           <template v-if="isPlatformSession">
-            No agents yet.
-            <a href="/" class="text-action-primary-600 hover:underline">Create one →</a>
+            {{ translate('No agents yet.') }}
+            <a href="/" class="text-action-primary-600 hover:underline">{{ translate('Create one →') }}</a>
           </template>
           <template v-else>
-            No agents shared with you yet — ask whoever invited you to share one.
+            {{ translate('No agents shared with you yet — ask whoever invited you to share one.') }}
           </template>
         </div>
       </section>
@@ -246,7 +246,7 @@
              declaration; the result rows below are siblings, so they keep the
              body colour a chat title needs. -->
         <div class="text-gray-400">
-          <div class="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide">Chats</div>
+          <div class="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide">{{ translate('Chats') }}</div>
           <div v-if="emptyLines.chats" class="px-2 py-3 text-xs">
             {{ emptyLines.chats }}
             <!-- The next action, on the one state where BOTH halves came back
@@ -264,7 +264,7 @@
           <div class="flex items-center gap-2">
             <PortalAvatar :name="r.agent_name" :avatar-url="avatarFor(r.agent_name)" :size="22" />
             <span class="min-w-0 flex-1">
-              <span class="block text-sm truncate">{{ r.title || 'Chat' }}</span>
+              <span class="block text-sm truncate">{{ r.title || translate('Chat') }}</span>
               <span v-if="r.snippet" class="block text-xs text-gray-400 truncate">{{ r.snippet }}</span>
             </span>
           </div>
@@ -275,7 +275,7 @@
         <!-- Starred first, and LIFTED OUT of the date groups below (a starred
              chat appears exactly once — see partitionStarred). -->
         <div v-if="starred.length" class="mt-3">
-          <div class="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Starred</div>
+          <div class="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ translate('Starred') }}</div>
           <ChatRow
             v-for="t in starred"
             :key="rowKey(t)"
@@ -289,7 +289,7 @@
         </div>
 
         <div v-for="g in grouped" :key="g.label" class="mt-3">
-          <div class="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ g.label }}</div>
+          <div class="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ translate(g.label) }}</div>
           <ChatRow
             v-for="t in g.threads"
             :key="rowKey(t)"
@@ -313,14 +313,14 @@
          lesson); only the accessible name changes. -->
     <div class="shrink-0 border-t border-gray-200 dark:border-gray-800 p-3 flex items-center gap-2">
       <div class="min-w-0 flex-1">
-        <div class="text-xs text-gray-400">{{ isPlatformSession ? 'Signed in to Trinity' : 'Signed in' }}</div>
+        <div class="text-xs text-gray-400">{{ isPlatformSession ? translate('Signed in to Trinity') : translate('Signed in') }}</div>
         <div class="text-sm truncate" :title="clientEmail">{{ clientEmail }}</div>
       </div>
       <button
         type="button"
         class="shrink-0 p-2 rounded-lg text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white dark:hover:bg-gray-900 transition"
-        :title="signOutLabel"
-        :aria-label="signOutLabel"
+        :title="translate(signOutLabel)"
+        :aria-label="translate(signOutLabel)"
         @click="$emit('sign-out')"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
@@ -330,6 +330,7 @@
 </template>
 
 <script setup>
+import { t as translate } from '@/i18n'
 import { computed, ref } from 'vue'
 import PortalAvatar from './PortalAvatar.vue'
 import ChatRow from './PortalChatRow.vue'
@@ -517,4 +518,6 @@ const avatarByAgent = computed(() =>
   Object.fromEntries((props.roster || []).map((a) => [a.name, a.avatar_url])),
 )
 const avatarFor = (name) => avatarByAgent.value[name] || null
+
+import { t as uiText } from '@/i18n'
 </script>

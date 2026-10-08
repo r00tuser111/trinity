@@ -26,7 +26,7 @@
             <button
               type="button"
               class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none focus:ring-1 focus:ring-action-primary-500 rounded"
-              aria-label="Close"
+              :aria-label="uiText(&quot;Close&quot;)"
               @click="$emit('close')"
             >
               <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -116,4 +116,6 @@ onUnmounted(() => {
   // Restore focus to whatever opened the dialog.
   if (prevActive && typeof prevActive.focus === 'function') prevActive.focus()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

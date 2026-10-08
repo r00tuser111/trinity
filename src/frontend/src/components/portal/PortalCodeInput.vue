@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-2" role="group" aria-label="6-digit sign-in code">
+  <div class="flex items-center gap-2" role="group" :aria-label="uiText(&quot;6-digit sign-in code&quot;)">
     <input
       v-for="(d, i) in digits"
       :key="i"
@@ -8,7 +8,7 @@
       inputmode="numeric"
       autocomplete="one-time-code"
       maxlength="1"
-      :aria-label="`Digit ${i + 1}`"
+      :aria-label="uiText(&quot;Digit {arg1}&quot;, { arg1: (i + 1) })"
       class="w-11 h-14 text-center text-xl font-semibold rounded-xl border bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100
              border-gray-300 dark:border-gray-700 focus:border-action-primary-500 focus:ring-2 focus:ring-action-primary-500/40 focus:outline-none transition"
       @input="onInput(i, $event)"
@@ -79,4 +79,6 @@ async function focusBox(i) {
 }
 
 defineExpose({ focusFirst: () => focusBox(0) })
+
+import { t as uiText } from '@/i18n'
 </script>

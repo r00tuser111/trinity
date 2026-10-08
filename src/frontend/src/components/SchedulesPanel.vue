@@ -3,8 +3,8 @@
     <!-- Header with Create Button -->
     <div class="flex justify-between items-center">
       <div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Scheduled Tasks</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Automate agent tasks with cron schedules</p>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Scheduled Tasks') }}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('Automate agent tasks with cron schedules') }}</p>
       </div>
       <button
         @click="showCreateForm = true"
@@ -13,7 +13,7 @@
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
-        New Schedule
+        {{ t('New Schedule') }}
       </button>
     </div>
 
@@ -31,16 +31,16 @@
         </svg>
         <div class="flex-1">
           <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
-            Autonomy is off — {{ enabledScheduleCount === 1 ? 'this schedule will not fire' : `these ${enabledScheduleCount} schedules will not fire` }}
+            {{ t('Autonomy is off —') }} {{ enabledScheduleCount === 1 ? t('this schedule will not fire') : uiText("these {arg1} schedules will not fire", { arg1: (enabledScheduleCount) }) }}
           </p>
           <p class="mt-1 text-sm text-amber-700 dark:text-amber-300">
-            Autonomy mode is the master switch for scheduled work on this agent. While it is off, each run is skipped silently and no execution is recorded.
+            {{ t('Autonomy mode is the master switch for scheduled work on this agent. While it is off, each run is skipped silently and no execution is recorded.') }}
           </p>
           <button
             @click="$emit('enable-autonomy')"
             class="mt-3 inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
           >
-            Enable autonomy
+            {{ t('Enable autonomy') }}
           </button>
         </div>
       </div>
@@ -52,23 +52,23 @@
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="closeForm"></div>
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full relative z-10 p-6">
           <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-            {{ editingSchedule ? 'Edit Schedule' : 'Create Schedule' }}
+            {{ editingSchedule ? t('Edit Schedule') : t('Create Schedule') }}
           </h3>
 
           <form @submit.prevent="saveSchedule" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Name') }}</label>
               <input
                 v-model="formData.name"
                 type="text"
                 required
-                placeholder="Daily report"
+                :placeholder="t('Daily report')"
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cron Expression</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Cron Expression') }}</label>
               <input
                 v-model="formData.cron_expression"
                 type="text"
@@ -85,7 +85,7 @@
                 :class="showCronError ? 'text-status-danger-600 dark:text-status-danger-400' : 'text-gray-500 dark:text-gray-400'"
               >
                 <template v-if="showCronError"><span data-testid="cron-error">{{ cronVerdict.error }}</span></template>
-                <template v-else>Format: minute hour day month day_of_week (e.g., "0 9 * * *" for 9 AM daily)</template>
+                <template v-else>{{ t('Format: minute hour day month day_of_week (e.g., "0 9 * * *" for 9 AM daily)') }}</template>
               </p>
               <div class="mt-1 flex flex-wrap gap-1">
                 <!-- #925: presets come from the exported CRON_PRESETS so "presets
@@ -101,23 +101,23 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Task Message</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Task Message') }}</label>
               <textarea
                 v-model="formData.message"
                 required
                 rows="3"
-                placeholder="Generate and post the daily analytics report..."
+                :placeholder="t('Generate and post the daily analytics report...')"
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
               ></textarea>
-              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">This message will be sent to the agent when the schedule triggers</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ t('This message will be sent to the agent when the schedule triggers') }}</p>
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description (optional)</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Description (optional)') }}</label>
               <input
                 v-model="formData.description"
                 type="text"
-                placeholder="Optional description"
+                :placeholder="t('Optional description')"
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
               />
             </div>
@@ -126,42 +126,42 @@
             <div>
               <ModelSelector
                 v-model="formData.model"
-                label="Model"
+                :label="t('Model')"
                 :platformDefault="platformDefaultModel"
               />
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Leave blank to use the platform default
+                {{ t('Leave blank to use the platform default') }}
                 <span v-if="platformDefaultModel" class="font-mono">({{ platformDefaultModel }})</span>.
               </p>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Timezone</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Timezone') }}</label>
                 <select
                   v-model="formData.timezone"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
                 >
                   <option value="UTC">UTC</option>
-                  <option value="America/New_York">America/New_York (EST/EDT)</option>
-                  <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
-                  <option value="Europe/London">Europe/London (GMT/BST)</option>
-                  <option value="Europe/Paris">Europe/Paris (CET/CEST)</option>
-                  <option value="Asia/Tokyo">Asia/Tokyo (JST)</option>
-                  <option value="Asia/Shanghai">Asia/Shanghai (CST)</option>
+                  <option value="America/New_York">{{ t('America/New_York (EST/EDT)') }}</option>
+                  <option value="America/Los_Angeles">{{ t('America/Los_Angeles (PST/PDT)') }}</option>
+                  <option value="Europe/London">{{ t('Europe/London (GMT/BST)') }}</option>
+                  <option value="Europe/Paris">{{ t('Europe/Paris (CET/CEST)') }}</option>
+                  <option value="Asia/Tokyo">{{ t('Asia/Tokyo (JST)') }}</option>
+                  <option value="Asia/Shanghai">{{ t('Asia/Shanghai (CST)') }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Timeout</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Timeout') }}</label>
                 <select
                   v-model="formData.timeout_seconds"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
                 >
-                  <option :value="300">5 minutes</option>
-                  <option :value="900">15 minutes</option>
-                  <option :value="1800">30 minutes</option>
-                  <option :value="3600">1 hour (default)</option>
-                  <option :value="7200">2 hours</option>
+                  <option :value="300">{{ t('5 minutes') }}</option>
+                  <option :value="900">{{ t('15 minutes') }}</option>
+                  <option :value="1800">{{ t('30 minutes') }}</option>
+                  <option :value="3600">{{ t('1 hour (default)') }}</option>
+                  <option :value="7200">{{ t('2 hours') }}</option>
                 </select>
               </div>
             </div>
@@ -169,47 +169,47 @@
             <!-- Retry Configuration (RETRY-001) -->
             <div class="grid grid-cols-2 gap-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max Retries</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Max Retries') }}</label>
                 <select
                   v-model="formData.max_retries"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
                 >
-                  <option :value="0">Disabled (default)</option>
-                  <option :value="1">1 retry</option>
-                  <option :value="2">2 retries</option>
-                  <option :value="3">3 retries</option>
-                  <option :value="5">5 retries</option>
+                  <option :value="0">{{ t('Disabled (default)') }}</option>
+                  <option :value="1">{{ t('1 retry') }}</option>
+                  <option :value="2">{{ t('2 retries') }}</option>
+                  <option :value="3">{{ t('3 retries') }}</option>
+                  <option :value="5">{{ t('5 retries') }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Retry Delay</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Retry Delay') }}</label>
                 <select
                   v-model="formData.retry_delay_seconds"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-action-primary-500"
                 >
-                  <option :value="30">30 seconds</option>
-                  <option :value="60">1 minute (default)</option>
-                  <option :value="120">2 minutes</option>
-                  <option :value="300">5 minutes</option>
-                  <option :value="600">10 minutes</option>
+                  <option :value="30">{{ t('30 seconds') }}</option>
+                  <option :value="60">{{ t('1 minute (default)') }}</option>
+                  <option :value="120">{{ t('2 minutes') }}</option>
+                  <option :value="300">{{ t('5 minutes') }}</option>
+                  <option :value="600">{{ t('10 minutes') }}</option>
                 </select>
               </div>
             </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 -mt-2">
-              Auto-retry failed executions. Rate-limited (429) failures use 2x delay.
+              {{ t('Auto-retry failed executions. Rate-limited (429) failures use 2x delay.') }}
             </p>
 
             <!-- Allowed Tools Section -->
             <div>
               <div class="flex items-center justify-between mb-2">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Allowed Tools</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('Allowed Tools') }}</label>
                 <button
                   type="button"
                   @click="toggleAllTools"
                   class="text-xs px-2 py-1 rounded"
                   :class="formData.allowed_tools === null ? 'bg-action-primary-100 dark:bg-action-primary-900/30 text-action-primary-700 dark:text-action-primary-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'"
                 >
-                  {{ formData.allowed_tools === null ? 'All Tools (Unrestricted)' : 'Enable All' }}
+                  {{ formData.allowed_tools === null ? t('All Tools (Unrestricted)') : t('Enable All') }}
                 </button>
               </div>
               <div v-if="formData.allowed_tools !== null" class="space-y-3">
@@ -235,7 +235,7 @@
                 </div>
               </div>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {{ formData.allowed_tools === null ? 'Agent can use any tool' : `${formData.allowed_tools.length} tool(s) selected` }}
+                {{ formData.allowed_tools === null ? t('Agent can use any tool') : uiText("{arg1} tool(s) selected", { arg1: (formData.allowed_tools.length) }) }}
               </p>
             </div>
 
@@ -246,7 +246,7 @@
                 id="enabled"
                 class="h-4 w-4 text-action-primary-600 focus:ring-action-primary-500 border-gray-300 rounded"
               />
-              <label for="enabled" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Enable schedule immediately</label>
+              <label for="enabled" class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ t('Enable schedule immediately') }}</label>
             </div>
 
             <div v-if="formError" class="p-3 bg-status-danger-50 dark:bg-status-danger-900/30 text-status-danger-700 dark:text-status-danger-300 text-sm rounded-md">
@@ -259,7 +259,7 @@
                 @click="closeForm"
                 class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
               >
-                Cancel
+                {{ t('Cancel') }}
               </button>
               <!-- #925: disabled ONLY for non-empty-AND-invalid cron — an empty
                    cron keeps the native `required` bubble path for the form. -->
@@ -273,9 +273,9 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                   </svg>
-                  Saving...
+                  {{ t('Saving...') }}
                 </span>
-                <span v-else>{{ editingSchedule ? 'Update' : 'Create' }}</span>
+                <span v-else>{{ editingSchedule ? t('Update') : t('Create') }}</span>
               </button>
             </div>
           </form>
@@ -305,7 +305,7 @@
          "no data yet" and is unchanged. -->
     <div v-if="loading && schedules.length === 0" class="p-4" aria-busy="true">
       <SkeletonLoader variant="rows" :count="4" height="3.5rem" gap="0.5rem" />
-      <span class="sr-only">Loading schedules…</span>
+      <span class="sr-only">{{ t('Loading schedules…') }}</span>
     </div>
 
     <!-- Failed list fetch (#1926) — "No schedules configured" on a failed fetch
@@ -316,7 +316,7 @@
          list instead (below). -->
     <LoadFailed
       v-else-if="loadError && schedules.length === 0"
-      title="Couldn't load schedules"
+      :title="t('Couldn\'t load schedules')"
       message="The schedule list didn't load, so what you see may be incomplete. Try again."
       :detail="loadError"
       :retrying="loading"
@@ -327,8 +327,8 @@
       <svg class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
-      <p class="mt-2 text-gray-500 dark:text-gray-400">No schedules configured</p>
-      <p class="text-sm text-gray-400 dark:text-gray-500">A schedule is what makes this agent autonomous — it runs without you.</p>
+      <p class="mt-2 text-gray-500 dark:text-gray-400">{{ t('No schedules configured') }}</p>
+      <p class="text-sm text-gray-400 dark:text-gray-500">{{ t('A schedule is what makes this agent autonomous — it runs without you.') }}</p>
       <!-- ent#238: an empty view with no way out is a dead end. The primary
            action is the same one the header carries, so the user never has to
            go hunting for it from the state that needs it most. -->
@@ -337,7 +337,7 @@
         data-testid="schedules-empty-create"
         class="mt-4 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700"
       >
-        Create a schedule
+        {{ t('Create a schedule') }}
       </button>
     </div>
 
@@ -348,7 +348,7 @@
       <LoadFailed
         v-if="loadError"
         dense
-        title="Couldn't refresh schedules"
+        :title="t('Couldn\'t refresh schedules')"
         message="Showing the last loaded list — it may be stale."
         :detail="loadError"
         :retrying="loading"
@@ -372,7 +372,7 @@
                   schedule.enabled ? 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                 ]"
               >
-                {{ schedule.enabled ? 'Active' : 'Disabled' }}
+                {{ schedule.enabled ? t('Active') : t('Disabled') }}
               </span>
             </div>
             <p v-if="schedule.description" class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ schedule.description }}</p>
@@ -389,8 +389,8 @@
                 <span
                   v-if="cronValidity[schedule.id] === false"
                   class="ml-1 text-status-warning-600 dark:text-status-warning-400"
-                  title="Invalid cron expression"
-                  aria-label="Invalid cron expression"
+                  :title="t('Invalid cron expression')"
+                  :aria-label="t('Invalid cron expression')"
                   role="img"
                   data-testid="cron-invalid-warning"
                 >
@@ -405,7 +405,7 @@
                 </svg>
                 {{ schedule.timezone }}
               </span>
-              <span class="flex items-center" :title="`Timeout: ${formatTimeout(schedule.timeout_seconds)}`">
+              <span class="flex items-center" :title="uiText(&quot;Timeout: {arg1}&quot;, { arg1: (formatTimeout(schedule.timeout_seconds)) })">
                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -415,50 +415,50 @@
                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
-                {{ schedule.allowed_tools.length }} tools
+                {{ schedule.allowed_tools.length }} {{ t('tools') }}
               </span>
-              <span class="flex items-center" :title="`Model: ${schedule.model || 'platform default'}`">
+              <span class="flex items-center" :title="uiText(&quot;Model: {arg1}&quot;, { arg1: (schedule.model || 'platform default') })">
                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
                 <span :class="!schedule.model ? 'text-gray-400 dark:text-gray-500 italic' : ''">
-                  {{ schedule.model || `platform default${platformDefaultModel ? ` (${platformDefaultModel})` : ''}` }}
+                  {{ schedule.model || uiText("platform default{arg1}", { arg1: (platformDefaultModel ? ` (${platformDefaultModel})` : '') }) }}
                 </span>
               </span>
               <!-- RETRY-001: Retry configuration badge -->
-              <span v-if="schedule.max_retries > 0" class="flex items-center" :title="`Retry: ${schedule.max_retries}x, ${schedule.retry_delay_seconds}s delay`">
+              <span v-if="schedule.max_retries > 0" class="flex items-center" :title="uiText(&quot;Retry: {arg1}x, {arg2}s delay&quot;, { arg1: (schedule.max_retries), arg2: (schedule.retry_delay_seconds) })">
                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                {{ schedule.max_retries }}x retry
+                {{ schedule.max_retries }}{{ t('x retry') }}
               </span>
               <!-- #1796: autonomy is the master gate. When it is off the
                    scheduler still fires the job and immediately discards it,
                    so a "Next: in 4 minutes" countdown here would promise a run
                    that cannot happen. Say why instead. -->
-              <span v-if="!autonomyEnabled && schedule.enabled" class="flex items-center text-amber-600 dark:text-amber-400" title="Autonomy is off for this agent, so this schedule will not fire">
+              <span v-if="!autonomyEnabled && schedule.enabled" class="flex items-center text-amber-600 dark:text-amber-400" :title="t('Autonomy is off for this agent, so this schedule will not fire')">
                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Will not fire — autonomy off
+                {{ t('Will not fire — autonomy off') }}
               </span>
-              <span v-else-if="schedule.next_run_at && isOverdue(schedule)" class="flex items-center text-amber-600 dark:text-amber-400" :title="`Scheduled for ${formatDateTime(schedule.next_run_at)} but hasn't fired yet`">
+              <span v-else-if="schedule.next_run_at && isOverdue(schedule)" class="flex items-center text-amber-600 dark:text-amber-400" :title="uiText(&quot;Scheduled for {arg1} but hasn't fired yet&quot;, { arg1: (formatDateTime(schedule.next_run_at)) })">
                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19H19a2 2 0 001.75-2.96l-6.93-12a2 2 0 00-3.5 0l-6.93 12A2 2 0 005.07 19z" />
                 </svg>
-                Overdue by {{ formatOverdue(schedule.next_run_at) }}
+                {{ t('Overdue by') }} {{ formatOverdue(schedule.next_run_at) }}
               </span>
               <span v-else-if="schedule.next_run_at" class="flex items-center text-action-primary-600 dark:text-action-primary-400">
                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
-                Next: {{ formatRelativeTime(schedule.next_run_at) }}
+                {{ t('Next:') }} {{ formatRelativeTime(schedule.next_run_at) }}
               </span>
               <span v-if="schedule.last_run_at" class="flex items-center">
                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                Last: {{ formatRelativeTime(schedule.last_run_at) }}
+                {{ t('Last:') }} {{ formatRelativeTime(schedule.last_run_at) }}
               </span>
             </div>
 
@@ -469,23 +469,23 @@
               class="flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs"
             >
               <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700/60">
-                <span class="text-gray-400 dark:text-gray-500">7d success</span>
+                <span class="text-gray-400 dark:text-gray-500">{{ t('7d success') }}</span>
                 <span :class="['font-semibold', successRateClass(perfBySchedule[schedule.id].success_rate)]">
                   {{ fmtSuccessRate(perfBySchedule[schedule.id].success_rate) }}
                 </span>
               </span>
               <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700/60">
-                <span class="text-gray-400 dark:text-gray-500">avg</span>
+                <span class="text-gray-400 dark:text-gray-500">{{ t('avg') }}</span>
                 <span class="font-mono text-gray-700 dark:text-gray-200">{{ fmtPerfDuration(perfBySchedule[schedule.id].avg_duration_ms) }}</span>
               </span>
               <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700/60">
                 <span class="font-mono text-gray-700 dark:text-gray-200">{{ perfBySchedule[schedule.id].total_executions }}</span>
-                <span class="text-gray-400 dark:text-gray-500">runs</span>
+                <span class="text-gray-400 dark:text-gray-500">{{ t('runs') }}</span>
               </span>
               <span
                 v-if="perfBySchedule[schedule.id].last_run_status"
                 class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700/60"
-                :title="`Last run: ${perfBySchedule[schedule.id].last_run_status}`"
+                :title="uiText(&quot;Last run: {arg1}&quot;, { arg1: (perfBySchedule[schedule.id].last_run_status) })"
               >
                 <span
                   class="w-1.5 h-1.5 rounded-full"
@@ -505,7 +505,7 @@
               @click="triggerSchedule(schedule)"
               :disabled="triggerLoading === schedule.id"
               class="p-1.5 text-gray-400 hover:text-action-primary-600 rounded transition-colors"
-              title="Run now"
+              :title="t('Run now')"
             >
               <svg v-if="triggerLoading === schedule.id" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -522,7 +522,7 @@
               :disabled="toggleLoading.has(schedule.id)"
               class="p-1.5 rounded transition-colors"
               :class="schedule.enabled ? 'text-status-success-600 hover:text-gray-400' : 'text-gray-400 hover:text-status-success-600'"
-              :title="schedule.enabled ? 'Disable' : 'Enable'"
+              :title="schedule.enabled ? t('Disable') : t('Enable')"
             >
               <svg v-if="toggleLoading.has(schedule.id)" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -540,7 +540,7 @@
               @click="editSchedule(schedule)"
               :disabled="deleteLoading === schedule.id || toggleLoading.has(schedule.id)"
               class="p-1.5 text-gray-400 hover:text-action-primary-600 rounded transition-colors"
-              title="Edit"
+              :title="t('Edit')"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -550,7 +550,7 @@
               @click="deleteSchedule(schedule)"
               :disabled="deleteLoading === schedule.id"
               class="p-1.5 text-gray-400 hover:text-status-danger-600 rounded transition-colors"
-              title="Delete"
+              :title="t('Delete')"
             >
               <svg v-if="deleteLoading === schedule.id" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -577,7 +577,7 @@
           >
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
-          {{ expandedSchedule === schedule.id ? 'Hide' : 'Show' }} execution history
+          {{ expandedSchedule === schedule.id ? t('Hide') : t('Show') }} {{ t('execution history') }}
         </button>
 
         <!-- ent#77: Webhook configuration toggle -->
@@ -591,7 +591,7 @@
           <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 010 5.656l-3 3a4 4 0 01-5.656-5.656l1.5-1.5m6.156-1.328a4 4 0 010-5.656l3-3a4 4 0 015.656 5.656l-1.5 1.5" />
           </svg>
-          Webhook<span v-if="schedule.webhook_enabled" class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-status-success-100 text-status-success-800 dark:bg-status-success-900/40 dark:text-status-success-300">on</span>
+          {{ uiText("Webhook") }}<span v-if="schedule.webhook_enabled" class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-status-success-100 text-status-success-800 dark:bg-status-success-900/40 dark:text-status-success-300">{{ t('on') }}</span>
         </button>
 
         <!-- ent#77: Webhook configuration panel -->
@@ -599,19 +599,19 @@
           <div v-if="wh(schedule).loading" class="py-3 space-y-2" aria-busy="true">
             <div class="h-3 w-2/3 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
             <div class="h-3 w-1/2 rounded bg-gray-100 dark:bg-gray-800/60 animate-pulse motion-reduce:animate-none"></div>
-            <span class="sr-only">Loading…</span>
+            <span class="sr-only">{{ t('Loading…') }}</span>
           </div>
 
           <template v-else>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Trigger this schedule from an external system by POSTing to a secret URL. Off by default; enable to mint a URL.
+              {{ t('Trigger this schedule from an external system by POSTing to a secret URL. Off by default; enable to mint a URL.') }}
             </p>
 
             <!-- Disabled state -->
             <div v-if="!wh(schedule).status || !wh(schedule).status.has_token">
               <button @click="enableWebhook(schedule)" :disabled="wh(schedule).busy"
                 class="px-3 py-1.5 text-xs rounded bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-50">
-                Enable webhook
+                {{ t('Enable webhook') }}
               </button>
             </div>
 
@@ -619,26 +619,26 @@
             <div v-else class="space-y-3">
               <!-- URL -->
               <div>
-                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Webhook URL</label>
+                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Webhook URL') }}</label>
                 <div class="flex items-center gap-2">
                   <input readonly :value="wh(schedule).revealed ? wh(schedule).status.webhook_url : maskUrl(wh(schedule).status.webhook_url)"
                     class="flex-1 font-mono text-xs px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200" />
                   <button @click="wh(schedule).revealed = !wh(schedule).revealed" class="text-xs px-2 py-1.5 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300">
-                    {{ wh(schedule).revealed ? 'Hide' : 'Reveal' }}
+                    {{ wh(schedule).revealed ? t('Hide') : t('Reveal') }}
                   </button>
                   <button @click="copyText(wh(schedule).status.webhook_url, schedule.id + ':url')" class="text-xs px-2 py-1.5 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200">
-                    {{ copiedKey === schedule.id + ':url' ? 'Copied!' : 'Copy URL' }}
+                    {{ copiedKey === schedule.id + ':url' ? t('Copied!') : t('Copy URL') }}
                   </button>
                 </div>
               </div>
 
               <!-- Example curl -->
               <div>
-                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Example request</label>
+                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{{ t('Example request') }}</label>
                 <div class="relative">
                   <pre class="font-mono text-[11px] whitespace-pre-wrap break-all px-2 py-2 rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">{{ exampleCurl(schedule) }}</pre>
                   <button @click="copyText(exampleCurl(schedule), schedule.id + ':curl')" class="absolute top-1.5 right-1.5 text-[10px] px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 dark:text-gray-200">
-                    {{ copiedKey === schedule.id + ':curl' ? 'Copied!' : 'Copy' }}
+                    {{ copiedKey === schedule.id + ':curl' ? t('Copied!') : t('Copy') }}
                   </button>
                 </div>
               </div>
@@ -647,39 +647,39 @@
               <div class="rounded border border-gray-200 dark:border-gray-700 p-2.5">
                 <div class="flex items-center justify-between">
                   <div>
-                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300">Signature authentication</span>
-                    <span v-if="wh(schedule).status.auth_enabled" class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-status-success-100 text-status-success-800 dark:bg-status-success-900/40 dark:text-status-success-300">required</span>
-                    <span v-else class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">off</span>
-                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">HMAC-SHA256 over the request body in <code>{{ wh(schedule).status.signature_header || 'X-Trinity-Signature' }}</code> — so a leaked URL alone can't trigger the schedule.</p>
+                    <span class="text-xs font-medium text-gray-700 dark:text-gray-300">{{ t('Signature authentication') }}</span>
+                    <span v-if="wh(schedule).status.auth_enabled" class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-status-success-100 text-status-success-800 dark:bg-status-success-900/40 dark:text-status-success-300">{{ t('required') }}</span>
+                    <span v-else class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">{{ t('off') }}</span>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{{ t('HMAC-SHA256 over the request body in') }} <code>{{ wh(schedule).status.signature_header || 'X-Trinity-Signature' }}</code> {{ t('— so a leaked URL alone can\'t trigger the schedule.') }}</p>
                   </div>
                   <div class="flex items-center gap-2 flex-shrink-0">
                     <button v-if="!wh(schedule).status.auth_enabled" @click="enableSignature(schedule)" :disabled="wh(schedule).busy"
-                      class="text-xs px-2 py-1 rounded bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-50">Enable</button>
+                      class="text-xs px-2 py-1 rounded bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-50">{{ t('Enable') }}</button>
                     <template v-else>
-                      <button @click="enableSignature(schedule)" :disabled="wh(schedule).busy" class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300">Rotate secret</button>
-                      <button @click="disableSignature(schedule)" :disabled="wh(schedule).busy" class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300">Disable</button>
+                      <button @click="enableSignature(schedule)" :disabled="wh(schedule).busy" class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300">{{ t('Rotate secret') }}</button>
+                      <button @click="disableSignature(schedule)" :disabled="wh(schedule).busy" class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300">{{ t('Disable') }}</button>
                     </template>
                   </div>
                 </div>
 
                 <!-- Secret shown exactly once -->
                 <div v-if="wh(schedule).secretOnce" class="mt-2 rounded border border-status-warning-300 dark:border-status-warning-700 bg-status-warning-50 dark:bg-status-warning-900/20 p-2">
-                  <p class="text-[11px] font-medium text-status-warning-800 dark:text-status-warning-300 mb-1">Copy this signing secret now — it is shown only once.</p>
+                  <p class="text-[11px] font-medium text-status-warning-800 dark:text-status-warning-300 mb-1">{{ t('Copy this signing secret now — it is shown only once.') }}</p>
                   <div class="flex items-center gap-2">
                     <input readonly :value="wh(schedule).secretOnce" class="flex-1 font-mono text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200" />
                     <button @click="copyText(wh(schedule).secretOnce, schedule.id + ':secret')" class="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-gray-200">
-                      {{ copiedKey === schedule.id + ':secret' ? 'Copied!' : 'Copy' }}
+                      {{ copiedKey === schedule.id + ':secret' ? t('Copied!') : t('Copy') }}
                     </button>
-                    <button @click="wh(schedule).secretOnce = null" class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300">Done</button>
+                    <button @click="wh(schedule).secretOnce = null" class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300">{{ t('Done') }}</button>
                   </div>
                 </div>
               </div>
 
               <!-- Destructive actions -->
               <div class="flex items-center gap-2 pt-1">
-                <button @click="rotateWebhook(schedule)" :disabled="wh(schedule).busy" class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300">Rotate URL</button>
-                <button @click="revokeWebhook(schedule)" :disabled="wh(schedule).busy" class="text-xs px-2 py-1 rounded border border-status-danger-300 dark:border-status-danger-700 text-status-danger-700 dark:text-status-danger-400 hover:bg-status-danger-50 dark:hover:bg-status-danger-900/20">Revoke</button>
-                <span class="text-[11px] text-gray-400 dark:text-gray-500">Rotating or revoking invalidates the old URL immediately.</span>
+                <button @click="rotateWebhook(schedule)" :disabled="wh(schedule).busy" class="text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300">{{ t('Rotate URL') }}</button>
+                <button @click="revokeWebhook(schedule)" :disabled="wh(schedule).busy" class="text-xs px-2 py-1 rounded border border-status-danger-300 dark:border-status-danger-700 text-status-danger-700 dark:text-status-danger-400 hover:bg-status-danger-50 dark:hover:bg-status-danger-900/20">{{ t('Revoke') }}</button>
+                <span class="text-[11px] text-gray-400 dark:text-gray-500">{{ t('Rotating or revoking invalidates the old URL immediately.') }}</span>
               </div>
             </div>
 
@@ -699,7 +699,7 @@
             :message="staleBannerMessage('executions', executionsLoadedAt[schedule.id])"
             :detail="executionsError[schedule.id]"
             retryable
-            :retry-label="executionsLoading[schedule.id] ? 'Retrying…' : 'Try again'"
+            :retry-label="executionsLoading[schedule.id] ? uiText(&quot;Retrying…&quot;) : uiText(&quot;Try again&quot;)"
             @retry="loadExecutions(schedule.id)"
             @dismiss="executionsError[schedule.id] = ''"
           />
@@ -711,14 +711,14 @@
           <LoadFailed
             v-else-if="execView(schedule.id).state === 'failed'"
             dense
-            title="Couldn't load executions"
+            :title="t('Couldn\'t load executions')"
             message="The execution history didn't load. Try again."
             :detail="executionsError[schedule.id]"
             :retrying="!!executionsLoading[schedule.id]"
             @retry="loadExecutions(schedule.id)"
           />
           <div v-else-if="execView(schedule.id).state === 'empty'" class="text-center py-4 text-xs text-gray-400 dark:text-gray-500">
-            No executions yet
+            {{ t('No executions yet') }}
           </div>
           <div v-else class="space-y-2 max-h-60 overflow-y-auto" data-testid="executions-list">
             <div
@@ -768,7 +768,7 @@
                     exec.status === 'success' ? 'text-status-success-600' : exec.status === 'failed' ? 'text-status-danger-600' : exec.status === 'skipped' ? 'text-accent-purple-600' : exec.status === 'pending_retry' ? 'text-status-urgent-600' : 'text-status-warning-600'
                   ]"
                 >
-                  {{ exec.status === 'pending_retry' ? 'retrying' : exec.status }}
+                  {{ exec.status === 'pending_retry' ? t('retrying') : exec.status }}
                 </span>
               </div>
             </div>
@@ -789,7 +789,7 @@
           <!-- Header -->
           <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-start">
             <div>
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white">Execution Details</h3>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Execution Details') }}</h3>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ formatDateTime(selectedExecution.started_at) }}</p>
             </div>
             <div class="flex items-center space-x-3">
@@ -814,15 +814,15 @@
           <!-- Stats Row -->
           <div class="p-4 bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 grid grid-cols-5 gap-4">
             <div>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Duration</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('Duration') }}</p>
               <p class="text-sm font-medium dark:text-white">{{ formatDuration(selectedExecution.duration_ms) || '-' }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Cost</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('Cost') }}</p>
               <p class="text-sm font-medium font-mono dark:text-white">{{ formatCost(selectedExecution.cost) }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Context Used</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('Context Used') }}</p>
               <div class="flex items-center space-x-2">
                 <p class="text-sm font-medium dark:text-white">{{ formatTokens(selectedExecution.context_used) }}</p>
                 <div v-if="selectedExecution.context_max" class="w-12 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -835,13 +835,13 @@
               </div>
             </div>
             <div>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Model</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('Model') }}</p>
               <p class="text-sm font-medium font-mono dark:text-white">
-                {{ selectedExecution.model_used || `platform default${platformDefaultModel ? ` (${platformDefaultModel})` : ''}` }}
+                {{ selectedExecution.model_used || uiText("platform default{arg1}", { arg1: (platformDefaultModel ? ` (${platformDefaultModel})` : '') }) }}
               </p>
             </div>
             <div>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Triggered By</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('Triggered By') }}</p>
               <p class="text-sm font-medium capitalize dark:text-white">{{ selectedExecution.triggered_by }}</p>
             </div>
           </div>
@@ -850,19 +850,19 @@
           <div class="flex-1 overflow-y-auto p-4 space-y-4">
             <!-- Message Sent -->
             <div>
-              <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Message Sent</h4>
+              <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ t('Message Sent') }}</h4>
               <div class="bg-gray-100 dark:bg-gray-700 rounded p-3 text-sm font-mono whitespace-pre-wrap dark:text-gray-300">{{ selectedExecution.message }}</div>
             </div>
 
             <!-- Error (if any) -->
             <div v-if="selectedExecution.error">
-              <h4 class="text-sm font-medium text-status-danger-700 dark:text-status-danger-400 mb-2">Error</h4>
+              <h4 class="text-sm font-medium text-status-danger-700 dark:text-status-danger-400 mb-2">{{ t('Error') }}</h4>
               <div class="bg-status-danger-50 dark:bg-status-danger-900/30 border border-status-danger-200 dark:border-status-danger-800 rounded p-3 text-sm text-status-danger-700 dark:text-status-danger-300 whitespace-pre-wrap">{{ selectedExecution.error }}</div>
             </div>
 
             <!-- Tool Calls -->
             <div v-if="parsedToolCalls.length > 0">
-              <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tool Calls ({{ parsedToolCalls.length }})</h4>
+              <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ t('Tool Calls (') }}{{ parsedToolCalls.length }})</h4>
               <div class="space-y-1">
                 <div
                   v-for="(tool, idx) in parsedToolCalls"
@@ -887,7 +887,7 @@
 
             <!-- Response -->
             <div v-if="selectedExecution.response">
-              <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Response</h4>
+              <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ t('Response') }}</h4>
               <div class="bg-gray-100 dark:bg-gray-700 rounded p-3 text-sm whitespace-pre-wrap max-h-60 overflow-y-auto dark:text-gray-300">{{ selectedExecution.response }}</div>
             </div>
           </div>
@@ -898,7 +898,7 @@
               @click="selectedExecution = null"
               class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600"
             >
-              Close
+              {{ t('Close') }}
             </button>
           </div>
         </div>
@@ -918,6 +918,7 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import SkeletonLoader from './SkeletonLoader.vue'
 import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue'
 import { formatCost } from '../composables/useFormatters'
@@ -1092,7 +1093,7 @@ async function loadWebhook(schedule) {
     )
     s.status = data
   } catch (e) {
-    s.error = e.response?.data?.detail || 'Failed to load webhook config'
+    s.error = e.response?.data?.detail || uiText("Failed to load webhook config")
   } finally {
     s.loading = false
   }
@@ -1109,14 +1110,14 @@ async function enableWebhook(schedule) {
     s.status = data; s.revealed = true
     schedule.webhook_enabled = true
   } catch (e) {
-    s.error = e.response?.data?.detail || 'Failed to enable webhook'
+    s.error = e.response?.data?.detail || uiText("Failed to enable webhook")
   } finally {
     s.busy = false
   }
 }
 
 async function rotateWebhook(schedule) {
-  if (!confirm('Rotate the webhook URL? The current URL stops working immediately, and any signature secret is cleared.')) return
+  if (!confirm(uiText("Rotate the webhook URL? The current URL stops working immediately, and any signature secret is cleared."))) return
   const s = webhookState[schedule.id]
   s.busy = true; s.error = ''; s.secretOnce = null
   try {
@@ -1126,14 +1127,14 @@ async function rotateWebhook(schedule) {
     )
     s.status = data; s.revealed = true
   } catch (e) {
-    s.error = e.response?.data?.detail || 'Failed to rotate webhook'
+    s.error = e.response?.data?.detail || uiText("Failed to rotate webhook")
   } finally {
     s.busy = false
   }
 }
 
 async function revokeWebhook(schedule) {
-  if (!confirm('Revoke this webhook? The URL is invalidated immediately and external callers will get 404.')) return
+  if (!confirm(uiText("Revoke this webhook? The URL is invalidated immediately and external callers will get 404."))) return
   const s = webhookState[schedule.id]
   s.busy = true; s.error = ''
   try {
@@ -1145,7 +1146,7 @@ async function revokeWebhook(schedule) {
     s.secretOnce = null; s.revealed = false
     schedule.webhook_enabled = false
   } catch (e) {
-    s.error = e.response?.data?.detail || 'Failed to revoke webhook'
+    s.error = e.response?.data?.detail || uiText("Failed to revoke webhook")
   } finally {
     s.busy = false
   }
@@ -1153,7 +1154,7 @@ async function revokeWebhook(schedule) {
 
 async function enableSignature(schedule) {
   const s = webhookState[schedule.id]
-  if (s.status?.auth_enabled && !confirm('Rotate the signing secret? The current secret stops working immediately.')) return
+  if (s.status?.auth_enabled && !confirm(uiText("Rotate the signing secret? The current secret stops working immediately."))) return
   s.busy = true; s.error = ''
   try {
     const { data } = await axios.post(
@@ -1164,14 +1165,14 @@ async function enableSignature(schedule) {
     // Merge auth state without discarding the URL.
     s.status = { ...s.status, auth_enabled: true, has_secret: true, signature_header: data.signature_header }
   } catch (e) {
-    s.error = e.response?.data?.detail || 'Failed to enable signature auth'
+    s.error = e.response?.data?.detail || uiText("Failed to enable signature auth")
   } finally {
     s.busy = false
   }
 }
 
 async function disableSignature(schedule) {
-  if (!confirm('Disable signature auth? The webhook URL stays live but becomes unauthenticated again.')) return
+  if (!confirm(uiText("Disable signature auth? The webhook URL stays live but becomes unauthenticated again."))) return
   const s = webhookState[schedule.id]
   s.busy = true; s.error = ''
   try {
@@ -1181,7 +1182,7 @@ async function disableSignature(schedule) {
     )
     s.status = data; s.secretOnce = null
   } catch (e) {
-    s.error = e.response?.data?.detail || 'Failed to disable signature auth'
+    s.error = e.response?.data?.detail || uiText("Failed to disable signature auth")
   } finally {
     s.busy = false
   }
@@ -1230,10 +1231,10 @@ const toolCategories = [
   {
     name: 'Files',
     tools: [
-      { value: 'Read', label: 'Read' },
-      { value: 'Write', label: 'Write' },
-      { value: 'Edit', label: 'Edit' },
-      { value: 'NotebookEdit', label: 'NotebookEdit' }
+      { value: 'Read', get "label"() { return uiText("Read") } },
+      { value: 'Write', get "label"() { return uiText("Write") } },
+      { value: 'Edit', get "label"() { return uiText("Edit") } },
+      { value: 'NotebookEdit', get "label"() { return uiText("NotebookEdit") } }
     ]
   },
   {
@@ -1259,7 +1260,7 @@ const toolCategories = [
   {
     name: 'Advanced',
     tools: [
-      { value: 'Task', label: 'Task (Agents)' }
+      { value: 'Task', get "label"() { return uiText("Task (Agents)") } }
     ]
   }
 ]
@@ -1311,7 +1312,7 @@ async function loadSchedules() {
   } catch (error) {
     if (seq !== loadSeq) return
     console.error('Failed to load schedules:', error)
-    loadError.value = apiErrorMessage(error, 'Request failed')
+    loadError.value = apiErrorMessage(error, uiText("Request failed"))
   } finally {
     if (seq === loadSeq) loading.value = false
   }
@@ -1383,7 +1384,7 @@ async function saveSchedule() {
     await loadSchedules()
     closeForm()
   } catch (error) {
-    formError.value = error.response?.data?.detail || 'Failed to save schedule'
+    formError.value = error.response?.data?.detail || uiText("Failed to save schedule")
   } finally {
     formLoading.value = false
   }
@@ -1433,8 +1434,8 @@ function editSchedule(schedule) {
 
 // Delete schedule
 function deleteSchedule(schedule) {
-  confirmDialog.title = 'Delete Schedule'
-  confirmDialog.message = `Are you sure you want to delete the schedule "${schedule.name}"?`
+  confirmDialog.title = uiText("Delete Schedule")
+  confirmDialog.message = uiText("Are you sure you want to delete the schedule \"{arg1}\"?", { arg1: (schedule.name) })
   confirmDialog.confirmText = 'Delete'
   confirmDialog.variant = 'danger'
   confirmDialog.onConfirm = async () => {
@@ -1448,7 +1449,7 @@ function deleteSchedule(schedule) {
     } catch (error) {
       // alert() blocks the page and dies on OK, leaving no record of what
       // failed; an inline error persists next to the row (#1926).
-      reportActionFailure(error, `delete the schedule "${schedule.name}"`)
+      reportActionFailure(error, `delete the schedule "${schedule.name}"`, uiText("Couldn't delete the schedule \"{name}\". Nothing was changed — try again.", { name: schedule.name }))
     } finally {
       deleteLoading.value = null
     }
@@ -1462,10 +1463,10 @@ function clearActionError() {
 }
 
 // #1926 — one place that turns a failed verb into a persistent, named error.
-function reportActionFailure(error, what) {
+function reportActionFailure(error, what, message) {
   console.error(`Failed to ${what}:`, error)
-  actionError.value = `Couldn't ${what}. Nothing was changed — try again.`
-  actionErrorDetail.value = apiErrorMessage(error, 'Request failed')
+  actionError.value = message
+  actionErrorDetail.value = apiErrorMessage(error, uiText("Request failed"))
 }
 
 // Toggle schedule enabled/disabled
@@ -1481,7 +1482,9 @@ async function toggleSchedule(schedule) {
   } catch (error) {
     // The row reverts to its server state on reload, so without this the user
     // sees the toggle snap back with no explanation (#1926).
-    reportActionFailure(error, `${wanted} the schedule "${schedule.name}"`)
+    reportActionFailure(error, `${wanted} the schedule "${schedule.name}"`, wanted === 'enable'
+      ? uiText("Couldn't enable the schedule \"{name}\". Nothing was changed — try again.", { name: schedule.name })
+      : uiText("Couldn't disable the schedule \"{name}\". Nothing was changed — try again.", { name: schedule.name }))
   } finally {
     toggleLoading.value.delete(schedule.id)
   }
@@ -1506,13 +1509,13 @@ async function triggerSchedule(schedule) {
     // run IS in flight, and retrying only hits the same lock. Say what is
     // actually true, and reload so the user can see the run in question.
     if (error?.response?.status === 409) {
-      actionError.value = `"${schedule.name}" is already running — no new run was started.`
+      actionError.value = uiText("\"{arg1}\" is already running — no new run was started.", { arg1: (schedule.name) })
       actionErrorDetail.value = ''
       if (expandedSchedule.value === schedule.id) {
         await loadExecutions(schedule.id)
       }
     } else {
-      reportActionFailure(error, `run the schedule "${schedule.name}" now`)
+      reportActionFailure(error, `run the schedule "${schedule.name}" now`, uiText("Couldn't run the schedule \"{name}\" now. Nothing was changed — try again.", { name: schedule.name }))
     }
   } finally {
     triggerLoading.value = null
@@ -1583,7 +1586,7 @@ async function loadExecutions(scheduleId) {
     console.error('Failed to load executions:', error)
     // Keep whatever rows are on screen; the chain renders failed (no data) or
     // the stale banner (data) from this field.
-    executionsError.value[scheduleId] = apiErrorMessage(error, 'Request failed')
+    executionsError.value[scheduleId] = apiErrorMessage(error, uiText('Request failed'))
   } finally {
     executionsLoading.value[scheduleId] = false
   }
@@ -1610,10 +1613,10 @@ function formatRelativeTime(dateStr) {
   } else {
     // Past
     const absDiff = Math.abs(diff)
-    if (absDiff < 60) return `${Math.round(absDiff)}s ago`
-    if (absDiff < 3600) return `${Math.round(absDiff / 60)}m ago`
-    if (absDiff < 86400) return `${Math.round(absDiff / 3600)}h ago`
-    return `${Math.round(absDiff / 86400)}d ago`
+    if (absDiff < 60) return uiText("{arg1}s ago", { arg1: (Math.round(absDiff)) })
+    if (absDiff < 3600) return uiText("{arg1}m ago", { arg1: (Math.round(absDiff / 60)) })
+    if (absDiff < 86400) return uiText("{arg1}h ago", { arg1: (Math.round(absDiff / 3600)) })
+    return uiText("{arg1}d ago", { arg1: (Math.round(absDiff / 86400)) })
   }
 }
 
@@ -1755,4 +1758,6 @@ onMounted(async () => {
 onUnmounted(() => {
   stopExecutionPolling()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

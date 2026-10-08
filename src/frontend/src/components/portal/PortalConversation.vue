@@ -29,7 +29,7 @@
       aria-hidden="true"
     >
       <p class="text-sm font-medium text-action-primary-700 dark:text-action-primary-200">
-        Drop files to send to {{ agentDisplayName(agent) }}
+        {{ translate('Drop files to send to') }} {{ agentDisplayName(agent) }}
       </p>
     </div>
 
@@ -37,7 +37,7 @@
     <header class="shrink-0 flex items-center gap-2 px-3 sm:px-4 h-14 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
       <button
         class="sm:hidden -ml-1 p-2 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
-        aria-label="Menu"
+        :aria-label="translate('Menu')"
         @click="$emit('open-menu')"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
@@ -68,7 +68,7 @@
             <PortalAvatar :name="a.name" :avatar-url="a.avatar_url" :size="28" />
             <span class="min-w-0">
               <span class="block text-sm font-medium truncate">
-                {{ a.name === agent.name ? agentDisplayName(a) : `New chat with ${agentDisplayName(a)}` }}
+                {{ a.name === agent.name ? agentDisplayName(a) : uiText("New chat with {arg1}", { arg1: (agentDisplayName(a)) }) }}
               </span>
               <span v-if="a.description" class="block text-xs text-gray-400 truncate">{{ a.description }}</span>
             </span>
@@ -87,17 +87,17 @@
       <span
         v-if="isMainChat"
         class="hidden sm:inline min-w-0 flex-1 truncate text-sm font-medium"
-      >{{ MAIN_TAB_LABEL }}</span>
+      >{{ translate(MAIN_TAB_LABEL) }}</span>
       <PortalEditableTitle
         v-else-if="currentThread"
         class="hidden sm:flex"
         :value="currentTitle"
-        placeholder="New chat"
+        :placeholder="translate('New chat')"
         :rename="rename ? saveTitle : null"
-        label="Rename this chat"
+        :label="translate('Rename this chat')"
         text-class="text-sm font-medium"
       />
-      <span v-else-if="!currentSessionId" class="hidden sm:inline min-w-0 flex-1 truncate text-sm text-gray-500 dark:text-gray-400">New chat</span>
+      <span v-else-if="!currentSessionId" class="hidden sm:inline min-w-0 flex-1 truncate text-sm text-gray-500 dark:text-gray-400">{{ translate('New chat') }}</span>
 
       <div class="ml-auto flex items-center gap-1 shrink-0">
         <!-- ent#451: New chat lives in the header, with its hotkey (⌘J /
@@ -106,15 +106,15 @@
         <button
           type="button"
           class="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100 transition"
-          :title="`New chat (${newChatHotkey})`"
-          :aria-label="`New chat (${newChatHotkey})`"
+          :title="uiText(&quot;New chat ({arg1})&quot;, { arg1: (newChatHotkey) })"
+          :aria-label="uiText(&quot;New chat ({arg1})&quot;, { arg1: (newChatHotkey) })"
           :aria-keyshortcuts="newChatHotkey === '⌘J' ? 'Meta+J' : 'Control+J'"
           :disabled="voiceCallActive"
           data-testid="new-chat-header"
           @click="emit('new-chat')"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-          <span class="hidden md:inline">New chat</span>
+          <span class="hidden md:inline">{{ translate('New chat') }}</span>
           <kbd class="hidden lg:inline text-[11px] font-mono text-gray-400 dark:text-gray-500">{{ newChatHotkey }}</kbd>
         </button>
         <!-- ent#359 AC #4: star from the header too. Hidden until the thread
@@ -136,7 +136,7 @@
           v-if="ttsEnabled && !voiceCallActive"
           class="p-2 rounded-lg transition"
           :class="voiceMode ? 'bg-action-primary-100 dark:bg-action-primary-900/40 text-action-primary-600 dark:text-action-primary-300' : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'"
-          :title="voiceMode ? 'Voice replies on — click to mute' : 'Speak replies aloud'"
+          :title="voiceMode ? translate('Voice replies on — click to mute') : translate('Speak replies aloud')"
           @click="voiceMode ? (voiceMode = false, stopSpeaking()) : (voiceMode = true)"
         >
           <svg v-if="voiceMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5 9v6h4l5 4V5L9 9H5z" /></svg>
@@ -159,10 +159,10 @@
           v-if="isMainChat"
           class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition disabled:opacity-40 disabled:cursor-not-allowed"
           :disabled="sending || resetting || voiceCallActive"
-          :title="voiceCallActive ? 'End the call, then reset' : (sending ? 'Wait for the current reply, then reset' : 'Archive this conversation and start the agent cold')"
+          :title="voiceCallActive ? translate('End the call, then reset') : (sending ? translate('Wait for the current reply, then reset') : translate('Archive this conversation and start the agent cold'))"
           data-testid="portal-reset-main"
           @click="onResetMain"
-        >{{ resetting ? 'Resetting…' : 'Reset' }}</button>
+        >{{ resetting ? translate('Resetting…') : translate('Reset') }}</button>
         <!-- ent#547: ONE paperclip, and it is the composer's. This header
              control opened the rail's Files tab with the same glyph the
              composer uses to ATTACH — two paperclips a few hundred pixels
@@ -223,20 +223,20 @@
       <span class="min-w-0 truncate text-gray-700 dark:text-gray-200">
         {{ voiceCallActive ? voiceHeaderText : voiceEndNotice }}
       </span>
-      <span v-if="voiceCallActive" class="hidden sm:inline text-gray-400 dark:text-gray-500">· End the call to switch chats · Esc ends</span>
+      <span v-if="voiceCallActive" class="hidden sm:inline text-gray-400 dark:text-gray-500">{{ translate('· End the call to switch chats · Esc ends') }}</span>
       <button
         v-if="voiceCallActive"
         type="button"
         class="ml-auto shrink-0 underline hover:no-underline text-gray-500 dark:text-gray-400"
         data-testid="portal-voice-end"
         @click="endVoiceCall()"
-      >End call</button>
+      >{{ translate('End call') }}</button>
       <button
         v-else
         type="button"
         class="ml-auto shrink-0 underline hover:no-underline text-gray-500 dark:text-gray-400"
         @click="voiceEndNotice = ''"
-      >Dismiss</button>
+      >{{ translate('Dismiss') }}</button>
     </div>
 
     <!-- Messages. The wrapper is the orb's positioned box (ent#534): while a
@@ -276,7 +276,7 @@
           v-if="historyTruncated"
           :class="PLATFORM_LINE_CLASS"
           data-testid="portal-history-truncated"
-        >Earlier messages in this chat aren't shown</p>
+        >{{ translate('Earlier messages in this chat aren\'t shown') }}</p>
         <template v-for="(item, k) in threadItems" :key="item.kind === 'voice-call' ? `call-${item.callId}` : `m-${item.index}`">
         <details
           v-if="item.kind === 'voice-call'"
@@ -286,7 +286,7 @@
           <summary class="cursor-pointer select-none flex items-center gap-2 px-3 py-2 text-xs text-gray-600 dark:text-gray-300">
             <svg class="w-3.5 h-3.5 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-14 0m7 7v3m0-3a4 4 0 004-4V7a4 4 0 10-8 0v6a4 4 0 004 4z" /></svg>
             <span class="font-medium">{{ item.label }}</span>
-            <span :class="META_INK_CLASS">· spoken</span>
+            <span :class="META_INK_CLASS">{{ translate('· spoken') }}</span>
           </summary>
           <div class="px-3 pb-3 space-y-3">
             <div
@@ -338,7 +338,7 @@
               @click="retry(item.index)"
             >
               <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-              Not delivered · Retry
+              {{ translate('Not delivered · Retry') }}
             </button>
           </div>
           <div v-else class="max-w-[85%]">
@@ -450,7 +450,7 @@
       <div class="max-w-[var(--ws-message-max,64rem)] mx-auto">
         <p v-if="offline" class="mb-2 text-xs text-status-warning-600 dark:text-status-warning-400 flex items-center gap-1.5">
           <span class="w-1.5 h-1.5 rounded-full bg-status-warning-500"></span>
-          You appear to be offline — messages will send once you're reconnected.
+          {{ translate('You appear to be offline — messages will send once you\'re reconnected.') }}
         </p>
         <!-- #2212: every voice failure says what happened here. Voice is an
              assist, never a blocker, so this is an inline notice next to a
@@ -467,7 +467,7 @@
             type="button"
             class="shrink-0 underline hover:no-underline text-gray-500 dark:text-gray-400"
             @click="voiceError = ''"
-          >Dismiss</button>
+          >{{ translate('Dismiss') }}</button>
         </p>
         <!-- ent#155: a cancel that was REFUSED. Deliberately not `markFailed` —
              the turn is still running and still spending, so calling it failed
@@ -484,7 +484,7 @@
             type="button"
             class="shrink-0 underline hover:no-underline text-gray-500 dark:text-gray-400"
             @click="cancelError = ''"
-          >Dismiss</button>
+          >{{ translate('Dismiss') }}</button>
         </p>
         <!-- ent#523 AC 10: an agent that cannot take a message says so BEFORE
              the person types a paragraph into it. A label, never a disabled
@@ -643,8 +643,8 @@
                 class="shrink-0 h-11 w-11 flex items-center justify-center rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed"
                 :class="voiceCallActive ? 'bg-action-primary-100 dark:bg-action-primary-900/40 text-action-primary-600 dark:text-action-primary-300' : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-750'"
                 :disabled="!voiceEntry.enabled || voiceStarting"
-                :title="voiceCallActive ? 'End the voice call (Esc)' : (voiceEntry.enabled ? 'Start a voice call' : voiceEntry.reason)"
-                :aria-label="voiceCallActive ? 'End the voice call' : (voiceEntry.enabled ? 'Start a voice call' : voiceEntry.reason)"
+                :title="voiceCallActive ? translate('End the voice call (Esc)') : (voiceEntry.enabled ? translate('Start a voice call') : voiceEntry.reason)"
+                :aria-label="voiceCallActive ? translate('End the voice call') : (voiceEntry.enabled ? translate('Start a voice call') : voiceEntry.reason)"
                 :aria-pressed="voiceCallActive"
                 data-testid="portal-voice-call"
                 @click="voiceCallActive ? endVoiceCall() : startVoiceCall()"
@@ -656,7 +656,7 @@
                 <button
                   type="button"
                   class="shrink-0 h-11 w-11 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-750 transition"
-                  title="Attach a file for the agent"
+                  :title="translate('Attach a file for the agent')"
                   :disabled="voiceCallActive"
                   @click="fileInput?.click()"
                 >
@@ -695,8 +695,8 @@
                     variant="ghost"
                     class="min-w-0 max-w-[17rem]"
                     :disabled="voiceCallActive || !modelControl.enabled"
-                    :title="modelControl.reason || 'Which model this chat runs on'"
-                    aria-label="Model for this chat"
+                    :title="modelControl.reason || translate('Which model this chat runs on')"
+                    :aria-label="translate('Model for this chat')"
                     data-testid="portal-model-picker"
                     @keydown.enter.prevent
                   >
@@ -714,8 +714,8 @@
                     @click="cancelTurn"
                     :disabled="cancelling"
                     class="shrink-0 h-11 w-11 flex items-center justify-center rounded-xl bg-status-danger-600 hover:bg-status-danger-700 text-white disabled:opacity-40 transition"
-                    :title="cancelling ? 'Stopping…' : 'Stop this turn (Esc)'"
-                    aria-label="Stop this turn"
+                    :title="cancelling ? translate('Stopping…') : translate('Stop this turn (Esc)')"
+                    :aria-label="translate('Stop this turn')"
                   >
                     <svg v-if="cancelling" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -728,7 +728,7 @@
                     type="submit"
                     class="shrink-0 h-11 w-11 flex items-center justify-center rounded-xl bg-action-primary-600 hover:bg-action-primary-700 text-white disabled:opacity-40 disabled:hover:bg-action-primary-600 transition"
                     :disabled="sending || !input.trim() || voiceCallActive"
-                    title="Send"
+                    :title="translate('Send')"
                   >
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" /></svg>
                   </button>
@@ -745,6 +745,7 @@
 </template>
 
 <script setup>
+import { t as translate } from '@/i18n'
 import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from 'vue'
 import { useClientPortalStore } from '@/stores/clientPortal'
 import { agentDisplayName } from '@/utils/agentName'
@@ -973,7 +974,7 @@ async function onResetMain() {
   } catch (e) {
     const detail = e?.response?.data?.detail
     cancelError.value = (detail && typeof detail === 'object' ? detail.message : detail)
-      || 'Could not reset this chat right now.'
+      || uiText("Could not reset this chat right now.")
   } finally {
     resetting.value = false
   }
@@ -1270,8 +1271,8 @@ async function reattach(executionId, budgetSeconds, budgetReadAt) {
       const verdict = {
         category: 'lost',
         message: data.idle
-          ? 'The agent did not reply. Check the conversation in a moment.'
-          : "Still no reply — we've lost track of this turn. It may still finish; check the conversation shortly.",
+          ? uiText('The agent did not reply. Check the conversation in a moment.')
+          : uiText("Still no reply — we've lost track of this turn. It may still finish; check the conversation shortly."),
         retryable: false,
         execution_id: executionId,
       }
@@ -1518,9 +1519,9 @@ watch(typeaheadBound, (b) => { activeIndex.value = clampActiveIndex(activeIndex.
 // feature exists. `@` is advertised only with the capability — a placeholder
 // promising something the build cannot do is the #2128 dead end in text form.
 const composerPlaceholder = computed(() => {
-  if (listening.value) return 'Listening…'
-  const base = `Message ${agentDisplayName(props.agent)}…  ·  / for playbooks`
-  return store.multiAgentChatAvailable ? `${base}  ·  @ to add an agent` : base
+  if (listening.value) return translate('Listening…')
+  const base = translate('Message {agent}…  ·  / for playbooks', { agent: agentDisplayName(props.agent) })
+  return store.multiAgentChatAvailable ? `${base}${translate('  ·  @ to add an agent')}` : base
 })
 
 function closeTypeahead() {
@@ -1762,14 +1763,14 @@ async function deliver(text) {
         // `mark_turn_inflight` no-ops when Redis is down, so a perfectly
         // healthy, already-billed turn reaches this branch on its first poll.
         return { lost: true, retryable: false,
-                 error: 'The agent did not reply. Check the conversation in a moment.' }
+                 error: uiText('The agent did not reply. Check the conversation in a moment.') }
       }
       if (data?.lost) {
         // #2133: we ran out of budget while the marker still claimed a turn.
         // That turn probably RAN and was billed — we merely lost sight of it.
         // So this is reported without a Retry: re-sending is the one action
         // guaranteed to be wrong.
-        return { lost: true, retryable: false, error: "Still no reply — we've lost track of this turn. It may still finish; check the conversation shortly." }
+        return { lost: true, retryable: false, error: uiText("Still no reply — we've lost track of this turn. It may still finish; check the conversation shortly.") }
       }
       if (!data) {
         // Defensive only: every return above is enumerated. Kept non-retryable
@@ -1779,7 +1780,7 @@ async function deliver(text) {
         // `awaitPersistedReply` never returned null, so `idle` fell into the
         // lost-track message above instead. That is the bug #2320 reported.)
         return { lost: true, retryable: false,
-                 error: 'The agent did not reply. Check the conversation in a moment.' }
+                 error: uiText('The agent did not reply. Check the conversation in a moment.') }
       }
     }
 
@@ -1909,7 +1910,7 @@ async function cancelTurn() {
       // ent#525: a stop the person asked for is an honest terminal the card
       // keeps ("Stopped by you") — recorded at the act, shown once the turn
       // settles. The red-message path deliberately never marks it.
-      rememberVerdict({ category: 'cancelled', message: 'Stopped by you.', execution_id: executionId })
+      rememberVerdict({ category: 'cancelled', message: uiText('Stopped by you.'), execution_id: executionId })
     }
   } catch (err) {
     // A 404 is the lost race (the row went terminal, or the agent no longer
@@ -2234,7 +2235,7 @@ function settleDelivery(index, text, res) {
   // the cancel check to `markFailed`, and that rule is the more important one.
   clearModelChoiceOnFailure(res)
   terminalOutcome.value = { category: res?.category || (res?.lost ? 'lost' : 'failed'),
-                            message: res?.error || 'Something went wrong.',
+                            message: res?.error || uiText('Something went wrong.'),
                             retryable: res?.retryable ?? !res?.lost, execution_id: lastDeliveredExecutionId.value }
   return { ok: false, error: res?.error, lost: res?.lost }
 }
@@ -2296,9 +2297,9 @@ const speaking = ref(false)
 const listening = ref(false)
 const transcribing = ref(false)
 const micTitle = computed(() => (
-  transcribing.value ? 'Transcribing…'
-    : listening.value ? 'Listening… click to stop'
-      : 'Speak your message'
+  transcribing.value ? uiText('Transcribing…')
+    : listening.value ? uiText('Listening… click to stop')
+      : uiText('Speak your message')
 ))
 const audioEl = ref(null)
 let recog = null, mediaRec = null, mediaStream = null, recChunks = [], lastAudioUrl = null
@@ -2323,10 +2324,10 @@ async function speak(text) {
     if (token !== narrationToken) { if (url) URL.revokeObjectURL(url); return }
     // The store answers `null` for every failure shape, so this is the only
     // place narration can report that it did not happen (#2212).
-    if (!url) { speaking.value = false; voiceError.value = TTS_FAILED_MESSAGE; return }
+    if (!url) { speaking.value = false; voiceError.value = uiText(TTS_FAILED_MESSAGE); return }
     revokeAudio(); lastAudioUrl = url
     if (audioEl.value) { audioEl.value.src = url; await audioEl.value.play() } else speaking.value = false
-  } catch { if (token === narrationToken) { speaking.value = false; voiceError.value = TTS_FAILED_MESSAGE } }
+  } catch { if (token === narrationToken) { speaking.value = false; voiceError.value = uiText(TTS_FAILED_MESSAGE) } }
 }
 // Bumping the token is what makes an in-flight synthesis abandon itself; the
 // pause alone cannot reach audio that has not been assigned yet.
@@ -2401,7 +2402,7 @@ function toggleSpeech() {
     listening.value = false
     // `start()` throws InvalidStateError only when a session is already live.
     voiceError.value = e?.name === 'InvalidStateError'
-      ? 'Dictation is already running — stop it and try again.'
+      ? uiText("Dictation is already running — stop it and try again.")
       : speechErrorMessage('')
   }
 }
@@ -2423,12 +2424,12 @@ async function toggleRecord() {
     // chunks; mislabelling Ogg as WebM is a silent upload bug (#2212).
     const type = resolveRecordingMimeType(mediaRec?.mimeType, recChunks)
     const blob = new Blob(recChunks, { type }); recChunks = []
-    if (blob.size < MIN_RECORDING_BYTES) { voiceError.value = RECORDING_TOO_SHORT_MESSAGE; return }
+    if (blob.size < MIN_RECORDING_BYTES) { voiceError.value = uiText(RECORDING_TOO_SHORT_MESSAGE); return }
     transcribing.value = true
     try {
       const t = await store.transcribeStt(props.agent.name, blob)
       if (t) appendTranscript(t)
-      else voiceError.value = TRANSCRIPT_EMPTY_MESSAGE
+      else voiceError.value = uiText(TRANSCRIPT_EMPTY_MESSAGE)
     } catch (e) {
       // /stt answers with a user-facing `detail`; it used to be swallowed.
       voiceError.value = transcriptionErrorMessage(e)
@@ -2592,7 +2593,7 @@ async function startVoiceCall() {
     secureContext: typeof window === 'undefined' ? true : window.isSecureContext !== false,
   })
   if (pre) { voiceError.value = pre; return }
-  if (sending.value) { voiceError.value = 'Wait for the current reply, then start the call.'; return }
+  if (sending.value) { voiceError.value = uiText("Wait for the current reply, then start the call."); return }
   voiceStarting.value = true
   try {
     // Dictation and narration must not overlap the call's own mic and speaker.
@@ -2605,7 +2606,7 @@ async function startVoiceCall() {
     if (!sid) {
       const created = await store.createSession(props.agent.name)
       sid = created?.id || created?.session_id || null
-      if (!sid) { voiceError.value = 'Could not open a chat for the call.'; return }
+      if (!sid) { voiceError.value = uiText("Could not open a chat for the call."); return }
       adoptSession(sid)
       emit('sessions-changed', sid)
     }
@@ -2648,4 +2649,6 @@ watch(
   { immediate: true }
 )
 onBeforeUnmount(() => emit('work-state', workSignalFrom({ sending: false })))
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -22,7 +22,7 @@
 
     <LoadFailed
       v-else-if="view.state === 'failed'"
-      title="Couldn't load canvases"
+      :title="uiText(&quot;Couldn't load canvases&quot;)"
       :message="feeds.error || 'The canvases for this chat could not be read.'"
       :retrying="feeds.loading"
       @retry="feeds.refresh()"
@@ -60,7 +60,7 @@
             @canvas-selected="(id) => portal.setOpenCanvas(agent, id)"
             @changed="feeds.refresh()"
           />
-          <p v-else-if="participants.length > 1" class="text-xs text-gray-400">Nothing published yet.</p>
+          <p v-else-if="participants.length > 1" class="text-xs text-gray-400">{{ uiText("Nothing published yet.") }}</p>
         </section>
       </template>
     </template>
@@ -110,6 +110,8 @@ function canManage(agent) {
 }
 function countLabel(agent) {
   const n = rows(agent).length
-  return n ? `${n} ${n === 1 ? 'canvas' : 'canvases'}` : 'nothing published'
+  return n ? `${n} ${n === 1 ? 'canvas' : 'canvases'}` : uiText("nothing published")
 }
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -1,14 +1,12 @@
 <template>
   <div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Expose via MCP</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Expose via MCP") }}</h3>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      Publish this agent as a dedicated MCP tool. When enabled, connected MCP
-      clients get a first-class
+      {{ uiText("Publish this agent as a dedicated MCP tool. When enabled, connected MCP clients get a first-class") }}
       <code class="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">{{ status.tool_name || 'chat_with_…' }}</code>
-      tool — functionally identical to
+      {{ uiText("tool — functionally identical to") }}
       <code class="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">chat_with_agent</code>
-      with this agent pre-filled. Access is unchanged: callers still need
-      ownership or a share to actually chat.
+      {{ uiText("with this agent pre-filled. Access is unchanged: callers still need ownership or a share to actually chat.") }}
     </p>
 
     <!-- Toggle -->
@@ -25,11 +23,10 @@
       </label>
       <div class="flex-1">
         <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-          {{ status.enabled ? 'Exposed' : 'Not exposed' }}
+          {{ status.enabled ? uiText("Exposed") : uiText("Not exposed") }}
         </div>
         <div class="text-xs text-gray-500 dark:text-gray-400">
-          No agent restart needed — the change appears in connected MCP clients
-          within a few seconds (the MCP server polls and refreshes their tool list).
+          {{ uiText("No agent restart needed — the change appears in connected MCP clients within a few seconds (the MCP server polls and refreshes their tool list).") }}
         </div>
       </div>
     </div>
@@ -39,7 +36,7 @@
       v-if="status.tool_name"
       class="mb-2 text-sm text-gray-600 dark:text-gray-400"
     >
-      Tool name:
+      {{ uiText("Tool name:") }}
       <code class="font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded">{{ status.tool_name }}</code>
     </div>
 
@@ -52,12 +49,10 @@
       class="mt-5 pt-5 border-t border-gray-200 dark:border-gray-700"
     >
       <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
-        Connect an external client
+        {{ uiText("Connect an external client") }}
       </h4>
       <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-        Copy a ready-to-paste config (Claude Code, Cursor, Claude Desktop) with a
-        scoped API key already embedded — no separate key steps. The key reaches
-        only this agent and is revocable below.
+        {{ uiText("Copy a ready-to-paste config (Claude Code, Cursor, Claude Desktop) with a scoped API key already embedded — no separate key steps. The key reaches only this agent and is revocable below.") }}
       </p>
 
       <!-- Loading connector state -->
@@ -69,7 +64,7 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
         </svg>
-        Loading connection…
+        {{ uiText("Loading connection…") }}
       </div>
 
       <template v-else>
@@ -86,11 +81,11 @@
           >
             <svg v-if="copied === 'config'" class="h-5 w-5 copied-pop" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
             <svg v-else-if="!connectorBusy" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 4h8a2 2 0 012 2v6a2 2 0 01-2 2h-8a2 2 0 01-2-2v-6a2 2 0 012-2z"/></svg>
-            {{ copied === 'config' ? 'Copied to clipboard!' : (connectorBusy ? 'Generating…' : 'Copy connection config') }}
+            {{ copied === 'config' ? uiText("Copied to clipboard!") : (connectorBusy ? uiText("Generating…") : uiText("Copy connection config")) }}
           </button>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            Generates a scoped key and copies a ready-to-paste
-            <code class="font-mono">.mcp.json</code>. The key is shown only once.
+            {{ uiText("Generates a scoped key and copies a ready-to-paste") }}
+            <code class="font-mono">.mcp.json</code>{{ uiText(". The key is shown only once.") }}
           </p>
         </div>
 
@@ -104,13 +99,13 @@
                   :class="connector.enabled ? 'bg-status-success-500' : 'bg-gray-400 dark:bg-gray-600'"
                 ></span>
                 <span class="text-gray-900 dark:text-gray-100">
-                  Connection key
+                  {{ uiText("Connection key") }}
                   <code class="text-xs">{{ connector.key_prefix }}…</code>
                 </span>
                 <span
                   v-if="!connector.enabled"
                   class="px-1.5 py-0.5 text-xs rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
-                >Disabled</span>
+                >{{ uiText("Disabled") }}</span>
               </div>
               <div class="flex items-center gap-2">
                 <button
@@ -123,27 +118,24 @@
                     : 'text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'"
                 >
                   <svg v-if="copied === 'existing'" class="h-4 w-4 copied-pop" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                  {{ copied === 'existing' ? 'Copied!' : 'Copy config' }}
+                  {{ copied === 'existing' ? uiText("Copied!") : uiText("Copy config") }}
                 </button>
                 <button
                   type="button"
                   @click="mintAndCopy"
                   :disabled="connectorBusy"
                   class="px-3 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50"
-                >{{ connectorBusy ? 'Working…' : 'Regenerate & copy' }}</button>
+                >{{ connectorBusy ? uiText("Working…") : uiText("Regenerate & copy") }}</button>
                 <button
                   type="button"
                   @click="revokeKey"
                   :disabled="connectorBusy"
                   class="px-3 py-1.5 text-sm font-medium rounded-md text-white bg-status-danger-600 hover:bg-status-danger-700 disabled:opacity-50"
-                >Revoke</button>
+                >{{ uiText("Revoke") }}</button>
               </div>
             </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-              The live key is shown only when generated. “Copy config” copies the
-              config with a placeholder — use “Regenerate &amp; copy” to embed a
-              fresh live key (this invalidates the old one). Revoking severs any
-              connected client.
+              {{ uiText("The live key is shown only when generated. “Copy config” copies the config with a placeholder — use “Regenerate & copy” to embed a fresh live key (this invalidates the old one). Revoking severs any connected client.") }}
             </p>
           </div>
 
@@ -158,13 +150,13 @@
         >
           <div class="flex items-center justify-between mb-2">
             <p class="text-sm font-medium text-state-autonomous-900 dark:text-state-autonomous-200">
-              Copied to clipboard — this config contains a live key, shown only once.
+              {{ uiText("Copied to clipboard — this config contains a live key, shown only once.") }}
             </p>
             <button
               type="button"
               @click="freshSnippets = []"
               class="text-xs text-gray-500 dark:text-gray-400 hover:underline"
-            >Dismiss</button>
+            >{{ uiText("Dismiss") }}</button>
           </div>
           <div class="space-y-3">
             <div v-for="s in freshSnippets" :key="s.client">
@@ -177,7 +169,7 @@
                   :class="copied === s.client ? 'text-status-success-600 dark:text-status-success-400' : 'text-action-primary-600'"
                 >
                   <svg v-if="copied === s.client" class="h-3 w-3 copied-pop" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                  {{ copied === s.client ? 'Copied!' : 'Copy' }}
+                  {{ copied === s.client ? uiText("Copied!") : uiText("Copy") }}
                 </button>
               </div>
               <pre class="text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded p-2 overflow-x-auto"><code>{{ s.content }}</code></pre>
@@ -245,7 +237,7 @@ async function loadStatus() {
     status.value = await agentsStore.getMcpExposedStatus(props.agentName)
     if (status.value.enabled) await loadConnector()
   } catch (e) {
-    notifyUser(`Failed to load MCP exposure status: ${e.message}`, 'error')
+    notifyUser(uiText('Failed to load MCP exposure status: {error}', { error: e.message }), 'error')
   } finally {
     statusLoading.value = false
   }
@@ -259,7 +251,7 @@ async function loadConnector() {
     connector.value = data
   } catch (e) {
     if (e.response?.status === 403) connectorAccessDenied.value = true
-    else notifyUser(e.response?.data?.detail || `Failed to load connection config: ${e.message}`, 'error')
+    else notifyUser(e.response?.data?.detail || uiText('Failed to load connection config: {error}', { error: e.message }), 'error')
   } finally {
     connectorLoading.value = false
   }
@@ -276,15 +268,15 @@ async function onToggle(enabled) {
     }
     notifyUser(
       enabled
-        ? `Exposed as MCP tool "${resp.tool_name}" — appears in clients shortly.`
-        : 'No longer exposed via MCP.',
+        ? uiText('Exposed as MCP tool "{tool}" — appears in clients shortly.', { tool: resp.tool_name })
+        : uiText('No longer exposed via MCP.'),
       'success'
     )
     if (enabled) await loadConnector()
     else freshSnippets.value = []
   } catch (e) {
     notifyUser(
-      e.response?.data?.detail || `Failed to toggle MCP exposure: ${e.message}`,
+      e.response?.data?.detail || uiText('Failed to toggle MCP exposure: {error}', { error: e.message }),
       'error'
     )
     // Reload to reflect actual state
@@ -309,12 +301,12 @@ async function mintAndCopy() {
     await loadConnector()
     notifyUser(
       didCopy
-        ? 'Connection config copied — contains a live key, shown only once.'
-        : 'Connection key generated — copy the config below.',
+        ? uiText('Connection config copied — contains a live key, shown only once.')
+        : uiText('Connection key generated — copy the config below.'),
       didCopy ? 'success' : 'info'
     )
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to generate connection config: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to generate connection config: {error}', { error: e.message }), 'error')
   } finally {
     connectorBusy.value = false
   }
@@ -325,15 +317,15 @@ async function mintAndCopy() {
 async function copyExistingConfig() {
   const cfg = pickConfigSnippet(connector.value.snippets)
   if (!cfg) {
-    notifyUser('No connection config available — regenerate the key.', 'error')
+    notifyUser(uiText('No connection config available — regenerate the key.'), 'error')
     return
   }
   const didCopy = await copyToClipboard(cfg.content)
   if (didCopy) flashCopied('existing')
   notifyUser(
     didCopy
-      ? 'Config copied (key placeholder). Use “Regenerate & copy” to embed a live key.'
-      : 'Copy failed — select and copy manually.',
+      ? uiText('Config copied (key placeholder). Use “Regenerate & copy” to embed a live key.')
+      : uiText('Copy failed — select and copy manually.'),
     didCopy ? 'success' : 'error'
   )
 }
@@ -344,9 +336,9 @@ async function revokeKey() {
     await api.delete(`/api/agents/${props.agentName}/connector/key`)
     freshSnippets.value = []
     await loadConnector()
-    notifyUser('Connection key revoked — any connected client is now severed.', 'success')
+    notifyUser(uiText('Connection key revoked — any connected client is now severed.'), 'success')
   } catch (e) {
-    notifyUser(e.response?.data?.detail || `Failed to revoke key: ${e.message}`, 'error')
+    notifyUser(e.response?.data?.detail || uiText('Failed to revoke key: {error}', { error: e.message }), 'error')
   } finally {
     connectorBusy.value = false
   }
@@ -355,10 +347,12 @@ async function revokeKey() {
 async function copyText(text, id = '') {
   const ok = await copyToClipboard(text)
   if (ok && id) flashCopied(id)
-  notifyUser(ok ? 'Copied to clipboard.' : 'Copy failed — select and copy manually.', ok ? 'success' : 'error')
+  notifyUser(ok ? uiText('Copied to clipboard.') : uiText('Copy failed — select and copy manually.'), ok ? 'success' : 'error')
 }
 
 onMounted(loadStatus)
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

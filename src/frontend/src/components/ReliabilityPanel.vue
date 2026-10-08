@@ -1,13 +1,11 @@
 <template>
   <div class="p-6">
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Reliability — dispatch circuit breaker</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Reliability — dispatch circuit breaker") }}</h3>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      When this agent's task dispatch keeps failing with auth/billing errors, the
-      breaker trips and fast-fails new tasks (instead of burning retries) until it
-      recovers. Opt-in per agent (#526).
+      {{ uiText("When this agent's task dispatch keeps failing with auth/billing errors, the breaker trips and fast-fails new tasks (instead of burning retries) until it recovers. Opt-in per agent") }} (#526).
     </p>
 
-    <div v-if="statusLoading" class="text-sm text-gray-400">Loading…</div>
+    <div v-if="statusLoading" class="text-sm text-gray-400">{{ uiText("Loading…") }}</div>
 
     <div v-else>
       <!-- Honest state when the platform-wide master switch is OFF (#1712).
@@ -17,14 +15,12 @@
         v-if="!globalEnabled"
         class="mb-4 rounded-md bg-amber-50 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 p-3"
       >
-        <p class="text-sm font-medium text-amber-900 dark:text-amber-200">Globally disabled — this toggle won't take effect yet</p>
+        <p class="text-sm font-medium text-amber-900 dark:text-amber-200">{{ uiText("Globally disabled — this toggle won't take effect yet") }}</p>
         <p class="mt-1 text-xs text-amber-800 dark:text-amber-300">
-          The platform-wide dispatch breaker is off, so per-agent breakers never
-          engage regardless of this setting.
-          <span class="font-medium">Remedy:</span> an admin must set
+          {{ uiText("The platform-wide dispatch breaker is off, so per-agent breakers never engage regardless of this setting.") }}
+          <span class="font-medium">{{ uiText("Remedy:") }}</span> {{ uiText("an admin must set") }}
           <code class="font-mono text-[11px] bg-amber-100 dark:bg-amber-800/60 px-1 py-0.5 rounded">DISPATCH_BREAKER_ENABLED=true</code>
-          in the platform environment (then restart). Your choice below is saved
-          and applies automatically once that's on.
+          {{ uiText("in the platform environment (then restart). Your choice below is saved and applies automatically once that's on.") }}
         </p>
       </div>
 
@@ -43,18 +39,18 @@
         </label>
         <div class="min-w-0">
           <p class="text-sm text-gray-900 dark:text-gray-100">
-            Enable the dispatch breaker for this agent
+            {{ uiText("Enable the dispatch breaker for this agent") }}
             <span
               v-if="enabled && !globalEnabled"
               class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300"
-            >saved · inactive</span>
+            >{{ uiText("saved · inactive") }}</span>
             <span
               v-else-if="enabled && globalEnabled"
               class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
-            >active</span>
+            >{{ uiText("active") }}</span>
           </p>
           <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-            Both this toggle <em>and</em> the platform-wide flag must be on for the breaker to engage.
+            {{ uiText("Both this toggle") }} <em>{{ uiText("and") }}</em> {{ uiText("the platform-wide flag must be on for the breaker to engage.") }}
           </p>
           <p v-if="lastMessage" class="mt-1 text-xs" :class="lastMessageOk ? 'text-green-600 dark:text-green-400' : 'text-amber-700 dark:text-amber-400'">
             {{ lastMessage }}
@@ -66,15 +62,12 @@
     <!-- ent#329 — respond → resume ------------------------------------------>
     <hr class="my-6 border-gray-200 dark:border-gray-700" />
 
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Wake this agent when an operator answers</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Wake this agent when an operator answers") }}</h3>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      An answer to one of this agent's parked requests always reaches it — but by
-      default it is only read on the agent's <em>next</em> turn. An agent with no
-      schedule has no next turn, so an approved action waits indefinitely. Turn
-      this on and answering starts one turn so the agent acts on it (ent#329).
+      {{ uiText("An answer to one of this agent's parked requests always reaches it — but by default it is only read on the agent's") }} <em>{{ uiText("next") }}</em> {{ uiText("turn. An agent with no schedule has no next turn, so an approved action waits indefinitely. Turn this on and answering starts one turn so the agent acts on it (ent#329).") }}
     </p>
 
-    <div v-if="resumeLoading" class="text-sm text-gray-400">Loading…</div>
+    <div v-if="resumeLoading" class="text-sm text-gray-400">{{ uiText("Loading…") }}</div>
 
     <div v-else class="flex items-start gap-3">
       <label class="relative inline-flex items-center cursor-pointer mt-0.5">
@@ -89,11 +82,10 @@
       </label>
       <div class="min-w-0">
         <p class="text-sm text-gray-900 dark:text-gray-100">
-          Answering a request re-triggers this agent
+          {{ uiText("Answering a request re-triggers this agent") }}
         </p>
         <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-          Each answer then costs one agent turn, billed to you — which is why it
-          is off by default and set per agent, not per request.
+          {{ uiText("Each answer then costs one agent turn, billed to you — which is why it is off by default and set per agent, not per request.") }}
         </p>
         <p v-if="resumeMessage" class="mt-1 text-xs" :class="resumeMessageOk ? 'text-green-600 dark:text-green-400' : 'text-amber-700 dark:text-amber-400'">
           {{ resumeMessage }}
@@ -134,7 +126,7 @@ async function load() {
     enabled.value = !!data?.config?.enabled
     globalEnabled.value = !!data?.config?.global_enabled
   } catch (e) {
-    notifyUser('Failed to load circuit-breaker settings.', 'error')
+    notifyUser(uiText('Failed to load circuit-breaker settings.'), 'error')
   } finally {
     statusLoading.value = false
   }
@@ -153,11 +145,11 @@ async function onToggle(next) {
       lastMessage.value = data.warning
       lastMessageOk.value = false
     } else {
-      lastMessage.value = next ? 'Enabled.' : 'Disabled.'
+      lastMessage.value = next ? uiText("Enabled.") : uiText("Disabled.")
       lastMessageOk.value = true
     }
   } catch (e) {
-    notifyUser('Failed to update the circuit breaker.', 'error')
+    notifyUser(uiText('Failed to update the circuit breaker.'), 'error')
     await load()  // re-sync the toggle to the true persisted state
   } finally {
     toggleLoading.value = false
@@ -177,7 +169,7 @@ async function loadResume() {
     const { data } = await api.get(`/api/agents/${props.agentName}/operator-resume`)
     resumeEnabled.value = !!data?.enabled
   } catch (e) {
-    notifyUser('Failed to load the respond-to-resume setting.', 'error')
+    notifyUser(uiText('Failed to load the respond-to-resume setting.'), 'error')
   } finally {
     resumeLoading.value = false
   }
@@ -190,11 +182,11 @@ async function onResumeToggle(next) {
     const { data } = await api.put(`/api/agents/${props.agentName}/operator-resume`, { enabled: next })
     resumeEnabled.value = !!data?.enabled
     resumeMessage.value = next
-      ? 'On — answers will start a turn.'
-      : 'Off — answers are read on the next turn.'
+      ? uiText("On — answers will start a turn.")
+      : uiText("Off — answers are read on the next turn.")
     resumeMessageOk.value = true
   } catch (e) {
-    notifyUser('Failed to update the respond-to-resume setting.', 'error')
+    notifyUser(uiText('Failed to update the respond-to-resume setting.'), 'error')
     await loadResume()  // re-sync to the true persisted state
   } finally {
     resumeSaving.value = false
@@ -203,4 +195,6 @@ async function onResumeToggle(next) {
 
 onMounted(load)
 onMounted(loadResume)
+
+import { t as uiText } from '@/i18n'
 </script>

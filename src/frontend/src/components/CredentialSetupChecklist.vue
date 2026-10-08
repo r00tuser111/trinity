@@ -103,13 +103,13 @@ const groups = computed(() => {
     else missing.push(row)
   }
   return [
-    { key: 'blocking', title: 'Required — not set', rows: blocking, tone: 'danger' },
-    { key: 'missing', title: 'Optional — not set', rows: missing, tone: 'warning' },
-    { key: 'unknown', title: 'Status unknown', rows: unknown, tone: 'gray' },
-    { key: 'set', title: 'Configured', rows: setRows, tone: 'success' },
+    { key: 'blocking', title: uiText('Required — not set'), rows: blocking, tone: 'danger' },
+    { key: 'missing', title: uiText('Optional — not set'), rows: missing, tone: 'warning' },
+    { key: 'unknown', title: uiText('Status unknown'), rows: unknown, tone: 'gray' },
+    { key: 'set', title: uiText('Configured'), rows: setRows, tone: 'success' },
     {
       key: 'advisory',
-      title: 'Referenced but not declared',
+      title: uiText('Referenced but not declared'),
       rows: advisory,
       tone: 'gray',
     },
@@ -119,19 +119,19 @@ const groups = computed(() => {
 const degradedMessage = computed(() => {
   switch (props.report?.degraded_reason) {
     case 'agent_not_running':
-      return 'The agent is stopped, so Trinity cannot tell which credentials are set. Requirements below come from the template catalog.'
+      return uiText("The agent is stopped, so Trinity cannot tell which credentials are set. Requirements below come from the template catalog.")
     case 'agent_unreachable':
-      return "Trinity could not read this agent's workspace. Status is unknown."
+      return uiText("Trinity could not read this agent's workspace. Status is unknown.")
     case 'template_unreadable':
-      return "This agent's template.yaml could not be read. Requirements below may be incomplete."
+      return uiText("This agent's template.yaml could not be read. Requirements below may be incomplete.")
     case 'no_template':
-      return 'This agent has no template.yaml, so its credential requirements are unknown.'
+      return uiText("This agent has no template.yaml, so its credential requirements are unknown.")
     case 'template_label_missing':
-      return 'This agent is not linked to a template, so its credential requirements are unknown.'
+      return uiText("This agent is not linked to a template, so its credential requirements are unknown.")
     case 'catalog_unavailable':
-      return "The template this agent was created from could not be fetched, so its requirements could not be confirmed."
+      return uiText("The template this agent was created from could not be fetched, so its requirements could not be confirmed.")
     default:
-      return 'Credential requirements could not be confirmed.'
+      return uiText("Credential requirements could not be confirmed.")
   }
 })
 
@@ -157,7 +157,7 @@ function hostParts(row) {
 function placeholderFor(row) {
   // Suppressed unless the author marked the variable non-secret.
   if (row.secret === false && row.default) return row.default
-  return row.status === 'set' ? 'Set — enter a new value to replace it' : ''
+  return row.status === 'set' ? uiText("Set — enter a new value to replace it") : ''
 }
 
 function toggleReveal(name) {
@@ -187,6 +187,8 @@ watch(
     }
   }
 )
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <template>
@@ -195,16 +197,16 @@ watch(
   <BaseCard flush>
     <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between gap-3">
       <div>
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Credential Setup</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Credential Setup") }}</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          What this agent needs, what is already set, and where to get each one.
+          {{ uiText("What this agent needs, what is already set, and where to get each one.") }}
         </p>
       </div>
       <button
         class="shrink-0 text-xs font-medium text-action-primary-600 dark:text-action-primary-400 hover:underline disabled:opacity-50"
         :disabled="loading"
         @click="emit('refresh')"
-      >{{ loading ? 'Checking…' : 'Refresh' }}</button>
+      >{{ loading ? uiText("Checking…") : uiText("Refresh") }}</button>
     </div>
 
     <!-- Failure to load the report itself (not a degraded read). -->
@@ -227,21 +229,19 @@ watch(
       >
         <template v-if="isDegraded">{{ degradedMessage }}</template>
         <template v-else-if="isIncomplete">
-          This template hasn't declared its credentials. The variables below are
-          referenced by its config files, so they are shown as a starting point —
-          they are advisory, not a verified requirement list.
+          {{ uiText("This template hasn't declared its credentials. The variables below are referenced by its config files, so they are shown as a starting point — they are advisory, not a verified requirement list.") }}
         </template>
-        <template v-else-if="isReady">Ready — this agent needs no credentials.</template>
+        <template v-else-if="isReady">{{ uiText("Ready — this agent needs no credentials.") }}</template>
         <template v-else-if="blockingCount > 0">
-          {{ blockingCount }} required {{ blockingCount === 1 ? 'credential is' : 'credentials are' }} not set.
+          {{ blockingCount }} {{ uiText("required") }} {{ blockingCount === 1 ? uiText("credential is") : uiText("credentials are") }} {{ uiText("not set.") }}
         </template>
-        <template v-else>All required credentials are set.</template>
+        <template v-else>{{ uiText("All required credentials are set.") }}</template>
       </div>
 
       <!-- Problems in the template's own declaration. Text-interpolated. -->
       <details v-if="report.errors && report.errors.length" class="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
         <summary class="text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
-          Template declaration problems ({{ report.errors.length }})
+          {{ uiText("Template declaration problems (") }}{{ report.errors.length }})
         </summary>
         <ul class="mt-1 space-y-0.5">
           <li v-for="(msg, i) in report.errors" :key="i" class="text-xs text-gray-500 dark:text-gray-400 font-mono break-words">
@@ -272,12 +272,12 @@ watch(
               <!-- Tri-state `required`. `unknown` is rendered as its own thing:
                    a bare `- FOO` carries no authorial intent, and showing it as
                    required cries wolf on every legacy template. -->
-              <span v-if="row.required === true" class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">required</span>
-              <span v-else-if="row.required === false" class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">optional</span>
-              <span v-else class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">not stated</span>
+              <span v-if="row.required === true" class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">{{ uiText("required") }}</span>
+              <span v-else-if="row.required === false" class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">{{ uiText("optional") }}</span>
+              <span v-else class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">{{ uiText("not stated") }}</span>
 
               <span v-if="row.format" class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">{{ row.format }}</span>
-              <span v-if="row.advisory" class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">advisory</span>
+              <span v-if="row.advisory" class="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">{{ uiText("advisory") }}</span>
             </div>
 
             <p v-if="row.title && row.title !== row.name" class="text-sm text-gray-800 dark:text-gray-200">{{ row.title }}</p>
@@ -286,7 +286,7 @@ watch(
             <!-- Where to get it. Anchor text is the PARSED HOST, never `title`. -->
             <p v-if="row.setup_url" class="text-xs">
               <template v-if="isLinkable(row)">
-                <span class="text-gray-500 dark:text-gray-400">Get one at </span>
+                <span class="text-gray-500 dark:text-gray-400">{{ uiText("Get one at") }} </span>
                 <a
                   :href="row.setup_url"
                   :title="row.setup_url"
@@ -299,7 +299,7 @@ watch(
                 </a>
               </template>
               <template v-else>
-                <span class="text-gray-500 dark:text-gray-400">Setup link (host could not be verified, so it is not clickable): </span>
+                <span class="text-gray-500 dark:text-gray-400">{{ uiText("Setup link (host could not be verified, so it is not clickable):") }} </span>
                 <span class="font-mono text-gray-600 dark:text-gray-300 break-all">{{ row.setup_url }}</span>
               </template>
             </p>
@@ -321,7 +321,7 @@ watch(
                 type="button"
                 class="shrink-0 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 @click="toggleReveal(row.name)"
-              >{{ revealed[row.name] ? 'Hide' : 'Show' }}</button>
+              >{{ revealed[row.name] ? uiText("Hide") : uiText("Show") }}</button>
             </div>
           </li>
         </ul>
@@ -329,7 +329,7 @@ watch(
 
       <div v-if="requirements.length" class="px-4 py-3 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700">
         <p v-if="!canSubmit" class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-          Start the agent to save credentials.
+          {{ uiText("Start the agent to save credentials.") }}
         </p>
         <p
           v-if="saveResult"
@@ -338,21 +338,21 @@ watch(
         >{{ saveResult.message }}</p>
         <div class="flex items-center justify-between gap-3">
           <span class="text-xs text-gray-500 dark:text-gray-400">
-            <template v-if="filled.length">{{ filled.length }} to save</template>
-            <template v-else>Enter a value to save it into the agent's .env</template>
+            <template v-if="filled.length">{{ filled.length }} {{ uiText("to save") }}</template>
+            <template v-else>{{ uiText("Enter a value to save it into the agent's .env") }}</template>
           </span>
           <button
             type="button"
             class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             :disabled="!canSubmit || saving || filled.length === 0"
             @click="submit"
-          >{{ saving ? 'Saving…' : 'Save credentials' }}</button>
+          >{{ saving ? uiText("Saving…") : uiText("Save credentials") }}</button>
         </div>
       </div>
     </template>
 
     <p v-else-if="loading" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-      Checking credential requirements…
+      {{ uiText("Checking credential requirements…") }}
     </p>
   </BaseCard>
 </template>

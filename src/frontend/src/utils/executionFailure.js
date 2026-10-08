@@ -30,6 +30,8 @@
  * `error_code` column lands (follow-up, listed in the PR body), the chip starts
  * appearing with zero UI churn.
  */
+import { t as uiText } from '../i18n/index.js'
+
 
 /**
  * The `[code]` marker the platform writes ahead of the message, or `null`.
@@ -173,9 +175,10 @@ export function failuresTileState({
     return {
       ...blank,
       state: 'ready',
-      note:
-        `${failed24h} failed in the last 24h · none in the latest page ` +
-        '(older, or a legacy status). Open executions for the full list.',
+      note: uiText(
+        '{count} failed in the last 24h · none in the latest page (older, or a legacy status). Open executions for the full list.',
+        { count: failed24h }
+      ),
     }
   }
 
@@ -188,10 +191,10 @@ export function failuresTileState({
   if (rosterSize <= 0) {
     return {
       state: 'empty',
-      emptyTitle: 'Fleet list is empty',
-      emptyHint:
-        'Nothing is deployed yet, or the fleet could not be read — either way '
-        + 'an all-clear cannot be confirmed. Refresh if agents are expected.',
+      emptyTitle: uiText('Fleet list is empty'),
+      emptyHint: uiText(
+        'Nothing is deployed yet, or the fleet could not be read — either way an all-clear cannot be confirmed. Refresh if agents are expected.'
+      ),
       note: null,
     }
   }
@@ -201,17 +204,17 @@ export function failuresTileState({
   if (confirmed) {
     return {
       state: 'empty',
-      emptyTitle: 'No failures in 24h ✓',
-      emptyHint: 'Nothing needs attention on this window.',
+      emptyTitle: uiText('No failures in 24h ✓'),
+      emptyHint: uiText('Nothing needs attention on this window.'),
       note: null,
     }
   }
 
   return {
     state: 'empty',
-    emptyTitle: 'No failures listed',
+    emptyTitle: uiText('No failures listed'),
     emptyHint:
-      "The 24h total couldn't be read, so this is not a confirmed all-clear.",
+      uiText("The 24h total couldn't be read, so this is not a confirmed all-clear."),
     note: null,
   }
 }

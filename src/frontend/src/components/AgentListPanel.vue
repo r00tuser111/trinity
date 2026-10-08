@@ -23,7 +23,7 @@
         v-if="notification.type === 'error'"
         type="button"
         class="ml-3 font-medium opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-status-danger-500/40 rounded"
-        aria-label="Dismiss notification"
+        :aria-label="t('Dismiss notification')"
         @click="dismissNotification"
       >✕</button>
     </div>
@@ -39,7 +39,7 @@
         <input
           v-model="filterName"
           type="text"
-          placeholder="Search agents..."
+          :placeholder="t('Search agents...')"
           class="block w-44 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-action-primary-500 focus:ring-action-primary-500 text-sm py-2 pl-8 pr-3 bg-white dark:bg-gray-700 dark:text-gray-200 border"
         />
       </div>
@@ -57,7 +57,7 @@
               : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
           ]"
         >
-          {{ opt.label }}
+          {{ t(opt.label) }}
         </button>
       </div>
 
@@ -70,7 +70,7 @@
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
-        Clear
+        {{ t('Clear') }}
       </button>
 
       <!-- Agent count — Y is the FULL fleet count, honest about chassis
@@ -91,12 +91,12 @@
           v-model="agentsStore.sortBy"
           class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-action-primary-500 focus:ring-action-primary-500 text-sm py-2 px-3 bg-white dark:bg-gray-700 dark:text-gray-200 border"
         >
-          <option value="created_desc">Newest First</option>
-          <option value="created_asc">Oldest First</option>
-          <option value="name_asc">Name (A-Z)</option>
-          <option value="name_desc">Name (Z-A)</option>
-          <option value="status">Running First</option>
-          <option value="success_desc">Success Rate</option>
+          <option value="created_desc">{{ t('Newest First') }}</option>
+          <option value="created_asc">{{ t('Oldest First') }}</option>
+          <option value="name_asc">{{ t('Name (A-Z)') }}</option>
+          <option value="name_desc">{{ t('Name (Z-A)') }}</option>
+          <option value="status">{{ t('Running First') }}</option>
+          <option value="success_desc">{{ t('Success Rate') }}</option>
         </select>
       </div>
     </div>
@@ -109,13 +109,13 @@
     >
       <div class="flex items-center space-x-3">
         <span class="text-sm font-medium text-blue-700 dark:text-blue-300">
-          {{ selectedAgents.length }} agent{{ selectedAgents.length > 1 ? 's' : '' }} selected
+          {{ selectedAgents.length }} {{ t('agent') }}{{ selectedAgents.length > 1 ? 's' : '' }} {{ t('selected') }}
         </span>
         <button
           @click="clearSelection"
           class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
         >
-          Clear
+          {{ t('Clear') }}
         </button>
       </div>
       <div class="flex items-center space-x-2">
@@ -125,7 +125,7 @@
             @click="showBulkAddTag = !showBulkAddTag"
             class="px-3 py-1.5 bg-status-success-100 dark:bg-status-success-900/50 text-status-success-700 dark:text-status-success-300 rounded text-sm font-medium hover:bg-status-success-200 dark:hover:bg-status-success-900 transition-colors"
           >
-            + Add Tag
+            {{ t('+ Add Tag') }}
           </button>
           <div
             v-if="showBulkAddTag"
@@ -136,12 +136,12 @@
                 v-model="bulkTagInput"
                 @keyup.enter="applyBulkTag"
                 type="text"
-                placeholder="Enter tag name..."
+                :placeholder="t('Enter tag name...')"
                 class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 dark:text-gray-200 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             <div v-if="availableTags.length > 0" class="mb-2 max-h-32 overflow-y-auto">
-              <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Or select existing:</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">{{ t('Or select existing:') }}</div>
               <div class="flex flex-wrap gap-1">
                 <button
                   v-for="tagInfo in availableTags"
@@ -163,14 +163,14 @@
                 @click="showBulkAddTag = false; bulkTagInput = ''"
                 class="px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
               >
-                Cancel
+                {{ t('Cancel') }}
               </button>
               <button
                 @click="applyBulkTag"
                 :disabled="!bulkTagInput.trim()"
                 class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Apply
+                {{ t('Apply') }}
               </button>
             </div>
           </div>
@@ -181,14 +181,14 @@
             @click="showBulkRemoveTag = !showBulkRemoveTag"
             class="px-3 py-1.5 bg-status-danger-100 dark:bg-status-danger-900/50 text-status-danger-700 dark:text-status-danger-300 rounded text-sm font-medium hover:bg-status-danger-200 dark:hover:bg-status-danger-900 transition-colors"
           >
-            - Remove Tag
+            {{ t('- Remove Tag') }}
           </button>
           <div
             v-if="showBulkRemoveTag"
             class="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 z-50 min-w-48"
           >
             <div v-if="commonTagsInSelection.length > 0">
-              <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">Tags in selected agents:</div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ t('Tags in selected agents:') }}</div>
               <div class="flex flex-wrap gap-1 mb-2">
                 <button
                   v-for="tag in commonTagsInSelection"
@@ -201,13 +201,13 @@
               </div>
             </div>
             <div v-else class="text-xs text-gray-500 dark:text-gray-400">
-              No tags found on selected agents
+              {{ t('No tags found on selected agents') }}
             </div>
             <button
               @click="showBulkRemoveTag = false"
               class="mt-2 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
             >
-              Close
+              {{ t('Close') }}
             </button>
           </div>
         </div>
@@ -258,11 +258,11 @@
         <div class="w-4 list-wide:ml-8"></div>
         <div class="w-2.5"></div>
         <div class="w-2"></div>
-        <div data-col="name">Name</div>
-        <div data-col="status">Status</div>
-        <div data-col="controls">Controls</div>
-        <div data-col="success">Success</div>
-        <div data-col="stats">Exec / Sched</div>
+        <div data-col="name">{{ t('Name') }}</div>
+        <div data-col="status">{{ t('Status') }}</div>
+        <div data-col="controls">{{ t('Controls') }}</div>
+        <div data-col="success">{{ t('Success') }}</div>
+        <div data-col="stats">{{ t('Exec / Sched') }}</div>
         <div class="w-4"></div>
         <div class="w-1.5 list-wide:mr-4"></div>
       </div>
@@ -343,21 +343,21 @@
                 v-if="agent.is_system"
                 class="px-1.5 py-0.5 text-[10px] font-semibold bg-accent-purple-100 text-accent-purple-700 dark:bg-accent-purple-900/50 dark:text-accent-purple-300 rounded flex-shrink-0"
               >
-                SYSTEM
+                {{ t('SYSTEM') }}
               </span>
               <span
                 v-if="agent.ephemeral"
                 class="px-1.5 py-0.5 text-[10px] font-semibold bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded flex-shrink-0"
-                title="Ephemeral agent — budgeted, auto-discarded when its executions or TTL run out (no recovery)"
+                :title="t('Ephemeral agent — budgeted, auto-discarded when its executions or TTL run out (no recovery)')"
               >
-                GHOST
+                {{ t('GHOST') }}
               </span>
               <span
                 v-if="agent.is_shared"
                 class="px-1.5 py-0.5 text-[10px] font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded flex-shrink-0"
-                :title="'Shared by ' + agent.owner"
+                :title="uiText(&quot;Shared by &quot;) + agent.owner"
               >
-                Shared
+                {{ t('Shared') }}
               </span>
             </div>
 
@@ -570,14 +570,14 @@
               v-if="agent.is_system"
               class="px-1.5 py-0.5 text-[10px] font-semibold bg-accent-purple-100 text-accent-purple-700 dark:bg-accent-purple-900/50 dark:text-accent-purple-300 rounded flex-shrink-0"
             >
-              SYSTEM
+              {{ t('SYSTEM') }}
             </span>
             <span
               v-if="agent.is_shared"
               class="px-1.5 py-0.5 text-[10px] font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded flex-shrink-0"
-              :title="'Shared by ' + agent.owner"
+              :title="uiText(&quot;Shared by &quot;) + agent.owner"
             >
-              Shared
+              {{ t('Shared') }}
             </span>
             <div class="ml-auto flex items-center gap-3">
               <div
@@ -670,10 +670,10 @@
             />
             <div class="flex items-center text-[11px] text-gray-500 dark:text-gray-400 gap-x-1.5 whitespace-nowrap">
               <template v-if="hasExecutionStats(agent.name)">
-                <span class="font-medium text-gray-700 dark:text-gray-300">{{ getExecutionStats(agent.name).taskCount }} tasks</span>
+                <span class="font-medium text-gray-700 dark:text-gray-300">{{ getExecutionStats(agent.name).taskCount }} {{ t('tasks') }}</span>
                 <template v-if="getExecutionStats(agent.name).totalCost > 0">
                   <span class="text-gray-300 dark:text-gray-600">·</span>
-                  <span class="font-medium text-gray-700 dark:text-gray-300" :title="costIsApproximate(agent.name) ? 'API-price equivalent of subscription usage — not a bill' : null">{{ costIsApproximate(agent.name) ? '≈' : '' }}{{ formatCostCompact(getExecutionStats(agent.name).totalCost) }}</span>
+                  <span class="font-medium text-gray-700 dark:text-gray-300" :title="costIsApproximate(agent.name) ? t('API-price equivalent of subscription usage — not a bill') : null">{{ costIsApproximate(agent.name) ? '≈' : '' }}{{ formatCostCompact(getExecutionStats(agent.name).totalCost) }}</span>
                 </template>
               </template>
               <span v-else class="text-gray-400 dark:text-gray-500">--</span>
@@ -747,7 +747,7 @@
               v-if="agent.is_system"
               class="px-1.5 py-0.5 text-[10px] font-semibold bg-accent-purple-100 text-accent-purple-700 dark:bg-accent-purple-900/50 dark:text-accent-purple-300 rounded flex-shrink-0"
             >
-              SYS
+              {{ t('SYS') }}
             </span>
             <!-- No runtime badge at base: a <=767px name line has no room for
                  a marker that is identical on every row of a single-runtime
@@ -807,7 +807,7 @@
               <span class="text-gray-300 dark:text-gray-600">·</span>
               <span class="font-medium" :class="getSuccessBarColor(agent.name).replace('bg-', 'text-')">{{ getSuccessBarPercent(agent.name) }}%</span>
               <span class="text-gray-300 dark:text-gray-600">·</span>
-              <span class="font-medium">{{ getExecutionStats(agent.name).taskCount }} tasks</span>
+              <span class="font-medium">{{ getExecutionStats(agent.name).taskCount }} {{ t('tasks') }}</span>
             </template>
             <template v-else-if="has7dOnlyStats(agent.name)">
               <span class="text-gray-300 dark:text-gray-600">·</span>
@@ -828,14 +828,14 @@
          OWN name/status filters narrowed a non-empty prop to zero. -->
     <div v-if="displayAgents.length === 0 && agents.length > 0" class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow">
       <ServerIcon class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
-      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No matching agents</h3>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your filters.</p>
+      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ t('No matching agents') }}</h3>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ t('Try adjusting your filters.') }}</p>
       <div class="mt-4">
         <button
           @click="clearAllFilters"
           class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
         >
-          Clear all filters
+          {{ t('Clear all filters') }}
         </button>
       </div>
     </div>
@@ -843,6 +843,7 @@
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { readStoredToken } from '../utils/platformSession'
 import { formatCostCompact } from '../composables/useFormatters'
@@ -901,9 +902,9 @@ const readOnlyLoading = ref(null)
 const filterName = ref(localStorage.getItem('trinity-dashboard-list-filter-name') || '')
 const filterStatus = ref(localStorage.getItem('trinity-dashboard-list-filter-status') || 'all')
 const statusOptions = [
-  { value: 'all', label: 'All' },
-  { value: 'running', label: 'Running' },
-  { value: 'stopped', label: 'Stopped' }
+  { value: 'all', get "label"() { return uiText("All") } },
+  { value: 'running', get "label"() { return uiText("Running") } },
+  { value: 'stopped', get "label"() { return uiText("Stopped") } }
 ]
 
 // Selection + bulk-op state (panel-local; wiped on mode switch by design —
@@ -1154,7 +1155,7 @@ const handleAutonomyToggle = async (agent) => {
   try {
     const result = await networkStore.toggleAutonomy(agent.name)
     if (!result.success) {
-      showNotification(result.error || 'Failed to toggle autonomy mode', 'error')
+      showNotification(result.error || uiText("Failed to toggle autonomy mode"), 'error')
     }
   } finally {
     autonomyLoading.value = null
@@ -1183,14 +1184,14 @@ async function handleReadOnlyToggle(agent) {
       agent.read_only_enabled = newState
       showNotification(
         newState
-          ? `Read-only mode enabled for ${agentDisplayName(agent)}`
-          : `Read-only mode disabled for ${agentDisplayName(agent)}`,
+          ? uiText("Read-only mode enabled for {arg1}", { arg1: (agentDisplayName(agent)) })
+          : uiText("Read-only mode disabled for {arg1}", { arg1: (agentDisplayName(agent)) }),
         'success'
       )
     }
   } catch (error) {
     console.error('Failed to toggle read-only mode:', error)
-    showNotification('Failed to toggle read-only mode', 'error')
+    showNotification(uiText("Failed to toggle read-only mode"), 'error')
   } finally {
     readOnlyLoading.value = null
   }
@@ -1205,9 +1206,9 @@ const handleRunningToggle = async (agent) => {
   const result = await networkStore.toggleAgentRunning(agent.name)
   if (result.success) {
     const action = result.status === 'running' ? 'started' : 'stopped'
-    showNotification(`Agent ${agentDisplayName(agent)} ${action}`, 'success')
+    showNotification(uiText("Agent {arg1} {arg2}", { arg1: (agentDisplayName(agent)), arg2: (action) }), 'success')
   } else {
-    showNotification(result.error || 'Failed to toggle agent', 'error')
+    showNotification(result.error || uiText("Failed to toggle agent"), 'error')
   }
 }
 
@@ -1232,7 +1233,7 @@ async function applyBulkTag() {
 
   // Validate tag format
   if (!/^[a-z0-9-]+$/.test(tag) || tag.length > 50) {
-    showNotification('Invalid tag format. Use lowercase letters, numbers, and hyphens only.', 'error')
+    showNotification(uiText("Invalid tag format. Use lowercase letters, numbers, and hyphens only."), 'error')
     return
   }
 
@@ -1242,7 +1243,7 @@ async function applyBulkTag() {
         axios.post(`/api/agents/${agentName}/tags/${tag}`)
       )
     )
-    showNotification(`Added tag "${tag}" to ${selectedAgents.value.length} agent(s)`, 'success')
+    showNotification(uiText("Added tag \"{arg1}\" to {arg2} agent(s)", { arg1: (tag), arg2: (selectedAgents.value.length) }), 'success')
     bulkTagInput.value = ''
     showBulkAddTag.value = false
     // Emit BEFORE the refresh await (ent#260 eng F15): an emit after an await
@@ -1252,7 +1253,7 @@ async function applyBulkTag() {
     await networkStore.fetchAgents() // row tags ride the fleet payload
   } catch (err) {
     console.error('Failed to add tag:', err)
-    showNotification('Failed to add tag to some agents', 'error')
+    showNotification(uiText("Failed to add tag to some agents"), 'error')
   }
 }
 
@@ -1263,16 +1264,18 @@ async function removeBulkTag(tag) {
         axios.delete(`/api/agents/${agentName}/tags/${tag}`)
       )
     )
-    showNotification(`Removed tag "${tag}" from ${selectedAgents.value.length} agent(s)`, 'success')
+    showNotification(uiText("Removed tag \"{arg1}\" from {arg2} agent(s)", { arg1: (tag), arg2: (selectedAgents.value.length) }), 'success')
     showBulkRemoveTag.value = false
     // Emit-before-await: same rationale as applyBulkTag.
     emit('tags-changed')
     await networkStore.fetchAgents()
   } catch (err) {
     console.error('Failed to remove tag:', err)
-    showNotification('Failed to remove tag from some agents', 'error')
+    showNotification(uiText("Failed to remove tag from some agents"), 'error')
   }
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

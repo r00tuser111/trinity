@@ -45,7 +45,7 @@
     <!-- Send -->
     <div>
       <label v-if="targets.length > 1" class="block text-[11px] text-gray-500 dark:text-gray-400 mb-2">
-        Send to
+        {{ uiText("Send to") }}
         <select v-model="target" class="mt-0.5 w-full text-xs rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800" data-testid="portal-rail-files-target">
           <option v-for="t in targets" :key="t.value" :value="t.value">{{ t.label }}</option>
         </select>
@@ -56,7 +56,7 @@
         data-testid="portal-rail-files-drop"
       >
         <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.9A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-        <span class="font-medium text-center">{{ uploading ? 'Sending…' : `Drop a file, or click to send to ${targetName}` }}</span>
+        <span class="font-medium text-center">{{ uploading ? uiText("Sending…") : uiText("Drop a file, or click to send to {arg1}", { arg1: (targetName) }) }}</span>
         <input type="file" multiple class="hidden" :disabled="uploading" @change="onPick" />
       </label>
       <InlineError v-if="uploadError" :message="uploadError" @dismiss="uploadError = ''" />
@@ -68,7 +68,7 @@
 
     <LoadFailed
       v-else-if="view.state === 'failed'"
-      title="Couldn't load files"
+      :title="uiText(&quot;Couldn't load files&quot;)"
       :message="feeds.error || 'The files for this chat could not be read.'"
       :retrying="feeds.loading"
       @retry="feeds.refresh({ uploads: true })"
@@ -86,11 +86,11 @@
 
         <div v-for="group in GROUP_ORDER" :key="group" class="space-y-2">
           <h4 class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-            {{ group === 'upload' ? 'Files you sent' : `Files from ${agent}` }}
+            {{ group === 'upload' ? uiText("Files you sent") : uiText("Files from {arg1}", { arg1: (agent) }) }}
           </h4>
           <div v-if="group === 'upload' && !feeds.uploadsLoaded[agent]" class="h-3 w-24 rounded animate-pulse motion-reduce:animate-none bg-gray-100 dark:bg-gray-800/60" aria-busy="true"></div>
           <div v-else-if="!rowsIn(agent, group).length" class="text-xs text-gray-400 py-1">
-            {{ group === 'upload' ? 'Nothing sent yet.' : 'Nothing shared with you yet.' }}
+            {{ group === 'upload' ? uiText("Nothing sent yet.") : uiText("Nothing shared with you yet.") }}
           </div>
           <ul v-else class="space-y-2">
             <li
@@ -121,12 +121,12 @@
                     :data-testid="`portal-rail-files-download-${row.key}`"
                     @click="download(row)"
                   >
-                    Download
+                    {{ uiText("Download") }}
                   </BaseButton>
                   <button
                     type="button"
                     class="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-status-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action-primary-500/40 dark:text-gray-400 dark:hover:bg-gray-750 dark:hover:text-status-danger-400 dark:focus-visible:ring-action-primary-400/40"
-                    :aria-label="actionsFor(row).remove === 'delete' ? `Delete ${row.item.filename}` : `Remove ${row.item.filename} from my list`"
+                    :aria-label="actionsFor(row).remove === 'delete' ? uiText(&quot;Delete {arg1}&quot;, { arg1: (row.item.filename) }) : uiText(&quot;Remove {arg1} from my list&quot;, { arg1: (row.item.filename) })"
                     :data-testid="`portal-rail-files-remove-${row.key}`"
                     @click="ask(row, actionsFor(row).remove)"
                   >
@@ -139,7 +139,7 @@
                     v-if="actionsFor(row).revoke"
                     type="button"
                     class="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-status-danger-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action-primary-500/40 dark:text-gray-400 dark:hover:bg-gray-750 dark:hover:text-status-danger-400 dark:focus-visible:ring-action-primary-400/40"
-                    :aria-label="`Delete ${row.item.filename} for everyone`"
+                    :aria-label="uiText(&quot;Delete {arg1} for everyone&quot;, { arg1: (row.item.filename) })"
                     :data-testid="`portal-rail-files-revoke-${row.key}`"
                     @click="ask(row, 'revoke')"
                   >
@@ -266,7 +266,7 @@ function stampOf(row) {
 }
 function countLabel(agent) {
   const n = rowsIn(agent, 'document').length
-  return n ? `${n} shared` : 'nothing shared'
+  return n ? `${n} shared` : uiText("nothing shared")
 }
 
 // #2128: the capability channel for this surface is the roster payload, not the
@@ -322,13 +322,13 @@ async function uploadBatch(fileList) {
   // this one did not, and the gap was invisible because a single-recipient
   // receipt reads exactly like a successful fan-out.
   const to = recipients.value
-  if (!to.length) { uploadError.value = 'This chat has no agent to send to.'; return }
+  if (!to.length) { uploadError.value = uiText("This chat has no agent to send to."); return }
   uploading.value = true
   uploadError.value = ''
   uploadOk.value = ''
   const sent = []
   const failed = []
-  let lastReason = "Couldn't upload."
+  let lastReason = uiText("Couldn't upload.")
   for (const file of files) {
     const rejection = rejectionFor(file)
     if (rejection) { failed.push(`${file.name}: ${rejection}`); continue }
@@ -461,7 +461,7 @@ async function download(row) {
     a.click()
     a.remove()
   } catch (err) {
-    setRowError(row.key, await errorDetail(err, "Couldn't download that file."))
+    setRowError(row.key, await errorDetail(err, uiText("Couldn't download that file.")))
   } finally {
     if (url) setTimeout(() => URL.revokeObjectURL(url), 0)
     busyKey.value = null
@@ -479,28 +479,28 @@ const confirmOpen = computed({
 
 const CONFIRM_COPY = {
   delete: {
-    title: 'Delete this file?',
-    body: (name, agent) => `“${name}” will be removed from ${agent}'s inbox. The agent will no longer be able to read it.`,
-    confirmText: 'Delete',
+    get "title"() { return uiText("Delete this file?") },
+    body: (name, agent) => uiText("“{name}” will be removed from {agent}'s inbox. The agent will no longer be able to read it.", { name, agent }),
+    get "confirmText"() { return uiText('Delete') },
   },
   dismiss: {
-    title: 'Remove this from your list?',
+    get "title"() { return uiText("Remove this from your list?") },
     // The consequence restated, and the session-type caveat with it: a viewer
     // (which a non-owner admin, and an owner on a portal token, both are)
     // cannot revoke, so "for you" is the honest word.
-    body: (name) => `“${name}” will stop appearing in your Files list. It stays shared — the agent's owner can still see it, and so can anyone else it was shared with.`,
-    confirmText: 'Remove',
+    body: (name) => uiText("“{name}” will stop appearing in your Files list. It stays shared — the agent's owner can still see it, and so can anyone else it was shared with.", { name }),
+    get "confirmText"() { return uiText('Remove') },
   },
   revoke: {
-    title: 'Delete this file for everyone?',
-    body: (name) => `The download link for “${name}” stops working now, and the file is removed within a day. Everyone it was shared with loses access.`,
-    confirmText: 'Delete for everyone',
+    get "title"() { return uiText("Delete this file for everyone?") },
+    body: (name) => uiText('The download link for “{name}” stops working now, and the file is removed within a day. Everyone it was shared with loses access.', { name }),
+    get "confirmText"() { return uiText('Delete for everyone') },
   },
 }
 
 const confirmCopy = computed(() => {
   const p = pending.value
-  if (!p) return { title: '', message: '', confirmText: 'Confirm' }
+  if (!p) return { title: '', message: '', confirmText: uiText('Confirm') }
   const copy = CONFIRM_COPY[p.verb] || CONFIRM_COPY.dismiss
   return {
     title: copy.title,
@@ -534,7 +534,7 @@ async function runPending() {
     }
     await feeds.refresh({ uploads: true })
   } catch (err) {
-    setRowError(row.key, await errorDetail(err, "Couldn't remove that file."))
+    setRowError(row.key, await errorDetail(err, uiText("Couldn't remove that file.")))
   } finally {
     busyKey.value = null
     busyVerb.value = null
@@ -560,4 +560,6 @@ function formatDate(iso) {
   try { return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) }
   catch { return iso }
 }
+
+import { t as uiText } from '@/i18n'
 </script>

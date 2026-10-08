@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Skill sources store (ent#237) — the admin-side skills-library repos.
  *
@@ -44,7 +46,7 @@ export const useSkillSourcesStore = defineStore('skillSources', () => {
       skillCount.value = res.data.skill_count || 0
       shadowedCount.value = res.data.shadowed_count || 0
     } catch (e) {
-      error.value = e.response?.data?.detail || 'Failed to load skill sources'
+      error.value = e.response?.data?.detail || uiText("Failed to load skill sources")
       // State is left untouched on failure rather than cleared — blanking the
       // list would read as "no sources configured", which is a different and
       // alarming thing to show an admin.
@@ -60,7 +62,7 @@ export const useSkillSourcesStore = defineStore('skillSources', () => {
       await fetch()
       return true
     } catch (e) {
-      error.value = e.response?.data?.detail || 'Failed to add source'
+      error.value = e.response?.data?.detail || uiText("Failed to add source")
       return false
     }
   }
@@ -73,7 +75,7 @@ export const useSkillSourcesStore = defineStore('skillSources', () => {
       await fetch()
       return true
     } catch (e) {
-      error.value = e.response?.data?.detail || 'Failed to update source'
+      error.value = e.response?.data?.detail || uiText("Failed to update source")
       return false
     } finally {
       busyId.value = null
@@ -88,7 +90,7 @@ export const useSkillSourcesStore = defineStore('skillSources', () => {
       await fetch()
       return true
     } catch (e) {
-      error.value = e.response?.data?.detail || 'Failed to remove source'
+      error.value = e.response?.data?.detail || uiText("Failed to remove source")
       return false
     } finally {
       busyId.value = null
@@ -106,7 +108,7 @@ export const useSkillSourcesStore = defineStore('skillSources', () => {
       // A refused moved tag arrives here (§21.1.2). Surfacing the backend's
       // message verbatim matters — it names the tag and tells the admin to
       // point at a new one, which a generic "sync failed" would hide.
-      error.value = e.response?.data?.detail || 'Sync failed'
+      error.value = e.response?.data?.detail || uiText("Sync failed")
       return false
     } finally {
       busyId.value = null
@@ -121,7 +123,7 @@ export const useSkillSourcesStore = defineStore('skillSources', () => {
       await fetch()
       return true
     } catch (e) {
-      error.value = e.response?.data?.detail || 'Sync failed'
+      error.value = e.response?.data?.detail || uiText("Sync failed")
       return false
     } finally {
       loading.value = false

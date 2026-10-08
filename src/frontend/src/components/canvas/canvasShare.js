@@ -1,3 +1,5 @@
+import { t as uiText } from '../../i18n/index.js'
+
 /**
  * Canvas sharing — the decidable rules (ent#554).
  *
@@ -20,14 +22,14 @@ export const SHARE_SCOPES = ['authorized', 'public']
 export function scopeCopy(scope) {
   if (scope === 'public') {
     return {
-      label: 'Anyone with the link',
-      detail: 'No sign-in. Anyone you send the link to can open this canvas, and so can anyone they forward it to.',
+      get "label"() { return uiText("Anyone with the link") },
+      get "detail"() { return uiText('No sign-in. Anyone you send the link to can open this canvas, and so can anyone they forward it to.') },
       wide: true,
     }
   }
   return {
-    label: 'People who already have access',
-    detail: 'Opening the link requires signing in, and only people who can already see this agent will see the canvas.',
+    get "label"() { return uiText("People who already have access") },
+    get "detail"() { return uiText('Opening the link requires signing in, and only people who can already see this agent will see the canvas.') },
     wide: false,
   }
 }
@@ -46,37 +48,37 @@ export function shareProblem(status, detail) {
 
   if (named === 'sign_in_required' || status === 401) {
     return {
-      title: 'Sign in to view this canvas',
-      body: 'It was shared with the people who already have access to its agent.',
+      get "title"() { return uiText("Sign in to view this canvas") },
+      get "body"() { return uiText('It was shared with the people who already have access to its agent.') },
       action: 'sign-in',
     }
   }
   if (named === 'not_authorized' || status === 403) {
     return {
-      title: 'This canvas is not shared with you',
-      body: 'It was shared with the people who already have access to its agent. Ask whoever sent it to share it more widely, or to add you to the agent.',
+      get "title"() { return uiText("This canvas is not shared with you") },
+      get "body"() { return uiText('It was shared with the people who already have access to its agent. Ask whoever sent it to share it more widely, or to add you to the agent.') },
       action: null,
     }
   }
   if (named === 'revoked') {
     return {
-      title: 'This link was turned off',
-      body: 'Whoever shared this canvas has revoked the link. Ask them for a new one.',
+      get "title"() { return uiText("This link was turned off") },
+      get "body"() { return uiText('Whoever shared this canvas has revoked the link. Ask them for a new one.') },
       action: null,
     }
   }
   if (named === 'expired') {
     return {
-      title: 'This link has expired',
-      body: 'The share link had an end date and it has passed. Ask whoever shared it for a new one.',
+      get "title"() { return uiText("This link has expired") },
+      get "body"() { return uiText('The share link had an end date and it has passed. Ask whoever shared it for a new one.') },
       action: null,
     }
   }
   // Everything else — an unknown token, a canvas since deleted — reads the
   // same, so a stranger guessing tokens learns nothing from the difference.
   return {
-    title: 'This link does not work',
-    body: 'It may be mistyped, or the canvas it pointed at is gone.',
+    get "title"() { return uiText("This link does not work") },
+    get "body"() { return uiText('It may be mistyped, or the canvas it pointed at is gone.') },
     action: null,
   }
 }
@@ -109,8 +111,8 @@ export function shareSummary(share, now = Date.now()) {
   const copy = scopeCopy(share.scope)
   const views = Number(share.view_count) || 0
   const parts = [copy.label]
-  if (share.revoked_at) parts.push('revoked')
-  else if (share.expires_at && Date.parse(share.expires_at) <= now) parts.push('expired')
-  parts.push(views === 1 ? '1 view' : `${views} views`)
+  if (share.revoked_at) parts.push(uiText('revoked'))
+  else if (share.expires_at && Date.parse(share.expires_at) <= now) parts.push(uiText('expired'))
+  parts.push(views === 1 ? uiText('1 view') : uiText('{count} views', { count: views }))
   return parts.join(' · ')
 }

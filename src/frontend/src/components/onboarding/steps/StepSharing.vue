@@ -10,15 +10,15 @@
 <template>
   <div data-testid="first-run-step-sharing">
     <FirstRunStepHeader
-      kicker="Privacy"
-      :title="decided ? 'Usage sharing' : copy.title"
+      :kicker="uiText(&quot;Privacy&quot;)"
+      :title="decided ? uiText(&quot;Usage sharing&quot;) : copy.title"
       :lead="decided ? decidedLead : copy.lead"
       :badge="decided ? 'Done' : 'Optional'"
       schematic="sharing"
     />
 
     <div class="mt-5 space-y-3">
-      <BaseBadge variant="neutral">Off by default</BaseBadge>
+      <BaseBadge variant="neutral">{{ uiText("Off by default") }}</BaseBadge>
       <p class="text-[12.5px] leading-[1.5] text-gray-500 dark:text-gray-400">
         {{ CONSENT_COPY.shared.detail }}
       </p>
@@ -31,7 +31,7 @@
         <div class="px-3 pb-3 pt-1">
           <LoadFailed
             v-if="previewView.state === 'failed'"
-            title="Couldn't build the preview"
+            :title="uiText(&quot;Couldn't build the preview&quot;)"
             :detail="store.error"
             retryable
             @retry="loadPreview"
@@ -47,7 +47,7 @@
               <div class="h-3 w-3/4 rounded bg-gray-200 dark:bg-gray-800"></div>
               <div class="h-3 w-5/6 rounded bg-gray-100 dark:bg-gray-800/60"></div>
               <div class="h-3 w-2/3 rounded bg-gray-100 dark:bg-gray-800/60"></div>
-              <span class="sr-only">Loading…</span>
+              <span class="sr-only">{{ uiText("Loading…") }}</span>
             </div>
             <pre v-else class="max-h-48 overflow-auto rounded bg-gray-50 dark:bg-gray-900 p-2 text-xs text-gray-700 dark:text-gray-300"><code>{{ prettyPreview }}</code></pre>
           </div>
@@ -115,8 +115,8 @@ const copy = CONSENT_COPY[variant]
 const decided = computed(() => !!props.ctx.telemetryEnabled || !!props.ctx.telemetryDismissed)
 const decidedLead = computed(() =>
   props.ctx.telemetryEnabled
-    ? 'Sharing is on. Turn it off any time in Settings → General.'
-    : 'You chose not to share. Turn it on any time in Settings → General.'
+    ? uiText('Sharing is on. Turn it off any time in Settings → General.')
+    : uiText('You chose not to share. Turn it on any time in Settings → General.')
 )
 
 // The warm ask (ent#437) is spent only once it has really been SEEN. This step
@@ -152,7 +152,7 @@ async function share() {
   const ok = await store.setConsent(true, 30)
   pending.value = ''
   if (!ok) {
-    actionError.value = store.error || 'Could not turn sharing on. Try again.'
+    actionError.value = store.error || uiText("Could not turn sharing on. Try again.")
     return
   }
   confirmation.value = CONSENT_COPY.shared.shared
@@ -165,9 +165,11 @@ async function dontAsk() {
   const ok = await store.dismissAsk()
   pending.value = ''
   if (!ok) {
-    actionError.value = store.error || 'Could not save your choice. Try again.'
+    actionError.value = store.error || uiText("Could not save your choice. Try again.")
     return
   }
   emit('complete')
 }
+
+import { t as uiText } from '@/i18n'
 </script>

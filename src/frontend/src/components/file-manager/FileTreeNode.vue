@@ -52,7 +52,7 @@
         @select="$emit('select', $event)"
       />
       <div v-if="!item.children?.length" class="px-2 py-1 text-xs text-gray-400 dark:text-gray-500 italic">
-        Empty folder
+        {{ uiText("Empty folder") }}
       </div>
     </div>
   </div>
@@ -140,6 +140,8 @@ const formatSize = (bytes) => {
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
 }
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <script>

@@ -1,3 +1,5 @@
+import { t as uiText } from '../../i18n/index.js'
+
 // The Workspace composer's model choice (trinity-enterprise#403) — the rules.
 //
 // Every decision the composer makes about the model control lives here as a
@@ -46,7 +48,7 @@ export function modelControlState({
       render: true,
       enabled: false,
       options: list,
-      reason: 'This message starts a group chat — it runs on each agent’s own model.',
+      get "reason"() { return uiText("This message starts a group chat — it runs on each agent’s own model.") },
     }
   }
   return { render: true, enabled: true, options: list, reason: '' }
@@ -102,7 +104,8 @@ export function withChoice(record, agentName, value) {
  *  tuned — so the closed state has to be short on any viewport. The model name
  *  rides the `title` instead, where it costs no width. */
 export function optionText(opt) {
-  return (opt?.tier || '').trim() || (opt?.label || '').trim() || (opt?.id || '')
+  const tier = (opt?.tier || '').trim()
+  return (tier && uiText(tier)) || (opt?.label || '').trim() || (opt?.id || '')
 }
 
 /** One option's hover text — the model's real name, for anyone who wants it. */
@@ -121,7 +124,7 @@ export function optionTitle(opt) {
  */
 export function defaultOptionText(modelDefault) {
   const label = (modelDefault?.label || modelDefault?.model || '').trim()
-  return label ? `Agent’s default (${label})` : 'Agent’s default'
+  return label ? uiText("Agent’s default ({arg1})", { arg1: (label) }) : uiText("Agent’s default")
 }
 
 /**

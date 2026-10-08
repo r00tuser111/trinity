@@ -260,7 +260,7 @@ describe('the strip is the primitive, and the editor has one home', () => {
   })
   it('OverflowTabs keeps "More" for every existing strip', () => {
     const s = src('components/OverflowTabs.vue')
-    expect(s).toMatch(/moreLabel: \{ type: Function, default: \(\) => 'More' \}/)
+    expect(s).toMatch(/moreLabel: \{ type: Function, default: \(\) => t\('More'\) \}/)
   })
 
   // #2579 — fixed width. These are SOURCE pins, not behaviour: vitest runs

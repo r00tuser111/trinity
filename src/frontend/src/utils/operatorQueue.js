@@ -23,6 +23,8 @@
  * is the unit-testable home of the rules and the views are thin callers.
  */
 
+import { t as uiText, msg } from '../i18n/index.js'
+
 /**
  * Normalize an item's `options` to a list of strings. The DB stores whatever
  * JSON the agent wrote (any truthy value round-trips, the ingestion clamp only
@@ -123,9 +125,9 @@ export function buildQueueResponse({ kind, option, note = '', answer = '' } = {}
 
 /** The desktop (QueueCard) labels for the three protocol types. */
 export const QUEUE_TYPE_LABELS = Object.freeze({
-  approval: 'Needs approval',
-  question: 'Question',
-  alert: 'Heads up',
+  approval: msg('Needs approval'),
+  question: msg('Question'),
+  alert: msg('Heads up'),
 })
 
 /**
@@ -137,7 +139,7 @@ export const QUEUE_TYPE_LABELS = Object.freeze({
  */
 export function queueTypeLabel(type) {
   if (typeof type !== 'string') return ''
-  return QUEUE_TYPE_LABELS[type] || type
+  return QUEUE_TYPE_LABELS[type] ? uiText(QUEUE_TYPE_LABELS[type]) : type
 }
 
 /**
@@ -148,7 +150,7 @@ export function queueTypeLabel(type) {
  * guess.
  */
 export const QUEUE_RESPONSE_NOT_RECORDED =
-  'This item is no longer pending (already answered, cancelled or expired) — your response was not recorded.'
+  msg('This item is no longer pending (already answered, cancelled or expired) — your response was not recorded.')
 
 /**
  * Did `POST …/respond` refuse because the item is no longer pending?

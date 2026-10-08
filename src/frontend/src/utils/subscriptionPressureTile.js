@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 // ent#259 — pure decision logic for the "Subscription pressure" grid tile.
 //
 // Separate from `subscriptionPressure.js` on purpose, mirroring how ent#96 kept
@@ -238,7 +240,7 @@ export function resetText(usage, now = Date.now()) {
   if (!r) return null
   // Past its instant: the window should have rolled, but only another probe can
   // confirm it — so this says "go look", never a stale future time.
-  return r.due ? 'reset due' : `resets ${r.at}`
+  return r.due ? uiText("reset due") : `resets ${r.at}`
 }
 
 /**
@@ -388,12 +390,12 @@ export function formatApproxCost(n) {
  */
 export function pressureHeadline(usage) {
   if (isUnavailable(usage)) return 'unavailable'
-  if (isTokenRejected(usage)) return 'token invalid'
+  if (isTokenRejected(usage)) return uiText("token invalid")
   if (usage.rate_limited_now) return 'rate-limited'
   const events = rateLimitEventCount(usage)
   if (events > 0) return `${events}× 429`
   if ((usage.failure_events_24h || 0) > 0) return 'failures'
-  if (headroomStatus(usage) === 'error') return 'no provider data'
+  if (headroomStatus(usage) === 'error') return uiText("no provider data")
   // Directly above `ok`: nothing has gone wrong yet, but this row is not
   // healthy either.
   //
@@ -405,7 +407,7 @@ export function pressureHeadline(usage) {
   // input — a headline saying `ok` for a row this module scores `warn` is the
   // same class of disagreement #2396 is about. The operator-visible fix for the
   // ordinary windowed row is the lead chip (red `limit` → amber `near`).
-  if (isNearingLimit(usage)) return 'nearing limit'
+  if (isNearingLimit(usage)) return uiText("nearing limit")
   return 'ok'
 }
 
@@ -423,7 +425,7 @@ export function pressureHeadline(usage) {
  * available in the row tooltip, labelled as an estimate.
  */
 export function usageLine(usage) {
-  if (isUnavailable(usage)) return 'usage data unavailable'
+  if (isUnavailable(usage)) return uiText("usage data unavailable")
   const w5 = usage.window_5h || {}
   const w7 = usage.window_7d || {}
   return [
@@ -436,7 +438,7 @@ export function usageLine(usage) {
 /** Full hover text — where the caveats live, since the row face has no room. */
 export function rowTooltip(sub, usage, now = Date.now()) {
   if (isUnavailable(usage)) {
-    return `${sub.name}\nUsage could not be read. The subscription itself is unaffected.`
+    return uiText("{arg1}\nUsage could not be read. The subscription itself is unaffected.", { arg1: (sub.name) })
   }
   const w5 = usage.window_5h || {}
   const w7 = usage.window_7d || {}
@@ -448,21 +450,20 @@ export function rowTooltip(sub, usage, now = Date.now()) {
     if (!win || win.utilization_pct == null) continue
     const reset = formatResetTime(win.resets_at)
     lines.push(
-      `${win.utilization_pct}% of the ${label} limit used`
-      + (reset ? ` · resets ${reset}` : ''),
+      reset
+        ? uiText('{pct}% of the {window} limit used · resets {reset}', { pct: win.utilization_pct, window: label, reset })
+        : uiText('{pct}% of the {window} limit used', { pct: win.utilization_pct, window: label }),
     )
   }
   // #447 — the two things the row face cannot say in the space it has.
   const reset = resetReading(usage, now)
   if (reset?.due) {
     lines.push(
-      `The ${reset.label} reset time (${reset.at}) has already passed — `
-      + 'refresh to confirm the window has rolled.',
+      uiText('The {window} reset time ({at}) has already passed — refresh to confirm the window has rolled.', { window: reset.label, at: reset.at }),
     )
   } else if (usage.rate_limited_now && !reset && !isTokenRejected(usage)) {
     lines.push(
-      'No reset time was reported for this limit. Refresh from '
-      + 'Settings → Integrations to re-check.',
+      uiText('No reset time was reported for this limit. Refresh from Settings → Integrations to re-check.'),
     )
   }
 
@@ -470,37 +471,42 @@ export function rowTooltip(sub, usage, now = Date.now()) {
 
   // 5h is a SUBSET of 7d — spelled out so the two lines are never read as
   // additive.
+  const runs5h = w5.message_count || 0
+  const out5h = formatTokenCount(w5.output_tokens)
+  const cost5h = formatApproxCost(w5.cost_usd)
   lines.push(
-    `5h: ${formatTokenCount(w5.output_tokens)} out · ${formatApproxCost(w5.cost_usd)}`
-    + ` · ${w5.message_count || 0} run${(w5.message_count || 0) === 1 ? '' : 's'}`,
+    runs5h === 1
+      ? uiText('5h: {tokens} out · {cost} · {count} run', { tokens: out5h, cost: cost5h, count: runs5h })
+      : uiText('5h: {tokens} out · {cost} · {count} runs', { tokens: out5h, cost: cost5h, count: runs5h }),
   )
   lines.push(
-    `7d (includes the 5h window): ${formatTokenCount(w7.output_tokens)} out`
-    + ` · ${formatApproxCost(w7.cost_usd)}`,
+    uiText('7d (includes the 5h window): {tokens} out · {cost}', { tokens: formatTokenCount(w7.output_tokens), cost: formatApproxCost(w7.cost_usd) }),
   )
   lines.push(
-    `Context estimate — 5h ${formatTokenCount(w5.input_tokens)},`
-    + ` 7d ${formatTokenCount(w7.input_tokens)}`
-    + ' (recorded context occupancy, not billed input tokens)',
+    uiText('Context estimate — 5h {tokens5h}, 7d {tokens7d} (recorded context occupancy, not billed input tokens)', { tokens5h: formatTokenCount(w5.input_tokens), tokens7d: formatTokenCount(w7.input_tokens) }),
   )
-  lines.push('Cost is API-equivalent — what this consumption would cost at API prices, not a bill.')
+  lines.push(uiText('Cost is API-equivalent — what this consumption would cost at API prices, not a bill.'))
 
   const kinds = failureKindLabel(usage.failure_events_by_kind)
-  if (kinds) lines.push(`Failure events (24h): ${kinds}`)
+  if (kinds) lines.push(uiText('Failure events (24h): {kinds}', { kinds }))
 
   // The most actionable state the payload can carry, and it is otherwise
   // indistinguishable from "no provider data" on the row face.
   if (usage.headroom?.status === 'invalid_token') {
-    lines.push('Provider token rejected — re-register this subscription in Settings.')
+    lines.push(uiText('Provider token rejected — re-register this subscription in Settings.'))
   } else if (usage.headroom?.status === 'error') {
     // Says why the percentages are missing. Without it "no provider data" on
     // the row face is a dead end — the reader cannot tell a transient blip from
     // something that needs looking at.
-    lines.push('The last provider check failed, so no live limit reading is available.')
+    lines.push(uiText('The last provider check failed, so no live limit reading is available.'))
   }
 
   const agents = (usage.agents || []).length
-  lines.push(agents === 0 ? 'No agents assigned' : `${agents} agent${agents === 1 ? '' : 's'} assigned`)
+  lines.push(agents === 0
+    ? uiText('No agents assigned')
+    : agents === 1
+      ? uiText('{count} agent assigned', { count: agents })
+      : uiText('{count} agents assigned', { count: agents }))
   return lines.join('\n')
 }
 
@@ -553,7 +559,7 @@ export function subscriptionPressureRows(subscriptions, usageBySub, options = {}
       // A `crit` row with no reset says so. Blank would read as "no reset
       // exists"; inventing one would be worse. The row already links to
       // Settings → Integrations, which is where a refresh lives.
-      meta += reset ? ` · ${reset}` : ' · reset unknown'
+      meta += reset ? ` · ${reset}` : ` · ${uiText('reset unknown')}`
     }
     const subLine = reset && windows ? `${reset} · ${usageLine(usage)}` : usageLine(usage)
 
@@ -610,10 +616,12 @@ export function subscriptionPressureRows(subscriptions, usageBySub, options = {}
     utilization: null,
     events: 0,
     overflow: true,
-    primary: `+${hiddenRows} more`,
+    primary: uiText('+{count} more', { count: hiddenRows }),
     meta: '',
-    sub: 'Open Settings → Integrations to see every subscription',
-    title: `${hiddenRows} more subscription${hiddenRows === 1 ? '' : 's'} not shown`,
+    sub: uiText('Open Settings → Integrations to see every subscription'),
+    title: hiddenRows === 1
+      ? uiText('{count} more subscription not shown', { count: hiddenRows })
+      : uiText('{count} more subscriptions not shown', { count: hiddenRows }),
   })
   return { rows: shown, visibleRows, totalRows, hiddenRows }
 }

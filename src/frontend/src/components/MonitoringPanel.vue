@@ -15,7 +15,7 @@
         :class="monitoringStore.enabled ? 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-700 dark:text-status-success-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'"
       >
         <span class="w-2 h-2 rounded-full mr-2" :class="monitoringStore.enabled ? 'bg-status-success-500' : 'bg-gray-400'"></span>
-        {{ monitoringStore.enabled ? 'Monitoring Active' : 'Monitoring Disabled' }}
+        {{ monitoringStore.enabled ? t('Monitoring Active') : t('Monitoring Disabled') }}
       </span>
 
       <!--
@@ -34,21 +34,21 @@
           ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
           : 'bg-status-success-600 hover:bg-status-success-700 text-white'"
         :title="monitoringStore.enabled
-          ? 'Stop the fleet-health monitoring loop (persists across restarts)'
-          : 'Start the fleet-health monitoring loop (persists across restarts)'"
+          ? t('Stop the fleet-health monitoring loop (persists across restarts)')
+          : t('Start the fleet-health monitoring loop (persists across restarts)')"
       >
-        {{ togglingMonitoring ? 'Working…' : (monitoringStore.enabled ? 'Disable monitoring' : 'Enable monitoring') }}
+        {{ togglingMonitoring ? t('Working…') : (monitoringStore.enabled ? t('Disable monitoring') : t('Enable monitoring')) }}
       </button>
 
       <span v-if="autoRefreshEnabled" class="text-xs text-gray-500 dark:text-gray-400">
-        Auto-refresh: {{ refreshCountdown }}s
+        {{ t('Auto-refresh:') }} {{ refreshCountdown }}s
       </span>
 
       <button
         @click="toggleAutoRefresh"
         :class="autoRefreshEnabled ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'"
         class="px-3 py-1.5 text-sm rounded-lg hover:bg-opacity-80 transition-colors"
-        :title="autoRefreshEnabled ? 'Disable auto-refresh' : 'Enable auto-refresh'"
+        :title="autoRefreshEnabled ? t('Disable auto-refresh') : t('Enable auto-refresh')"
       >
         <ClockIcon class="w-4 h-4" />
       </button>
@@ -57,7 +57,7 @@
         @click="refreshAll"
         :disabled="monitoringStore.loading"
         class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg"
-        title="Refresh"
+        :title="t('Refresh')"
       >
         <ArrowPathIcon class="w-5 h-5" :class="{ 'animate-spin': monitoringStore.loading }" />
       </button>
@@ -68,7 +68,7 @@
         :disabled="triggeringCheck"
         class="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
       >
-        {{ triggeringCheck ? 'Checking...' : 'Check All' }}
+        {{ triggeringCheck ? t('Checking...') : t('Check All') }}
       </button>
     </div>
 
@@ -78,7 +78,7 @@
       class="mb-4 px-4 py-2 rounded-lg bg-status-danger-50 dark:bg-status-danger-900/20 text-status-danger-700 dark:text-status-danger-300 text-sm flex items-center justify-between"
     >
       <span>{{ monitoringError }}</span>
-      <button @click="monitoringError = ''" class="ml-3 text-status-danger-500 hover:text-status-danger-700" title="Dismiss">
+      <button @click="monitoringError = ''" class="ml-3 text-status-danger-500 hover:text-status-danger-700" :title="t('Dismiss')">
         <XCircleIcon class="w-4 h-4" />
       </button>
     </div>
@@ -87,23 +87,23 @@
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
         <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ monitoringStore.summary.total_agents }}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400">Total Agents</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">{{ t('Total Agents') }}</div>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-status-success-500">
         <div class="text-3xl font-bold text-status-success-600 dark:text-status-success-400">{{ monitoringStore.summary.healthy }}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400">Healthy</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">{{ t('Healthy') }}</div>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-status-warning-500">
         <div class="text-3xl font-bold text-status-warning-600 dark:text-status-warning-400">{{ monitoringStore.summary.degraded }}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400">Degraded</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">{{ t('Degraded') }}</div>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-status-danger-500">
         <div class="text-3xl font-bold text-status-danger-600 dark:text-status-danger-400">{{ monitoringStore.summary.unhealthy }}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400">Unhealthy</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">{{ t('Unhealthy') }}</div>
       </div>
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-status-danger-700">
         <div class="text-3xl font-bold text-status-danger-700 dark:text-status-danger-500">{{ monitoringStore.summary.critical }}</div>
-        <div class="text-xs text-gray-500 dark:text-gray-400">Critical</div>
+        <div class="text-xs text-gray-500 dark:text-gray-400">{{ t('Critical') }}</div>
       </div>
     </div>
 
@@ -112,7 +112,7 @@
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-lg font-medium text-status-danger-800 dark:text-status-danger-200 flex items-center">
           <BellAlertIcon class="w-5 h-5 mr-2" />
-          Active Alerts ({{ monitoringStore.alerts.length }})
+          {{ t('Active Alerts (') }}{{ monitoringStore.alerts.length }})
         </h2>
       </div>
       <div class="space-y-2">
@@ -139,7 +139,7 @@
     <!-- Agent Health Grid -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
       <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <h2 class="text-lg font-medium text-gray-900 dark:text-white">Agent Health Status</h2>
+        <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ t('Agent Health Status') }}</h2>
 
         <!-- Status filter -->
         <div class="flex items-center gap-2">
@@ -147,12 +147,12 @@
             v-model="statusFilter"
             class="text-sm border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
           >
-            <option value="">All Statuses</option>
-            <option value="healthy">Healthy</option>
-            <option value="degraded">Degraded</option>
-            <option value="unhealthy">Unhealthy</option>
-            <option value="critical">Critical</option>
-            <option value="unknown">Unknown</option>
+            <option value="">{{ t('All Statuses') }}</option>
+            <option value="healthy">{{ t('Healthy') }}</option>
+            <option value="degraded">{{ t('Degraded') }}</option>
+            <option value="unhealthy">{{ t('Unhealthy') }}</option>
+            <option value="critical">{{ t('Critical') }}</option>
+            <option value="unknown">{{ t('Unknown') }}</option>
           </select>
         </div>
       </div>
@@ -189,9 +189,9 @@
                   </span>
                 </div>
                 <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  <span v-if="agent.docker_status">Container: {{ agent.docker_status }}</span>
+                  <span v-if="agent.docker_status">{{ t('Container:') }} {{ agent.docker_status }}</span>
                   <span v-if="agent.network_reachable !== undefined" class="ml-3">
-                    Network: {{ agent.network_reachable ? 'Reachable' : 'Unreachable' }}
+                    {{ t('Network:') }} {{ agent.network_reachable ? t('Reachable') : t('Unreachable') }}
                   </span>
                 </div>
               </div>
@@ -201,7 +201,7 @@
               <!-- Issues list -->
               <div v-if="agent.issues && agent.issues.length > 0" class="text-right">
                 <div class="text-sm text-status-danger-600 dark:text-status-danger-400">
-                  {{ agent.issues.length }} issue{{ agent.issues.length > 1 ? 's' : '' }}
+                  {{ agent.issues.length }} {{ t('issue') }}{{ agent.issues.length > 1 ? 's' : '' }}
                 </div>
                 <div class="text-xs text-gray-500 dark:text-gray-400 max-w-xs truncate">
                   {{ agent.issues[0] }}
@@ -210,9 +210,9 @@
 
               <!-- Last check time -->
               <div class="text-right">
-                <div class="text-xs text-gray-400">Last check</div>
+                <div class="text-xs text-gray-400">{{ t('Last check') }}</div>
                 <div class="text-sm text-gray-600 dark:text-gray-300">
-                  {{ agent.last_check_at ? formatRelativeTime(agent.last_check_at) : 'Never' }}
+                  {{ agent.last_check_at ? formatRelativeTime(agent.last_check_at) : t('Never') }}
                 </div>
               </div>
 
@@ -222,7 +222,7 @@
                 @click.stop="triggerAgentCheck(agent.name)"
                 :disabled="checkingAgent === agent.name"
                 class="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg"
-                title="Trigger health check"
+                :title="t('Trigger health check')"
               >
                 <ArrowPathIcon class="w-4 h-4" :class="{ 'animate-spin': checkingAgent === agent.name }" />
               </button>
@@ -234,9 +234,9 @@
 
         <div v-if="filteredAgents.length === 0" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
           <HeartIcon class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-          <p class="text-lg font-medium">No agents found</p>
+          <p class="text-lg font-medium">{{ t('No agents found') }}</p>
           <p class="text-sm mt-1">
-            {{ statusFilter ? 'No agents match the selected filter' : 'No agents are being monitored' }}
+            {{ statusFilter ? t('No agents match the selected filter') : t('No agents are being monitored') }}
           </p>
         </div>
       </div>
@@ -244,12 +244,15 @@
 
     <!-- Last updated -->
     <div v-if="monitoringStore.lastCheck" class="mt-4 text-center text-xs text-gray-400">
-      Last updated: {{ formatTime(monitoringStore.lastCheck) }}
+      {{ t('Last updated:') }} {{ formatTime(monitoringStore.lastCheck) }}
     </div>
   </div>
 </template>
 
 <script setup>
+import { t as uiText } from '@/i18n'
+
+import { t } from '@/i18n'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMonitoringStore } from '../stores/monitoring'
@@ -368,8 +371,8 @@ async function toggleMonitoring() {
     await refreshAll()
   } catch (err) {
     monitoringError.value = turningOn
-      ? 'Failed to enable monitoring. Check your permissions and try again.'
-      : 'Failed to disable monitoring. Please try again.'
+      ? uiText("Failed to enable monitoring. Check your permissions and try again.")
+      : uiText("Failed to disable monitoring. Please try again.")
   } finally {
     togglingMonitoring.value = false
   }
@@ -453,10 +456,10 @@ function formatRelativeTime(dateStr) {
   const diffHours = Math.floor(diffMs / 3600000)
   const diffDays = Math.floor(diffMs / 86400000)
 
-  if (diffSecs < 60) return 'just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  return `${diffDays}d ago`
+  if (diffSecs < 60) return uiText("just now")
+  if (diffMins < 60) return uiText("{arg1}m ago", { arg1: (diffMins) })
+  if (diffHours < 24) return uiText("{arg1}h ago", { arg1: (diffHours) })
+  return uiText("{arg1}d ago", { arg1: (diffDays) })
 }
 
 function formatTime(dateStr) {

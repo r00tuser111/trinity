@@ -32,7 +32,7 @@
 
     <LoadFailed
       v-else-if="view.state === 'failed'"
-      title="Couldn't load what's running"
+      :title="uiText(&quot;Couldn't load what's running&quot;)"
       :message="store.error || 'The work for this chat could not be read.'"
       :retrying="store.loading"
       @retry="store.refresh()"
@@ -44,7 +44,7 @@
 
       <!-- Waiting on you -->
       <section v-if="asks.length" data-testid="portal-work-waiting">
-        <h3 :class="OVERLINE">Waiting on you</h3>
+        <h3 :class="OVERLINE">{{ uiText("Waiting on you") }}</h3>
         <PortalAsks :agent-names="participants" :show-agent="participants.length > 1" :current-session-id="chatId" @open-thread="(t) => $emit('open-thread', t)" />
       </section>
 
@@ -58,14 +58,14 @@
       <template v-else>
         <!-- Now -->
         <section data-testid="portal-work-now">
-          <h3 :class="OVERLINE">Now</h3>
+          <h3 :class="OVERLINE">{{ uiText("Now") }}</h3>
           <template v-if="participants.length > 1">
             <div v-for="[agent, list] in groupedNow" :key="agent" class="mb-3 last:mb-0">
               <div class="flex items-center gap-2 min-w-0 mb-1.5">
                 <PortalAvatar :name="agent" :size="18" />
                 <span class="text-[11px] font-semibold uppercase tracking-wide text-gray-400 truncate">{{ agent }}</span>
-                <BaseBadge v-if="list.length" variant="info" dot class="ml-auto">{{ list.length }} running</BaseBadge>
-                <span v-else class="ml-auto text-xs text-gray-400">nothing in flight</span>
+                <BaseBadge v-if="list.length" variant="info" dot class="ml-auto">{{ list.length }} {{ uiText("running") }}</BaseBadge>
+                <span v-else class="ml-auto text-xs text-gray-400">{{ uiText("nothing in flight") }}</span>
               </div>
               <div class="space-y-2">
                 <PortalWorkCard
@@ -84,7 +84,7 @@
             </div>
           </template>
           <template v-else>
-            <p v-if="!store.live.length" class="text-xs text-gray-500 dark:text-gray-400" data-testid="portal-work-now-empty">Nothing running right now.</p>
+            <p v-if="!store.live.length" class="text-xs text-gray-500 dark:text-gray-400" data-testid="portal-work-now-empty">{{ uiText("Nothing running right now.") }}</p>
             <div v-else class="space-y-2">
               <PortalWorkCard
                 v-for="it in store.live"
@@ -105,7 +105,7 @@
 
         <!-- Earlier -->
         <section data-testid="portal-work-earlier">
-          <h3 :class="OVERLINE">Earlier</h3>
+          <h3 :class="OVERLINE">{{ uiText("Earlier") }}</h3>
           <p class="text-xs text-gray-500 dark:text-gray-400 tabular-nums" data-testid="portal-work-earlier-summary">{{ summary }}</p>
           <template v-if="participants.length > 1">
             <div v-for="[agent, list] in groupedEarlier" :key="agent" class="mt-2">
@@ -128,7 +128,7 @@
             class="mt-2"
             data-testid="portal-work-show-all"
             @click="expanded = !expanded"
-          >{{ expanded ? 'Show fewer' : `Show all ${store.earlier.length}` }}</BaseButton>
+          >{{ expanded ? uiText("Show fewer") : uiText("Show all {arg1}", { arg1: (store.earlier.length) }) }}</BaseButton>
         </section>
       </template>
     </template>
@@ -193,9 +193,9 @@ const groupedNow = computed(() => groupByParticipant(store.live, participants.va
 const groupedEarlier = computed(() => groupByParticipant(shownEarlier.value, participants.value))
 
 const EMPTY_FALLBACK = {
-  title: 'Nothing running right now',
-  body: 'When an agent takes on a longer job from this chat, it shows up here step by step.',
-  action: 'See what you can ask',
+  get "title"() { return uiText("Nothing running right now") },
+  get "body"() { return uiText('When an agent takes on a longer job from this chat, it shows up here step by step.') },
+  get "action"() { return uiText('See what you can ask') },
 }
 const emptyCopy = computed(() => railEmptyCopy(props.tab || { empty: EMPTY_FALLBACK }, participants.value))
 
@@ -226,7 +226,7 @@ const stopError = ref('')
 async function onStop(item) {
   stopError.value = ''
   const res = await store.stopItem(item)
-  if (!res.success) stopError.value = "Couldn't stop that job — it may still be running."
+  if (!res.success) stopError.value = uiText("Couldn't stop that job — it may still be running.")
 }
 
 // Ask about it: a prefill the shell hands to the composer. Never sent here.
@@ -235,4 +235,6 @@ function onAsk(item) {
 }
 
 const OVERLINE = 'text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2'
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -10,7 +10,7 @@
       :message="staleMessage"
       :detail="loadError"
       retryable
-      :retry-label="loading ? 'Retrying…' : 'Try again'"
+      :retry-label="loading ? uiText(&quot;Retrying…&quot;) : uiText(&quot;Try again&quot;)"
       @retry="loadDashboard"
       @dismiss="loadError = ''"
     />
@@ -34,7 +34,7 @@
 
       <LoadFailed
         v-else-if="loadFailed"
-        title="Couldn't load the dashboard"
+        :title="uiText(&quot;Couldn't load the dashboard&quot;)"
         message="The agent did not return its dashboard. This is not the same as an agent without one."
         :detail="loadError"
         :retrying="loading"
@@ -48,9 +48,9 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Agent Not Running</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Agent Not Running") }}</h3>
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-        Start the agent to view its dashboard.
+        {{ uiText("Start the agent to view its dashboard.") }}
       </p>
     </div>
 
@@ -61,7 +61,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Dashboard Error</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Dashboard Error") }}</h3>
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
         {{ dashboardData?.error }}
       </p>
@@ -74,12 +74,12 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">No Dashboard Defined</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("No Dashboard Defined") }}</h3>
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-        This agent does not have a dashboard.yaml file.
+        {{ uiText("This agent does not have a dashboard.yaml file.") }}
       </p>
       <div class="mt-4 text-xs text-gray-400 dark:text-gray-500">
-        Create <code class="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">~/dashboard.yaml</code> to define a custom dashboard.
+        {{ uiText("Create") }} <code class="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">~/dashboard.yaml</code> {{ uiText("to define a custom dashboard.") }}
       </div>
     </div>
 
@@ -93,7 +93,7 @@
           </svg>
           <div class="ml-3 flex-1">
             <p class="text-sm font-medium text-status-warning-800 dark:text-status-warning-200">
-              Showing cached dashboard
+              {{ uiText("Showing cached dashboard") }}
             </p>
             <p class="mt-1 text-xs text-status-warning-700 dark:text-status-warning-300">
               {{ dashboardData.stale_reason }}
@@ -110,7 +110,7 @@
           </svg>
           <div class="ml-3 flex-1">
             <p class="text-sm font-medium text-state-autonomous-800 dark:text-state-autonomous-200">
-              {{ dashboardData.warnings.length }} widget{{ dashboardData.warnings.length > 1 ? 's' : '' }} skipped due to validation errors
+              {{ dashboardData.warnings.length }} {{ uiText("widget") }}{{ dashboardData.warnings.length > 1 ? 's' : '' }} {{ uiText("skipped due to validation errors") }}
             </p>
             <ul class="mt-1 text-xs text-state-autonomous-700 dark:text-state-autonomous-300 list-disc list-inside">
               <li v-for="(warning, idx) in dashboardData.warnings" :key="idx">{{ warning }}</li>
@@ -131,14 +131,14 @@
         </div>
         <div class="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
           <span v-if="dashboardData.last_modified">
-            Updated {{ formatRelativeTime(dashboardData.last_modified) }}
+            {{ uiText("Updated") }} {{ formatRelativeTime(dashboardData.last_modified) }}
           </span>
           <button
             v-if="hasUpdateDashboardPlaybook"
             @click="triggerUpdateDashboard"
             :disabled="updatingDashboard"
             class="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded bg-action-primary-50 text-action-primary-700 hover:bg-action-primary-100 dark:bg-action-primary-900/50 dark:text-action-primary-300 dark:hover:bg-action-primary-900/70 disabled:opacity-50"
-            title="Run /update-dashboard playbook"
+            :title="uiText(&quot;Run /update-dashboard playbook&quot;)"
           >
             <svg v-if="updatingDashboard" class="w-3.5 h-3.5 mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -146,13 +146,13 @@
             <svg v-else class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            Update Dashboard
+            {{ uiText("Update Dashboard") }}
           </button>
           <button
             @click="loadDashboard"
             :disabled="loading"
             class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
-            title="Refresh dashboard"
+            :title="uiText(&quot;Refresh dashboard&quot;)"
           >
             <svg :class="['w-4 h-4', loading ? 'animate-spin' : '']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -175,7 +175,7 @@
               {{ section.title }}
             </h3>
             <span v-if="section.platform_managed" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-action-primary-100 text-action-primary-700 dark:bg-action-primary-900/50 dark:text-action-primary-300">
-              Auto
+              {{ uiText("Auto") }}
             </span>
           </div>
           <p v-if="section.description" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
@@ -210,7 +210,7 @@
                     <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                   </svg>
                   <span v-if="widget.trend_value || widget.history?.trend_percent" class="ml-1">
-                    {{ widget.trend_value || (widget.history?.trend_percent ? `${widget.history.trend_percent > 0 ? '+' : ''}${widget.history.trend_percent}%` : '') }}
+                    {{ widget.trend_value || (widget.history?.trend_percent ? uiText("{arg1}{arg2}%", { arg1: (widget.history.trend_percent > 0 ? '+' : ''), arg2: (widget.history.trend_percent) }) : '') }}
                   </span>
                 </div>
               </div>
@@ -475,7 +475,7 @@ const loadDashboard = async () => {
     // blocking symptom by ordering alone, which is exactly the wedged-agent
     // case an operator is most likely to hit.
     if (props.agentStatus !== 'running') return
-    loadError.value = error?.response?.data?.detail || error?.message || 'Request failed'
+    loadError.value = error?.response?.data?.detail || error?.message || uiText("Request failed")
   } finally {
     loading.value = false
   }
@@ -502,7 +502,7 @@ const firstLoad = computed(() => view.value.state === 'loading')
 // animates behind the not-running copy.
 const awaitingFirstLoad = computed(() => firstLoad.value && props.agentStatus === 'running')
 const loadFailed = computed(() => view.value.state === 'failed')
-const staleMessage = computed(() => staleBannerMessage('the dashboard', lastLoadedAt.value))
+const staleMessage = computed(() => staleBannerMessage(uiText('the dashboard'), lastLoadedAt.value))
 
 // Check if agent has an update-dashboard playbook
 const checkUpdateDashboardPlaybook = async () => {
@@ -554,10 +554,10 @@ const formatRelativeTime = (isoString) => {
   const date = new Date(isoString)
   const now = new Date()
   const diffSeconds = Math.floor((now - date) / 1000)
-  if (diffSeconds < 60) return 'just now'
-  if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m ago`
-  if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)}h ago`
-  return `${Math.floor(diffSeconds / 86400)}d ago`
+  if (diffSeconds < 60) return uiText("just now")
+  if (diffSeconds < 3600) return uiText("{arg1}m ago", { arg1: (Math.floor(diffSeconds / 60)) })
+  if (diffSeconds < 86400) return uiText("{arg1}h ago", { arg1: (Math.floor(diffSeconds / 3600)) })
+  return uiText("{arg1}d ago", { arg1: (Math.floor(diffSeconds / 86400)) })
 }
 
 // renderMarkdown imported from utils/markdown
@@ -732,4 +732,6 @@ onMounted(() => {
 onUnmounted(() => {
   stopRefresh()
 })
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -7,11 +7,9 @@
   <div class="space-y-8">
     <!-- Header -->
     <div>
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">System Credential Vault</h3>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ uiText("System Credential Vault") }}</h3>
       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-        Store a shared secret once and grant it to agents. An agent fetches a granted value by
-        name at runtime; the value is scrubbed from its saved transcript. Values are encrypted
-        (AES-256-GCM) and are never shown again after you save them.
+        {{ uiText("Store a shared secret once and grant it to agents. An agent fetches a granted value by name at runtime; the value is scrubbed from its saved transcript. Values are encrypted (AES-256-GCM) and are never shown again after you save them.") }}
       </p>
     </div>
 
@@ -21,10 +19,9 @@
       v-if="adminRequired"
       class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800/50"
     >
-      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Administrator access required</p>
+      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Administrator access required") }}</p>
       <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-        Managing vault credentials and grants requires an administrator signed in interactively
-        (not an API key). Ask an administrator to add credentials or grant one to your agent.
+        {{ uiText("Managing vault credentials and grants requires an administrator signed in interactively (not an API key). Ask an administrator to add credentials or grant one to your agent.") }}
       </p>
     </div>
 
@@ -38,12 +35,10 @@
         class="p-4 border rounded-lg border-status-warning-300 dark:border-status-warning-700 bg-status-warning-50 dark:bg-status-warning-900/30"
       >
         <p class="text-sm font-medium text-status-warning-800 dark:text-status-warning-200">
-          {{ rewrapResult.failed }} credential(s) could not be decrypted
+          {{ rewrapResult.failed }} {{ uiText("credential(s) could not be decrypted") }}
         </p>
         <p class="mt-1 text-sm text-status-warning-700 dark:text-status-warning-300">
-          These entries were encrypted under a key this instance no longer has. Restore the
-          previous key as <code>CREDENTIAL_ENCRYPTION_KEY_SECONDARY</code>, then re-encrypt the
-          vault. Until then, agents fetching those credentials get a decrypt error.
+          {{ uiText("These entries were encrypted under a key this instance no longer has. Restore the previous key as") }} <code>CREDENTIAL_ENCRYPTION_KEY_SECONDARY</code>{{ uiText(", then re-encrypt the vault. Until then, agents fetching those credentials get a decrypt error.") }}
         </p>
         <button
           type="button"
@@ -51,7 +46,7 @@
           :disabled="busy"
           class="mt-3 text-xs px-3 py-1.5 rounded bg-action-primary-600 text-white hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {{ busy ? 'Re-encrypting…' : 'Re-encrypt vault entries' }}
+          {{ busy ? uiText("Re-encrypting…") : uiText("Re-encrypt vault entries") }}
         </button>
       </div>
 
@@ -59,12 +54,12 @@
 
       <!-- Entries -->
       <section class="space-y-3">
-        <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200">Credentials</h4>
+        <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ uiText("Credentials") }}</h4>
 
-        <p v-if="loading && !entries.length" class="text-sm text-gray-500 dark:text-gray-400">Loading…</p>
+        <p v-if="loading && !entries.length" class="text-sm text-gray-500 dark:text-gray-400">{{ uiText("Loading…") }}</p>
 
         <div v-else-if="!entries.length" class="text-sm text-gray-500 dark:text-gray-400">
-          No credentials yet — add one below.
+          {{ uiText("No credentials yet — add one below.") }}
         </div>
 
         <div
@@ -80,7 +75,7 @@
               </p>
               <p v-if="e.description" class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ e.description }}</p>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                Granted to {{ e.grant_count }} agent{{ e.grant_count === 1 ? '' : 's' }}
+                {{ uiText("Granted to") }} {{ e.grant_count }} {{ uiText("agent") }}{{ e.grant_count === 1 ? '' : 's' }}
               </p>
             </div>
             <div class="flex items-center gap-2 shrink-0">
@@ -88,18 +83,18 @@
                 type="button"
                 @click="toggleEdit(e)"
                 class="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
-              >Update value</button>
+              >{{ uiText("Update value") }}</button>
               <button
                 type="button"
                 @click="toggleGrants(e)"
                 class="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
-              >Grants</button>
+              >{{ uiText("Grants") }}</button>
               <button
                 type="button"
                 @click="remove(e)"
                 :disabled="busy"
                 class="text-xs px-2 py-1 rounded text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-800 disabled:opacity-50"
-              >Delete</button>
+              >{{ uiText("Delete") }}</button>
             </div>
           </div>
 
@@ -109,7 +104,7 @@
               v-model="editValue"
               type="password"
               autocomplete="off"
-              placeholder="New value (min 8 chars)"
+              :placeholder="uiText(&quot;New value (min 8 chars)&quot;)"
               :class="inputCls"
             />
             <button
@@ -117,19 +112,19 @@
               @click="saveValue(e)"
               :disabled="busy || !editValue"
               class="text-xs px-3 py-1.5 rounded bg-action-primary-600 text-white hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >Save</button>
+            >{{ uiText("Save") }}</button>
             <button
               type="button"
               @click="cancelEdit"
               class="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
-            >Cancel</button>
+            >{{ uiText("Cancel") }}</button>
           </div>
 
           <!-- Per-entry grants -->
           <div v-if="grantsOpenId === e.id" class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 space-y-2">
-            <p v-if="grantsLoading && !grants.length" class="text-xs text-gray-500 dark:text-gray-400">Loading grants…</p>
+            <p v-if="grantsLoading && !grants.length" class="text-xs text-gray-500 dark:text-gray-400">{{ uiText("Loading grants…") }}</p>
             <div v-else-if="!grants.length" class="text-xs text-gray-500 dark:text-gray-400">
-              Not granted to any agent yet.
+              {{ uiText("Not granted to any agent yet.") }}
             </div>
             <div
               v-for="g in grants"
@@ -142,12 +137,12 @@
                 @click="revoke(e, g.agent_name)"
                 :disabled="busy"
                 class="text-xs text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-800 disabled:opacity-50"
-              >Revoke</button>
+              >{{ uiText("Revoke") }}</button>
             </div>
             <div class="flex items-center gap-2 pt-1">
               <input
                 v-model="newGrantAgent"
-                placeholder="Agent name"
+                :placeholder="uiText(&quot;Agent name&quot;)"
                 :class="inputCls"
                 @keyup.enter="grant(e)"
               />
@@ -156,7 +151,7 @@
                 @click="grant(e)"
                 :disabled="busy || !newGrantAgent.trim()"
                 class="text-xs px-3 py-1.5 rounded bg-action-primary-600 text-white hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >Grant</button>
+              >{{ uiText("Grant") }}</button>
             </div>
           </div>
         </div>
@@ -164,27 +159,26 @@
 
       <!-- Add credential -->
       <section class="space-y-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-        <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200">Add a credential</h4>
+        <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ uiText("Add a credential") }}</h4>
         <form @submit.prevent="add" class="space-y-3">
-          <input v-model="form.name" placeholder="Name (e.g. openai-api-key)" required :class="inputCls" />
+          <input v-model="form.name" :placeholder="uiText(&quot;Name (e.g. openai-api-key)&quot;)" required :class="inputCls" />
           <input
             v-model="form.value"
             type="password"
             autocomplete="off"
-            placeholder="Value (min 8 chars, max 32 KiB) — stored encrypted, shown once"
+            :placeholder="uiText(&quot;Value (min 8 chars, max 32 KiB) — stored encrypted, shown once&quot;)"
             required
             :class="inputCls"
           />
-          <input v-model="form.description" placeholder="Description (optional)" :class="inputCls" />
-          <input v-model="form.kind" placeholder="Kind (default: secret)" :class="inputCls" />
+          <input v-model="form.description" :placeholder="uiText(&quot;Description (optional)&quot;)" :class="inputCls" />
+          <input v-model="form.kind" :placeholder="uiText(&quot;Kind (default: secret)&quot;)" :class="inputCls" />
           <button type="submit" :disabled="busy || !form.name || !form.value" :class="btnCls">
-            {{ busy ? 'Saving…' : 'Add credential' }}
+            {{ busy ? uiText("Saving…") : uiText("Add credential") }}
           </button>
         </form>
         <p v-if="addError" class="text-xs text-status-danger-600 dark:text-status-danger-400">{{ addError }}</p>
         <p class="text-xs text-gray-500 dark:text-gray-400">
-          The value is encrypted and never shown again. Grant it to an agent below, then the agent
-          fetches it by name at runtime.
+          {{ uiText("The value is encrypted and never shown again. Grant it to an agent below, then the agent fetches it by name at runtime.") }}
         </p>
       </section>
 
@@ -192,12 +186,10 @@
            Tucked away (collapsed) so Rewrap is not a permanent primary fixture;
            running it reports counts, and any failures raise the banner above. -->
       <details class="text-sm">
-        <summary class="cursor-pointer text-gray-700 dark:text-gray-300 select-none">Key-rotation maintenance</summary>
+        <summary class="cursor-pointer text-gray-700 dark:text-gray-300 select-none">{{ uiText("Key-rotation maintenance") }}</summary>
         <div class="mt-3 space-y-2 pl-1">
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            After rotating <code>CREDENTIAL_ENCRYPTION_KEY</code>, re-encrypt every entry onto the
-            new key. Keep the previous key as <code>CREDENTIAL_ENCRYPTION_KEY_SECONDARY</code> until
-            this reports 0 failures.
+            {{ uiText("After rotating") }} <code>CREDENTIAL_ENCRYPTION_KEY</code>{{ uiText(", re-encrypt every entry onto the new key. Keep the previous key as") }} <code>CREDENTIAL_ENCRYPTION_KEY_SECONDARY</code> {{ uiText("until this reports 0 failures.") }}
           </p>
           <button
             type="button"
@@ -205,10 +197,10 @@
             :disabled="busy"
             class="text-xs px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50"
           >
-            {{ busy ? 'Re-encrypting…' : 'Re-encrypt vault entries' }}
+            {{ busy ? uiText("Re-encrypting…") : uiText("Re-encrypt vault entries") }}
           </button>
           <p v-if="rewrapResult" class="text-xs text-gray-600 dark:text-gray-400">
-            {{ rewrapResult.rewrapped }} re-encrypted, {{ rewrapResult.failed }} failed.
+            {{ rewrapResult.rewrapped }} {{ uiText("re-encrypted,") }} {{ rewrapResult.failed }} {{ uiText("failed.") }}
           </p>
         </div>
       </details>
@@ -283,7 +275,7 @@ async function load() {
       // Entitled tab, but not an admin (or an MCP-key principal) — named state.
       adminRequired.value = true
     } else {
-      error.value = describe(e, 'Failed to load vault credentials')
+      error.value = describe(e, uiText('Failed to load vault credentials'))
     }
   } finally {
     loading.value = false
@@ -301,10 +293,10 @@ async function add() {
       kind: (form.kind || 'secret').trim(),
     })
     Object.assign(form, { name: '', value: '', description: '', kind: 'secret' })
-    flash('success', 'Credential added')
+    flash('success', uiText('Credential added'))
     await load()
   } catch (e) {
-    addError.value = describe(e, 'Failed to add credential')
+    addError.value = describe(e, uiText('Failed to add credential'))
   } finally {
     busy.value = false
   }
@@ -325,27 +317,29 @@ async function saveValue(e) {
   try {
     await axios.put(`${BASE}/entries/${e.id}`, { value: editValue.value })
     cancelEdit()
-    flash('success', `Value updated for "${e.name}"`)
+    flash('success', uiText('Value updated for "{name}"', { name: e.name }))
     await load()
   } catch (err) {
-    flash('error', describe(err, 'Failed to update value'))
+    flash('error', describe(err, uiText('Failed to update value')))
   } finally {
     busy.value = false
   }
 }
 
 async function remove(e) {
-  const extra = e.grant_count > 0 ? ` This will also revoke ${e.grant_count} grant(s).` : ''
-  if (!confirm(`Delete credential "${e.name}"?${extra}`)) return
+  const question = e.grant_count > 0
+    ? uiText('Delete credential "{name}"? This will also revoke {count} grant(s).', { name: e.name, count: e.grant_count })
+    : uiText('Delete credential "{name}"?', { name: e.name })
+  if (!confirm(question)) return
   busy.value = true
   try {
     await axios.delete(`${BASE}/entries/${e.id}`)
     if (grantsOpenId.value === e.id) grantsOpenId.value = null
     if (editingId.value === e.id) cancelEdit()
-    flash('success', `Deleted "${e.name}"`)
+    flash('success', uiText('Deleted "{name}"', { name: e.name }))
     await load()
   } catch (err) {
-    flash('error', describe(err, 'Failed to delete credential'))
+    flash('error', describe(err, uiText('Failed to delete credential')))
   } finally {
     busy.value = false
   }
@@ -368,7 +362,7 @@ async function loadGrants(e) {
     const { data } = await axios.get(`${BASE}/entries/${e.id}/grants`)
     grants.value = Array.isArray(data) ? data : []
   } catch (err) {
-    flash('error', describe(err, 'Failed to load grants'))
+    flash('error', describe(err, uiText('Failed to load grants')))
   } finally {
     grantsLoading.value = false
   }
@@ -379,31 +373,30 @@ async function grant(e) {
   if (!agent) return
   // Escalated-consent confirm — a grant lets the agent read the plaintext VALUE.
   if (!confirm(
-    `Grant "${agent}" access to "${e.name}"?\n\n` +
-    `Agent "${agent}" will be able to read the VALUE of "${e.name}" at any time while the grant is active.`
+    uiText("Grant \"{arg1}\" access to \"{arg2}\"?\n\nAgent \"{arg3}\" will be able to read the VALUE of \"{arg4}\" at any time while the grant is active.", { arg1: agent, arg2: e.name, arg3: agent, arg4: e.name })
   )) return
   busy.value = true
   try {
     await axios.post(`${BASE}/entries/${e.id}/grants`, { agent_name: agent })
     newGrantAgent.value = ''
-    flash('success', `Granted "${e.name}" to ${agent}`)
+    flash('success', uiText('Granted "{name}" to {agent}', { name: e.name, agent }))
     await Promise.all([loadGrants(e), load()])
   } catch (err) {
-    flash('error', describe(err, 'Failed to grant'))
+    flash('error', describe(err, uiText('Failed to grant')))
   } finally {
     busy.value = false
   }
 }
 
 async function revoke(e, agentName) {
-  if (!confirm(`Revoke "${agentName}"'s access to "${e.name}"?`)) return
+  if (!confirm(uiText("Revoke \"{arg1}\"'s access to \"{arg2}\"?", { arg1: (agentName), arg2: (e.name) }))) return
   busy.value = true
   try {
     await axios.delete(`${BASE}/entries/${e.id}/grants/${encodeURIComponent(agentName)}`)
-    flash('success', `Revoked ${agentName}`)
+    flash('success', uiText('Revoked {arg1}', { arg1: agentName }))
     await Promise.all([loadGrants(e), load()])
   } catch (err) {
-    flash('error', describe(err, 'Failed to revoke'))
+    flash('error', describe(err, uiText('Failed to revoke')))
   } finally {
     busy.value = false
   }
@@ -418,16 +411,24 @@ async function rewrap() {
       failed: Number(data?.failed ?? 0),
     }
     if (rewrapResult.value.failed > 0) {
-      flash('error', `${rewrapResult.value.failed} entr${rewrapResult.value.failed === 1 ? 'y' : 'ies'} could not be decrypted`)
+      const failed = rewrapResult.value.failed
+      flash('error', failed === 1
+        ? uiText('{count} entry could not be decrypted', { count: failed })
+        : uiText('{count} entries could not be decrypted', { count: failed }))
     } else {
-      flash('success', `Re-encrypted ${rewrapResult.value.rewrapped} entr${rewrapResult.value.rewrapped === 1 ? 'y' : 'ies'}`)
+      const rewrapped = rewrapResult.value.rewrapped
+      flash('success', rewrapped === 1
+        ? uiText('Re-encrypted {count} entry', { count: rewrapped })
+        : uiText('Re-encrypted {count} entries', { count: rewrapped }))
     }
   } catch (err) {
-    flash('error', describe(err, 'Rewrap failed'))
+    flash('error', describe(err, uiText('Rewrap failed')))
   } finally {
     busy.value = false
   }
 }
 
 onMounted(load)
+
+import { t as uiText } from '@/i18n'
 </script>

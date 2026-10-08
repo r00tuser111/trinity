@@ -12,9 +12,9 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white">Owner Access Required</h3>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Owner Access Required") }}</h3>
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-        Only the agent owner can manage shared folders.
+        {{ uiText("Only the agent owner can manage shared folders.") }}
       </p>
     </div>
 
@@ -27,9 +27,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
           <div class="ml-3">
-            <h3 class="text-sm font-medium text-state-autonomous-800 dark:text-state-autonomous-200">Restart Required</h3>
+            <h3 class="text-sm font-medium text-state-autonomous-800 dark:text-state-autonomous-200">{{ uiText("Restart Required") }}</h3>
             <p class="mt-1 text-sm text-state-autonomous-700 dark:text-state-autonomous-300">
-              Configuration has changed. Restart the agent to apply shared folder mounts.
+              {{ uiText("Configuration has changed. Restart the agent to apply shared folder mounts.") }}
             </p>
           </div>
         </div>
@@ -37,16 +37,16 @@
 
       <!-- Configuration Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Shared Folder Configuration</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">{{ uiText("Shared Folder Configuration") }}</h3>
 
         <div class="space-y-6">
           <!-- Expose Toggle -->
           <div class="flex items-start justify-between">
             <div class="flex-1">
-              <h4 class="text-sm font-medium text-gray-900 dark:text-white">Expose Shared Folder</h4>
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ uiText("Expose Shared Folder") }}</h4>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Make files in <code class="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs">/home/developer/shared-out</code>
-                available to other permitted agents.
+                {{ uiText("Make files in") }} <code class="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs">/home/developer/shared-out</code>
+                {{ uiText("available to other permitted agents.") }}
               </p>
             </div>
             <button
@@ -69,9 +69,9 @@
           <!-- Consume Toggle -->
           <div class="flex items-start justify-between">
             <div class="flex-1">
-              <h4 class="text-sm font-medium text-gray-900 dark:text-white">Mount Shared Folders</h4>
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ uiText("Mount Shared Folders") }}</h4>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Mount shared folders from other permitted agents at
+                {{ uiText("Mount shared folders from other permitted agents at") }}
                 <code class="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs">/home/developer/shared-in/{agent}</code>
               </p>
             </div>
@@ -96,22 +96,22 @@
 
       <!-- Exposed Folder Info (if exposing) -->
       <div v-if="foldersData?.expose_enabled" class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Exposed Folder</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">{{ uiText("Exposed Folder") }}</h3>
 
         <div class="space-y-4">
           <div class="flex items-center space-x-2 text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Volume:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ uiText("Volume:") }}</span>
             <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs font-mono">{{ foldersData?.exposed_volume }}</code>
           </div>
           <div class="flex items-center space-x-2 text-sm">
-            <span class="text-gray-500 dark:text-gray-400">Path:</span>
+            <span class="text-gray-500 dark:text-gray-400">{{ uiText("Path:") }}</span>
             <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs font-mono">{{ foldersData?.exposed_path }}</code>
           </div>
 
           <!-- Consumers List -->
           <div v-if="consumers.length > 0" class="mt-4">
-            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Consumers</h4>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">These agents can mount this folder:</p>
+            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ uiText("Consumers") }}</h4>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ uiText("These agents can mount this folder:") }}</p>
             <div class="space-y-2">
               <div
                 v-for="consumer in consumers"
@@ -130,14 +130,14 @@
             </div>
           </div>
           <div v-else class="text-sm text-gray-500 dark:text-gray-400 italic">
-            No agents are configured to consume this folder yet.
+            {{ uiText("No agents are configured to consume this folder yet.") }}
           </div>
         </div>
       </div>
 
       <!-- Consumed Folders (if consuming) -->
       <div v-if="foldersData?.consume_enabled" class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Mounted Folders</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">{{ uiText("Mounted Folders") }}</h3>
 
         <div v-if="foldersData?.consumed_folders?.length > 0" class="space-y-3">
           <div
@@ -149,7 +149,7 @@
               <span :class="[
                 'w-3 h-3 rounded-full',
                 folder.currently_mounted ? 'bg-status-success-500' : 'bg-state-autonomous-500'
-              ]" :title="folder.currently_mounted ? 'Mounted' : 'Pending restart'"></span>
+              ]" :title="folder.currently_mounted ? uiText(&quot;Mounted&quot;) : uiText(&quot;Pending restart&quot;)"></span>
               <div>
                 <div class="font-medium text-gray-900 dark:text-white" :title="agentNameTooltip(agentsStore.agentRefForSlug(folder.source_agent))">{{ folder.source_agent }}</div>
                 <code class="text-xs text-gray-500 dark:text-gray-400">{{ folder.mount_path }}</code>
@@ -159,16 +159,16 @@
               'px-2 py-1 text-xs rounded-full',
               folder.currently_mounted ? 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-700 dark:text-status-success-400' : 'bg-state-autonomous-100 dark:bg-state-autonomous-900/30 text-state-autonomous-700 dark:text-state-autonomous-400'
             ]">
-              {{ folder.currently_mounted ? 'Mounted' : 'Pending' }}
+              {{ folder.currently_mounted ? uiText("Mounted") : uiText("Pending") }}
             </span>
           </div>
         </div>
 
         <!-- Available Folders -->
         <div v-if="availableFolders.length > 0" class="mt-6">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available Folders</h4>
+          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ uiText("Available Folders") }}</h4>
           <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
-            Folders from agents you have permission to access. These will be mounted on restart.
+            {{ uiText("Folders from agents you have permission to access. These will be mounted on restart.") }}
           </p>
           <div class="grid grid-cols-2 gap-2">
             <div
@@ -186,29 +186,29 @@
         </div>
 
         <div v-else-if="foldersData?.consumed_folders?.length === 0" class="text-sm text-gray-500 dark:text-gray-400 italic">
-          No shared folders available. Grant permissions to other agents that expose folders.
+          {{ uiText("No shared folders available. Grant permissions to other agents that expose folders.") }}
         </div>
       </div>
 
       <!-- How It Works -->
       <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">How Shared Folders Work</h4>
+        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ uiText("How Shared Folders Work") }}</h4>
         <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
           <li class="flex items-start">
             <span class="text-action-primary-500 mr-2">1.</span>
-            Enable "Expose" on Agent A to create a shared volume at <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">/home/developer/shared-out</code>
+            {{ uiText("Enable \"Expose\" on Agent A to create a shared volume at") }} <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">/home/developer/shared-out</code>
           </li>
           <li class="flex items-start">
             <span class="text-action-primary-500 mr-2">2.</span>
-            Grant Agent B permission to access Agent A (via Permissions tab)
+            {{ uiText("Grant Agent B permission to access Agent A (via Permissions tab)") }}
           </li>
           <li class="flex items-start">
             <span class="text-action-primary-500 mr-2">3.</span>
-            Enable "Mount" on Agent B to mount Agent A's folder at <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">/home/developer/shared-in/agent-a</code>
+            {{ uiText("Enable \"Mount\" on Agent B to mount Agent A's folder at") }} <code class="bg-gray-200 dark:bg-gray-700 px-1 rounded">/home/developer/shared-in/agent-a</code>
           </li>
           <li class="flex items-start">
             <span class="text-action-primary-500 mr-2">4.</span>
-            Restart both agents to apply the volume mounts
+            {{ uiText("Restart both agents to apply the volume mounts") }}
           </li>
         </ul>
       </div>
@@ -303,4 +303,6 @@ watch(() => props.agentName, () => {
     loadFoldersConfig()
   }
 })
+
+import { t as uiText } from '@/i18n'
 </script>

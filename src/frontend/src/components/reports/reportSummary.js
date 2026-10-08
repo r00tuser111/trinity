@@ -1,3 +1,5 @@
+import { t as uiText } from '../../i18n/index.js'
+
 /**
  * Summarise an unrecognised report payload for a human (#2162).
  *
@@ -183,7 +185,7 @@ export function summarizePayload(payload) {
   if (Array.isArray(payload)) {
     if (!payload.length) return { entries: [], truncated: 0 }
     return {
-      entries: [{ key: '', label: 'Items', ...describeValue(payload) }],
+      entries: [{ key: '', get "label"() { return uiText("Items") }, ...describeValue(payload) }],
       truncated: 0,
     }
   }
@@ -191,7 +193,7 @@ export function summarizePayload(payload) {
   if (typeof payload !== 'object') {
     const described = describeValue(payload)
     if (described.hint === 'empty') return { entries: [], truncated: 0 }
-    return { entries: [{ key: '', label: 'Value', ...described }], truncated: 0 }
+    return { entries: [{ key: '', get "label"() { return uiText("Value") }, ...described }], truncated: 0 }
   }
 
   const keys = Object.keys(payload)

@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { ref } from 'vue'
 
 /**
@@ -44,7 +46,7 @@ export function useAgentSettings(agentRef, agentsStore, showNotification) {
       }
       showNotification(result.message, 'success')
     } catch (err) {
-      showNotification(err.message || 'Failed to update API key setting', 'error')
+      showNotification(err.message || uiText("Failed to update API key setting"), 'error')
     } finally {
       apiKeySettingLoading.value = false
     }
@@ -65,10 +67,10 @@ export function useAgentSettings(agentRef, agentsStore, showNotification) {
     modelLoading.value = true
     try {
       await agentsStore.setAgentModel(agentRef.value.name, currentModel.value || null)
-      showNotification(`Model changed to ${currentModel.value || 'default'}`, 'success')
+      showNotification(uiText("Model changed to {arg1}", { arg1: (currentModel.value || 'default') }), 'success')
     } catch (err) {
       console.error('Failed to change model:', err)
-      showNotification('Failed to change model', 'error')
+      showNotification(uiText("Failed to change model"), 'error')
       // Reload to get actual state
       await loadModelInfo()
     } finally {
@@ -94,7 +96,7 @@ export function useAgentSettings(agentRef, agentsStore, showNotification) {
       console.error('Failed to load resource limits:', err)
       resourceLimits.value = {
         ...resourceLimits.value,
-        error: err?.response?.data?.detail || err?.message || 'Request failed',
+        error: err?.response?.data?.detail || err?.message || uiText('Request failed'),
       }
     }
   }
@@ -114,7 +116,7 @@ export function useAgentSettings(agentRef, agentsStore, showNotification) {
       showNotification(result.message, 'success')
       return true
     } catch (err) {
-      showNotification(err.message || 'Failed to update resource limits', 'error')
+      showNotification(err.message || uiText("Failed to update resource limits"), 'error')
       return false
     } finally {
       resourceLimitsLoading.value = false

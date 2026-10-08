@@ -16,7 +16,7 @@
 <template>
   <fieldset class="mt-3">
     <legend class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-      How should this repository be imported?
+      {{ uiText("How should this repository be imported?") }}
     </legend>
     <div class="mt-1 space-y-2">
       <label
@@ -56,18 +56,20 @@ defineEmits(['update:modelValue'])
 const OPTIONS = [
   {
     value: 'clone',
-    title: 'Clone — my repo',
-    desc: 'Clones with two-way git sync. Best when the repo is yours.',
+    get "title"() { return uiText("Clone — my repo") },
+    get "desc"() { return uiText('Clones with two-way git sync. Best when the repo is yours.') },
   },
   {
     value: 'copy',
-    title: 'Copy — snapshot',
-    desc: 'One-time copy, no link to the source repo. You can connect it to your own repo later from the Git tab.',
+    get "title"() { return uiText("Copy — snapshot") },
+    get "desc"() { return uiText('One-time copy, no link to the source repo. You can connect it to your own repo later from the Git tab.') },
   },
   {
     value: 'fork',
-    title: 'Fork — make it mine',
-    desc: 'Copies the repo into your GitHub account first; the agent syncs to YOUR copy.',
+    get "title"() { return uiText("Fork — make it mine") },
+    get "desc"() { return uiText('Copies the repo into your GitHub account first; the agent syncs to YOUR copy.') },
   },
 ]
+
+import { t as uiText } from '@/i18n'
 </script>

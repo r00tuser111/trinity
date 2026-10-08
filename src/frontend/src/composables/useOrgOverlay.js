@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { ref, computed } from 'vue'
 import { useFleetGridStore } from '@/stores/fleetGrid'
 import { useNetworkStore } from '@/stores/network'
@@ -97,7 +99,7 @@ export function useOrgOverlay({ agents, layout, canvasEl, vz, vtx, vty, dragging
       try {
         await t.undo()
       } catch {
-        _toast('Undo failed — the fleet may have changed. Refresh and check the agent’s tags.', { type: 'error' })
+        _toast(uiText('Undo failed — the fleet may have changed. Refresh and check the agent’s tags.'), { type: 'error' })
       }
     }
   }
@@ -179,19 +181,19 @@ export function useOrgOverlay({ agents, layout, canvasEl, vz, vtx, vty, dragging
     if (!c || !target) return
     if (!orgTagFits(REPORTS_PREFIX, c.source)) {
       _toast(
-        `Can’t link: "${REPORTS_PREFIX}${c.source}" exceeds the 50-character tag limit. Rename the manager agent shorter, or manage this line from the agent’s tags.`,
+        uiText('Can’t link: "{tag}" exceeds the 50-character tag limit. Rename the manager agent shorter, or manage this line from the agent’s tags.', { tag: `${REPORTS_PREFIX}${c.source}` }),
         { type: 'error' }
       )
       return
     }
     try {
       const { previous } = await networkStore.addReportsTo(target, c.source)
-      _toast(`${target} now reports to ${c.source}`, {
+      _toast(uiText('{agent} now reports to {manager}', { agent: target, manager: c.source }), {
         undo: () => networkStore.setAgentTags(target, previous),
       })
     } catch (e) {
       _toast(
-        `Couldn’t save the reporting line (${e?.response?.status || 'network error'}). You need owner access to ${target} — retry after checking.`,
+        uiText('Couldn’t save the reporting line ({status}). You need owner access to {agent} — retry after checking.', { status: e?.response?.status || uiText('network error'), agent: target }),
         { type: 'error' }
       )
     }
@@ -212,12 +214,12 @@ export function useOrgOverlay({ agents, layout, canvasEl, vz, vtx, vty, dragging
     try {
       const { previous } = await networkStore.removeReportsTo(e.report, e.manager)
       hoverEdge.value = null
-      _toast(`Removed reporting line ${e.manager} → ${e.report}`, {
+      _toast(uiText('Removed reporting line {manager} → {agent}', { manager: e.manager, agent: e.report }), {
         undo: () => networkStore.setAgentTags(e.report, previous),
       })
     } catch (err) {
       _toast(
-        `Couldn’t remove the line (${err?.response?.status || 'network error'}). You need owner access to ${e.report}.`,
+        uiText('Couldn’t remove the line ({status}). You need owner access to {agent}.', { status: err?.response?.status || uiText('network error'), agent: e.report }),
         { type: 'error' }
       )
     }
@@ -255,12 +257,12 @@ export function useOrgOverlay({ agents, layout, canvasEl, vz, vtx, vty, dragging
     if (!orgTagFits(DEPT_PREFIX, z.dept)) return
     try {
       const { previous } = await networkStore.assignDept(name, z.dept)
-      _toast(`${name} moved to ${z.dept}`, {
+      _toast(uiText('{agent} moved to {dept}', { agent: name, dept: z.dept }), {
         undo: () => networkStore.setAgentTags(name, previous),
       })
     } catch (e) {
       _toast(
-        `Couldn’t change department (${e?.response?.status || 'network error'}). You need owner access to ${name}.`,
+        uiText('Couldn’t change department ({status}). You need owner access to {agent}.', { status: e?.response?.status || uiText('network error'), agent: name }),
         { type: 'error' }
       )
     }
@@ -410,11 +412,11 @@ export function useOrgOverlay({ agents, layout, canvasEl, vz, vtx, vty, dragging
     const name = newDeptName.value.trim().toLowerCase()
     if (!name || !/^[a-z0-9-]+$/.test(name)) {
       newDeptError.value =
-        'Department names use lowercase letters, numbers, and hyphens — e.g. "marketing" or "gtm-emea".'
+        uiText("Department names use lowercase letters, numbers, and hyphens — e.g. \"marketing\" or \"gtm-emea\".")
       return
     }
     if (!orgTagFits(DEPT_PREFIX, name)) {
-      newDeptError.value = `Too long: "${DEPT_PREFIX}${name}" must be ≤ 50 characters.`
+      newDeptError.value = uiText("Too long: \"{arg1}{arg2}\" must be ≤ 50 characters.", { arg1: (DEPT_PREFIX), arg2: (name) })
       return
     }
     newDeptOpen.value = false
@@ -430,7 +432,7 @@ export function useOrgOverlay({ agents, layout, canvasEl, vz, vtx, vty, dragging
       assignMode.value = { ...m, count: m.count + 1 }
     } catch (e) {
       _toast(
-        `Couldn’t add ${name} to ${m.dept} (${e?.response?.status || 'network error'}).`,
+        uiText('Couldn’t add {agent} to {dept} ({status}).', { agent: name, dept: m.dept, status: e?.response?.status || uiText('network error') }),
         { type: 'error' }
       )
     }
@@ -441,7 +443,9 @@ export function useOrgOverlay({ agents, layout, canvasEl, vz, vtx, vty, dragging
     const m = assignMode.value
     assignMode.value = null
     if (m && m.count > 0) {
-      _toast(`${m.dept}: ${m.count} agent${m.count === 1 ? '' : 's'} assigned`)
+      _toast(m.count === 1
+        ? uiText('{dept}: 1 agent assigned', { dept: m.dept })
+        : uiText('{dept}: {count} agents assigned', { dept: m.dept, count: m.count }))
     }
   }
 

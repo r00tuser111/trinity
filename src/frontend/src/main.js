@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import axios from 'axios'
 import router from './router'
 import App from './App.vue'
+import { initializeLocale } from './i18n'
 import './style.css'
 import { useAuthStore } from './stores/auth'
 import { useClientPortalStore } from './stores/clientPortal'
@@ -16,6 +17,8 @@ import { installConsoleBuffer } from './utils/consoleBuffer'
 // in-app bug reporter can attach them (scrubbed) to a report. Runs before the
 // app mounts so early boot errors are caught too.
 installConsoleBuffer()
+
+const localeReady = initializeLocale()
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -119,4 +122,5 @@ window.addEventListener('storage', (event) => {
   })
 })
 
-app.mount('#app')
+// Mount in the saved language rather than flashing English while its catalog loads.
+localeReady.finally(() => app.mount('#app'))

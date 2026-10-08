@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useClientPortalStore } from './clientPortal'
@@ -154,9 +156,9 @@ export const usePortalRailFeedsStore = defineStore('portalRailFeeds', () => {
         hasLoaded.value = true
         version.value++
         // Partial failure keeps what loaded and says the view may be short.
-        error.value = anyFailed ? 'Some agents could not be reached; this list may be incomplete.' : null
+        error.value = anyFailed ? uiText("Some agents could not be reached; this list may be incomplete.") : null
       } else {
-        error.value = 'Could not load this tab.'
+        error.value = uiText("Could not load this tab.")
       }
     } finally {
       if (token === _fetchToken) loading.value = false

@@ -593,8 +593,8 @@ describe('the domain step says why, and what has to be true first (#2691)', () =
     expect(DOMAIN_PREREQUISITE.toLowerCase()).toMatch(/point the domain at this server/)
 
     const face = withoutComments(GUIDE_SFC).split('<details')[0]
-    expect(face).toContain(':help="DOMAIN_BENEFIT"')
-    expect(face).toContain('{{ DOMAIN_PREREQUISITE }}')
+    expect(face).toContain(':help="uiText(DOMAIN_BENEFIT)"')
+    expect(face).toContain('{{ uiText(DOMAIN_PREREQUISITE) }}')
   })
 
   it('names the side effect where the setting is owned, not in the first-run flow', () => {
@@ -603,7 +603,7 @@ describe('the domain step says why, and what has to be true first (#2691)', () =
     // channels — which a first-run visitor does not — so it is stated in
     // Settings and left out of the overlay.
     expect(DOMAIN_SIDE_EFFECT.toLowerCase()).toMatch(/telegram and whatsapp/)
-    expect(SETTINGS_SFC).toContain('{{ DOMAIN_SIDE_EFFECT }}')
+    expect(SETTINGS_SFC).toContain('{{ t(DOMAIN_SIDE_EFFECT) }}')
     expect(withoutComments(GUIDE_SFC)).not.toContain('DOMAIN_SIDE_EFFECT')
   })
 
@@ -612,8 +612,8 @@ describe('the domain step says why, and what has to be true first (#2691)', () =
     // the operator arrived through, and shared constants are what stop the two
     // drifting apart.
     expect(SETTINGS_SFC).toMatch(/import \{[\s\S]{0,200}DOMAIN_BENEFIT[\s\S]{0,200}\} from '..\/components\/onboarding\/hardeningGuide'/)
-    expect(SETTINGS_SFC).toContain('{{ DOMAIN_BENEFIT }}')
-    expect(SETTINGS_SFC).toContain('{{ DOMAIN_PREREQUISITE }}')
+    expect(SETTINGS_SFC).toContain('{{ t(DOMAIN_BENEFIT) }}')
+    expect(SETTINGS_SFC).toContain('{{ t(DOMAIN_PREREQUISITE) }}')
     // And the corrected consumer list: the old text named three of a dozen and
     // omitted the one that fails outright without it.
     expect(SETTINGS_SFC).toMatch(/voice calls fail outright without it/)

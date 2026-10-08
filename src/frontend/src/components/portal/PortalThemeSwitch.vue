@@ -12,14 +12,14 @@
       type="button"
       data-testid="portal-theme-switch"
       class="h-8 px-2 rounded-md flex items-center gap-1.5 text-[12.5px] text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-750 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action-primary-500/40 dark:focus-visible:ring-action-primary-400/40"
-      :aria-label="ariaLabel"
+      :aria-label="t(ariaLabel)"
       aria-haspopup="dialog"
       :aria-expanded="open ? 'true' : 'false'"
-      :title="ariaLabel"
+      :title="t(ariaLabel)"
       @click="open = !open"
     >
       <ThemeIcon :name="icon" class="w-4 h-4 shrink-0" />
-      <span class="hidden sm:inline whitespace-nowrap">{{ label }}</span>
+      <span class="hidden sm:inline whitespace-nowrap">{{ t(label) }}</span>
     </button>
 
     <!-- The popover is a sibling of the trigger and anchors to the header's
@@ -28,17 +28,18 @@
     <div
       v-if="open"
       role="dialog"
-      aria-label="Choose theme"
+      :aria-label="t('Choose theme')"
       data-testid="portal-theme-menu"
       class="absolute right-0 top-full mt-1 z-50 w-56 rounded-lg p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-750 shadow-lg"
     >
-      <p class="px-1 pb-1.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">Theme</p>
-      <ThemeChoice :theme="themeStore.theme" aria-label="Theme" @select="choose" />
+      <p class="px-1 pb-1.5 text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ t('Theme') }}</p>
+      <ThemeChoice :theme="themeStore.theme" :aria-label="t('Theme')" @select="choose" />
     </div>
   </div>
 </template>
 
 <script setup>
+import { t } from '@/i18n'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 import { themeSwitchAriaLabel, themeSwitchIcon, themeSwitchLabel } from '@/utils/themeSwitch'

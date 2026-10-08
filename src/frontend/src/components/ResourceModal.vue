@@ -14,10 +14,10 @@
           </div>
           <div class="mt-3 text-center sm:mt-5">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
-              Configure Resource Allocation
+              {{ uiText("Configure Resource Allocation") }}
             </h3>
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-              Adjust memory and CPU allocation for this agent.
+              {{ uiText("Adjust memory and CPU allocation for this agent.") }}
             </p>
           </div>
         </div>
@@ -29,7 +29,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <p class="ml-3 text-sm text-state-autonomous-700 dark:text-state-autonomous-300">
-              If the agent is running, it will be automatically restarted to apply changes.
+              {{ uiText("If the agent is running, it will be automatically restarted to apply changes.") }}
             </p>
           </div>
         </div>
@@ -38,39 +38,39 @@
              show stale defaults rather than the agent's real values. -->
         <div v-if="resourceLimits.error" class="mt-4 p-3 bg-status-danger-50 dark:bg-status-danger-900/30 border border-status-danger-200 dark:border-status-danger-800 rounded-lg">
           <p class="text-sm text-status-danger-700 dark:text-status-danger-300">
-            Could not load current resource limits — showing defaults. {{ resourceLimits.error }}
+            {{ uiText("Could not load current resource limits — showing defaults.") }} {{ resourceLimits.error }}
           </p>
         </div>
 
         <!-- Resource Configuration Form -->
         <div class="mt-5 space-y-4">
           <BaseSelect
-            label="Memory"
+            :label="uiText(&quot;Memory&quot;)"
             :model-value="resourceLimits.memory ?? resourceLimits.current_memory"
             :disabled="loading"
             @update:model-value="$emit('update:memory', $event || null)"
           >
-            <option value="">Inherit default ({{ resourceLimits.current_memory || '4g' }})</option>
-            <option value="1g">1 GB</option>
-            <option value="2g">2 GB</option>
-            <option value="4g">4 GB</option>
-            <option value="8g">8 GB</option>
-            <option value="16g">16 GB</option>
-            <option value="32g">32 GB</option>
-            <option value="64g">64 GB</option>
+            <option value="">{{ uiText("Inherit default (") }}{{ resourceLimits.current_memory || '4g' }})</option>
+            <option value="1g">{{ uiText("1 GB") }}</option>
+            <option value="2g">{{ uiText("2 GB") }}</option>
+            <option value="4g">{{ uiText("4 GB") }}</option>
+            <option value="8g">{{ uiText("8 GB") }}</option>
+            <option value="16g">{{ uiText("16 GB") }}</option>
+            <option value="32g">{{ uiText("32 GB") }}</option>
+            <option value="64g">{{ uiText("64 GB") }}</option>
           </BaseSelect>
           <BaseSelect
-            label="CPU Cores"
+            :label="uiText(&quot;CPU Cores&quot;)"
             :model-value="resourceLimits.cpu ?? resourceLimits.current_cpu"
             :disabled="loading"
             @update:model-value="$emit('update:cpu', $event || null)"
           >
-            <option value="">Inherit default ({{ resourceLimits.current_cpu || '2' }})</option>
-            <option value="1">1 Core</option>
-            <option value="2">2 Cores</option>
-            <option value="4">4 Cores</option>
-            <option value="8">8 Cores</option>
-            <option value="16">16 Cores</option>
+            <option value="">{{ uiText("Inherit default (") }}{{ resourceLimits.current_cpu || '2' }})</option>
+            <option value="1">{{ uiText("1 Core") }}</option>
+            <option value="2">{{ uiText("2 Cores") }}</option>
+            <option value="4">{{ uiText("4 Cores") }}</option>
+            <option value="8">{{ uiText("8 Cores") }}</option>
+            <option value="16">{{ uiText("16 Cores") }}</option>
           </BaseSelect>
         </div>
 
@@ -82,14 +82,14 @@
             :disabled="loading"
             class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-action-primary-600 text-base font-medium text-white hover:bg-action-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 sm:col-start-2 sm:text-sm disabled:opacity-50"
           >
-            {{ loading ? 'Saving...' : 'Save Changes' }}
+            {{ loading ? uiText("Saving...") : uiText("Save Changes") }}
           </button>
           <button
             type="button"
             @click="$emit('update:show', false)"
             class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-action-primary-500 sm:mt-0 sm:col-start-1 sm:text-sm"
           >
-            Cancel
+            {{ uiText("Cancel") }}
           </button>
         </div>
       </div>
@@ -110,4 +110,6 @@ defineProps({
 })
 
 defineEmits(['update:show', 'update:memory', 'update:cpu', 'save'])
+
+import { t as uiText } from '@/i18n'
 </script>

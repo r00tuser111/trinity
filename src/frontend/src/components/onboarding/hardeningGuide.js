@@ -13,6 +13,8 @@
 // The retired card's per-browser dismissal. Nothing writes it any more; the
 // first-run overlay reads it once so an operator who dismissed the card is not
 // re-asked after the upgrade (`firstRunSteps.js::legacySkips`).
+import { msg, t as uiText } from '../../i18n/index.js'
+
 export const HARDENING_GUIDE_DISMISSED_KEY = 'trinity_hardening_guide_dismissed'
 
 // The posture that completes step ONE. It does NOT retire the card: the guide
@@ -39,14 +41,14 @@ export function hardeningStage(installTlsPosture) {
  * Shared with Settings → General so the meaning does not depend on which
  * surface you arrive through, and so the two cannot drift apart.
  */
-export const DOMAIN_BENEFIT =
-  'People reach Trinity at your own address instead of a bare IP, with a proper certificate and no browser warning.'
+export const DOMAIN_BENEFIT = msg(
+  'People reach Trinity at your own address instead of a bare IP, with a proper certificate and no browser warning.')
 // No "see below" — this string renders on BOTH the first-run step and
 // Settings → General (`Settings.vue`), and the two surfaces have different
 // things below them. A pointer that resolves on one and dangles on the other
 // is the drift the shared constant exists to prevent.
-export const DOMAIN_PREREQUISITE =
-  'Point the domain at this server first, then save it here.'
+export const DOMAIN_PREREQUISITE = msg(
+  'Point the domain at this server first, then save it here.')
 
 /**
  * Saving this value re-points live integrations, immediately (#2691).
@@ -70,8 +72,8 @@ export const DOMAIN_PREREQUISITE =
  */
 export const HARDENING_DOCS_URL = 'https://docs.ability.ai/getting-started/deploying/hardening'
 
-export const DOMAIN_SIDE_EFFECT =
-  'Saving re-points Telegram and WhatsApp webhooks to this address straight away, so set it once the domain is live.'
+export const DOMAIN_SIDE_EFFECT = msg(
+  'Saving re-points Telegram and WhatsApp webhooks to this address straight away, so set it once the domain is live.')
 
 /**
  * What the card is allowed to say, per posture.
@@ -109,48 +111,55 @@ export const DOMAIN_SIDE_EFFECT =
  */
 export const POSTURE_COPY = {
   unconfigured: {
-    badge: 'No public URL',
+    get badge() { return uiText('No public URL') },
     badgeVariant: 'neutral',
-    headline: 'No public URL is configured for this instance yet.',
-    detail:
-      'Trinity has no address to hand out, so it cannot tell how people are reaching it today. Both steps below settle that — one decides the address, the other decides who can use it.',
+    get headline() { return uiText('No public URL is configured for this instance yet.') },
+    get detail() {
+      return uiText('Trinity has no address to hand out, so it cannot tell how people are reaching it today. Both steps below settle that — one decides the address, the other decides who can use it.')
+    },
   },
   http: {
-    badge: 'Advertises HTTP',
+    get badge() { return uiText('Advertises HTTP') },
     badgeVariant: 'warning',
-    headline: 'This instance advertises a plain-HTTP address.',
-    detail:
-      'Anyone reaching Trinity at that address sends traffic unencrypted, sign-in codes included. If something in front of Trinity already terminates TLS, this is a stale address rather than an exposure — Trinity cannot tell which from here. Either way, both steps below apply.',
+    get headline() { return uiText('This instance advertises a plain-HTTP address.') },
+    get detail() {
+      return uiText('Anyone reaching Trinity at that address sends traffic unencrypted, sign-in codes included. If something in front of Trinity already terminates TLS, this is a stale address rather than an exposure — Trinity cannot tell which from here. Either way, both steps below apply.')
+    },
   },
   'https-ip': {
-    badge: 'HTTPS at an IP',
+    get badge() { return uiText('HTTPS at an IP') },
     badgeVariant: 'info',
-    headline: 'This instance advertises HTTPS at a bare IP address.',
-    detail:
-      'Trinity cannot inspect the certificate from here — it only knows the address it was told to advertise. If a marketplace image or the DigitalOcean install script set this up, expect a short-lived certificate tied to the IP, renewed automatically while the server is running. Certificates on that profile last about six days, so a server left switched off for longer than that comes back to a browser warning until renewal catches up. Either way, an IP address is awkward to share and answers to the whole public internet, so a real name is worth adding.',
+    get headline() { return uiText('This instance advertises HTTPS at a bare IP address.') },
+    get detail() {
+      return uiText('Trinity cannot inspect the certificate from here — it only knows the address it was told to advertise. If a marketplace image or the DigitalOcean install script set this up, expect a short-lived certificate tied to the IP, renewed automatically while the server is running. Certificates on that profile last about six days, so a server left switched off for longer than that comes back to a browser warning until renewal catches up. Either way, an IP address is awkward to share and answers to the whole public internet, so a real name is worth adding.')
+    },
   },
   // Saved, but nothing has arrived at the name yet. This is the honest state
   // for every domain the moment it is entered, and it is where a typo or an
   // absent DNS record stays forever (#2691).
   'https-domain': {
-    badge: 'Domain saved',
+    get badge() { return uiText('Domain saved') },
     badgeVariant: 'info',
-    headline:
-      'Your domain is saved. The first visit to it is what proves the name works \u2014 until then Trinity cannot tell.',
-    detail:
-      'Trinity now gives people this name instead of the IP address. The certificate for it is obtained on the first request that actually arrives for the name, so nothing here can confirm the domain until someone opens it. If DNS does not point at this server, that visit never gets here: the browser shows an error, and Trinity, which is not part of that exchange, carries on showing the name as saved. Open it in a browser to find out.',
+    get headline() {
+      return uiText('Your domain is saved. The first visit to it is what proves the name works \u2014 until then Trinity cannot tell.')
+    },
+    get detail() {
+      return uiText('Trinity now gives people this name instead of the IP address. The certificate for it is obtained on the first request that actually arrives for the name, so nothing here can confirm the domain until someone opens it. If DNS does not point at this server, that visit never gets here: the browser shows an error, and Trinity, which is not part of that exchange, carries on showing the name as saved. Open it in a browser to find out.')
+    },
   },
   // The one state in this file that rests on something OBSERVED rather than
   // parsed: a request for exactly this name arrived and a certificate followed.
   // It survives a proxy, a load balancer or a reserved IP in between, which is
   // why it is the tick rather than a DNS lookup taken at save time.
   'https-domain-reached': {
-    badge: 'Domain reached',
+    get badge() { return uiText('Domain reached') },
     badgeVariant: 'success',
-    headline:
-      'Your domain has been reached. One optional step is left \u2014 a Cloudflare Tunnel can take this server off the public internet.',
-    detail:
-      'A request for your domain reached this server, and a certificate was obtained for it. One thing is left, and it is optional \u2014 this server still answers anyone who finds the address. A Cloudflare Tunnel closes that off, so the only way in is through Cloudflare. Fine to skip while you are trying Trinity out; worth doing from Settings \u2192 General before this instance matters.',
+    get headline() {
+      return uiText('Your domain has been reached. One optional step is left \u2014 a Cloudflare Tunnel can take this server off the public internet.')
+    },
+    get detail() {
+      return uiText('A request for your domain reached this server, and a certificate was obtained for it. One thing is left, and it is optional \u2014 this server still answers anyone who finds the address. A Cloudflare Tunnel closes that off, so the only way in is through Cloudflare. Fine to skip while you are trying Trinity out; worth doing from Settings \u2192 General before this instance matters.')
+    },
   },
 }
 

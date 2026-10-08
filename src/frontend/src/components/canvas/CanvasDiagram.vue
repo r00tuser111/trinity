@@ -19,7 +19,7 @@
       v-else-if="!svg"
       class="h-32 animate-pulse rounded-lg bg-gray-100 motion-reduce:animate-none dark:bg-gray-800"
       aria-busy="true"
-    ><span class="sr-only">Rendering diagram…</span></div>
+    ><span class="sr-only">{{ uiText("Rendering diagram…") }}</span></div>
 
     <!-- The SVG has been through the app's one DOMPurify policy. -->
     <div ref="diagramEl" v-else class="canvas-diagram overflow-x-auto" v-html="svg"></div>
@@ -147,6 +147,8 @@ async function render() {
 
 watch(() => [props.source, themeStore.isDark], render, { immediate: true })
 onBeforeUnmount(() => { unmounted = true })
+
+import { t as uiText } from '@/i18n'
 </script>
 
 <style scoped>

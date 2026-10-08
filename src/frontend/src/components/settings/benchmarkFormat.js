@@ -1,3 +1,5 @@
+import { t as uiText } from '../../i18n/index.js'
+
 /**
  * Pure decisions for the fleet-benchmark card (ent#12 → ent#190).
  *
@@ -21,9 +23,9 @@
 const EM_DASH = '—'
 
 export const METRIC_ROWS = [
-  { key: 'execution_success_rate', label: 'Execution success rate', kind: 'percent' },
-  { key: 'executions_per_day', label: 'Executions per day', kind: 'rate' },
-  { key: 'agents', label: 'Agents', kind: 'count' },
+  { key: 'execution_success_rate', get "label"() { return uiText("Execution success rate") }, kind: 'percent' },
+  { key: 'executions_per_day', get "label"() { return uiText("Executions per day") }, kind: 'rate' },
+  { key: 'agents', get "label"() { return uiText("Agents") }, kind: 'count' },
 ]
 
 function isObject(v) {
@@ -115,7 +117,7 @@ export function participantsLine(benchmark) {
   const { participants, window_days: window } = benchmark
   if (!isFiniteNumber(participants) || !isFiniteNumber(window)) return null
   const noun = participants === 1 ? 'instance' : 'instances'
-  return `Compared against ${participants} ${noun} that shared in the last ${window} days`
+  return uiText("Compared against {arg1} {arg2} that shared in the last {arg3} days", { arg1: (participants), arg2: (noun), arg3: (window) })
 }
 
 /**
@@ -129,13 +131,13 @@ export function basedOnLine(basedOn, formatRelative) {
   const when = typeof formatRelative === 'function' ? formatRelative(basedOn.shared_at) : basedOn.shared_at
   const parts = []
   if (isFiniteNumber(basedOn.window_days)) {
-    parts.push(`${basedOn.window_days}-day window`)
+    parts.push(uiText('{days}-day window', { days: basedOn.window_days }))
   }
   if (typeof basedOn.backfill === 'boolean') {
-    parts.push(basedOn.backfill ? 'backfill' : 'heartbeat')
+    parts.push(basedOn.backfill ? uiText('backfill') : uiText('heartbeat'))
   }
   const detail = parts.length ? ` (${parts.join(', ')})` : ''
-  return `Based on your share from ${when}${detail}`
+  return uiText("Based on your share from {arg1}{arg2}", { arg1: (when), arg2: (detail) })
 }
 
 /** The technical class shown in tertiary mono ink under an `unavailable`

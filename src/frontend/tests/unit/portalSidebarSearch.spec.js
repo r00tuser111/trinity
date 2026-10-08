@@ -232,7 +232,7 @@ describe('labels and the one persistent toggle', () => {
 
 describe('what only source can answer — PortalSidebar.vue', () => {
   it('binds the placeholder to the constant rather than restating it', () => {
-    expect(SIDEBAR).toMatch(/:placeholder="SEARCH_PLACEHOLDER"/)
+    expect(SIDEBAR).toMatch(/:placeholder="translate\(SEARCH_PLACEHOLDER\)"/)
     expect(SIDEBAR).not.toContain('placeholder="Search your chats')
   })
 

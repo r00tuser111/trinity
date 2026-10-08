@@ -1,3 +1,5 @@
+import { t as uiText } from '../i18n/index.js'
+
 /**
  * Fleet-level skills library store (ent#263) — backs the Library page's
  * Skills section (browse-only; assignment stays on each agent's Skills tab).
@@ -114,7 +116,7 @@ export const useSkillsLibraryStore = defineStore('skillsLibrary', () => {
       hasLoaded.value = true
     } catch (e) {
       if (mine !== generation) return
-      error.value = e?.response?.data?.detail || 'Could not load the skills library'
+      error.value = e?.response?.data?.detail || uiText("Could not load the skills library")
     } finally {
       if (mine === generation) fetching.value = false
     }
@@ -152,7 +154,7 @@ export const useSkillsLibraryStore = defineStore('skillsLibrary', () => {
       assignableAgents.value = []
       assignmentsLoaded.value = false
       assignmentsError.value =
-        e?.response?.data?.detail || 'Could not load skill assignments'
+        e?.response?.data?.detail || uiText("Could not load skill assignments")
     } finally {
       if (mine === assignmentsGeneration) assignmentsFetching.value = false
     }
@@ -212,7 +214,7 @@ export const useSkillsLibraryStore = defineStore('skillsLibrary', () => {
         await load()
         return true
       }
-      syncError.value = e?.response?.data?.detail || 'Sync failed'
+      syncError.value = e?.response?.data?.detail || uiText("Sync failed")
       return false
     } finally {
       syncing.value = false
@@ -282,7 +284,7 @@ export const useSkillsLibraryStore = defineStore('skillsLibrary', () => {
       // The server's own reason, verbatim — "Skill 'x' not found in library"
       // and "Agent not found" are the named failures AC 4 asks for, and
       // inventing our own wording here would drift from them.
-      return e?.response?.data?.detail || 'Could not assign the skill'
+      return e?.response?.data?.detail || uiText("Could not assign the skill")
     }
   }
 
@@ -303,7 +305,7 @@ export const useSkillsLibraryStore = defineStore('skillsLibrary', () => {
       assignments.value = map
       return null
     } catch (e) {
-      return e?.response?.data?.detail || 'Could not unassign the skill'
+      return e?.response?.data?.detail || uiText("Could not unassign the skill")
     }
   }
 

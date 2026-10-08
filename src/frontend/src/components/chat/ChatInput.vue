@@ -22,12 +22,12 @@
       >
         <!-- Header hint -->
         <div class="px-3 py-1.5 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-          <span class="text-xs text-gray-400 dark:text-gray-500 font-medium">Playbooks</span>
+          <span class="text-xs text-gray-400 dark:text-gray-500 font-medium">{{ uiText("Playbooks") }}</span>
           <span class="text-xs text-gray-400 dark:text-gray-500">
             <kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono">↑↓</kbd>
-            navigate &nbsp;
-            <kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono">Tab</kbd>
-            accept
+            {{ uiText("navigate") }}
+            <kbd class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[10px] font-mono">{{ uiText("Tab") }}</kbd>
+            {{ uiText("accept") }}
           </span>
         </div>
 
@@ -67,7 +67,7 @@
               v-if="idx === ac.selectedIndex.value"
               class="shrink-0 ml-auto text-[10px] text-gray-400 dark:text-gray-500 font-mono"
             >
-              Tab ⇥
+              {{ uiText("Tab ⇥") }}
             </span>
           </li>
         </ul>
@@ -77,7 +77,7 @@
           v-if="ac.filteredPlaybooks.value.length > 8"
           class="px-3 py-1 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-400 dark:text-gray-500"
         >
-          {{ ac.filteredPlaybooks.value.length - 8 }} more — keep typing to filter
+          {{ ac.filteredPlaybooks.value.length - 8 }} {{ uiText("more — keep typing to filter") }}
         </div>
       </div>
     </Transition>
@@ -93,7 +93,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
         </svg>
         <span class="max-w-[120px] truncate">{{ f.name }}</span>
-        <button type="button" @click="removeFile(idx)" class="ml-0.5 hover:text-status-danger-500 transition-colors" title="Remove">
+        <button type="button" @click="removeFile(idx)" class="ml-0.5 hover:text-status-danger-500 transition-colors" :title="uiText(&quot;Remove&quot;)">
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -106,7 +106,7 @@
       v-if="dragOver"
       class="absolute inset-0 rounded-xl bg-action-primary-50/90 dark:bg-action-primary-900/60 border-2 border-dashed border-action-primary-400 flex items-center justify-center z-20 pointer-events-none"
     >
-      <span class="text-action-primary-600 dark:text-action-primary-300 text-sm font-medium">Drop files here</span>
+      <span class="text-action-primary-600 dark:text-action-primary-300 text-sm font-medium">{{ uiText("Drop files here") }}</span>
     </div>
 
     <!-- ── Input row ─────────────────────────────────────────────────────── -->
@@ -140,7 +140,7 @@
           ref="textareaRef"
           v-model="localMessage"
           rows="1"
-          :placeholder="showPlaceholder ? placeholder : ''"
+          :placeholder="showPlaceholder ? uiText(placeholder) : ''"
           class="relative z-10 w-full resize-none border-0 p-0 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-0 focus:outline-none text-sm leading-6"
           :disabled="disabled"
           @keydown="handleKeydown"
@@ -156,7 +156,7 @@
         @click="fileInputRef?.click()"
         :disabled="disabled || pendingFiles.length >= 3"
         class="p-2 rounded-lg transition-colors shrink-0 bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-action-primary-100 dark:hover:bg-action-primary-900/30 hover:text-action-primary-600 dark:hover:text-action-primary-400 disabled:opacity-40"
-        title="Attach files (max 3, 5 MB each)"
+        :title="uiText(&quot;Attach files (max 3, 5 MB each)&quot;)"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -181,8 +181,8 @@
         @click="$emit('cancel')"
         :disabled="cancelling"
         class="p-2 bg-status-danger-600 hover:bg-status-danger-700 disabled:bg-status-danger-400 text-white rounded-lg transition-colors shrink-0"
-        :title="cancelling ? 'Stopping…' : 'Stop this turn (Esc)'"
-        aria-label="Stop this turn"
+        :title="cancelling ? uiText(&quot;Stopping…&quot;) : uiText(&quot;Stop this turn (Esc)&quot;)"
+        :aria-label="uiText(&quot;Stop this turn&quot;)"
       >
         <svg v-if="cancelling" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -245,7 +245,7 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: 'Type your message or / for playbooks…'
+    default: msg('Type your message or / for playbooks…')
   },
   disabled: {
     type: Boolean,
@@ -456,7 +456,7 @@ async function addFiles(fileList) {
   const toAdd = Array.from(fileList).slice(0, remaining)
   for (const file of toAdd) {
     if (file.size > MAX_FILE_BYTES) {
-      alert(`"${file.name}" exceeds the 5 MB limit and was skipped.`)
+      alert(uiText("\"{arg1}\" exceeds the 5 MB limit and was skipped.", { arg1: (file.name) }))
       continue
     }
     const data_base64 = await encodeFile(file)
@@ -507,6 +507,8 @@ function nextTick_(fn) {
 defineExpose({
   focus: () => textareaRef.value?.focus()
 })
+
+import { t as uiText, msg } from '@/i18n'
 </script>
 
 <style scoped>

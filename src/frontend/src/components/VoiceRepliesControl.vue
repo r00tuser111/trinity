@@ -18,24 +18,23 @@
         <div class="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-action-primary-500 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-action-primary-600"></div>
       </label>
       <div class="flex-1">
-        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Voice replies</div>
+        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ uiText("Voice replies") }}</div>
         <div class="text-xs text-gray-500 dark:text-gray-400">
-          Let this agent speak replies as a voice note (ElevenLabs). Replies are text by default —
-          the agent chooses voice per message. Enable it per channel in each channel's settings.
+          {{ uiText("Let this agent speak replies as a voice note (ElevenLabs). Replies are text by default — the agent chooses voice per message. Enable it per channel in each channel's settings.") }}
           <span v-if="!voice.available" class="block mt-1 text-status-warning-600 dark:text-status-warning-400">
-            Voice is unavailable — the platform has no ElevenLabs API key configured.
+            {{ uiText("Voice is unavailable — the platform has no ElevenLabs API key configured.") }}
           </span>
         </div>
       </div>
     </div>
     <div v-if="voice.enabled || voiceId" class="mt-3">
-      <label :for="`tts-voice-id-${agentName}`" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">ElevenLabs voice ID</label>
+      <label :for="`tts-voice-id-${agentName}`" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{{ uiText("ElevenLabs voice ID") }}</label>
       <div class="flex gap-2">
         <input
           :id="`tts-voice-id-${agentName}`"
           v-model="voiceId"
           type="text"
-          :placeholder="defaultVoiceId ? `Default: ${defaultVoiceId}` : 'e.g. 21m00Tcm4TlvDq8ikWAM'"
+          :placeholder="defaultVoiceId ? uiText(&quot;Default: {arg1}&quot;, { arg1: (defaultVoiceId) }) : uiText(&quot;e.g. 21m00Tcm4TlvDq8ikWAM&quot;)"
           :disabled="!voice.available || voiceSaving"
           class="flex-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-action-primary-500 disabled:opacity-50"
         />
@@ -44,11 +43,11 @@
           @click="saveVoice"
           :disabled="!voice.available || voiceSaving"
           class="px-3 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50"
-        >Save</button>
+        >{{ uiText("Save") }}</button>
       </div>
       <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">
-        <template v-if="defaultVoiceId">Leave blank to use the platform default voice.</template>
-        <template v-else>Paste a voice ID from your ElevenLabs account.</template>
+        <template v-if="defaultVoiceId">{{ uiText("Leave blank to use the platform default voice.") }}</template>
+        <template v-else>{{ uiText("Paste a voice ID from your ElevenLabs account.") }}</template>
       </p>
       <p v-if="message" class="mt-1 text-xs" :class="messageError ? 'text-status-danger-600' : 'text-status-success-600'">{{ message }}</p>
     </div>
@@ -96,9 +95,9 @@ async function saveVoice() {
     })
     voice.value = { ...voice.value, enabled: !!data.enabled }
     voiceId.value = data.voice_id || ''
-    notify('Voice settings saved')
+    notify(uiText("Voice settings saved"))
   } catch (e) {
-    notify(e.response?.data?.detail || 'Failed to save voice settings', true)
+    notify(e.response?.data?.detail || uiText("Failed to save voice settings"), true)
   } finally {
     voiceSaving.value = false
   }
@@ -114,4 +113,6 @@ async function toggleVoice(enabled) {
 
 watch(() => props.agentName, loadVoice)
 onMounted(loadVoice)
+
+import { t as uiText } from '@/i18n'
 </script>

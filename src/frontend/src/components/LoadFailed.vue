@@ -34,8 +34,8 @@
       />
     </svg>
 
-    <p class="font-medium text-gray-900 dark:text-gray-100">{{ title }}</p>
-    <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">{{ message }}</p>
+    <p class="font-medium text-gray-900 dark:text-gray-100">{{ t(title) }}</p>
+    <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">{{ t(message) }}</p>
 
     <button
       v-if="showRetry"
@@ -44,13 +44,13 @@
       :disabled="retrying"
       @click="$emit('retry')"
     >
-      {{ retrying ? 'Retrying…' : retryLabel }}
+      {{ retrying ? t('Retrying…') : t(retryLabel) }}
     </button>
 
     <!-- Principle 25: codes and traces live behind a disclosure, not in the headline. -->
     <details v-if="detail" class="mt-3 text-left max-w-md mx-auto">
       <summary class="text-xs text-gray-500 dark:text-gray-400 cursor-pointer select-none">
-        Technical detail
+        {{ t('Technical detail') }}
       </summary>
       <p class="mt-1 text-xs font-mono break-words text-gray-600 dark:text-gray-400">
         {{ detail }}
@@ -60,16 +60,17 @@
 </template>
 
 <script setup>
+import { t, msg } from '@/i18n'
 defineProps({
   // Headline: what happened, in user vocabulary.
   title: {
     type: String,
-    default: "Couldn't load"
+    default: msg("Couldn't load")
   },
   // What it means / what to do next.
   message: {
     type: String,
-    default: 'The request failed. Check your connection and try again.'
+    default: msg('The request failed. Check your connection and try again.')
   },
   // Raw error text (status code, server message) — disclosed, never the headline.
   detail: {
@@ -78,7 +79,7 @@ defineProps({
   },
   retryLabel: {
     type: String,
-    default: 'Try again'
+    default: msg('Try again')
   },
   // True while the retry is in flight, so the control can't be double-fired.
   retrying: {

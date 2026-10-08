@@ -33,10 +33,10 @@
         class="mt-1 text-xs font-medium underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-status-danger-500/40 rounded"
         @click="$emit('retry')"
       >
-        {{ retryLabel }}
+        {{ t(retryLabel) }}
       </button>
       <details v-if="detail" class="mt-1">
-        <summary class="text-xs opacity-80 cursor-pointer select-none">Technical detail</summary>
+        <summary class="text-xs opacity-80 cursor-pointer select-none">{{ t('Technical detail') }}</summary>
         <p class="mt-1 text-xs font-mono break-words opacity-90">{{ detail }}</p>
       </details>
     </div>
@@ -44,7 +44,7 @@
     <button
       type="button"
       class="flex-shrink-0 opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-status-danger-500/40 rounded"
-      :aria-label="`Dismiss error: ${message}`"
+      :aria-label="uiText(&quot;Dismiss error: {arg1}&quot;, { arg1: (message) })"
       @click="$emit('dismiss')"
     >
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -55,6 +55,7 @@
 </template>
 
 <script setup>
+import { t, msg } from '@/i18n'
 defineProps({
   // What happened + what to do. Empty string renders nothing.
   message: {
@@ -71,9 +72,11 @@ defineProps({
   },
   retryLabel: {
     type: String,
-    default: 'Try again'
+    default: msg('Try again')
   }
 })
 
 defineEmits(['dismiss', 'retry'])
+
+import { t as uiText } from '@/i18n'
 </script>

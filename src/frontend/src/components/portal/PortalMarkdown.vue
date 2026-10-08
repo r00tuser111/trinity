@@ -26,6 +26,7 @@
  * message mounts THIS and inherits render, style and copy as one unit.
  */
 import { computed, ref, onBeforeUnmount } from 'vue'
+import { t } from '@/i18n'
 import { renderMarkdownWithCodeBlocks } from '@/utils/markdown'
 import { codeBlockText, DATA_CODE_BLOCK, DATA_COPY_CODE } from '@/utils/codeBlocks'
 import {
@@ -66,7 +67,8 @@ async function copyBlock(btn, text) {
   // writeText first, nothing awaited before it: Safari grants clipboard access
   // only inside the task the click started.
   const result = await copyText(text)
-  const { label, tone } = copyFeedback(result)
+  const { label: message, tone } = copyFeedback(result)
+  const label = t(message)
 
   btn.textContent = label
   btn.setAttribute('aria-label', label)
@@ -78,8 +80,8 @@ async function copyBlock(btn, text) {
     // Restore the CONSTANTS, never a value captured before the click: two
     // clicks inside the window would otherwise restore "Copied" and leave the
     // button permanently claiming a success it is no longer reporting.
-    btn.textContent = COPY_CODE_LABEL
-    btn.setAttribute('aria-label', COPY_CODE_ARIA)
+    btn.textContent = t(COPY_CODE_LABEL)
+    btn.setAttribute('aria-label', t(COPY_CODE_ARIA))
     delete btn.dataset.state
     resetTimers.delete(btn)
   }, COPY_FEEDBACK_TTL_MS))

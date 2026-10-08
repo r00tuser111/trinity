@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Telegram Bot</h3>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ uiText("Telegram Bot") }}</h3>
     <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-      Connect a Telegram bot so users can chat with this agent via Telegram DMs and group chats.
+      {{ uiText("Connect a Telegram bot so users can chat with this agent via Telegram DMs and group chats.") }}
     </p>
 
     <!-- Loading -->
@@ -11,12 +11,12 @@
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      Loading...
+      {{ uiText("Loading...") }}
     </div>
 
     <!-- Access Denied -->
     <div v-else-if="accessDenied" class="text-sm text-gray-500 dark:text-gray-400">
-      Only the agent owner can manage Telegram bot settings.
+      {{ uiText("Only the agent owner can manage Telegram bot settings.") }}
     </div>
 
     <!-- Connected State -->
@@ -46,14 +46,14 @@
               :disabled="verifying"
               class="text-sm text-action-primary-600 dark:text-action-primary-400 hover:text-action-primary-800 dark:hover:text-action-primary-300 disabled:opacity-50"
             >
-              {{ verifying ? 'Verifying...' : 'Verify' }}
+              {{ verifying ? uiText("Verifying...") : uiText("Verify") }}
             </button>
             <button
               @click="disconnectBot"
               :disabled="disconnecting"
               class="text-sm text-status-danger-600 dark:text-status-danger-400 hover:text-status-danger-800 dark:hover:text-status-danger-300 disabled:opacity-50"
             >
-              {{ disconnecting ? 'Removing...' : 'Disconnect' }}
+              {{ disconnecting ? uiText("Removing...") : uiText("Disconnect") }}
             </button>
           </div>
         </div>
@@ -61,16 +61,15 @@
 
       <!-- Webhook Warning -->
       <div v-if="!binding.webhook_url" class="p-3 rounded-lg text-sm bg-status-warning-50 dark:bg-status-warning-900/30 text-status-warning-700 dark:text-status-warning-300">
-        Bot connected but webhook not registered. Set a <router-link to="/settings" class="underline font-medium hover:text-status-warning-800 dark:hover:text-status-warning-200">Public URL in Settings</router-link> for Telegram messages to reach this agent.
+        {{ uiText("Bot connected but webhook not registered. Set a") }} <router-link to="/settings" class="underline font-medium hover:text-status-warning-800 dark:hover:text-status-warning-200">{{ uiText("Public URL in Settings") }}</router-link> {{ uiText("for Telegram messages to reach this agent.") }}
       </div>
 
       <!-- In-progress indicator toggle (ent#264) -->
       <div class="flex items-start justify-between gap-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
         <div>
-          <p class="text-sm font-medium text-gray-900 dark:text-white">In-progress indicator</p>
+          <p class="text-sm font-medium text-gray-900 dark:text-white">{{ uiText("In-progress indicator") }}</p>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            React with &#128064; when a task starts and post an elapsed-time status while long tasks run.
-            In groups, only @mention/reply-triggered turns (and "All messages" mode) are acknowledged.
+            {{ uiText("React with 👀 when a task starts and post an elapsed-time status while long tasks run. In groups, only @mention/reply-triggered turns (and \"All messages\" mode) are acknowledged.") }}
           </p>
         </div>
         <button
@@ -92,7 +91,7 @@
       <!-- Group Chats Section -->
       <div v-if="groups.length > 0" class="mt-4">
         <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Group Chats ({{ groups.length }})
+          {{ uiText("Group Chats (") }}{{ groups.length }})
         </h4>
         <div class="space-y-2">
           <div
@@ -106,7 +105,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <span class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ group.chat_title || `Group ${group.chat_id}` }}
+                  {{ group.chat_title || uiText("Group {arg1}", { arg1: (group.chat_id) }) }}
                 </span>
                 <span class="text-xs text-gray-400">{{ group.chat_type }}</span>
               </div>
@@ -114,7 +113,7 @@
                 @click="removeGroup(group)"
                 class="text-xs text-status-danger-500 hover:text-status-danger-700 dark:hover:text-status-danger-400"
               >
-                Remove
+                {{ uiText("Remove") }}
               </button>
             </div>
 
@@ -129,7 +128,7 @@
                   @change="updateGroup(group, { trigger_mode: 'mention' })"
                   class="text-action-primary-600 focus:ring-action-primary-500"
                 />
-                <span class="text-gray-600 dark:text-gray-400">@mention only</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ uiText("@mention only") }}</span>
               </label>
               <label class="flex items-center gap-1.5 cursor-pointer">
                 <input
@@ -140,9 +139,9 @@
                   @change="updateGroup(group, { trigger_mode: 'all' })"
                   class="text-action-primary-600 focus:ring-action-primary-500"
                 />
-                <span class="text-gray-600 dark:text-gray-400">All messages</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ uiText("All messages") }}</span>
               </label>
-              <label class="flex items-center gap-1.5 cursor-pointer" title="Agent sees all messages but can choose not to respond">
+              <label class="flex items-center gap-1.5 cursor-pointer" :title="uiText(&quot;Agent sees all messages but can choose not to respond&quot;)">
                 <input
                   type="radio"
                   :name="`trigger-${group.id}`"
@@ -151,7 +150,7 @@
                   @change="updateGroup(group, { trigger_mode: 'observe' })"
                   class="text-action-primary-600 focus:ring-action-primary-500"
                 />
-                <span class="text-gray-600 dark:text-gray-400">Observe</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ uiText("Observe") }}</span>
               </label>
             </div>
 
@@ -164,17 +163,17 @@
                   @change="updateGroup(group, { welcome_enabled: !group.welcome_enabled })"
                   class="rounded text-action-primary-600 focus:ring-action-primary-500"
                 />
-                <span class="text-gray-600 dark:text-gray-400">Welcome new members</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ uiText("Welcome new members") }}</span>
               </label>
               <div v-if="group.welcome_enabled" class="mt-1.5">
                 <input
                   type="text"
                   :value="group.welcome_text || ''"
                   @blur="updateGroup(group, { welcome_text: $event.target.value })"
-                  placeholder="Welcome, {name}! I'm here to help."
+                  :placeholder="uiText(&quot;Welcome, {name}! I'm here to help.&quot;)"
                   class="w-full text-xs px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-action-primary-500"
                 />
-                <p class="mt-0.5 text-xs text-gray-400">Use {name} for the user's first name</p>
+                <p class="mt-0.5 text-xs text-gray-400">{{ uiText("Use {name} for the user's first name") }}</p>
               </div>
             </div>
 
@@ -190,17 +189,17 @@
                   @change="updateGroup(group, { allow_proactive: !group.allow_proactive })"
                   class="rounded text-action-primary-600 focus:ring-action-primary-500"
                 />
-                <span class="text-gray-600 dark:text-gray-400">Completion reports</span>
+                <span class="text-gray-600 dark:text-gray-400">{{ uiText("Completion reports") }}</span>
               </label>
               <p class="mt-0.5 text-xs text-gray-400">
-                Posts a completion notice for delegated or background tasks started from this group.
+                {{ uiText("Posts a completion notice for delegated or background tasks started from this group.") }}
               </p>
             </div>
           </div>
         </div>
       </div>
       <div v-else-if="binding.configured && binding.webhook_url" class="mt-3 text-xs text-gray-400 dark:text-gray-500">
-        No group chats yet. Add the bot to a Telegram group to see it here.
+        {{ uiText("No group chats yet. Add the bot to a Telegram group to see it here.") }}
       </div>
 
       <!-- Voice replies (ent#117) — per-channel flag; agent-level config in Settings -->
@@ -212,18 +211,18 @@
       <form @submit.prevent="connectBot" class="space-y-3">
         <div>
           <label for="telegram-token" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Bot Token
+            {{ uiText("Bot Token") }}
           </label>
           <input
             id="telegram-token"
             v-model="botToken"
             type="password"
-            placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+            :placeholder="uiText(&quot;123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11&quot;)"
             :disabled="connecting"
             class="w-full max-w-lg px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-action-primary-500 disabled:bg-gray-100 dark:disabled:bg-gray-900"
           />
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            Get a token from <a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">@BotFather</a> on Telegram.
+            {{ uiText("Get a token from") }} <a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" class="text-action-primary-600 dark:text-action-primary-400 hover:underline">{{ uiText("@BotFather") }}</a> {{ uiText("on Telegram.") }}
           </p>
         </div>
         <button
@@ -235,7 +234,7 @@
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          {{ connecting ? 'Connecting...' : 'Connect Bot' }}
+          {{ connecting ? uiText("Connecting...") : uiText("Connect Bot") }}
         </button>
       </form>
     </div>
@@ -311,10 +310,10 @@ async function connectBot() {
     })
     botToken.value = ''
     binding.value = response.data
-    message.value = { type: 'success', text: `Bot @${response.data.bot_username} connected` }
+    message.value = { type: 'success', get "text"() { return uiText("Bot @{arg1} connected", { arg1: (response.data.bot_username) }) } }
     setTimeout(() => { message.value = null }, 3000)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to connect bot'
+    const detail = e.response?.data?.detail || uiText('Failed to connect bot')
     message.value = { type: 'error', text: detail }
   } finally {
     connecting.value = false
@@ -326,12 +325,12 @@ async function disconnectBot() {
   message.value = null
   try {
     await api.delete(`/api/agents/${props.agentName}/telegram`)
-    message.value = { type: 'success', text: 'Bot disconnected' }
+    message.value = { type: 'success', get "text"() { return uiText("Bot disconnected") } }
     binding.value = { configured: false }
     groups.value = []
     setTimeout(() => { message.value = null }, 3000)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to disconnect bot'
+    const detail = e.response?.data?.detail || uiText('Failed to disconnect bot')
     message.value = { type: 'error', text: detail }
   } finally {
     disconnecting.value = false
@@ -348,11 +347,11 @@ async function verifyBot() {
     if (response.data.ok) {
       message.value = { type: 'success', text: response.data.message }
     } else {
-      message.value = { type: 'error', text: response.data.message || 'Verification failed' }
+      message.value = { type: 'error', text: response.data.message || uiText("Verification failed") }
     }
     setTimeout(() => { message.value = null }, 3000)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to verify bot'
+    const detail = e.response?.data?.detail || uiText('Failed to verify bot')
     message.value = { type: 'error', text: detail }
   } finally {
     verifying.value = false
@@ -371,7 +370,7 @@ async function toggleProgressIndicator() {
     })
   } catch (e) {
     binding.value.progress_indicator_enabled = prev
-    const detail = e.response?.data?.detail || 'Failed to update indicator setting'
+    const detail = e.response?.data?.detail || uiText('Failed to update indicator setting')
     message.value = { type: 'error', text: detail }
     setTimeout(() => { message.value = null }, 3000)
   } finally {
@@ -391,7 +390,7 @@ async function updateGroup(group, updates) {
       groups.value[idx] = { ...groups.value[idx], ...response.data }
     }
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to update group config'
+    const detail = e.response?.data?.detail || uiText('Failed to update group config')
     message.value = { type: 'error', text: detail }
     setTimeout(() => { message.value = null }, 3000)
   }
@@ -402,7 +401,7 @@ async function removeGroup(group) {
     await api.delete(`/api/agents/${props.agentName}/telegram/groups/${group.id}`)
     groups.value = groups.value.filter(g => g.id !== group.id)
   } catch (e) {
-    const detail = e.response?.data?.detail || 'Failed to remove group'
+    const detail = e.response?.data?.detail || uiText('Failed to remove group')
     message.value = { type: 'error', text: detail }
     setTimeout(() => { message.value = null }, 3000)
   }
@@ -410,4 +409,6 @@ async function removeGroup(group) {
 
 watch(() => props.agentName, () => loadBinding())
 onMounted(() => loadBinding())
+
+import { t as uiText } from '@/i18n'
 </script>

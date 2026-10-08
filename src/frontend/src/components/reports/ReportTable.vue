@@ -19,7 +19,7 @@
           >{{ cell(row, col) }}</td>
         </tr>
         <tr v-if="rows.length === 0">
-          <td :colspan="columns.length || 1" class="py-3 text-gray-400 text-xs">No rows.</td>
+          <td :colspan="columns.length || 1" class="py-3 text-gray-400 text-xs">{{ uiText("No rows.") }}</td>
         </tr>
       </tbody>
     </table>
@@ -27,13 +27,13 @@
          how much of the set it is holding and can pull the next window. -->
     <div v-if="meta && meta.total > rows.length" class="mt-2 flex items-center gap-3">
       <span class="text-xs text-gray-500 dark:text-gray-400">
-        Showing {{ rows.length.toLocaleString() }} of {{ meta.total.toLocaleString() }} rows
+        {{ uiText("Showing") }} {{ rows.length.toLocaleString() }} {{ uiText("of") }} {{ meta.total.toLocaleString() }} {{ uiText("rows") }}
       </span>
       <button
         class="text-xs px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
         :disabled="loadingMore"
         @click="onLoadMore"
-      >{{ loadingMore ? 'Loading…' : 'Load more' }}</button>
+      >{{ loadingMore ? uiText("Loading…") : uiText("Load more") }}</button>
     </div>
   </div>
 </template>
@@ -70,4 +70,6 @@ function cell(row, col) {
   if (v === null || v === undefined) return ''
   return typeof v === 'object' ? JSON.stringify(v) : String(v)
 }
+
+import { t as uiText } from '@/i18n'
 </script>

@@ -39,11 +39,11 @@
               <!-- Content -->
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" data-testid="confirm-dialog-title">
-                  {{ title }}
+                  {{ t(title) }}
                 </h3>
                 <div class="mt-2">
                   <p class="text-sm text-gray-500 dark:text-gray-400" data-testid="confirm-dialog-message">
-                    {{ message }}
+                    {{ t(message) }}
                   </p>
                 </div>
               </div>
@@ -60,7 +60,7 @@
               data-testid="confirm-dialog-confirm"
               @click="onConfirm"
             >
-              {{ confirmText }}
+              {{ t(confirmText) }}
             </BaseButton>
             <BaseButton
               variant="secondary"
@@ -68,7 +68,7 @@
               data-testid="confirm-dialog-cancel"
               @click="onCancel"
             >
-              {{ cancelText }}
+              {{ t(cancelText) }}
             </BaseButton>
           </div>
         </div>
@@ -78,6 +78,7 @@
 </template>
 
 <script setup>
+import { msg, t } from '@/i18n'
 import { ref, watch } from 'vue'
 import BaseButton from './base/BaseButton.vue'
 
@@ -88,7 +89,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: 'Confirm Action'
+    default: msg('Confirm Action')
   },
   message: {
     type: String,
@@ -96,11 +97,11 @@ const props = defineProps({
   },
   confirmText: {
     type: String,
-    default: 'Confirm'
+    default: msg('Confirm')
   },
   cancelText: {
     type: String,
-    default: 'Cancel'
+    default: msg('Cancel')
   },
   variant: {
     type: String,

@@ -3,12 +3,11 @@
     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <h2 class="text-lg font-medium text-gray-900 dark:text-white">Skills Library</h2>
+          <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ uiText("Skills Library") }}</h2>
           <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Repositories the platform syncs reusable agent skills from. Skills live at
+            {{ uiText("Repositories the platform syncs reusable agent skills from. Skills live at") }}
             <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">skills/&lt;name&gt;/SKILL.md</code>
-            (declared via <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">catalog.yaml</code>)
-            or the legacy
+            {{ uiText("(declared via") }} <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">catalog.yaml</code>{{ uiText(") or the legacy") }}
             <code class="px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs">.claude/skills/&lt;name&gt;/SKILL.md</code>.
           </p>
         </div>
@@ -17,7 +16,7 @@
           :disabled="store.loading || !store.sources.length"
           class="shrink-0 inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {{ store.loading ? 'Syncing…' : 'Sync all' }}
+          {{ store.loading ? uiText("Syncing…") : uiText("Sync all") }}
         </button>
       </div>
     </div>
@@ -37,12 +36,11 @@
         class="rounded-md bg-status-warning-50 dark:bg-status-warning-900/30 p-3 text-sm text-status-warning-800 dark:text-status-warning-300"
       >
         <strong>{{ store.shadowedCount }}</strong>
-        {{ store.shadowedCount === 1 ? 'skill is' : 'skills are' }} provided by more than one
-        source. The higher-precedence source wins; the other copies are not used.
+        {{ store.shadowedCount === 1 ? uiText("skill is") : uiText("skills are") }} {{ uiText("provided by more than one source. The higher-precedence source wins; the other copies are not used.") }}
       </div>
 
       <p v-if="!store.sources.length && !store.loading" class="text-sm text-gray-500 dark:text-gray-400">
-        No sources configured — the library is empty. Add a repository below.
+        {{ uiText("No sources configured — the library is empty. Add a repository below.") }}
       </p>
 
       <!-- Source list, in RESOLUTION order. The first row wins a name clash. -->
@@ -55,12 +53,12 @@
                 <span
                   v-if="i === 0"
                   class="px-1.5 py-0.5 rounded text-xs bg-action-primary-100 dark:bg-action-primary-900/40 text-action-primary-700 dark:text-action-primary-300"
-                  title="Wins when two sources ship the same skill name"
-                >wins conflicts</span>
+                  :title="uiText(&quot;Wins when two sources ship the same skill name&quot;)"
+                >{{ uiText("wins conflicts") }}</span>
                 <span
                   v-if="s.is_default"
                   class="px-1.5 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
-                >bundled</span>
+                >{{ uiText("bundled") }}</span>
                 <!-- ref_type is the supply-chain posture, not decoration:
                      'pinned' means a moved tag is refused. -->
                 <span
@@ -69,10 +67,10 @@
                     ? 'bg-status-success-100 dark:bg-status-success-900/40 text-status-success-700 dark:text-status-success-300'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'"
                   :title="s.ref_type === 'tag'
-                    ? 'Pinned to a tag — a tag that moves is refused'
-                    : 'Tracks a branch — picks up every new commit on sync'"
-                >{{ s.ref_type === 'tag' ? 'pinned' : 'branch' }} · {{ s.ref }}</span>
-                <span v-if="!s.enabled" class="px-1.5 py-0.5 rounded text-xs bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300">disabled</span>
+                    ? uiText(&quot;Pinned to a tag — a tag that moves is refused&quot;)
+                    : uiText(&quot;Tracks a branch — picks up every new commit on sync&quot;)"
+                >{{ s.ref_type === 'tag' ? uiText("pinned") : uiText("branch") }} · {{ s.ref }}</span>
+                <span v-if="!s.enabled" class="px-1.5 py-0.5 rounded text-xs bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300">{{ uiText("disabled") }}</span>
               </div>
               <!-- ent#334: the backend now strips userinfo at the emitter, so
                    this is defence-in-depth, not the control. Kept because the
@@ -84,7 +82,7 @@
               <p class="mt-0.5 text-xs" :class="statusClass(s)">
                 {{ statusLabel(s) }}
                 <span v-if="s.skill_count" class="text-gray-500 dark:text-gray-400">
-                  · {{ s.skill_count }} {{ s.skill_count === 1 ? 'skill' : 'skills' }} in use
+                  · {{ s.skill_count }} {{ s.skill_count === 1 ? uiText("skill") : uiText("skills") }} {{ uiText("in use") }}
                 </span>
               </p>
               <p v-if="s.last_error" class="mt-0.5 text-xs text-status-danger-600 dark:text-status-danger-400 break-words">
@@ -97,17 +95,17 @@
                 @click="store.sync(s.id)"
                 :disabled="store.busyId === s.id || !s.enabled"
                 class="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50"
-              >Sync</button>
+              >{{ uiText("Sync") }}</button>
               <button
                 @click="store.update(s.id, { enabled: !s.enabled })"
                 :disabled="store.busyId === s.id"
                 class="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50"
-              >{{ s.enabled ? 'Disable' : 'Enable' }}</button>
+              >{{ s.enabled ? uiText("Disable") : uiText("Enable") }}</button>
               <button
                 @click="confirmRemove(s)"
                 :disabled="store.busyId === s.id"
                 class="px-2 py-1 text-xs border border-status-danger-300 dark:border-status-danger-700 rounded text-status-danger-700 dark:text-status-danger-400 hover:bg-status-danger-50 dark:hover:bg-status-danger-900/30 disabled:opacity-50"
-              >Remove</button>
+              >{{ uiText("Remove") }}</button>
             </div>
           </div>
         </li>
@@ -119,43 +117,42 @@
           v-if="!adding"
           @click="adding = true"
           class="text-sm text-action-primary-600 dark:text-action-primary-400 hover:underline"
-        >+ Add a skills repository</button>
+        >{{ uiText("+ Add a skills repository") }}</button>
 
         <div v-else class="space-y-3">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">Name</label>
-              <input v-model="form.name" placeholder="Acme internal skills" :class="inputClass" />
+              <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">{{ uiText("Name") }}</label>
+              <input v-model="form.name" :placeholder="uiText(&quot;Acme internal skills&quot;)" :class="inputClass" />
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">Repository URL</label>
-              <input v-model="form.url" placeholder="github.com/owner/repo" :class="inputClass" />
+              <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">{{ uiText("Repository URL") }}</label>
+              <input v-model="form.url" :placeholder="uiText(&quot;github.com/owner/repo&quot;)" :class="inputClass" />
             </div>
             <div>
-              <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">Track</label>
+              <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">{{ uiText("Track") }}</label>
               <select v-model="form.ref_type" :class="inputClass">
-                <option value="branch">Branch (follows new commits)</option>
-                <option value="tag">Tag (pinned — a moved tag is refused)</option>
+                <option value="branch">{{ uiText("Branch (follows new commits)") }}</option>
+                <option value="tag">{{ uiText("Tag (pinned — a moved tag is refused)") }}</option>
               </select>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">
-                {{ form.ref_type === 'tag' ? 'Tag' : 'Branch' }}
+                {{ form.ref_type === 'tag' ? uiText("Tag") : uiText("Branch") }}
               </label>
-              <input v-model="form.ref" :placeholder="form.ref_type === 'tag' ? 'v1.0.0' : 'main'" :class="inputClass" />
+              <input v-model="form.ref" :placeholder="form.ref_type === 'tag' ? 'v1.0.0' : uiText(&quot;main&quot;)" :class="inputClass" />
             </div>
           </div>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Pin to a tag when you don't fully control who can merge to the repository — skills can
-            carry executable scripts, and a branch is picked up automatically on every sync.
+            {{ uiText("Pin to a tag when you don't fully control who can merge to the repository — skills can carry executable scripts, and a branch is picked up automatically on every sync.") }}
           </p>
           <div class="flex justify-end gap-2">
-            <button @click="cancelAdd" class="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:underline">Cancel</button>
+            <button @click="cancelAdd" class="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:underline">{{ uiText("Cancel") }}</button>
             <button
               @click="submit"
               :disabled="!canSubmit"
               class="px-3 py-1.5 text-sm font-medium rounded-md text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >Add source</button>
+            >{{ uiText("Add source") }}</button>
           </div>
         </div>
       </div>
@@ -187,8 +184,8 @@ function statusLabel (s) {
   if (s.last_sync_status === 'success') {
     return s.last_sync ? `Synced ${new Date(s.last_sync).toLocaleString()}` : 'Synced'
   }
-  if (s.last_sync_status === 'failed') return 'Last sync failed'
-  return 'Never synced'
+  if (s.last_sync_status === 'failed') return uiText("Last sync failed")
+  return uiText("Never synced")
 }
 
 function statusClass (s) {
@@ -219,12 +216,14 @@ async function confirmRemove (s) {
   // Removing a source does NOT unassign its skills — they keep resolving through
   // whatever source still provides them. Say so, so "Remove" doesn't read as
   // "strip these skills from my agents".
-  const msg =
-    `Remove "${s.name}" from the skills library?\n\n` +
-    `Agents keep any skills already installed, and assignments are not removed — ` +
-    `each skill will resolve through another source if one provides it.`
+  const msg = uiText(
+    'Remove "{name}" from the skills library?\n\nAgents keep any skills already installed, and assignments are not removed — each skill will resolve through another source if one provides it.',
+    { name: s.name }
+  )
   if (window.confirm(msg)) await store.remove(s.id)
 }
 
 onMounted(store.fetch)
+
+import { t as uiText } from '@/i18n'
 </script>
