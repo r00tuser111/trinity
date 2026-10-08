@@ -61,7 +61,8 @@
 import { t as uiText } from '@/i18n'
 
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import { MODEL_CATALOG } from '../constants/modelCatalog'
+import { useModelProviderStore } from '../stores/modelProvider'
+import { presetModelsFor } from '../utils/modelProvider'
 
 const props = defineProps({
   modelValue: {
@@ -94,7 +95,10 @@ const emit = defineEmits(['update:modelValue'])
 // A removed preset is only hidden from the picker, not blocked: free-text
 // passthrough (onInput below) still accepts any string, including the `[1m]`
 // extended-context suffix (e.g. 'claude-sonnet-4-6[1m]').
-const PRESET_MODELS = MODEL_CATALOG.map((m) => ({ value: m.id, label: m.label, note: m.note }))
+// LLM-PROVIDER-001: with a custom provider active, its models replace the
+// Claude presets (the catalog read is shared and cached by the store).
+const modelProviderStore = useModelProviderStore()
+const presetModels = computed(() => presetModelsFor(modelProviderStore.catalog))
 
 const showDropdown = ref(false)
 const highlightedIndex = ref(-1)
@@ -116,12 +120,13 @@ const inputClass = computed(() => {
 })
 
 const filteredModels = computed(() => {
-  if (!isTyping.value || !props.modelValue) return PRESET_MODELS
+  const presets = presetModels.value
+  if (!isTyping.value || !props.modelValue) return presets
   const query = props.modelValue.toLowerCase()
-  const filtered = PRESET_MODELS.filter(m =>
+  const filtered = presets.filter(m =>
     m.value.toLowerCase().includes(query) || m.label.toLowerCase().includes(query)
   )
-  return filtered.length > 0 ? filtered : PRESET_MODELS
+  return filtered.length > 0 ? filtered : presets
 })
 
 function onInput(event) {
@@ -174,6 +179,7 @@ function handleClickOutside(event) {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  modelProviderStore.fetchCatalog()
 })
 
 onBeforeUnmount(() => {

@@ -399,3 +399,48 @@ Composition paths and whether the model is known:
   #1521's context-window "safe floor").
 
 ---
+
+## 42. Custom Model Provider (LLM-PROVIDER-001)
+
+Claude-runtime agents and the backend's own model calls can run against an
+**Anthropic-compatible third-party provider** (e.g. DeepSeek's
+`/anthropic` endpoint) instead of Anthropic. One provider is active per
+instance; the choice is platform-wide.
+
+- **FR-1 — Platform-wide mode.** Settings → Integrations carries a model
+  provider with two modes: `anthropic` (default, today's behaviour, unchanged)
+  and `custom`. Custom mode stores a base URL, an API key (encrypted at rest
+  like every other credential setting), a model list (`id`, display label,
+  context window) and a default + fast model drawn from that list. Admin-only;
+  every change is audited; the key is never logged or returned unmasked.
+- **FR-2 — Agent injection.** In custom mode, an agent that would otherwise
+  receive the platform Anthropic key receives `ANTHROPIC_BASE_URL`,
+  `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_MODEL`, the opus/sonnet/haiku alias
+  mappings, `ANTHROPIC_SMALL_FAST_MODEL`, `TRINITY_PROVIDER_MODELS`,
+  `TRINITY_PROVIDER_CONTEXT_WINDOWS` and
+  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` — and **never**
+  `ANTHROPIC_API_KEY`. A per-agent Claude subscription still wins (explicit
+  per-agent choice). Non-Claude runtimes are untouched.
+- **FR-3 — Fleet convergence.** Switching mode or editing the provider makes
+  existing containers stale; the start path detects the drift and recreates
+  them, and the settings surface can restart running agents to apply it now.
+- **FR-4 — No Anthropic credential leaves to a third party.** In the agent, a
+  baseline `ANTHROPIC_BASE_URL` force-unsets any `.env` `ANTHROPIC_API_KEY` at
+  spawn. Any model id not in the provider list (stored Claude ids on schedules,
+  public-channel overrides, the image's Claude default) is dropped from argv so
+  the provider default applies instead.
+- **FR-5 — Model selection follows the provider.** In custom mode the
+  selectable catalog (operator picker, admin default, public-channel override,
+  Workspace composer) is the provider's model list; the platform default model
+  is the provider default; dispatch validation accepts provider ids by exact
+  match (they reach argv). Context windows come from the provider list.
+- **FR-6 — Backend model calls follow the provider.** Workspace title
+  generation, compatibility AI checks and platform-prompt summarisation call
+  the active provider's `/v1/messages`; the key test sends a one-token message
+  in custom mode. The Claude subscription headroom probe stays Anthropic-only.
+- **FR-7 — URL safety.** The base URL must be `https://`, or `http://` to a
+  loopback/private host (a local gateway such as LiteLLM). Link-local and
+  cloud-metadata hosts are refused.
+- **Out of scope.** Per-provider pricing (cost figures under a custom provider
+  are Claude-priced and labelled approximate), multiple simultaneous providers,
+  and built-in OpenAI-protocol translation (use an external gateway).

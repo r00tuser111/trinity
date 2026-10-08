@@ -599,7 +599,7 @@ async def get_public_channel_model(
         "resolved_model": override or platform_default,
         "is_overridden": override is not None,
         "platform_default": platform_default,
-        "available_models": sorted(settings_service.PUBLIC_CHANNEL_MODELS),
+        "available_models": sorted(settings_service.get_public_channel_models()),
     }
 
 
@@ -628,7 +628,7 @@ async def set_public_channel_model(
             detail={
                 "error": "invalid_public_channel_model",
                 "message": f"{model!r} is not a selectable public-channel model.",
-                "available_models": sorted(settings_service.PUBLIC_CHANNEL_MODELS),
+                "available_models": sorted(settings_service.get_public_channel_models()),
             },
         )
 

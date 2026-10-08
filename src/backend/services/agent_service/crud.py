@@ -1560,6 +1560,10 @@ def _build_base_env(config: AgentConfig) -> dict:
         # The dir is created at container start by startup.sh.
         'TMPDIR': AGENT_DEFAULT_TMPDIR,
     }
+    if is_claude_runtime(config.runtime):
+        # LLM-PROVIDER-001: the custom provider's env replaces the Anthropic key.
+        from services.llm_provider import apply_provider_env
+        apply_provider_env(env_vars)
 
     # #1369: operator-configurable headless per-tool stall-watchdog ceiling.
     # Only propagate when the backend env sets it — an unset value leaves the
@@ -1613,6 +1617,8 @@ def _apply_subscription_env(config: AgentConfig, env_vars: dict) -> Optional[str
                 if token:
                     env_vars['CLAUDE_CODE_OAUTH_TOKEN'] = token
                     env_vars.pop('ANTHROPIC_API_KEY', None)
+                    from services.llm_provider import strip_provider_env
+                    strip_provider_env(env_vars)
                     auto_assigned_subscription_id = least_used.id
                     logger.info(f"Auto-assigned subscription '{least_used.name}' to agent {config.name}")
                 else:

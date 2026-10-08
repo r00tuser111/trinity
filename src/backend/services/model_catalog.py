@@ -261,7 +261,7 @@ class InvalidModelError(ValueError):
     """
 
 
-def validate_dispatch_model(raw: str | None) -> str | None:
+def validate_dispatch_model(raw: str | None, extra_ids: frozenset = frozenset()) -> str | None:
     """Normalise and shape-check a caller-supplied model id for a dispatch.
 
     Order matches ``client_portal.service.validate_requested_model`` and is
@@ -271,6 +271,9 @@ def validate_dispatch_model(raw: str | None) -> str | None:
 
     Args:
         raw: The model id as the caller sent it, or ``None``.
+        extra_ids: Ids accepted by EXACT match on top of the family gate — the
+            active custom provider's models (LLM-PROVIDER-001), whose names
+            (``deepseek-chat``) match no Claude/Gemini/OpenAI family.
 
     Returns:
         The stripped id, or ``None`` to inherit. The value is never rewritten
@@ -284,7 +287,7 @@ def validate_dispatch_model(raw: str | None) -> str | None:
     model = (raw or "").strip() or None
     if model is None:
         return None
-    if model.lower().startswith(_MODEL_FAMILY_PREFIXES):
+    if model in extra_ids or model.lower().startswith(_MODEL_FAMILY_PREFIXES):
         return model
     # Bounded before it is echoed. The field is deliberately unbounded at the
     # payload layer, so without this an authenticated caller could have a

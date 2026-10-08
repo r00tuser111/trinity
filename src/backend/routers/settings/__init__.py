@@ -32,6 +32,7 @@ from . import (
     generic,
     integrations,
     mcp_url,
+    model_provider,
     ops,
     retention,
     templates,
@@ -65,6 +66,7 @@ router.include_router(flags.router)
 router.include_router(retention.router)
 router.include_router(credentials.router)
 router.include_router(provider_keys.router)  # #2715 resend/gemini keys, split out of credentials
+router.include_router(model_provider.router)  # LLM-PROVIDER-001
 router.include_router(whitelist.router)
 router.include_router(templates.router)
 router.include_router(mcp_url.router)

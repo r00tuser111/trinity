@@ -304,6 +304,17 @@ async def update_setting(
             ),
         )
 
+    from services.llm_provider import PROVIDER_SETTING_KEYS
+
+    if key in PROVIDER_SETTING_KEYS:
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                f"{key} must be set via PUT /api/settings/model-provider "
+                "(URL- and model-validated, admin-only, audit-logged)"
+            ),
+        )
+
     from services.settings_service import RETENTION_OPS_KEYS
 
     if key in RETENTION_OPS_KEYS:

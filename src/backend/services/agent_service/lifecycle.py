@@ -947,6 +947,8 @@ async def recreate_container_with_updated_config(
     has_subscription = subscription_id is not None
     use_platform_key = db.get_use_platform_api_key(agent_name)
 
+    from services.llm_provider import apply_provider_env, strip_provider_env
+
     if not _is_claude_runtime:
         # Non-Claude: leave the agent's own credentials in place; never inject a
         # Claude token.
@@ -957,14 +959,17 @@ async def recreate_container_with_updated_config(
         if token:
             env_vars['CLAUDE_CODE_OAUTH_TOKEN'] = token
         env_vars.pop('ANTHROPIC_API_KEY', None)
+        strip_provider_env(env_vars)
     elif use_platform_key:
-        # No subscription, use platform API key
-        env_vars['ANTHROPIC_API_KEY'] = get_anthropic_api_key()
+        # No subscription: platform API key, or the custom provider (LLM-PROVIDER-001)
+        if not apply_provider_env(env_vars):
+            env_vars['ANTHROPIC_API_KEY'] = get_anthropic_api_key()
         env_vars.pop('CLAUDE_CODE_OAUTH_TOKEN', None)
     else:
         # No subscription, no platform key — user will auth in terminal
         env_vars.pop('ANTHROPIC_API_KEY', None)
         env_vars.pop('CLAUDE_CODE_OAUTH_TOKEN', None)
+        strip_provider_env(env_vars)
 
     # ent#109: the whole GitHub-sync env block is derived from persisted DB
     # state by the single shared owner. Before this, THIS path re-derived only
@@ -1669,9 +1674,12 @@ def _apply_persisted_auth_env(agent_name: str, env_vars: dict, runtime: str) -> 
     """Set auth-related env from persisted DB state, mirroring the refresh block
     in `recreate_container_with_updated_config` (subscription token vs platform
     key, per-agent GitHub PAT, guardrails, stall-limit, derived agent token)."""
+    from services.llm_provider import apply_provider_env, strip_provider_env
+
     if not is_claude_runtime(runtime):
         env_vars.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
         env_vars.pop("ANTHROPIC_API_KEY", None)
+        strip_provider_env(env_vars)
     else:
         subscription_id = db.get_agent_subscription_id(agent_name)
         if subscription_id:
@@ -1679,12 +1687,15 @@ def _apply_persisted_auth_env(agent_name: str, env_vars: dict, runtime: str) -> 
             if token:
                 env_vars["CLAUDE_CODE_OAUTH_TOKEN"] = token
             env_vars.pop("ANTHROPIC_API_KEY", None)
+            strip_provider_env(env_vars)
         elif db.get_use_platform_api_key(agent_name):
-            env_vars["ANTHROPIC_API_KEY"] = get_anthropic_api_key()
+            if not apply_provider_env(env_vars):
+                env_vars["ANTHROPIC_API_KEY"] = get_anthropic_api_key()
             env_vars.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
         else:
             env_vars.pop("ANTHROPIC_API_KEY", None)
             env_vars.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
+            strip_provider_env(env_vars)
 
     # Per-agent GitHub PAT (opt-in), plus GITHUB_REPO / GIT_SYNC from git config.
     # ent#123: gate on the REPO, not the PAT (see `_apply_git_env_from_db`).

@@ -567,9 +567,14 @@ class ModelContext(NamedTuple):
 def workspace_model_options() -> list:
     """The curated option list, in catalog order. Derived from the ONE catalog
     (#2086), never a second hand-typed list — the drift that registry exists to
-    prevent."""
+    prevent. An active custom provider (LLM-PROVIDER-001) offers its own list."""
+    from services.llm_provider import get_active_provider
     from services.model_catalog import MODEL_CATALOG
 
+    provider = get_active_provider()
+    if provider is not None:
+        # The tier is the client-facing name; a provider model has only its label.
+        return [PortalModelOption(id=m.id, tier=m.label, label=m.label) for m in provider.models]
     return [
         PortalModelOption(id=m.id, tier=m.workspace_tier, label=m.label)
         for m in MODEL_CATALOG
@@ -586,8 +591,12 @@ def catalog_label(model_id: str) -> str:
     `claude-sonnet-4-6[1m]` in legitimate circulation. A KeyError here would 500
     the roster — this surface's front door — over a display string.
     """
+    from services.llm_provider import get_active_provider
     from services.model_catalog import MODEL_CATALOG
 
+    provider = get_active_provider()
+    if provider is not None:
+        return provider.label_for(model_id) or model_id
     for m in MODEL_CATALOG:
         if m.id == model_id:
             return m.label
@@ -2071,6 +2080,27 @@ def _resolve_title_auth(agent_name: str) -> dict | None:
     return None
 
 
+def _provider_title_endpoint(agent_name: str):
+    """The custom provider's fast model (LLM-PROVIDER-001), or None.
+
+    None when no custom provider is active, and for a subscription-mode agent:
+    the credential follows the agent (#2766), and its own token is Anthropic's.
+    """
+    from services.llm_provider import get_active_provider, resolve_llm_endpoint
+
+    if get_active_provider() is None:
+        return None
+    try:
+        import database
+        db = database.db if hasattr(database, "db") else database.get_db()
+        if db.get_agent_subscription_id(agent_name):
+            return None
+    except Exception as e:  # noqa: BLE001 — fail-soft, keep the derived title
+        logger.warning("portal title: subscription lookup failed for %s: %s", agent_name, e)
+        return None
+    return resolve_llm_endpoint("fast", _TITLE_MODEL)
+
+
 async def _generate_thread_title(agent_name: str, client_message: str, reply: str) -> str | None:
     """Ask the small model for a thread label. Returns None on ANY problem — no
     credential, non-200, timeout, malformed body, unusable text.
@@ -2081,7 +2111,12 @@ async def _generate_thread_title(agent_name: str, client_message: str, reply: st
     one."""
     import httpx
 
-    headers = _resolve_title_auth(agent_name)
+    url, model = "https://api.anthropic.com/v1/messages", _TITLE_MODEL
+    provider_endpoint = _provider_title_endpoint(agent_name)
+    if provider_endpoint is not None:
+        url, model, headers = provider_endpoint.url, provider_endpoint.model, provider_endpoint.headers
+    else:
+        headers = _resolve_title_auth(agent_name)
     if not headers:
         _record_title_outcome("no_credential",
                               f"no ANTHROPIC_API_KEY and no subscription token for {agent_name}")
@@ -2101,10 +2136,10 @@ async def _generate_thread_title(agent_name: str, client_message: str, reply: st
     try:
         async with httpx.AsyncClient(timeout=_TITLE_TIMEOUT) as client:
             resp = await client.post(
-                "https://api.anthropic.com/v1/messages",
+                url,
                 headers=headers,
                 json={
-                    "model": _TITLE_MODEL,
+                    "model": model,
                     "max_tokens": _TITLE_MAX_TOKENS,
                     "messages": [{"role": "user", "content": prompt}],
                 },
@@ -2546,9 +2581,12 @@ def validate_requested_model(raw: str | None, *, is_platform: bool) -> str | Non
             403, "Choosing a model isn't available on this chat.",
             category="invalid_model", retryable=False,
         )
+    from services.llm_provider import get_active_provider
     from services.model_catalog import WORKSPACE_MODELS
 
-    if model not in WORKSPACE_MODELS:
+    provider = get_active_provider()
+    allowed = provider.model_ids if provider is not None else WORKSPACE_MODELS
+    if model not in allowed:
         # The rejected value is REFLECTED back, so it is bounded before it is
         # echoed. `PortalChatRequest.model` is deliberately unvalidated at the
         # payload layer (a length rule there would refuse before the 403 that

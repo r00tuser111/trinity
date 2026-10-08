@@ -113,14 +113,20 @@ def select_subscription_for_new_agent() -> Optional[SubscriptionCredential]:
 def is_claude_auth_configured() -> bool:
     """Can ANY agent on this instance authenticate to Claude?
 
-    A platform Anthropic key (settings or env) OR any registered subscription.
-    The one definition behind the `claude_auth_configured` feature flag and the
-    first-credential check below, so "configured" cannot mean two things.
+    A platform Anthropic key (settings or env), an active custom model provider
+    (LLM-PROVIDER-001) OR any registered subscription. The one definition
+    behind the `claude_auth_configured` feature flag and the first-credential
+    check below, so "configured" cannot mean two things.
     """
     from database import db as _db
+    from services.llm_provider import get_active_provider
     from services.settings_service import get_anthropic_api_key
 
-    return bool(get_anthropic_api_key()) or _db.has_any_subscription()
+    return (
+        bool(get_anthropic_api_key())
+        or get_active_provider() is not None
+        or _db.has_any_subscription()
+    )
 
 
 # Strong refs for the fire-and-forget restarts — the event loop holds only a
@@ -320,9 +326,12 @@ def instance_has_api_key() -> bool:
     ``--workers 2`` consistency). Callers on an async path go through
     ``asyncio.to_thread``.
     """
+    from services.llm_provider import get_active_provider
     from services.settings_service import get_anthropic_api_key
 
-    return bool((get_anthropic_api_key() or "").strip())
+    # LLM-PROVIDER-001: a custom provider also authenticates api_key-mode
+    # agents; adopting them onto a subscription would pull them off it.
+    return bool((get_anthropic_api_key() or "").strip()) or get_active_provider(fresh=True) is not None
 
 
 def credentialless_agent_names() -> List[str]:

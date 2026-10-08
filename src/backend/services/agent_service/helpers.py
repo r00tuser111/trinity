@@ -516,13 +516,18 @@ def check_api_key_env_matches(container, agent_name: str) -> bool:
     env_list = container.attrs.get("Config", {}).get("Env", [])
     env_dict = {e.split("=", 1)[0]: e.split("=", 1)[1] for e in env_list if "=" in e}
 
+    from services.llm_provider import get_active_provider, has_provider_env, platform_auth_env_matches
+
     has_api_key = "ANTHROPIC_API_KEY" in env_dict and env_dict["ANTHROPIC_API_KEY"]
     has_oauth_token = "CLAUDE_CODE_OAUTH_TOKEN" in env_dict and env_dict["CLAUDE_CODE_OAUTH_TOKEN"]
+    # LLM-PROVIDER-001: only Claude containers carry provider env; others keep
+    # comparing the bare platform key exactly as before.
+    claude_container = is_claude_runtime(env_dict.get("AGENT_RUNTIME"))
 
     # Subscription takes priority — if assigned, must have token and NOT have API key
     subscription_id = db.get_agent_subscription_id(agent_name)
     if subscription_id is not None:
-        if has_api_key:
+        if has_api_key or has_provider_env(env_dict):
             return False
         if not has_oauth_token:
             return False
@@ -537,12 +542,17 @@ def check_api_key_env_matches(container, agent_name: str) -> bool:
         # Should have the platform key and NOT have oauth token
         if has_oauth_token:
             return False
+        if claude_container:
+            if get_active_provider() is not None:
+                return platform_auth_env_matches(env_dict)
+            if has_provider_env(env_dict):
+                return False
         expected_key = get_anthropic_api_key()
         current_key = env_dict.get("ANTHROPIC_API_KEY", "")
         return current_key == expected_key
     else:
         # Should NOT have the key or oauth token
-        return not has_api_key and not has_oauth_token
+        return not has_api_key and not has_oauth_token and not has_provider_env(env_dict)
 
 
 def check_guardrails_env_matches(container, agent_name: str) -> bool:

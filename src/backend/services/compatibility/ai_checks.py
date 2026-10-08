@@ -26,6 +26,13 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
+from services.llm_provider import (
+    ANTHROPIC_MESSAGES_URL,
+    ANTHROPIC_VERSION,
+    LlmEndpoint,
+    get_active_provider,
+    resolve_llm_endpoint,
+)
 from services.settings_service import get_anthropic_api_key
 from . import spec
 
@@ -139,22 +146,18 @@ def _category_prompt(checks: List[spec.CheckDef], bundle: str) -> str:
 
 
 async def _call_category(
-    client: httpx.AsyncClient, api_key: str, checks: List[spec.CheckDef], bundle: str
+    client: httpx.AsyncClient, endpoint: LlmEndpoint, checks: List[spec.CheckDef], bundle: str
 ) -> Dict[str, Dict[str, Any]]:
-    """One Anthropic call for one category; returns {check_id: {status, explanation, confidence}}.
+    """One Messages call for one category; returns {check_id: {status, explanation, confidence}}.
 
     Returns {} on any failure (caller turns missing ids into 'skipped').
     """
     try:
         resp = await client.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={
-                "x-api-key": api_key,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json",
-            },
+            endpoint.url,
+            headers=endpoint.headers,
             json={
-                "model": _MODEL,
+                "model": endpoint.model,
                 "max_tokens": 1500,
                 "tools": [_TOOL],
                 "tool_choice": {"type": "tool", "name": "report_compatibility"},
@@ -204,8 +207,19 @@ async def run_ai(snapshot: Dict[str, Any], ai_check_ids: List[str]) -> Dict[str,
     requested = [cid for cid in ai_check_ids if cid in spec.BY_ID]
     out: Dict[str, Dict[str, Any]] = {}
 
-    api_key = get_anthropic_api_key()
-    if not api_key:
+    # LLM-PROVIDER-001: an active custom provider answers instead of Anthropic.
+    endpoint = resolve_llm_endpoint("fast", _MODEL) if get_active_provider() else None
+    if endpoint is None:
+        api_key = get_anthropic_api_key()
+        if api_key:
+            endpoint = LlmEndpoint(
+                url=ANTHROPIC_MESSAGES_URL,
+                headers={"x-api-key": api_key, "anthropic-version": ANTHROPIC_VERSION,
+                         "content-type": "application/json"},
+                model=_MODEL,
+                provider="anthropic",
+            )
+    if endpoint is None:
         for cid in requested:
             out[cid] = {"status": "skipped", "skip_reason": "no_api_key",
                         "explanation": None, "confidence": None}
@@ -220,7 +234,7 @@ async def run_ai(snapshot: Dict[str, Any], ai_check_ids: List[str]) -> Dict[str,
     bundle = _build_bundle(snapshot)
 
     async with httpx.AsyncClient() as client:
-        tasks = [_call_category(client, api_key, checks, bundle) for checks in by_cat.values()]
+        tasks = [_call_category(client, endpoint, checks, bundle) for checks in by_cat.values()]
         category_results = await asyncio.gather(*tasks, return_exceptions=True)
 
     merged: Dict[str, Dict[str, Any]] = {}

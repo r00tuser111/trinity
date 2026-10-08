@@ -41,7 +41,7 @@ from ._runtime_config import (
     _load_guardrails,
     merged_disallowed_tools,
 )
-from .execution_env import build_execution_env
+from .execution_env import build_execution_env, cli_model_arg, provider_context_window
 from .error_classifier import (
     _classify_empty_result,
     _classify_signal_exit,
@@ -746,9 +746,10 @@ def _setup_headless_command(
         cmd.extend(["--mcp-config", str(mcp_config_path)])
 
     # Add model selection if specified
-    if model:
-        cmd.extend(["--model", model])
-        logger.info(f"[Headless Task] Using model: {model}")
+    model_arg = cli_model_arg(model)
+    if model_arg:
+        cmd.extend(["--model", model_arg])
+        logger.info(f"[Headless Task] Using model: {model_arg}")
 
     # Add allowed tools restriction if specified
     if allowed_tools:
@@ -805,7 +806,9 @@ def _setup_headless_command(
         # when present; this catalog value is the fallback for the salvage /
         # empty-result paths (headless never otherwise sets context_window, so it
         # would default to a flat 200K).
-        metadata=ExecutionMetadata(context_window=resolve_context_window(model)),
+        metadata=ExecutionMetadata(
+            context_window=provider_context_window(model) or resolve_context_window(model)
+        ),
     )
 
 

@@ -1,0 +1,13 @@
+[
+  {
+    "id": "deepseek",
+    "label": "DeepSeek",
+    "base_url": "https://api.deepseek.com/anthropic",
+    "models": [
+      { "id": "deepseek-chat", "label": "DeepSeek Chat", "context_window": 128000 },
+      { "id": "deepseek-reasoner", "label": "DeepSeek Reasoner", "context_window": 128000 }
+    ],
+    "default_model": "deepseek-chat",
+    "fast_model": "deepseek-chat"
+  }
+]

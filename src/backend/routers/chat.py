@@ -22,6 +22,7 @@ from dependencies import (
 from services.agent_auth import agent_httpx_client
 from services.docker_service import get_agent_container
 from services.model_catalog import InvalidModelError, validate_dispatch_model
+from services.llm_provider import provider_model_ids
 from services.capacity_manager import (
     CapacityFull,
     CircuitOpen,
@@ -175,7 +176,7 @@ async def chat_with_agent(
     # deliberately does not repeat). Normalised in place so the execution row
     # and the dispatch payload cannot disagree about the value.
     try:
-        request.model = validate_dispatch_model(request.model)
+        request.model = validate_dispatch_model(request.model, provider_model_ids())
     except InvalidModelError as e:
         raise HTTPException(status_code=422, detail=str(e))
 
@@ -385,7 +386,7 @@ async def execute_parallel_task(
     # `--model` argv element by the same path. Normalised in place, exactly like
     # the timeout below.
     try:
-        request.model = validate_dispatch_model(request.model)
+        request.model = validate_dispatch_model(request.model, provider_model_ids())
     except InvalidModelError as e:
         raise HTTPException(status_code=422, detail=str(e))
 

@@ -32,6 +32,7 @@ from dependencies import AuthorizedAgent, get_current_user
 from models import CreateSessionRequest, SessionMessageRequest, User
 from services.docker_service import get_agent_container
 from services.model_catalog import InvalidModelError, validate_dispatch_model
+from services.llm_provider import provider_model_ids
 from services.session_cleanup_service import get_session_cleanup_service
 from services.session_turn_service import (
     InflightSentinel,
@@ -297,7 +298,7 @@ async def send_session_message(
     # initial attempt and the cold retry, so validating the single source here
     # covers both call sites.
     try:
-        body.model = validate_dispatch_model(body.model)
+        body.model = validate_dispatch_model(body.model, provider_model_ids())
     except InvalidModelError as e:
         raise HTTPException(status_code=422, detail=str(e))
 

@@ -487,11 +487,12 @@ async def summarize_user_memory_background(
     # Local imports to avoid an import cycle at module load:
     # platform_prompt_service is imported by routers that the settings
     # service may transitively pull in.
-    from services.settings_service import get_anthropic_api_key
+    from services.llm_provider import resolve_llm_endpoint
 
     try:
-        api_key = get_anthropic_api_key()
-        if not api_key:
+        # LLM-PROVIDER-001: Anthropic, or the custom provider's fast model.
+        endpoint = resolve_llm_endpoint("fast", _SUMMARIZATION_MODEL)
+        if endpoint is None:
             logger.warning(
                 "[MemSummarize] No ANTHROPIC_API_KEY configured, skipping summarization"
             )
@@ -528,14 +529,10 @@ async def summarize_user_memory_background(
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
-                "https://api.anthropic.com/v1/messages",
-                headers={
-                    "x-api-key": api_key,
-                    "anthropic-version": "2023-06-01",
-                    "content-type": "application/json",
-                },
+                endpoint.url,
+                headers=endpoint.headers,
                 json={
-                    "model": _SUMMARIZATION_MODEL,
+                    "model": endpoint.model,
                     "max_tokens": 512,
                     "messages": [{"role": "user", "content": prompt}],
                 },

@@ -3881,6 +3881,33 @@ class ResendKeyRequest(BaseModel):
     from_address: Optional[str] = None
 
 
+class ProviderModelIn(BaseModel):
+    """One model of the custom provider (LLM-PROVIDER-001)."""
+    id: str = Field(max_length=128)
+    label: Optional[str] = Field(default=None, max_length=80)
+    context_window: Optional[int] = None
+
+
+class ModelProviderUpdate(BaseModel):
+    """Body for PUT /api/settings/model-provider (LLM-PROVIDER-001).
+
+    A blank ``api_key`` keeps the stored one; the UI never receives it back.
+    """
+    mode: Literal["anthropic", "custom"]
+    base_url: Optional[str] = Field(default=None, max_length=2048)
+    api_key: Optional[str] = Field(default=None, max_length=4096)
+    models: List[ProviderModelIn] = Field(default_factory=list, max_length=50)
+    default_model: Optional[str] = Field(default=None, max_length=128)
+    fast_model: Optional[str] = Field(default=None, max_length=128)
+
+
+class ModelProviderTest(BaseModel):
+    """Body for POST /api/settings/model-provider/test — never persisted."""
+    base_url: str = Field(max_length=2048)
+    api_key: Optional[str] = Field(default=None, max_length=4096)
+    model: str = Field(max_length=128)
+
+
 class SubscriptionTokenTest(BaseModel):
     """Body for POST /api/subscriptions/test (ent#582) — a token to validate
     BEFORE it is registered. Never persisted, never echoed."""

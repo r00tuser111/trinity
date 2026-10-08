@@ -402,6 +402,10 @@ class SystemAgentService:
             # main.py's lifespan catch keeps boot alive either way.
             'TRINITY_AGENT_AUTH_TOKEN': derive_agent_token(SYSTEM_AGENT_NAME),
         }
+        # LLM-PROVIDER-001: same convergence rule — the drift predicate expects
+        # the provider env when a custom provider is active.
+        from services.llm_provider import apply_provider_env
+        apply_provider_env(env_vars)
 
         # NB: deliberately NO `TRINITY_BACKEND_URL` here. That env var is the
         # agent-side heartbeat loop's gate, and heartbeat_service.

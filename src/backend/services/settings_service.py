@@ -35,9 +35,18 @@ _PLATFORM_MODEL_CACHE_TTL = 60.0
 from services.model_catalog import PUBLIC_CHANNEL_MODELS  # noqa: E402  (re-export)
 
 
+def get_public_channel_models() -> frozenset:
+    """The selectable public-channel overrides — the custom provider's models
+    when one is active (LLM-PROVIDER-001), else the Claude catalog (#894)."""
+    from services.llm_provider import get_active_provider
+
+    provider = get_active_provider()
+    return provider.model_ids if provider else PUBLIC_CHANNEL_MODELS
+
+
 def is_valid_public_channel_model(model: str) -> bool:
     """True if `model` is a selectable per-agent public-channel override (#894)."""
-    return model in PUBLIC_CHANNEL_MODELS
+    return model in get_public_channel_models()
 
 
 # ============================================================================
@@ -907,7 +916,14 @@ class SettingsService:
 
         Resolution: system_settings.platform_default_model → PLATFORM_DEFAULT_MODEL_VALUE.
         Result is cached for 60 s to avoid per-turn SQLite reads during burst drain.
+        An active custom provider (LLM-PROVIDER-001) supplies its own default
+        instead: a Claude id would otherwise be dispatched to the third party.
         """
+        from services.llm_provider import get_active_provider
+
+        provider = get_active_provider()
+        if provider is not None:
+            return provider.default_model
         global _platform_model_cache, _platform_model_cache_ts
         now = time.monotonic()
         if _platform_model_cache is not None and (now - _platform_model_cache_ts) < _PLATFORM_MODEL_CACHE_TTL:

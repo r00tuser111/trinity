@@ -314,6 +314,79 @@ def arm_subscription_auth_guard() -> bool:
 
 
 # ---------------------------------------------------------------------------
+# Custom model provider (LLM-PROVIDER-001)
+# ---------------------------------------------------------------------------
+
+# The routing pair the backend bakes for a custom provider. Pinned to the
+# baseline so a `.env` leftover cannot send the provider token elsewhere.
+PROVIDER_ROUTING_KEYS = ("ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN")
+
+# Claude Code tier aliases the provider env remaps (ANTHROPIC_DEFAULT_*_MODEL).
+_PROVIDER_TIER_ALIASES = frozenset({"opus", "sonnet", "haiku"})
+
+
+def provider_active() -> bool:
+    """The container was created against a custom provider (boot baseline)."""
+    runtime = (INITIAL_ENV.get("AGENT_RUNTIME") or "claude-code").lower()
+    return (
+        runtime in _CLAUDE_RUNTIME_NAMES
+        and bool(INITIAL_ENV.get("ANTHROPIC_BASE_URL"))
+        and bool(INITIAL_ENV.get("ANTHROPIC_AUTH_TOKEN"))
+    )
+
+
+def arm_provider_auth_guard() -> bool:
+    """Keep a `.env` ANTHROPIC_API_KEY away from a third-party base URL.
+
+    Same trust model as `arm_subscription_auth_guard`: the backend bakes the
+    provider env and pops the Anthropic key, so the baseline is authoritative.
+    Called from agent-server boot. Idempotent; returns True when armed.
+    """
+    if not provider_active():
+        return False
+    set_runtime_override("ANTHROPIC_API_KEY", None)
+    for key in PROVIDER_ROUTING_KEYS:
+        set_runtime_override(key, INITIAL_ENV[key])
+    logger.info("custom model provider active: spawn env force-unsets ANTHROPIC_API_KEY")
+    return True
+
+
+def provider_models() -> tuple:
+    """Model ids the provider serves; empty when no provider is active."""
+    if not provider_active():
+        return ()
+    raw = INITIAL_ENV.get("TRINITY_PROVIDER_MODELS") or ""
+    return tuple(m for m in (part.strip() for part in raw.split(",")) if m)
+
+
+def provider_context_window(model: Optional[str]) -> Optional[int]:
+    """The provider-declared window for ``model`` (`id=window,...`), if any."""
+    if not model or not provider_active():
+        return None
+    raw = INITIAL_ENV.get("TRINITY_PROVIDER_CONTEXT_WINDOWS") or ""
+    for part in raw.split(","):
+        name, sep, value = part.strip().rpartition("=")
+        if sep and name == model and value.isdigit():
+            return int(value)
+    return None
+
+
+def cli_model_arg(model: Optional[str]) -> Optional[str]:
+    """The ``--model`` value to pass Claude Code, or None to omit the flag.
+
+    In provider mode a Claude model id (a stale agent setting, the safety-net
+    default) would reach a provider that does not serve it; omitting the flag
+    lets ANTHROPIC_MODEL pick the provider's default instead.
+    """
+    if not model:
+        return None
+    models = provider_models()
+    if not models or model in models or model in _PROVIDER_TIER_ALIASES:
+        return model
+    return None
+
+
+# ---------------------------------------------------------------------------
 # The spawn-path entry point
 # ---------------------------------------------------------------------------
 

@@ -376,7 +376,7 @@
                   <div class="mt-1 flex gap-2 items-center">
                     <select
                       v-model="platformDefaultModelValue"
-                      :disabled="savingPlatformDefaultModel"
+                      :disabled="savingPlatformDefaultModel || providerSetsDefaultModel"
                       class="block flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-action-primary-500 focus:border-action-primary-500 dark:bg-gray-700 dark:text-white text-sm"
                     >
                       <!-- Options derive from the single source of truth
@@ -392,7 +392,7 @@
                     </select>
                     <button
                       @click="savePlatformDefaultModel"
-                      :disabled="savingPlatformDefaultModel"
+                      :disabled="savingPlatformDefaultModel || providerSetsDefaultModel"
                       class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-action-primary-600 hover:bg-action-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <svg v-if="savingPlatformDefaultModel" class="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -409,7 +409,9 @@
                     {{ t('Saved') }}
                   </div>
                   <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    {{ t('Model used for schedules and chats where no model is explicitly selected. Changes take effect on the next execution — no restart required.') }}
+                    {{ providerSetsDefaultModel
+                      ? t('A custom model provider is active — its default model applies. Change it under Integrations → Model provider.')
+                      : t('Model used for schedules and chats where no model is explicitly selected. Changes take effect on the next execution — no restart required.') }}
                   </p>
                 </div>
 
@@ -683,6 +685,9 @@
               </div>
             </div>
           </div>
+
+          <!-- Model provider (LLM-PROVIDER-001) -->
+          <ModelProviderPanel v-if="activeTab === 'integrations'" />
 
           <!-- API Keys Section -->
           <div v-if="activeTab === 'integrations'" class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 rounded-lg">
@@ -2193,6 +2198,9 @@ import FirstRunRerunPanel from '../components/settings/FirstRunRerunPanel.vue'
 import OperatorIntakePanel from '../components/settings/OperatorIntakePanel.vue'
 import PortalSessionPolicyPanel from '../components/settings/PortalSessionPolicyPanel.vue'
 import RoomBudgetDefaultsPanel from '../components/settings/RoomBudgetDefaultsPanel.vue'
+import ModelProviderPanel from '../components/settings/ModelProviderPanel.vue'
+import { useModelProviderStore } from '../stores/modelProvider'
+import { adminDefaultModelsFor, isProviderCatalog } from '../utils/modelProvider'
 import { SETTINGS_NUMBER_INPUT_CLASS, SETTINGS_TEXT_INPUT_CLASS } from '../components/settings/fieldStyles'
 // #2691: one home for what the Public URL buys, what must be true first, and
 // what saving it re-points — shared with the first-run step so the explanation
@@ -2202,7 +2210,6 @@ import {
   DOMAIN_PREREQUISITE,
   DOMAIN_SIDE_EFFECT,
 } from '../components/onboarding/hardeningGuide'
-import { MODEL_CATALOG } from '../constants/modelCatalog'
 import TemplateRegistryPanel from '../components/settings/TemplateRegistryPanel.vue'
 import PlatformKeyField from '../components/settings/PlatformKeyField.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
@@ -2556,7 +2563,14 @@ const platformDefaultModelValue = ref('claude-sonnet-4-6')
 // Admin fleet-default dropdown options — the catalog filtered to models an admin
 // may set as the platform default. Haiku is deliberately excluded (#1080). Order
 // follows the catalog; "(recommended)" rides the `recommended` flag in the template.
-const adminDefaultModels = MODEL_CATALOG.filter((m) => m.adminDefaultSelectable)
+// LLM-PROVIDER-001: with a custom provider active the fleet default is the
+// provider's default model, set on the Model provider card.
+const modelProviderStore = useModelProviderStore()
+const providerSetsDefaultModel = computed(() => isProviderCatalog(modelProviderStore.catalog))
+const adminDefaultModels = computed(() => adminDefaultModelsFor(modelProviderStore.catalog))
+watch(() => modelProviderStore.catalog, (catalog) => {
+  if (isProviderCatalog(catalog)) platformDefaultModelValue.value = catalog.default_model
+}, { immediate: true })
 const savingPlatformDefaultModel = ref(false)
 const platformDefaultModelSaveSuccess = ref(false)
 
@@ -2759,6 +2773,7 @@ async function loadSettings() {
     await Promise.all([
       loadPublicUrl(),
       loadPlatformDefaultModel(),
+      modelProviderStore.fetchCatalog(),
       loadDefaultAccessPolicy(),
       loadMaxParallelTasksCeiling(),
       loadProactiveLimits(),
@@ -2970,7 +2985,7 @@ function removeGithubPat() {
 async function loadPlatformDefaultModel() {
   try {
     const value = await settingsStore.getSetting('platform_default_model')
-    if (value) platformDefaultModelValue.value = value
+    if (value && !providerSetsDefaultModel.value) platformDefaultModelValue.value = value
   } catch {
     // non-critical; UI shows the code-default
   }

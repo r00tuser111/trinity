@@ -34,7 +34,7 @@ from ._runtime_config import (
     _load_guardrails,
     merged_disallowed_tools,
 )
-from .execution_env import build_execution_env
+from .execution_env import build_execution_env, cli_model_arg, provider_context_window
 from .error_classifier import (
     _classify_signal_exit,
     _diagnose_exit_failure,
@@ -112,7 +112,7 @@ class ClaudeCodeRuntime(AgentRuntime):
         This is a FALLBACK — the authoritative window is the runtime-reported
         ``modelUsage.contextWindow`` captured in ``stream_parser``.
         """
-        return resolve_context_window(model)
+        return provider_context_window(model) or resolve_context_window(model)
 
     def configure_mcp(self, mcp_servers: Dict) -> bool:
         """
@@ -246,9 +246,10 @@ async def execute_claude_code(prompt: str, stream: bool = False, model: Optional
             cmd.extend(["--mcp-config", str(mcp_config_path)])
 
         # Add model selection if set
-        if agent_state.current_model:
-            cmd.extend(["--model", agent_state.current_model])
-            logger.info(f"Using model: {agent_state.current_model}")
+        model_arg = cli_model_arg(agent_state.current_model)
+        if model_arg:
+            cmd.extend(["--model", model_arg])
+            logger.info(f"Using model: {model_arg}")
 
         if agent_state.session_started:
             # Continue the existing conversation
@@ -280,7 +281,10 @@ async def execute_claude_code(prompt: str, stream: bool = False, model: Optional
         # (salvage / partial-metadata paths), this catalog value is the real
         # denominator — NOT the flat 200K Pydantic default (get_context_window
         # is never called for Claude, so this seed is the only fallback hook).
-        metadata.context_window = resolve_context_window(model or agent_state.current_model)
+        seed_model = model or agent_state.current_model
+        metadata.context_window = (
+            provider_context_window(seed_model) or resolve_context_window(seed_model)
+        )
         tool_start_times: Dict[str, datetime] = {}
         response_parts: List[str] = []
         # Use provided execution_id if available (enables termination tracking from backend)

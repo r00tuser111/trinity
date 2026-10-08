@@ -14,6 +14,7 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from ..models import ChatRequest, ModelRequest, ParallelTaskRequest
 from ..state import agent_state
 from ..services.claude_code import get_execution_lock
+from ..services.execution_env import provider_models
 from ..services.runtime_adapter import get_runtime
 from ..services.process_registry import get_process_registry, PENDING_CHAT_TIMEOUT_SECONDS
 from ..services import result_callback
@@ -282,6 +283,13 @@ async def get_model():
             "available_models": ["gemini-3-pro", "gemini-3-flash", "gemini-2.5-pro", "gemini-2.5-flash"],
             "note": "Gemini models. 3-pro is the most capable; 3-flash is the fast default."
         }
+    elif provider_models():
+        return {
+            "model": agent_state.current_model,
+            "runtime": runtime,
+            "available_models": list(provider_models()),
+            "note": "Models served by the platform's custom model provider.",
+        }
     else:
         return {
             "model": agent_state.current_model,
@@ -318,7 +326,11 @@ async def set_model(request: ModelRequest):
         # Claude Code validation
         valid_aliases = ["sonnet", "opus", "haiku", "fable",
                          "sonnet[1m]", "opus[1m]", "haiku[1m]", "fable[1m]"]
-        if request.model in valid_aliases or request.model.startswith("claude-"):
+        if (
+            request.model in valid_aliases
+            or request.model.startswith("claude-")
+            or request.model in provider_models()
+        ):
             agent_state.current_model = request.model
             logger.info(f"Model changed to: {request.model}")
             return {

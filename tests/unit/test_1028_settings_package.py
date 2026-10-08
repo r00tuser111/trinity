@@ -170,6 +170,14 @@ _ADDED_SINCE_SPLIT = {
     ("/api/settings/api-keys/gemini", ("PUT",), "update_gemini_key"),
     ("/api/settings/api-keys/gemini", ("DELETE",), "delete_gemini_key"),
     ("/api/settings/api-keys/gemini/test", ("POST",), "test_gemini_key"),
+    # LLM-PROVIDER-001 — platform-wide custom model provider (`model_provider`).
+    ("/api/settings/model-provider", ("GET",), "get_model_provider"),
+    ("/api/settings/model-provider", ("PUT",), "update_model_provider"),
+    ("/api/settings/model-provider", ("DELETE",), "delete_model_provider"),
+    ("/api/settings/model-provider/test", ("POST",), "test_model_provider"),
+    ("/api/settings/model-provider/pending", ("GET",), "pending_model_provider_agents"),
+    ("/api/settings/model-provider/apply", ("POST",), "apply_model_provider"),
+    ("/api/settings/model-catalog", ("GET",), "get_model_catalog"),
 }
 
 
