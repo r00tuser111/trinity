@@ -52,11 +52,11 @@ Both `0.9.0` **and** `v0.9.0` are published for one digest: `{{version}}` strips
 
 A container package first created by `GITHUB_TOKEN` is not reliably public. If any of the five lands private, `docker pull` on a fresh VM fails with `denied` — and `start.sh` has no way to tell that apart from a network fault, so it reports it to an operator who can do nothing about it. The last step therefore proves the operator's exact path where it is cheap: an **anonymous** `docker manifest inspect` with a scratch `DOCKER_CONFIG`, so the runner's own `ghcr.io` login cannot mask a private package. It runs after the push and fails the job on purpose — the image is already published; a red step is the one-time signal to flip visibility to Public.
 
-**The reference is lowercased in the shell body.** This owner is literally `Abilityai` and a GHCR repository name must be lowercase: docker rejects the mixed-case reference *locally*, before any network call (`repository name must be lowercase`), so the retry loop would burn out and the step would fail on **every** publish — reporting a perfectly public package as private and destroying the one signal it exists to give. The push itself is unaffected (`docker/metadata-action` lowercases its `images:` input, and `start.sh` hardcodes `ghcr.io/abilityai/`); a hand-written reference has to do it itself.
+**The reference is lowercased in the shell body.** This owner is literally `Abilityai` and a GHCR repository name must be lowercase: docker rejects the mixed-case reference *locally*, before any network call (`repository name must be lowercase`), so the retry loop would burn out and the step would fail on **every** publish — reporting a perfectly public package as private and destroying the one signal it exists to give. The push itself is unaffected (`docker/metadata-action` lowercases its `images:` input, and the `start.sh` default `ghcr.io/abilityai` is already lowercase); a hand-written reference has to do it itself.
 
 ## Compose Layer — `docker-compose.hosted.yml`
 
-`docker-compose.prod.yml` with every `build:` block replaced by a GHCR `image:` and **nothing else changed** — same `.env` contract, ports, volumes, networks and security posture. Image selection is `${TRINITY_IMAGE_TAG:-latest}`, so an operator pins a release without editing the file.
+`docker-compose.prod.yml` with every `build:` block replaced by a GHCR `image:` and **nothing else changed** — same `.env` contract, ports, volumes, networks and security posture. Image selection is `${TRINITY_IMAGE_REGISTRY:-ghcr.io/abilityai}/<image>:${TRINITY_IMAGE_TAG:-latest}`, so an operator pins a release — or points at a fork's own Docker Hub builds (HOST-022) — without editing the file.
 
 **The two files are CI-guarded, never trusted.** `tests/unit/test_2280_hosted_compose_parity.py` fails the build when hosted and prod disagree on the service set, any third-party image pin, the top-level volumes/networks, or **any** per-service value — the service comparison is **wholesale** (`prod` minus `{build, image}` vs `hosted` minus `{image}`), not a key allowlist. It began as an 18-key list that omitted `profiles`, `env_file`, `logging`, `labels`, `deploy` and `stop_grace_period`; `profiles` is live today on `cloudflared`, so a prod change that profile-gated or un-gated a service would have drifted silently past the guard whose entire purpose is catching that. An allowlist watches only the keys someone remembered, and the drift that matters is the key nobody thought of.
 
@@ -74,7 +74,7 @@ One script, two image sources. Secret generation, the `ADMIN_PASSWORD` contract 
   ├─ resolve_image_tag()      shell/CI > .env > latest
   ├─ TUNNEL_TOKEN set → COMPOSE_FILES+=(--profile tunnel) + persist COMPOSE_PROFILES to .env
   ├─ data-switch guard (BOTH directions — refuse; both-stores-present — warn, naming the one in use, #2528)
-  ├─ docker pull ghcr.io/abilityai/trinity-agent-base:$TAG
+  ├─ docker pull $TRINITY_IMAGE_REGISTRY/trinity-agent-base:$TAG   (default ghcr.io/abilityai)
   │     └─ docker tag … trinity-agent-base:latest       # fatal on failure, never falls back to building
   ├─ Docker-Desktop log-source override appended BY NAME (auto-merge is off)
   ├─ docker compose -f … pull      # tailored fatal naming the three likely causes

@@ -419,6 +419,9 @@ provision_site() {
     if [ -n "${TRINITY_IMAGE_TAG:-}" ]; then
         set_env_key TRINITY_IMAGE_TAG "$TRINITY_IMAGE_TAG"
     fi
+    if [ -n "${TRINITY_IMAGE_REGISTRY:-}" ]; then
+        set_env_key TRINITY_IMAGE_REGISTRY "$TRINITY_IMAGE_REGISTRY"
+    fi
     chmod 0600 .env
     echo "→ .env: FRONTEND_URL=https://${ip}, TRINITY_INSTALL_SOURCE=${provenance}"
 
@@ -797,6 +800,38 @@ resolve_image_tag() {
 }
 resolve_image_tag
 
+# HOST-022: where hosted images come from — same precedence as the tag. A
+# Docker Hub user is just the name (`youruser` → `youruser/trinity-backend`);
+# any other registry is `host[:port]/namespace`. Validated here, before any
+# pull, because compose and `docker pull` report a malformed reference with an
+# error that names neither this variable nor the fix.
+resolve_image_registry() {
+    if [ -z "${TRINITY_IMAGE_REGISTRY:-}" ]; then
+        TRINITY_IMAGE_REGISTRY=$(env_value TRINITY_IMAGE_REGISTRY)
+    fi
+    TRINITY_IMAGE_REGISTRY="${TRINITY_IMAGE_REGISTRY:-ghcr.io/abilityai}"
+    TRINITY_IMAGE_REGISTRY="${TRINITY_IMAGE_REGISTRY%/}"
+    if ! printf '%s' "$TRINITY_IMAGE_REGISTRY" | grep -Eq '^[a-z0-9][a-z0-9._-]*(:[0-9]+)?(/[a-z0-9][a-z0-9._-]*)*$'; then
+        echo "❌ TRINITY_IMAGE_REGISTRY='${TRINITY_IMAGE_REGISTRY}' is not a valid image namespace." >&2
+        echo "   Use lowercase, no scheme and no tag, e.g. 'youruser' (Docker Hub)," >&2
+        echo "   'ghcr.io/yourorg' or 'registry.example.com/team'." >&2
+        exit 1
+    fi
+    export TRINITY_IMAGE_REGISTRY
+}
+# The host `docker login` must target: the first path component when it looks
+# like a host (has a dot or port, or is localhost), otherwise Docker Hub.
+image_registry_host() {
+    local first="${TRINITY_IMAGE_REGISTRY%%/*}"
+    case "$TRINITY_IMAGE_REGISTRY" in
+        */*) case "$first" in *.*|*:*|localhost) echo "$first"; return ;; esac ;;
+    esac
+    echo "Docker Hub"
+}
+if [ "$HOSTED" = "1" ]; then
+    resolve_image_registry
+fi
+
 # --- Activate the Cloudflare Tunnel profile when a token is present (#2280) ---
 # `cloudflared` is profile-gated (`profiles: ["tunnel"]`), so it starts only
 # under `--profile tunnel`. docs/DEPLOYMENT.md presents the tunnel as the
@@ -975,15 +1010,18 @@ fi
 # #1809 image-drift check untouched: both read the container's own reference,
 # which stays `trinity-agent-base:latest` either way.
 if [ "$HOSTED" = "1" ]; then
-    _base_remote="ghcr.io/abilityai/trinity-agent-base:${TRINITY_IMAGE_TAG}"
+    # Default resolves to ghcr.io/abilityai/trinity-agent-base:<tag>.
+    _base_remote="${TRINITY_IMAGE_REGISTRY}/trinity-agent-base:${TRINITY_IMAGE_TAG}"
     echo "Pulling agent base image (${_base_remote})..."
     if ! docker pull "$_base_remote"; then
         echo ""
         echo "ERROR: could not pull ${_base_remote}."
         echo "       Hosted mode cannot fall back to a local build — that is the"
-        echo "       5-10 minute first boot it exists to avoid. Check network and"
-        echo "       image-tag spelling (TRINITY_IMAGE_TAG=${TRINITY_IMAGE_TAG}), or"
-        echo "       drop --hosted to build from source instead."
+        echo "       5-10 minute first boot it exists to avoid. Check network,"
+        echo "       TRINITY_IMAGE_REGISTRY=${TRINITY_IMAGE_REGISTRY} and the"
+        echo "       image-tag spelling (TRINITY_IMAGE_TAG=${TRINITY_IMAGE_TAG}). A private"
+        echo "       repository needs 'docker login' first. Or drop --hosted to build"
+        echo "       from source instead."
         exit 1
     fi
     docker tag "$_base_remote" trinity-agent-base:latest
@@ -1062,7 +1100,7 @@ fi
 # -----------------------------------------------------------------------------
 
 if [ "$HOSTED" = "1" ]; then
-    echo "Pulling platform images (tag: ${TRINITY_IMAGE_TAG})..."
+    echo "Pulling platform images (${TRINITY_IMAGE_REGISTRY}/*:${TRINITY_IMAGE_TAG})..."
     # Tailored fatal, matching the agent-base pull one screen above. Bare, this
     # died on `set -e` with a raw Compose error on precisely the install least
     # equipped to read one — and its two likeliest causes (a tag not published
@@ -1075,9 +1113,11 @@ if [ "$HOSTED" = "1" ]; then
         echo "         • the tag does not exist — check TRINITY_IMAGE_TAG against"
         echo "           https://github.com/abilityai/trinity/releases (both 'v0.9.0'"
         echo "           and '0.9.0' are published for the same digest);"
-        echo "         • 'denied' / 'unauthorized' — the GHCR package is not public;"
-        echo "           report it, it is a publishing fault, not yours;"
-        echo "         • no network route to ghcr.io."
+        echo "         • 'denied' / 'unauthorized' — the repository is private: run"
+        echo "           'docker login' for $(image_registry_host) first, or make it public"
+        echo "           (on the default ghcr.io/abilityai it is a publishing fault — report it);"
+        echo "         • TRINITY_IMAGE_REGISTRY=${TRINITY_IMAGE_REGISTRY} is not where the images are;"
+        echo "         • no network route to the registry."
         echo "       Hosted mode does not fall back to building — that is the 5-10"
         echo "       minute first boot it exists to avoid. Drop --hosted to build"
         echo "       from source instead."
@@ -1199,6 +1239,7 @@ if [ "$HOSTED" = "1" ]; then
     echo "this script with --hosted. It re-pulls the platform images AND the agent"
     echo "base image; a plain 'docker compose ${_cf} pull' skips the base image,"
     echo "which is not a compose service, and leaves agents on the old runtime."
+    echo "Images from: TRINITY_IMAGE_REGISTRY=${TRINITY_IMAGE_REGISTRY}"
     echo "Currently pinned to: TRINITY_IMAGE_TAG=${TRINITY_IMAGE_TAG}"
     if [ "$TRINITY_IMAGE_TAG" = "latest" ]; then
         echo "  ⚠️  'latest' moves on every Trinity release. Pin a version on any"

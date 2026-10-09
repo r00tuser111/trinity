@@ -57,7 +57,9 @@ _BUILT_SERVICES = {
 # `trinity-agent-base:latest` through the Docker SDK, so hosted mode pulls and
 # retags it in start.sh instead. See test_start_sh_hosted_mode_pulls_agent_base.
 _AGENT_BASE_TAG = "trinity-agent-base:latest"
-_AGENT_BASE_REMOTE = "ghcr.io/abilityai/trinity-agent-base"
+# HOST-022: the namespace is configurable; the default stays the upstream GHCR.
+_AGENT_BASE_REMOTE = "${TRINITY_IMAGE_REGISTRY}/trinity-agent-base"
+_REGISTRY_REF = "${TRINITY_IMAGE_REGISTRY:-ghcr.io/abilityai}"
 
 # The ONLY intended environment divergence (trinity-enterprise#580). The
 # marketplace browser-claim runs the hosted file (via `start.sh --hosted`) and
@@ -133,9 +135,9 @@ def test_built_services_resolve_ghcr_images(hosted: dict) -> None:
     for service, image_name in _BUILT_SERVICES.items():
         image = hosted["services"][service].get("image")
         assert image, f"hosted service '{service}' has no image: (and no build:)"
-        assert image.startswith(f"ghcr.io/abilityai/{image_name}:"), (
-            f"hosted '{service}' image is {image!r}; expected the published GHCR "
-            f"copy ghcr.io/abilityai/{image_name}:..."
+        assert image.startswith(f"{_REGISTRY_REF}/{image_name}:"), (
+            f"hosted '{service}' image is {image!r}; expected the published copy "
+            f"{_REGISTRY_REF}/{image_name}:... (HOST-022 — default ghcr.io/abilityai)"
         )
         assert "${TRINITY_IMAGE_TAG" in image, (
             f"hosted '{service}' pins {image!r} with no TRINITY_IMAGE_TAG "

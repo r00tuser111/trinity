@@ -30,6 +30,13 @@
 # install you intend to keep: `latest` moves on every release, so an unpinned
 # pull is an unscheduled upgrade. `start.sh` reads the value from `.env` too,
 # which is where an unattended or marketplace install persists it.
+
+#
+# Pick WHERE they come from with TRINITY_IMAGE_REGISTRY (default
+# `ghcr.io/abilityai`, HOST-022): a Docker Hub user is just the name
+# (`TRINITY_IMAGE_REGISTRY=youruser` -> `youruser/trinity-backend:<tag>`),
+# any other registry is `host/namespace`. Set it in `.env`; a private
+# repository needs `docker login` on the host first.
 #
 # THE AGENT BASE IMAGE IS NOT A SERVICE HERE, and pulling it is not optional.
 # The backend creates agent containers through the Docker SDK from the literal
@@ -101,7 +108,7 @@ x-logging: &default-logging
 
 services:
   backend:
-    image: ghcr.io/abilityai/trinity-backend:${TRINITY_IMAGE_TAG:-latest}
+    image: ${TRINITY_IMAGE_REGISTRY:-ghcr.io/abilityai}/trinity-backend:${TRINITY_IMAGE_TAG:-latest}
     container_name: trinity-backend
     logging: *default-logging
     restart: unless-stopped
@@ -551,7 +558,7 @@ services:
       start_period: 60s
 
   frontend:
-    image: ghcr.io/abilityai/trinity-frontend:${TRINITY_IMAGE_TAG:-latest}
+    image: ${TRINITY_IMAGE_REGISTRY:-ghcr.io/abilityai}/trinity-frontend:${TRINITY_IMAGE_TAG:-latest}
     container_name: trinity-frontend
     logging: *default-logging
     restart: unless-stopped
@@ -674,7 +681,7 @@ services:
   # Scheduler - dedicated service for cron-based agent task execution
   # Prevents duplicate executions that occurred with multiple backend workers
   scheduler:
-    image: ghcr.io/abilityai/trinity-scheduler:${TRINITY_IMAGE_TAG:-latest}
+    image: ${TRINITY_IMAGE_REGISTRY:-ghcr.io/abilityai}/trinity-scheduler:${TRINITY_IMAGE_TAG:-latest}
     container_name: trinity-scheduler
     logging: *default-logging
     restart: unless-stopped
@@ -772,7 +779,7 @@ services:
       start_period: 10s  # Give Vector time to start before health checks
 
   mcp-server:
-    image: ghcr.io/abilityai/trinity-mcp-server:${TRINITY_IMAGE_TAG:-latest}
+    image: ${TRINITY_IMAGE_REGISTRY:-ghcr.io/abilityai}/trinity-mcp-server:${TRINITY_IMAGE_TAG:-latest}
     container_name: trinity-mcp-server
     logging: *default-logging
     restart: unless-stopped
