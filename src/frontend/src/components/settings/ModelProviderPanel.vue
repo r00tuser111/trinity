@@ -340,7 +340,15 @@ async function applyNow() {
   applying.value = true
   try {
     const result = await store.apply()
-    savedNote.value = uiText('Restarting {arg1} agent(s) in the background.', { arg1: result?.count ?? 0 })
+    const unfinished = (result?.not_ready?.length || 0) + (result?.skipped?.length || 0)
+    if (unfinished) {
+      applyError.value = uiText('{arg1} agent(s) switched. {arg2} did not finish and still need a restart.', {
+        arg1: result?.count ?? 0,
+        arg2: unfinished,
+      })
+    } else {
+      savedNote.value = uiText('Restarted {arg1} agent(s) onto the current provider.', { arg1: result?.count ?? 0 })
+    }
   } catch (e) {
     applyError.value = apiErrorMessage(e, uiText('Could not restart the agents. Try again, or restart them from the dashboard.'))
   } finally {

@@ -424,6 +424,12 @@ instance; the choice is platform-wide.
 - **FR-3 — Fleet convergence.** Switching mode or editing the provider makes
   existing containers stale; the start path detects the drift and recreates
   them, and the settings surface can restart running agents to apply it now.
+  Saving does not restart the fleet on its own — Apply is the only restart,
+  and it waits until each agent is accepting health checks before reporting
+  that agent as switched. A chat or task for a running Claude agent whose
+  container env is not the active provider yet is refused before it reaches
+  the agent, naming the provider switch, instead of being sent into a
+  container that cannot authenticate.
 - **FR-4 — No Anthropic credential leaves to a third party.** In the agent, a
   baseline `ANTHROPIC_BASE_URL` force-unsets any `.env` `ANTHROPIC_API_KEY` at
   spawn. Any model id not in the provider list (stored Claude ids on schedules,
@@ -438,6 +444,9 @@ instance; the choice is platform-wide.
   generation, compatibility AI checks and platform-prompt summarisation call
   the active provider's `/v1/messages`; the key test sends a one-token message
   in custom mode. The Claude subscription headroom probe stays Anthropic-only.
+  A compatibility check against a custom provider disables thinking when it
+  forces a tool, and if the provider still rejects that forced `tool_choice`
+  the check retries once without it. Anthropic calls are unchanged.
 - **FR-7 — URL safety.** The base URL must be `https://`, or `http://` to a
   loopback/private host (a local gateway such as LiteLLM). Link-local and
   cloud-metadata hosts are refused.

@@ -92,7 +92,9 @@ describe('ModelProviderPanel', () => {
 
   it('the pending banner offers the restart and only runs it on request', async () => {
     route({ pending: { agents: ['a1', 'a2'], count: 2 } })
-    api.post.mockResolvedValueOnce({ data: { restarting: ['a1', 'a2'], count: 2 } })
+    api.post.mockResolvedValueOnce({
+      data: { restarted: ['a1', 'a2'], not_ready: [], skipped: [], count: 2 },
+    })
     const wrapper = await mountPanel()
     const banner = wrapper.find('[data-testid="model-provider-pending"]')
     expect(banner.exists()).toBe(true)
@@ -101,5 +103,18 @@ describe('ModelProviderPanel', () => {
     await flushPromises()
     expect(api.post).toHaveBeenCalledWith('/api/settings/model-provider/apply')
     expect(wrapper.find('[data-testid="model-provider-pending"]').exists()).toBe(false)
+    expect(wrapper.text()).toContain('Restarted 2 agent(s)')
+  })
+
+  it('keeps the pending banner when a restart does not come up ready', async () => {
+    route({ pending: { agents: ['a1'], count: 1 } })
+    api.post.mockResolvedValueOnce({
+      data: { restarted: [], not_ready: ['a1'], skipped: [], count: 0 },
+    })
+    const wrapper = await mountPanel()
+    await wrapper.find('[data-testid="model-provider-pending"] button').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[data-testid="model-provider-pending"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('did not finish')
   })
 })

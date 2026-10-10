@@ -39,6 +39,7 @@ class TaskExecutionErrorCode(str, Enum):
     LEASE_EXPIRED = "lease_expired" # Fire-and-forget lease expired — no callback before slot TTL (#1083)
     SKILL_NOT_FOUND = "skill_not_found"  # Slash-command message didn't resolve to an installed skill (#1410)
     EPHEMERAL_EXHAUSTED = "ephemeral_exhausted"  # Ghost agent budget spent — expired TTL or exec count (trinity-enterprise#69)
+    PROVIDER_SWITCH = "provider_switch"  # Running container env is not the active custom model provider yet
 
 
 @dataclass

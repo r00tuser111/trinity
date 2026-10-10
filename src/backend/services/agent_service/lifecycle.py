@@ -444,6 +444,7 @@ async def start_agent_internal(agent_name: str) -> dict:
     # idempotent start is redundant and generates connection-error noise when
     # the agent is under load and can't accept new HTTP connections.
     skip_injection = was_already_running and not needs_recreation
+    agent_ready = True
 
     if skip_injection:
         credentials_result = {
@@ -460,7 +461,7 @@ async def start_agent_internal(agent_name: str) -> dict:
         # Gate post-start injections on HTTP readiness — Docker "running"
         # precedes FastAPI "listening" by several seconds, and the downstream
         # retry window is too short under multi-agent deploys (#406).
-        await wait_for_agent_ready(agent_name)
+        agent_ready = await wait_for_agent_ready(agent_name)
 
         # Inject assigned credentials from the Credentials page.
         # trinity-enterprise#69: ephemeral ghosts get NO automatic credential
@@ -560,6 +561,9 @@ async def start_agent_internal(agent_name: str) -> dict:
         # routers/agents.py::start_agent_endpoint rebuilds a fresh dict from a
         # whitelist of keys (#1809's own learning), so this is surfaced there too.
         "recreate_deferred": recreate_deferred,
+        # False only when the post-start /health probe timed out. Callers that
+        # report "restarted" (model-provider apply) must not treat that as done.
+        "ready": agent_ready,
     }
 
 

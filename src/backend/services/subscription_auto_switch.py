@@ -975,7 +975,11 @@ async def _restart_agent(agent_name: str) -> str:
             return "not_running"
 
         await container_stop(container)
-        await start_agent_internal(agent_name)
+        started = await start_agent_internal(agent_name)
+        # start waits for /health and proceeds anyway on timeout. A provider
+        # apply must be able to tell "restarted" from "never came up".
+        if isinstance(started, dict) and started.get("ready") is False:
+            return "not_ready"
         return "success"
     except Exception as e:
         logger.error(f"[SUB-003] Failed to restart agent '{agent_name}': {e}")

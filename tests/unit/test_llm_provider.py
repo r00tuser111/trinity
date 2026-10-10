@@ -441,7 +441,6 @@ class TestRoutes:
         audit = _live("services.platform_audit_service").platform_audit_service
         monkeypatch.setattr(audit, "log", _noop)
         monkeypatch.setattr(_lp(), "_resolve_host", _public)
-        monkeypatch.setattr(_live("routers.settings.model_provider"), "_connect_waiting_agents", lambda: None)
 
     def _body(self, **kw):
         body = {"mode": "custom", "base_url": "https://api.deepseek.com/anthropic",
@@ -489,3 +488,201 @@ class TestRoutes:
         assert c.post("/api/settings/model-provider/test", json=body).json()["valid"] is False
         assert seen == [("https://api.deepseek.com/anthropic", _KEY),
                         ("https://elsewhere.example.com/anthropic", "")]
+
+    def test_saving_does_not_restart_the_fleet(self, monkeypatch):
+        called = []
+
+        async def _restart(names):
+            called.append(("restart", list(names)))
+            return {"restarted": [], "not_ready": [], "skipped": []}
+
+        monkeypatch.setattr(_lp(), "restart_agents", _restart)
+        monkeypatch.setattr(
+            _live("services.subscription_service"),
+            "connect_agents_to_first_credential",
+            lambda *a, **k: called.append("connect"),
+        )
+        r = _client().put("/api/settings/model-provider", json=self._body())
+        assert r.status_code == 200, r.text
+        assert called == []
+
+    def test_apply_waits_and_names_agents_that_did_not_come_up(self, monkeypatch):
+        async def _restart(names):
+            assert names == ["sage"]
+            return {"restarted": ["scout"], "not_ready": ["sage"], "skipped": ["scribe"]}
+
+        monkeypatch.setattr(_lp(), "stale_claude_agents", lambda: ["sage"])
+        monkeypatch.setattr(_lp(), "restart_agents", _restart)
+        body = _client().post("/api/settings/model-provider/apply").json()
+        assert body["restarted"] == ["scout"]
+        assert body["restarting"] == ["scout"]
+        assert body["not_ready"] == ["sage"]
+        assert body["skipped"] == ["scribe"]
+        assert body["count"] == 1
+
+
+class _Lock:
+    async def __aenter__(self):
+        return None
+
+    async def __aexit__(self, *args):
+        return False
+
+
+class TestProviderSwitch:
+    def test_restart_splits_a_ready_agent_from_one_that_never_came_up(self, monkeypatch):
+        sas = _live("services.subscription_auto_switch")
+
+        async def _lock(name):
+            return _Lock()
+
+        outcomes = {"ready-one": "success", "slow-one": "not_ready", "busy-one": "failed: boom"}
+
+        async def _restart(name):
+            return outcomes[name]
+
+        monkeypatch.setattr(sas, "agent_switch_lock", _lock)
+        monkeypatch.setattr(sas, "_restart_agent", _restart)
+        monkeypatch.setattr(
+            _live("database").db, "agent_has_running_execution", lambda name: name == "running-one",
+        )
+        out = asyncio.run(_lp().restart_agents(["ready-one", "slow-one", "busy-one", "running-one"]))
+        assert out == {
+            "restarted": ["ready-one"],
+            "not_ready": ["slow-one"],
+            "skipped": ["busy-one", "running-one"],
+        }
+
+    def _container(self, status="running"):
+        docker = _live("services.docker_service")
+        container = types.SimpleNamespace(labels={"trinity.agent-runtime": "claude-code"})
+        return docker, container, types.SimpleNamespace(status=status)
+
+    def test_a_running_agent_on_the_old_env_blocks_the_turn(self, monkeypatch):
+        _save()
+        db = _live("database").db
+        docker, container, status = self._container()
+        monkeypatch.setattr(db, "get_agent_subscription_id", lambda name: None)
+        monkeypatch.setattr(db, "get_use_platform_api_key", lambda name: True)
+        monkeypatch.setattr(docker, "get_agent_container", lambda name: container)
+        monkeypatch.setattr(docker, "get_agent_status_from_container", lambda c: status)
+        monkeypatch.setattr(
+            _live("services.agent_service.helpers"),
+            "check_api_key_env_matches",
+            lambda container, name: False,
+        )
+        assert _lp().running_agent_on_stale_provider("trinity-system") is True
+
+    def test_a_subscription_or_stopped_agent_is_not_blocked(self, monkeypatch):
+        _save()
+        db = _live("database").db
+        docker, container, stopped = self._container("stopped")
+        monkeypatch.setattr(db, "get_use_platform_api_key", lambda name: True)
+        monkeypatch.setattr(docker, "get_agent_container", lambda name: container)
+        monkeypatch.setattr(db, "get_agent_subscription_id", lambda name: "sub-1")
+        assert _lp().running_agent_on_stale_provider("trinity-system") is False
+        monkeypatch.setattr(db, "get_agent_subscription_id", lambda name: None)
+        monkeypatch.setattr(docker, "get_agent_status_from_container", lambda c: stopped)
+        assert _lp().running_agent_on_stale_provider("trinity-system") is False
+
+    def test_a_stale_provider_turn_never_calls_the_agent(self, monkeypatch):
+        from services.failure_classifier import is_auth_failure
+
+        lp = _lp()
+        monkeypatch.setattr(lp, "running_agent_on_stale_provider", lambda name: True)
+        tes = _live("services.task_execution_service")
+        called = {}
+
+        async def _call_agent(self, **kwargs):
+            called["agent"] = True
+
+        class _Capacity:
+            async def release(self, *args, **kwargs):
+                called["released"] = True
+
+        updates = []
+        monkeypatch.setattr(tes.TaskExecutionService, "_call_agent_with_retries", _call_agent)
+        monkeypatch.setattr(tes, "get_capacity_manager", lambda: _Capacity())
+        monkeypatch.setattr(
+            _live("database").db, "update_execution_status",
+            lambda **kwargs: updates.append(kwargs) or True,
+        )
+        result = asyncio.run(tes.TaskExecutionService().execute_task(
+            agent_name="trinity-system",
+            message="hi",
+            triggered_by="manual",
+            model="deepseek-chat",
+            timeout_seconds=30,
+            execution_id="exec-1",
+        ))
+        assert "agent" not in called
+        assert result.status == "failed"
+        assert result.error_code == tes.TaskExecutionErrorCode.PROVIDER_SWITCH
+        assert "previous model provider" in result.error
+        assert is_auth_failure(result.error) is False
+        assert updates[0]["execution_id"] == "exec-1"
+        assert updates[0]["error"] == result.error
+
+
+class _MessagesResponse:
+    def __init__(self, status, body):
+        self.status_code = status
+        self._body = body
+        self.text = json.dumps(body)
+
+    def json(self):
+        return self._body
+
+
+class TestCompatibilityToolChoice:
+    def test_custom_provider_disables_thinking_and_retries_without_a_forced_tool(self):
+        ai = _live("services.compatibility.ai_checks")
+        spec = _live("services.compatibility.spec")
+        check = spec.BY_ID[spec.AI_IDS[0]]
+        endpoint = _lp().LlmEndpoint(
+            url="https://api.deepseek.com/anthropic/v1/messages",
+            headers={"x-api-key": "k"},
+            model="deepseek-flash",
+            provider="custom",
+        )
+        client = types.SimpleNamespace(bodies=[])
+
+        async def post(url, headers=None, json=None, timeout=None):
+            client.bodies.append(json)
+            if len(client.bodies) == 1:
+                return _MessagesResponse(400, {"error": {"message": "Thinking mode does not support this tool_choice"}})
+            return _MessagesResponse(200, {"content": [{
+                "type": "tool_use",
+                "input": {"results": [{"check_id": check.id, "status": "pass", "confidence": 0.8}]},
+            }]})
+
+        client.post = post
+        out = asyncio.run(ai._call_category(client, endpoint, [check], "files"))
+        assert out[check.id]["status"] == "pass"
+        assert client.bodies[0]["tool_choice"]["name"] == "report_compatibility"
+        assert client.bodies[0]["thinking"] == {"type": "disabled"}
+        assert "tool_choice" not in client.bodies[1]
+        assert "thinking" not in client.bodies[1]
+
+    def test_anthropic_keeps_the_forced_tool_and_does_not_retry(self):
+        ai = _live("services.compatibility.ai_checks")
+        spec = _live("services.compatibility.spec")
+        check = spec.BY_ID[spec.AI_IDS[0]]
+        endpoint = _lp().LlmEndpoint(
+            url="https://api.anthropic.com/v1/messages",
+            headers={"x-api-key": "k"},
+            model="claude-haiku-4-5-20251001",
+            provider="anthropic",
+        )
+        client = types.SimpleNamespace(bodies=[])
+
+        async def post(url, headers=None, json=None, timeout=None):
+            client.bodies.append(json)
+            return _MessagesResponse(400, {"error": {"message": "bad request"}})
+
+        client.post = post
+        out = asyncio.run(ai._call_category(client, endpoint, [check], "files"))
+        assert out == {}
+        assert len(client.bodies) == 1
+        assert "thinking" not in client.bodies[0]
+        assert client.bodies[0]["tool_choice"]["type"] == "tool"

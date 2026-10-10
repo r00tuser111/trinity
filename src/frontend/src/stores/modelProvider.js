@@ -78,7 +78,9 @@ export const useModelProviderStore = defineStore('modelProvider', {
 
     async apply() {
       const { data } = await api.post('/api/settings/model-provider/apply')
-      this.pending = { agents: [], count: 0 }
+      const leftover = (data?.not_ready?.length || 0) + (data?.skipped?.length || 0)
+      if (leftover) await this.fetchPending()
+      else this.pending = { agents: [], count: 0 }
       return data
     },
   },

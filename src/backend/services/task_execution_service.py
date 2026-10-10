@@ -1385,6 +1385,40 @@ class TaskExecutionService:
         # This fixes issue #90 where exceptions during slot acquisition left executions
         # stuck in 'running' status with NULL session_id and duration_ms.
         try:
+            # A container that has not picked up the active custom provider yet
+            # cannot authenticate. Refuse before the agent call — sending the
+            # turn produces "Not logged in" and looks like a credential failure.
+            from services.llm_provider import (
+                PROVIDER_SWITCH_MESSAGE,
+                running_agent_on_stale_provider,
+            )
+            if running_agent_on_stale_provider(agent_name):
+                logger.info(
+                    "[TaskExecService] Refusing turn for %s: container env is not "
+                    "the active model provider",
+                    agent_name,
+                )
+                if execution_id:
+                    try:
+                        db.update_execution_status(
+                            execution_id=execution_id,
+                            status=TaskExecutionStatus.FAILED,
+                            error=PROVIDER_SWITCH_MESSAGE,
+                        )
+                    except Exception as e:  # noqa: BLE001 — the refusal still returns
+                        logger.warning(
+                            "[TaskExecService] could not record the provider-switch "
+                            "refusal for %s: %s",
+                            execution_id, e,
+                        )
+                return TaskExecutionResult(
+                    execution_id=execution_id or "",
+                    status=TaskExecutionStatus.FAILED,
+                    response="",
+                    error=PROVIDER_SWITCH_MESSAGE,
+                    error_code=TaskExecutionErrorCode.PROVIDER_SWITCH,
+                )
+
             # ---- 2. Acquire capacity slot ------------------------------------
             slot_acquired, admission_denied = await self._admission_gate(
                 agent_name=agent_name,

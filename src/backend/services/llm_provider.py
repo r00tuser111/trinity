@@ -557,6 +557,54 @@ async def check_provider(base_url: str, api_key: str, model: str, resolve: Resol
     return {"valid": False, "error": f"The provider answered {response.status_code}" + (f": {detail}" if detail else ".")}
 
 
+#: Shown on a chat or task that would otherwise hit a container still lacking
+#: the active provider's env. Must not contain auth-classifier substrings
+#: ("authentication", "credentials", "401", …) or SUB-003 treats it as a
+#: subscription failure.
+PROVIDER_SWITCH_MESSAGE = (
+    "This agent is still running on the previous model provider. "
+    "Open Settings, then Model provider, and choose Restart now before sending another message."
+)
+
+
+def running_agent_on_stale_provider(agent_name: str) -> bool:
+    """True when a turn must not be sent: custom provider is active, and this
+    running Claude agent still uses the platform credential but its container
+    env is not that provider yet.
+
+    A stopped agent is not blocked — the next start bakes the current env.
+    A subscription-backed agent is not blocked — that credential wins over the
+    provider. Inspection failures return False so a Docker blip does not refuse
+    every turn.
+    """
+    if get_active_provider() is None:
+        return False
+    try:
+        from database import db
+        from services.agent_service.helpers import check_api_key_env_matches, is_claude_runtime
+        from services.docker_service import get_agent_container, get_agent_status_from_container
+
+        if db.get_agent_subscription_id(agent_name) is not None:
+            return False
+        if not db.get_use_platform_api_key(agent_name):
+            return False
+        container = get_agent_container(agent_name)
+        if container is None:
+            return False
+        if get_agent_status_from_container(container).status != "running":
+            return False
+        runtime = (getattr(container, "labels", None) or {}).get("trinity.agent-runtime") or "claude-code"
+        if not is_claude_runtime(runtime):
+            return False
+        return not check_api_key_env_matches(container, agent_name)
+    except Exception as e:  # noqa: BLE001 — a probe must not fail the turn
+        logger.warning(
+            "could not tell whether '%s' is on the current model provider: %s",
+            agent_name, e,
+        )
+        return False
+
+
 def stale_claude_agents() -> List[str]:
     """Running, durable Claude agents whose auth env no longer matches. SYNCHRONOUS.
 
@@ -596,17 +644,25 @@ async def restart_agents(names: List[str]) -> dict:
     from database import db
     from services.subscription_auto_switch import _restart_agent, agent_switch_lock
 
-    restarted, skipped = [], []
+    restarted, not_ready, skipped = [], [], []
     for name in names:
         try:
             async with await agent_switch_lock(name):
                 if await asyncio.to_thread(db.agent_has_running_execution, name):
                     skipped.append(name)
                     continue
-                await _restart_agent(name)
+                outcome = await _restart_agent(name)
+            if outcome == "success":
                 restarted.append(name)
+            elif outcome == "not_ready":
+                not_ready.append(name)
+            else:
+                skipped.append(name)
         except Exception as e:  # noqa: BLE001
             logger.error("restart of '%s' onto the model provider failed: %s", name, e)
             skipped.append(name)
-    logger.info("model provider applied: %d restarted, %d left for next start", len(restarted), len(skipped))
-    return {"restarted": restarted, "skipped": skipped}
+    logger.info(
+        "model provider applied: %d restarted, %d not ready, %d left for next start",
+        len(restarted), len(not_ready), len(skipped),
+    )
+    return {"restarted": restarted, "not_ready": not_ready, "skipped": skipped}

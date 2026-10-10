@@ -5,7 +5,6 @@ Included before `generic` like every sibling: `/model-provider` and
 swallow (Invariant #4). Policy lives in `services/llm_provider.py`.
 """
 import asyncio
-import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
@@ -14,12 +13,7 @@ from models import ModelProviderTest, ModelProviderUpdate, User
 from services import llm_provider
 from services.platform_audit_service import AuditEventType, platform_audit_service
 
-logger = logging.getLogger(__name__)
-
 router = APIRouter()
-
-# Strong refs for fire-and-forget restarts (the event loop only holds a weak one).
-_inflight: "set[asyncio.Task]" = set()
 
 
 async def _audit(request: Request, user: User, action: str, **details) -> None:
@@ -36,15 +30,6 @@ async def _audit(request: Request, user: User, action: str, **details) -> None:
     )
 
 
-def _connect_waiting_agents() -> None:
-    """Agents created with no credential pick the provider up (ent#582 path)."""
-    try:
-        from services.subscription_service import connect_agents_to_first_credential
-        connect_agents_to_first_credential()
-    except Exception as e:  # noqa: BLE001 — the provider is already saved
-        logger.warning("could not connect waiting agents to the model provider: %s", e)
-
-
 @router.get("/model-provider")
 async def get_model_provider(current_user: User = Depends(get_current_user)):
     assert_admin(current_user)
@@ -58,9 +43,6 @@ async def update_model_provider(
     current_user: User = Depends(get_current_user),
 ):
     assert_admin(current_user)
-    from services.subscription_service import is_claude_auth_configured
-
-    was_configured = await asyncio.to_thread(is_claude_auth_configured)
     if body.mode == llm_provider.MODE_ANTHROPIC:
         await asyncio.to_thread(llm_provider.use_anthropic)
         await _audit(request, current_user, "use_anthropic")
@@ -82,8 +64,6 @@ async def update_model_provider(
             base_url=body.base_url, models=[m.id for m in body.models],
             key_changed=bool((body.api_key or "").strip()),
         )
-        if not was_configured:
-            _connect_waiting_agents()
     return await asyncio.to_thread(llm_provider.provider_status)
 
 
@@ -114,15 +94,31 @@ async def pending_model_provider_agents(current_user: User = Depends(get_current
 
 @router.post("/model-provider/apply")
 async def apply_model_provider(request: Request, current_user: User = Depends(get_current_user)):
-    """Restart stale running agents now, in the background."""
+    """Restart stale running agents and wait until each one is healthy.
+
+    One restart, not a second one racing the save path. An agent that does not
+    accept health checks is reported in ``not_ready`` rather than counted as
+    switched.
+    """
     assert_admin(current_user)
     names = await asyncio.to_thread(llm_provider.stale_claude_agents)
+    result = {"restarted": [], "not_ready": [], "skipped": []}
     if names:
-        task = asyncio.create_task(llm_provider.restart_agents(names))
-        _inflight.add(task)
-        task.add_done_callback(_inflight.discard)
-    await _audit(request, current_user, "apply", agents=len(names))
-    return {"restarting": names, "count": len(names)}
+        result = await llm_provider.restart_agents(names)
+    restarted = result.get("restarted") or []
+    await _audit(
+        request, current_user, "apply",
+        agents=len(names), restarted=len(restarted),
+        not_ready=len(result.get("not_ready") or []),
+    )
+    return {
+        # `restarting` kept so an older client still reads a list of names.
+        "restarting": restarted,
+        "restarted": restarted,
+        "not_ready": result.get("not_ready") or [],
+        "skipped": result.get("skipped") or [],
+        "count": len(restarted),
+    }
 
 
 @router.get("/model-catalog")

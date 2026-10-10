@@ -145,6 +145,36 @@ def _category_prompt(checks: List[spec.CheckDef], bundle: str) -> str:
     return "\n".join(lines)
 
 
+def _category_body(endpoint: LlmEndpoint, checks: List[spec.CheckDef], bundle: str, *, force_tool: bool) -> dict:
+    """Messages body for one category.
+
+    Anthropic is asked to call ``report_compatibility``. A custom provider is
+    asked the same way, but with thinking turned off: DeepSeek's thinking mode
+    rejects a forced ``tool_choice``. The caller retries once without the force
+    if that request is still refused.
+    """
+    body = {
+        "model": endpoint.model,
+        "max_tokens": 1500,
+        "tools": [_TOOL],
+        "messages": [{"role": "user", "content": _category_prompt(checks, bundle)}],
+    }
+    if force_tool:
+        body["tool_choice"] = {"type": "tool", "name": "report_compatibility"}
+        if endpoint.provider != "anthropic":
+            body["thinking"] = {"type": "disabled"}
+    return body
+
+
+async def _post_category(client: httpx.AsyncClient, endpoint: LlmEndpoint, body: dict):
+    return await client.post(
+        endpoint.url,
+        headers=endpoint.headers,
+        json=body,
+        timeout=_PER_CALL_TIMEOUT,
+    )
+
+
 async def _call_category(
     client: httpx.AsyncClient, endpoint: LlmEndpoint, checks: List[spec.CheckDef], bundle: str
 ) -> Dict[str, Dict[str, Any]]:
@@ -153,18 +183,22 @@ async def _call_category(
     Returns {} on any failure (caller turns missing ids into 'skipped').
     """
     try:
-        resp = await client.post(
-            endpoint.url,
-            headers=endpoint.headers,
-            json={
-                "model": endpoint.model,
-                "max_tokens": 1500,
-                "tools": [_TOOL],
-                "tool_choice": {"type": "tool", "name": "report_compatibility"},
-                "messages": [{"role": "user", "content": _category_prompt(checks, bundle)}],
-            },
-            timeout=_PER_CALL_TIMEOUT,
-        )
+        body = _category_body(endpoint, checks, bundle, force_tool=True)
+        resp = await _post_category(client, endpoint, body)
+        # Thinking-mode providers reject a forced tool even after thinking is
+        # disabled. One retry, without the force, still accepts a voluntary
+        # tool_use block. Anthropic is not retried.
+        if (
+            endpoint.provider != "anthropic"
+            and resp.status_code == 400
+        ):
+            logger.warning(
+                "[compatibility] custom provider rejected the forced tool (%s); retrying without tool_choice",
+                resp.text[:200],
+            )
+            resp = await _post_category(
+                client, endpoint, _category_body(endpoint, checks, bundle, force_tool=False),
+            )
     except (httpx.HTTPError, asyncio.TimeoutError) as e:
         logger.warning("[compatibility] AI category call failed: %s", e)
         return {}
